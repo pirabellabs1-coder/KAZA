@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA - Messaging</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark max-w-md mx-auto shadow-2xl overflow-hidden">
+<!-- Header / Navigation Bar -->
+<header class="sticky top-0 z-10 flex items-center bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary dark:text-slate-100 flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">KAZA - Chat</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">Online / En ligne</p>
+</div>
+</div>
+<div class="flex items-center">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Owner Details Card -->
+<div class="p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+<div class="flex w-full flex-col gap-4 @container">
+<div class="flex gap-4 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 border-2 border-primary/10" data-alt="Professional portrait of a property owner" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD2d7yloWnCRsg3Kw53PXnLx7aCCjkr3VJiQdregG3AHiwpKkxn_-US3JF-uRdKF0qs9AVRgiYCVVsY5QR4LqGJO8Rg-nSZ341uJmmFZGPMa2X5lJo0QP8g0px7qqpceaLDrE5lNtKEgxWTu9-I0tI6mZ0chGQRyL7ggxD9t-mogPOP5ZHRhP1mmkZrG6IFg3RcvHmOk4Ub-_FJiwLm0Vsh8QV2d71yAegBEyY8pW8-Y2jHErAtcg1uQOpvfnaZPLHrICyQKny2LRk");'></div>
+<div class="flex flex-col justify-center flex-1">
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">Marc-Antoine</p>
+<p class="text-primary dark:text-primary/70 text-sm font-medium">Owner / Propriétaire</p>
+</div>
+<button class="flex h-10 px-4 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-slate-100 text-xs font-bold uppercase tracking-wider transition-colors hover:bg-primary/20">
+<span class="truncate">Listing / Annonce</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Chat Area -->
+<main class="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-slate-200 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Today / Aujourd'hui</span>
+</div>
+<!-- Message Received -->
+<div class="flex items-end gap-3 max-w-[85%]">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-8 h-8 shrink-0 mb-1" data-alt="Small avatar of the property owner" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvzzjNpzSMRQjDnqPRp0sTv2zeAtJUtsMwP2WRwzwiO3Qg4eQ9m1kTjijOXKOQTaDfe7dBae-tONLa_XSXR6jj6lTdoeMo8LExEqtf-Hsl4KFqVO8uF2vRPlzHJ3t9B4pZCUIpQHkyt7yDaQXdgUOljhVzKaH4lOApiErPbhlhTC8RVIpYhTFvoEO2Qxb8LJmXtNhwUTCYopkM9bBsyuUmGmeoeGdM6CxEBWGBi6RgEFngpM0dmSAMgGAZJSOGIUKiSHnWitpbf04");'></div>
+<div class="flex flex-col gap-1">
+<p class="text-slate-400 dark:text-slate-500 text-[11px] font-medium ml-1">Marc-Antoine • 10:42 AM</p>
+<div class="relative text-sm leading-relaxed rounded-2xl rounded-bl-none px-4 py-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm border border-slate-100 dark:border-slate-700">
+                        Bonjour ! L'appartement est toujours disponible pour vos dates. / Hello! The apartment is still available for your dates.
+                    </div>
+</div>
+</div>
+<!-- Message Sent -->
+<div class="flex items-end gap-3 justify-end self-end max-w-[85%]">
+<div class="flex flex-1 flex-col gap-1 items-end">
+<p class="text-slate-400 dark:text-slate-500 text-[11px] font-medium mr-1">Me • 10:45 AM</p>
+<div class="text-sm leading-relaxed rounded-2xl rounded-br-none px-4 py-3 bg-primary text-white shadow-md">
+                        Super, merci ! Est-ce que le stationnement est inclus ? / Great, thanks! Is parking included?
+                    </div>
+</div>
+</div>
+<!-- Message Received (Longer text) -->
+<div class="flex items-end gap-3 max-w-[85%]">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-8 h-8 shrink-0 mb-1" data-alt="Small avatar of the property owner" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDToNu8o2JqX4P1VNgd_TUg8WOP_ZZUyPMiKBUijCB8aHJIKbRJwFeuejLXu5cIqc5jihLyGVfeFRXAZLqK_5b5hKjKKeOBrtllP9DNAeHrAXsxkPqITXdGiU1Eoet1BHzL36iur4WRWJ_sPxtiqHwZ_Vh69RJNXO6IVIGepFwl-p5bM5lUI9ojhJbvUCYeZsCRwh-ipd97g5xfPaheMTJ8eJhQikLb3k74t0WVP0M60qtdyXZhTX8OY4VaQuNv8KeFIT1xZVdTLZ8");'></div>
+<div class="flex flex-col gap-1">
+<p class="text-slate-400 dark:text-slate-500 text-[11px] font-medium ml-1">Marc-Antoine • 10:47 AM</p>
+<div class="text-sm leading-relaxed rounded-2xl rounded-bl-none px-4 py-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm border border-slate-100 dark:border-slate-700">
+                        Oui, il y a une place réservée dans le garage souterrain. Je vous envoie une photo de l'entrée. / Yes, there is a reserved spot in the underground garage. I'll send you a photo of the entrance.
+                    </div>
+</div>
+</div>
+<!-- Image Attachment Received -->
+<div class="flex items-end gap-3 max-w-[85%]">
+<div class="w-8 shrink-0"></div>
+<div class="flex flex-col gap-1 w-full">
+<div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="h-48 bg-cover bg-center" data-alt="Interior view of a modern underground parking garage" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCn7aj_XetDzI5vekQf0Vguapo7rM0jh0ApLOf7WSM8nzQ2Q_XZ_yKDbQFhwmNu1OvqwRDo9y_ZfPgnI3a4GOJcah7uZ3a7t5Xk-Tnso0MfFyMmmV396O9vhl22AVDyJaHeb-muPri1xCwjRZtgC4rWlgU12ds7rj4gGRLpabpkV1-FM_Kfohl9WlGU-_GSdE-BslGw0PZya-_yF0z1oGrvGQXbNQ6oM9GoIRU9BLXHbnkfhtca9MGssFzhq0gipj7ChGmTBV7zyCw');"></div>
+<div class="bg-white dark:bg-slate-800 p-2 text-[10px] text-slate-500 dark:text-slate-400 flex justify-between items-center">
+<span>parking_entrance.jpg</span>
+<span>1.2 MB</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Message Input Area -->
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4">
+<div class="flex items-center gap-2">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full text-primary dark:text-primary/70 hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<div class="relative flex-1">
+<input class="w-full rounded-full border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-3 pl-4 pr-12 text-sm focus:border-primary focus:ring-1 focus:ring-primary dark:text-slate-200" placeholder="Type a message... / Message..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 flex size-8 items-center justify-center rounded-full text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">mood</span>
+</button>
+</div>
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</footer>
+<!-- Bottom Navigation Bar -->
+<nav class="flex gap-2 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 transition-colors hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]">explore</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Explore</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 transition-colors hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Saved</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary dark:text-white" href="#">
+<span class="material-symbols-outlined text-[24px] fill-1">chat_bubble</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Inbox</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 transition-colors hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Profile</p>
+</a>
+</nav>
+</div>
+</body></html>

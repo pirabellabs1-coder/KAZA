@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<title>KAZA | Premium Real Estate Nairobi</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-hidden">
+<div class="flex flex-col h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 shrink-0 z-30">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="hidden md:flex flex-col min-w-80 max-w-md">
+<div class="flex w-full items-stretch rounded-xl h-10 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+<div class="text-slate-400 flex items-center justify-center pl-4 rounded-l-xl">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="w-full min-w-0 flex-1 border-none bg-transparent focus:outline-0 focus:ring-0 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 px-3 text-sm" placeholder="Search Nairobi, Kenya..." value="Nairobi, Kenya"/>
+</div>
+</div>
+</div>
+<div class="flex flex-1 justify-end items-center gap-6">
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Rent</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Buy</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Sell</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Short-stay</a>
+</nav>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile picture showing a professional man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDhLDCT28rfSm4q3NjNOqzdmpurnDduleGNzzLR8ie6WZtL9jPW-9jBHDrA96-F1T-dM--wjNjywZ3_tABHs5DGKkVMLe2I8Bklt5FLdb2HmfSrqSrX83v53gjQpJlww4ybMJiEFbpeJyiFnkFHNCYftt9x8DJBMySVy76OFRnVq9Qu1KZLNTwBzG1KKxQy13rfLz46aMiW2IeTomC9o5dR5pA1GLz_tN4JPADzYaQywl3C7mHbT444_bH9-gZiZiQQ_Jr_tdvZMz4");'></div>
+</div>
+</div>
+</header>
+<!-- Filter Bar -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 flex items-center justify-between overflow-x-auto whitespace-nowrap gap-4 scrollbar-hide shrink-0 z-20">
+<div class="flex gap-3">
+<button class="flex h-10 items-center justify-center gap-x-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all group">
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Price Range / Prix</span>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">expand_more</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-x-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all group">
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Bedrooms / Chambres</span>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">expand_more</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-x-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all group">
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Property Type / Type</span>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">expand_more</span>
+</button>
+<button class="flex h-10 items-center justify-center gap-x-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all group">
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Amenities / Services</span>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">expand_more</span>
+</button>
+<div class="h-10 w-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
+<button class="flex h-10 items-center justify-center gap-x-2 rounded-xl bg-primary/10 text-primary px-4 border border-primary/20 hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-lg">verified</span>
+<span class="text-sm font-semibold">Verified Only</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 bg-slate-900 dark:bg-white dark:text-slate-900 text-white px-4 h-10 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg">tune</span>
+                    More Filters
+                </button>
+</div>
+</div>
+<!-- Main Content (Split Screen) -->
+<main class="flex-1 flex overflow-hidden">
+<!-- Left Side: List View -->
+<div class="w-full lg:w-[600px] xl:w-[700px] bg-background-light dark:bg-background-dark overflow-y-auto p-6 scroll-smooth">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Properties in Nairobi</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">248 premium listings available</p>
+</div>
+<div class="flex bg-white dark:bg-slate-800 rounded-lg p-1 border border-slate-200 dark:border-slate-700 shadow-sm">
+<button class="px-3 py-1.5 bg-primary text-white rounded-md text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">format_list_bulleted</span> List
+                        </button>
+<button class="px-3 py-1.5 text-slate-500 dark:text-slate-400 rounded-md text-xs font-bold flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-sm">grid_view</span> Grid
+                        </button>
+</div>
+</div>
+<!-- Listing Cards -->
+<div class="space-y-6">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+<div class="relative w-full md:w-72 h-48 md:h-auto overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern luxury villa with pool in Nairobi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCThApaI8g0fU-7pOvjDyloCDKITDfpCNyLUyd_LOStzOF6Os49tyQgFc8NqLCJ8BlgxbpL_6aqqzi4UkQpUSXlzZu74MFnA33mFcFZejg-blU8r-L_fgedLiFG8GWGO7k9l-vGhpWT2JFwHV6PuKBHylWwmHTRNn2b3XzWwGRXs1wFXuVK0ZbsOOi1YYtchS8HtLZk29r0MreXZh_s9j1FaZ9BocYssCFvEMatKFKo-8Odcx9EQAJItGrE01x_cuCKJhONarkJyXo"/>
+<div class="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-primary flex items-center gap-1 border border-primary/20">
+<span class="material-symbols-outlined text-xs">verified</span> VERIFIED
+                            </div>
+<button class="absolute top-3 right-3 size-8 bg-white/90 dark:bg-slate-900/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<div class="flex-1 p-5 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white leading-tight">The Azure Villa, Muthaiga</h3>
+<div class="flex items-center gap-1 text-amber-500">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="text-xs font-bold">4.9</span>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Limuru Rd, Nairobi
+                                </p>
+<div class="flex gap-4 mb-4">
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">bed</span>
+<span class="text-xs font-medium">4 Beds</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">bathtub</span>
+<span class="text-xs font-medium">3 Baths</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">straighten</span>
+<span class="text-xs font-medium">3,200 sqft</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
+<div>
+<span class="text-2xl font-bold text-primary">$4,500</span>
+<span class="text-slate-400 text-xs ml-1">/ month</span>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">
+                                    View Details
+                                </button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+<div class="relative w-full md:w-72 h-48 md:h-auto overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="High-rise apartment building in Westlands area" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCidX1VsHBHeHBMZwE3Gl62yTH0unm8zvipK_vDrh4BmmXd_NvVK1ZUxmFZt3heNnhTfrYjN33nQWre06C4Wv9TdyGtrqmnW63aj1yA8iD0U6xTfMrd6SrirN5Szqm7v_lBOEIxp8g1oacBP6MsI2N1P5VvKEe1s7WiCm-wYtl20pHOK-TKVCKk6gugPRpogFDqRs0EE3cUFV4HCrdne8VC9Gl8c-iB1k8vuCAAkBPwKZqYxr8-60TxPC7TYJZnP2IvChRzEEXtZsc"/>
+<div class="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-primary flex items-center gap-1 border border-primary/20">
+<span class="material-symbols-outlined text-xs">verified</span> VERIFIED
+                            </div>
+<button class="absolute top-3 right-3 size-8 bg-white/90 dark:bg-slate-900/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<div class="flex-1 p-5 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white leading-tight">Savannah Penthouse, Westlands</h3>
+<div class="flex items-center gap-1 text-amber-500">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="text-xs font-bold">4.7</span>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Waiyaki Way, Nairobi
+                                </p>
+<div class="flex gap-4 mb-4">
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">bed</span>
+<span class="text-xs font-medium">2 Beds</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">bathtub</span>
+<span class="text-xs font-medium">2 Baths</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">pool</span>
+<span class="text-xs font-medium">Pool</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
+<div>
+<span class="text-2xl font-bold text-primary">$2,800</span>
+<span class="text-slate-400 text-xs ml-1">/ month</span>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">
+                                    View Details
+                                </button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow group cursor-pointer opacity-80 hover:opacity-100 transition-opacity">
+<div class="relative w-full md:w-72 h-48 md:h-auto overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Traditional Kenyan style modern estate" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3zFK-H6kVvzbAXuwJF5cp8s2Fo6F4fdeEJzankw5usAXGRmdp3E602qxhV608aRexLwjB23xmtpiPwkdffBAK7oCKuUimr5RaKv98mRN3UjQIhCzTSUy5Iw-3_tEi3tt5H1fzLYhmPCxpS4glEO9aOZCVGcv6fDiZpaiHlPb-gMlaTSR373AaOYd-qea6DVt-_KFoJYgOCXI11OlI_6Wqu0hRG5FN5zlTGBLxPUhCknaeCIrgZ2SWUK2isi_11-3zFXZdz0fLe5Y"/>
+<div class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">workspace_premium</span> PREMIUM
+                            </div>
+<button class="absolute top-3 right-3 size-8 bg-white/90 dark:bg-slate-900/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<div class="flex-1 p-5 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white leading-tight">Kilimani Garden Duplex</h3>
+<div class="flex items-center gap-1 text-amber-500">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="text-xs font-bold">4.8</span>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Argwings Kodhek, Nairobi
+                                </p>
+<div class="flex gap-4 mb-4">
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">bed</span>
+<span class="text-xs font-medium">3 Beds</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">local_parking</span>
+<span class="text-xs font-medium">2 Slots</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg">security</span>
+<span class="text-xs font-medium">24/7</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
+<div>
+<span class="text-2xl font-bold text-primary">$3,200</span>
+<span class="text-slate-400 text-xs ml-1">/ month</span>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">
+                                    View Details
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex justify-center pb-8">
+<button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-6 py-2.5 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        Load More Properties
+                    </button>
+</div>
+</div>
+<!-- Right Side: Map View -->
+<div class="hidden lg:block flex-1 relative bg-slate-200 dark:bg-slate-800 overflow-hidden">
+<!-- Map Placeholder Image -->
+<div class="absolute inset-0 bg-slate-200 dark:bg-slate-800" data-location="Nairobi, Kenya" style="">
+<img class="w-full h-full object-cover opacity-60" data-alt="Stylized map of Nairobi with property pins" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuq8tDvZL5R2WDBP6EuNoSacRkOsdw0sT6z5eOGFnhVuvMXtVwpDBJBGimN_xb7mpE_SWKIosbjNspjUco0cgPtPm6N-4Jqm5_G-R7n4VGjaRcJGZBf40-Uy73MSseq64RTVr2ZVt1vkjjrKRSnD4aUqwzwVpl3djDG5zf5p0l_s8nuZPo4YL6_kuwiaIKKUM2noppexDueistNbkuPyRNuuyWUx2LAy_x4_zXQXpC_L8dBLCVWjlVWaJVqvSEOb40iSSWf2tg5No"/>
+</div>
+<!-- Map Pins (Mock) -->
+<div class="absolute top-[30%] left-[40%] group">
+<div class="bg-primary text-white text-xs font-bold px-2 py-1.5 rounded-lg shadow-xl border-2 border-white cursor-pointer hover:scale-110 transition-transform">
+                        $4,500
+                    </div>
+</div>
+<div class="absolute top-[50%] left-[60%] group">
+<div class="bg-primary text-white text-xs font-bold px-2 py-1.5 rounded-lg shadow-xl border-2 border-white cursor-pointer hover:scale-110 transition-transform">
+                        $2,800
+                    </div>
+</div>
+<div class="absolute top-[45%] left-[30%] group">
+<div class="bg-primary text-white text-xs font-bold px-2 py-1.5 rounded-lg shadow-xl border-2 border-white cursor-pointer hover:scale-110 transition-transform">
+                        $3,200
+                    </div>
+</div>
+<div class="absolute top-[20%] left-[70%] group">
+<div class="bg-slate-500 text-white text-xs font-bold px-2 py-1.5 rounded-lg shadow-xl border-2 border-white cursor-pointer hover:scale-110 transition-transform">
+                        $1,500
+                    </div>
+</div>
+<!-- Map Controls -->
+<div class="absolute bottom-6 right-6 flex flex-col gap-2">
+<button class="size-10 bg-white dark:bg-slate-900 shadow-lg rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="size-10 bg-white dark:bg-slate-900 shadow-lg rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="size-10 bg-white dark:bg-slate-900 shadow-lg rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50">
+<span class="material-symbols-outlined">near_me</span>
+</button>
+</div>
+<div class="absolute top-6 left-6">
+<div class="bg-white dark:bg-slate-900 p-1.5 rounded-lg shadow-lg border border-slate-200 dark:border-slate-800 flex gap-1">
+<button class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-xs font-bold rounded-md">Satellite</button>
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-md">Street</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

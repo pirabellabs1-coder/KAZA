@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA Proptech - Identity Verification</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- TopNavBar Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs><clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath></defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em]">KAZA Proptech</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 md:gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">Properties</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full px-4 md:px-6 py-8 gap-8">
+<!-- Sidebar / Progress Tracker -->
+<aside class="w-full md:w-80 flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Alex Johnson</h3>
+<p class="text-sm text-slate-500">KYC Status: Pending</p>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Verification Progress</p>
+<p class="text-xs font-bold text-primary">66%</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 66%;"></div>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span class="text-sm font-medium">Personal Information</span>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg bg-primary text-white shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+<span class="text-sm font-medium">Identity Documents</span>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg text-slate-500 dark:text-slate-400 opacity-60">
+<span class="material-symbols-outlined text-sm">face</span>
+<span class="text-sm font-medium">Selfie Verification</span>
+</div>
+</nav>
+</div>
+</div>
+<div class="bg-primary/5 dark:bg-primary/10 p-6 rounded-xl border border-primary/10">
+<h4 class="text-sm font-bold text-primary mb-2">Why verify?</h4>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            To comply with financial regulations and protect our community, we require all investors to complete a one-time identity verification (KYC).
+                        </p>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">Identity Verification</h1>
+<p class="text-slate-600 dark:text-slate-400">Please provide a valid government-issued ID to continue.</p>
+</div>
+<!-- Step 2: Document Upload -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-lg font-bold text-slate-900 dark:text-slate-100">Step 2: Document Upload</h2>
+<span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase">Required</span>
+</div>
+<div class="p-6 space-y-8">
+<!-- Document Type Selector -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<label class="relative flex flex-col gap-3 p-4 border-2 border-primary rounded-xl bg-primary/5 cursor-pointer">
+<input checked="" class="absolute top-4 right-4 text-primary focus:ring-primary h-4 w-4" name="doc_type" type="radio"/>
+<span class="material-symbols-outlined text-primary text-3xl">badge</span>
+<span class="font-bold text-slate-900 dark:text-slate-100">Passport</span>
+</label>
+<label class="relative flex flex-col gap-3 p-4 border-2 border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/50 cursor-pointer">
+<input class="absolute top-4 right-4 text-primary focus:ring-primary h-4 w-4" name="doc_type" type="radio"/>
+<span class="material-symbols-outlined text-slate-500 text-3xl">contact_emergency</span>
+<span class="font-bold text-slate-900 dark:text-slate-100">ID Card</span>
+</label>
+<label class="relative flex flex-col gap-3 p-4 border-2 border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/50 cursor-pointer">
+<input class="absolute top-4 right-4 text-primary focus:ring-primary h-4 w-4" name="doc_type" type="radio"/>
+<span class="material-symbols-outlined text-slate-500 text-3xl">directions_car</span>
+<span class="font-bold text-slate-900 dark:text-slate-100">Driver's License</span>
+</label>
+</div>
+<!-- Upload Area -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-3">
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Front of document</p>
+<div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center gap-4 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer group">
+<div class="size-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-primary">cloud_upload</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100">Click to upload</p>
+<p class="text-xs text-slate-500">or drag and drop</p>
+</div>
+<p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">PNG, JPG up to 10MB</p>
+</div>
+</div>
+<div class="space-y-3">
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Back of document (if applicable)</p>
+<div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 flex flex-col items-center justify-center gap-4 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer group">
+<div class="size-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-primary">cloud_upload</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100">Click to upload</p>
+<p class="text-xs text-slate-500">or drag and drop</p>
+</div>
+<p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">PNG, JPG up to 10MB</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Selfie Verification Preview -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800">
+<h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 leading-none">Step 3: Selfie Verification</h2>
+<p class="text-xs text-slate-500 mt-2">Will be unlocked after document upload</p>
+</div>
+<div class="p-6 flex flex-col md:flex-row gap-8 items-center opacity-50 grayscale">
+<div class="w-full md:w-1/3 aspect-square rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 overflow-hidden relative">
+<span class="material-symbols-outlined text-6xl text-slate-300">person</span>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-48 h-64 border-2 border-slate-400 rounded-full border-dashed opacity-30"></div>
+</div>
+</div>
+<div class="flex-1 space-y-4">
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Instructions:</h3>
+<ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-lg">light_mode</span>
+<span>Ensure you are in a well-lit area.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-lg">no_photography</span>
+<span>Remove hats, glasses, or masks.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-lg">center_focus_strong</span>
+<span>Keep your face within the oval frame.</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row gap-4 justify-between items-center py-4">
+<button class="w-full sm:w-auto px-8 py-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            Back
+                        </button>
+<button class="w-full sm:w-auto px-12 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+                            Save &amp; Continue
+                        </button>
+</div>
+<!-- Trust Bar -->
+<div class="flex items-center justify-center gap-6 py-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="text-[10px] uppercase font-bold tracking-widest">Secure 256-bit AES Encryption</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">gpp_maybe</span>
+<span class="text-[10px] uppercase font-bold tracking-widest">GDPR Compliant</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Small -->
+<footer class="mt-auto px-6 py-8 border-t border-slate-200 dark:border-slate-800">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
+<p>© 2024 KAZA Proptech Inc. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

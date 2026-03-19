@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="flex items-center bg-white dark:bg-slate-900 px-4 py-4 justify-between border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined block">dashboard</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-primary dark:text-slate-100">KAZA <span class="text-slate-500 font-medium">Owner</span></h1>
+</div>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">notifications</span>
+</button>
+</header>
+<!-- Navigation Tabs -->
+<nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+<div class="flex px-4 gap-8">
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4" href="#">
+<p class="text-sm font-bold">Overview / Aperçu</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4" href="#">
+<p class="text-sm font-medium">Properties / Propriétés</p>
+</a>
+</div>
+</nav>
+<main class="flex-1 pb-24">
+<!-- Key Stats -->
+<div class="p-4 grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">payments</span>
+<p class="text-xs font-semibold uppercase tracking-wider">Revenue / Revenu</p>
+</div>
+<p class="text-2xl font-bold leading-tight">$12,450</p>
+<div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+8.2%</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">group</span>
+<p class="text-xs font-semibold uppercase tracking-wider">Occupancy / Taux</p>
+</div>
+<p class="text-2xl font-bold leading-tight">94%</p>
+<div class="flex items-center gap-1 text-rose-600 dark:text-rose-400 text-xs font-bold">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+<span>-2.1%</span>
+</div>
+</div>
+</div>
+<!-- Occupancy Chart Section -->
+<section class="px-4 py-2">
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-lg font-bold">Occupancy Trend / Tendance</h2>
+<span class="text-xs text-slate-500">Last 6 Months</span>
+</div>
+<div class="flex items-end justify-between h-32 gap-2 px-2">
+<div class="flex-1 bg-primary/10 dark:bg-primary/20 rounded-t-md relative group h-[70%]">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-800 text-white text-[10px] px-1 rounded">70%</div>
+</div>
+<div class="flex-1 bg-primary/10 dark:bg-primary/20 rounded-t-md relative h-[85%]"></div>
+<div class="flex-1 bg-primary/10 dark:bg-primary/20 rounded-t-md relative h-[92%]"></div>
+<div class="flex-1 bg-primary rounded-t-md relative h-[94%]"></div>
+<div class="flex-1 bg-primary/10 dark:bg-primary/20 rounded-t-md relative h-[88%]"></div>
+<div class="flex-1 bg-primary/10 dark:bg-primary/20 rounded-t-md relative h-[94%]"></div>
+</div>
+<div class="flex justify-between mt-2 px-1 text-[10px] font-bold text-slate-400 uppercase">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+</div>
+</div>
+</section>
+<!-- Recent Requests -->
+<section class="px-4 py-6">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold">Recent Requests / Demandes</h2>
+<a class="text-primary dark:text-primary/80 text-sm font-semibold" href="#">View All</a>
+</div>
+<div class="space-y-3">
+<!-- Request Card 1 -->
+<div class="flex gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="h-12 w-12 rounded-full overflow-hidden shrink-0 border-2 border-slate-100 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Portrait of a young male tenant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYLwFUfrapLwg8LzR_t2ihlNJTbCkCpnxlLHrCOgdRA5XQYgm81x0o5pD1Dl2nMvkJhfYZuP3iyutdIwgGaYT4vkhUlpMZNqwfW0TzylnkUk0qyP5NybhGsRi7NFwHYNxfrcbMbDvywOrSevqBV7W0-nUjTYYfc3W3z6waU1q1GbR3f9hkIhvhGeJHC7iDoWLAGwCTUKS4_kXAEPmFs_pFtGTmwy33c9ARIaccz0vS6r9nP_LyQZDehsn6jGVO0_DFa0pfH2_ai3c"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-sm truncate">Jean Dupont</h3>
+<span class="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Pending</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-1">Leaking faucet in kitchen / Robinet qui fuit</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span> Unit 402
+                                </span>
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span> 2h ago
+                                </span>
+</div>
+</div>
+</div>
+<!-- Request Card 2 -->
+<div class="flex gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="h-12 w-12 rounded-full overflow-hidden shrink-0 border-2 border-slate-100 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Portrait of a female tenant smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCa9W4wo-sdg1pqn67PV5aWyP-x8AOEVlFVgYiaOKF9ZKeg76_2ss9L-LXAoV5IEBJeI14BuT7ZdhAw-OAmgOpCJlixrNyFARl168I1KJI16DTE6X_2pgk_gtFf4YOkQTbZV7iMO6EGIdHfxdFr8FTdkNqm_xtfg42x-LxDzsdJ-XhoreZ7z77NQ_7IeKUR6hJ64VcFDNmF84CwwSSoinjo90RVjyiYE4IIPu9yjJy507FsAx4_mFf0XlcV6wxaDCkmCBoTwq6VmM"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-sm truncate">Sarah Miller</h3>
+<span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">In Progress</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-1">AC Repair / Réparation climatisation</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span> Unit 115
+                                </span>
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span> 5h ago
+                                </span>
+</div>
+</div>
+</div>
+<!-- Request Card 3 -->
+<div class="flex gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm opacity-80">
+<div class="h-12 w-12 rounded-full overflow-hidden shrink-0 border-2 border-slate-100 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Portrait of a male tenant with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaY4qNzHZe2389U27WHLcfLs7jhovIgSB_SG6brPVJAsxBYre2vM0_04h6Fm2ysz_9cz6eEwbA0G0aJC2byl6xj0m1O-rBjLeKrlloUIEgo5_BC9xnjRrv0tO6swBEe4hxQZWdeVlpUxwa69rLXq7dMvTgLdIVDJXlg7B7vEOeoUT7A1ctmZezOdYHb1p6nd9_ykYNTdEIgiPEC1x9eKPuR7tQp8er0kTnky5rTuYmvVNS5mHvAyoRhXlMPGs7dPHp6P_OElTBcb0"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-sm truncate">Marc Lefebvre</h3>
+<span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Closed</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm line-clamp-1">Rent payment issue / Problème de paiement</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span> Unit 208
+                                </span>
+<span class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span> Yesterday
+                                </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined font-fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<p class="text-[10px] font-bold">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">apartment</span>
+<p class="text-[10px] font-medium">Units</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<div class="relative">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-rose-500 text-[8px] text-white">2</span>
+</div>
+<p class="text-[10px] font-medium">Chat</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-medium">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

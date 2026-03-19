@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA - Premium African Proptech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent-green": "#28A745",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20">
+<div class="flex items-center gap-2">
+<div class="text-primary dark:text-blue-400">
+<span class="material-symbols-outlined text-4xl">domain</span>
+</div>
+<h1 class="text-2xl font-extrabold tracking-tighter text-primary dark:text-white uppercase">Kaza</h1>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Buy</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Rent</a>
+<a class="text-sm font-semibold text-accent-green hover:underline decoration-2 underline-offset-4" href="#">Student Housing</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Owners</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all">
+<span>EN</span>
+<span class="opacity-40">/</span>
+<span class="opacity-60">FR</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative py-12 px-4 @container">
+<div class="max-w-7xl mx-auto">
+<div class="relative min-h-[560px] flex flex-col items-center justify-center text-center rounded-xl overflow-hidden px-6 py-20" data-alt="Modern luxury villa with African architecture sunset" style="background-image: linear-gradient(to bottom, rgba(0, 33, 66, 0.7), rgba(0, 0, 0, 0.5)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuABWlvJbe75EnlHDaEo4OgQ1JDOUvnH-20hEpAIQ-hTvJbnEI6NulcIJKFPFPW6LZdezGkH4WaGIqIuLQrWLOsAX9DwxWlA0GoW8To3TQMh31wyOcRCaS5h-HouGXjWp3Cs1PSY--ddtAEglq0ue--0Y-0OCAx_zcKy51XMBdTP4DCoCBErM4_fBan_eiSQHN2ztw9L5H8_nBL88zgEx9Ydl5ZEf4FNizZTzshDeP9XosFzV2iAWQWPobbhI4C4ADMCLKzd_CBUp-I'); background-size: cover; background-position: center;">
+<div class="max-w-3xl mb-12">
+<h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-6 tracking-tight">
+                        Find Your Premium <br/><span class="text-accent-green">Home in Africa</span>
+</h1>
+<p class="text-lg md:text-xl text-slate-100 font-medium opacity-90">
+                        Modern living spaces tailored for professionals, expatriates, and students.
+                    </p>
+</div>
+<!-- Search Bar -->
+<div class="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-xl md:rounded-full p-2 shadow-2xl flex flex-col md:flex-row items-stretch gap-2 border border-slate-100 dark:border-slate-800">
+<div class="flex-1 flex items-center px-4 py-3 md:py-0 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
+<span class="material-symbols-outlined text-slate-400 mr-3">location_on</span>
+<div class="flex flex-col items-start">
+<span class="text-[10px] font-bold uppercase text-slate-500">Location</span>
+<input class="border-0 p-0 focus:ring-0 bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 font-semibold w-full" placeholder="Lagos, Nairobi, Abidjan..." type="text"/>
+</div>
+</div>
+<div class="flex-1 flex items-center px-4 py-3 md:py-0 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
+<span class="material-symbols-outlined text-slate-400 mr-3">home_work</span>
+<div class="flex flex-col items-start">
+<span class="text-[10px] font-bold uppercase text-slate-500">Property Type</span>
+<select class="border-0 p-0 focus:ring-0 bg-transparent text-slate-900 dark:text-white font-semibold w-full appearance-none">
+<option>All Types</option>
+<option>House</option>
+<option>Apartment</option>
+<option>Shared Suite</option>
+</select>
+</div>
+</div>
+<div class="flex-1 flex items-center px-4 py-3 md:py-0">
+<span class="material-symbols-outlined text-slate-400 mr-3">payments</span>
+<div class="flex flex-col items-start">
+<span class="text-[10px] font-bold uppercase text-slate-500">Budget</span>
+<input class="border-0 p-0 focus:ring-0 bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 font-semibold w-full" placeholder="Min - Max" type="text"/>
+</div>
+</div>
+<button class="bg-primary hover:bg-blue-900 text-white rounded-xl md:rounded-full px-8 py-4 flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-primary/30">
+<span class="material-symbols-outlined">search</span>
+<span class="font-bold">Search</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Property Filters -->
+<section class="max-w-7xl mx-auto px-4 mb-12">
+<div class="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar">
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white font-semibold whitespace-nowrap shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+                All Residential
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold whitespace-nowrap hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">cottage</span>
+                Houses
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold whitespace-nowrap hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">apartment</span>
+                Apartments
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold whitespace-nowrap hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">groups</span>
+                Shared Housing
+            </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-green-50 border border-accent-green/20 text-accent-green font-bold whitespace-nowrap hover:bg-green-100 transition-colors">
+<span class="material-symbols-outlined text-lg">school</span>
+                Student Suites
+            </button>
+</div>
+</section>
+<!-- Featured Listings -->
+<section class="max-w-7xl mx-auto px-4 mb-24">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-3xl font-black text-primary dark:text-white tracking-tight">Featured Listings</h2>
+<p class="text-slate-500 mt-2 font-medium">Handpicked premium properties in top African cities.</p>
+</div>
+<a class="text-primary font-bold hover:underline flex items-center gap-1 group" href="#">
+                View all <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Luxury modern villa in Ikoyi Lagos with swimming pool" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNAyyl_yFhJVhYTrI6EAS3TaUs1RQofi1X3_Y-i7Ecd4bJNx0tIV10vSIMatsm_0p9gXTquWEAUpEyLVm1kM3LGp5cGRRK0SousEab3dK0DAva6LgWL6XuvRxylApZe-Gpy7pCdCWr4MfpbIGtSVy7I1cicWLiy3mTI-QFELh9LwVaRGBn4ZhdoIX0bAIzl2caYsO_q3CBwzEOASD7Fyi9kC9kphs9wc3iWhfkewS_HY0WfxXv_M1MPXdTm-AUUzOQZ6crgu3q8nw"/>
+<div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Premium</div>
+<button class="absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Ikoyi Waterfront Villa</h3>
+<span class="text-accent-green font-black text-lg">$4,500<span class="text-xs font-normal text-slate-400">/mo</span></span>
+</div>
+<p class="text-slate-500 text-sm mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Lagos, Nigeria
+                    </p>
+<div class="flex items-center gap-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">bed</span> 4 Beds
+                        </div>
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">bathtub</span> 3 Baths
+                        </div>
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">straighten</span> 350m²
+                        </div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern penthouse apartment in Cape Town with mountain view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9wHB3QJAono85ogagCxlYaphedjThpTlGPqQmqfFkc-i3Yi7WfSnIuns2Q5zRJx7UJUH-G2HTQKLEQ8o2kZKMHxRjGc-df51_7yF5a9WVdtOEWc3NDtoNUwtzKqk4jhJrib5t4DKvuAWeRPPl71SFnjioxOiU2NtQZc9DmY2jWHBDJA3WpoohscCMMUciQIOHDNazxe6W387cGkcs5PNwiWAosOv1pJp9D04nH-9AK1WXzZcPu6o6OIsUX_gseRehNtF469oBdng"/>
+<div class="absolute top-4 left-4 bg-accent-green text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Hot Deal</div>
+<button class="absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">V&amp;A Penthouse</h3>
+<span class="text-accent-green font-black text-lg">$3,200<span class="text-xs font-normal text-slate-400">/mo</span></span>
+</div>
+<p class="text-slate-500 text-sm mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Cape Town, SA
+                    </p>
+<div class="flex items-center gap-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">bed</span> 2 Beds
+                        </div>
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">bathtub</span> 2 Baths
+                        </div>
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">straighten</span> 180m²
+                        </div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern stylish studio apartment for students" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHxHJ-hM9sdfrELdlzqaMXx_znqhTINwZsDWbTxjHb4mgu_8JmEEbtoTYTTaFFE53gnIMfLhPa-CG5zPmrvL_d1m-ZNyyDT3VsVeQDfn1bc5GnqU046eIKkEOpvWc8F7NrnOQUvCGY7V2Gm7ftZDM3UcUJRh3zIc-4K1vhKWvVFH6H5GWx_q6nr4fb6GJmBKxXIUYLOf8L_sBKZkmL0HqdVn1TwMiABF2hZfCg-Qi4ZEoXFDddv532xCecdsstsbG_ppaGib83IDU"/>
+<div class="absolute top-4 left-4 bg-slate-100 text-slate-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-slate-200">Verified</div>
+<button class="absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">East Legon Shared Suite</h3>
+<span class="text-accent-green font-black text-lg">$850<span class="text-xs font-normal text-slate-400">/mo</span></span>
+</div>
+<p class="text-slate-500 text-sm mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Accra, Ghana
+                    </p>
+<div class="flex items-center gap-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">group</span> 3 Roommates
+                        </div>
+<div class="flex items-center gap-1 text-slate-600 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-lg">wifi</span> High Speed
+                        </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Specialized Entry Point: Student Housing -->
+<section class="bg-primary py-20 px-4 mb-24 rounded-xl max-w-7xl mx-auto overflow-hidden relative">
+<div class="absolute top-0 right-0 w-1/2 h-full bg-accent-green/10 -skew-x-12 transform translate-x-1/4"></div>
+<div class="relative flex flex-col lg:flex-row items-center gap-12 z-10">
+<div class="flex-1 text-center lg:text-left">
+<span class="inline-block bg-accent-green/20 text-accent-green font-bold px-4 py-1 rounded-full mb-4">KAZA ACADEMIA</span>
+<h2 class="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">Elite Student Living <br/>Across the Continent</h2>
+<p class="text-blue-100 text-lg mb-8 max-w-xl mx-auto lg:mx-0">
+                    Safe, community-focused, and premium housing located near major universities. Full amenities included for the modern scholar.
+                </p>
+<div class="flex flex-wrap justify-center lg:justify-start gap-4">
+<button class="bg-accent-green hover:bg-green-600 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-green-900/40">Find Student Housing</button>
+<button class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold py-4 px-8 rounded-xl transition-all">List Your Residence</button>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4">
+<div class="space-y-4 pt-8">
+<img class="rounded-xl aspect-square object-cover" data-alt="Student communal study area in dorm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_nBTIDzuHKdB0wfohL3n0ccmHY2_9M8rCzHMJKO3XDRQpco5DAelBEfqYge4isi_xs2FTJ-co3aF73vFlzJWppTa8nspykSN_W4DQlfkdhsATMdLMBosgIraFn4o6JS-DgowESuGuE0C2n4OQ2eprD6AMlL68-wXyOXTGfTa1cgsxPndZJa5aX51Hw73xjWAuyJPQA0geurmEg5sAHz3e-rLS3Eh0A19AwxD_bLavOfyZiVNsM8tM_-auoRZGBDi4iVUgv5nWX7M"/>
+<img class="rounded-xl aspect-[3/4] object-cover" data-alt="Modern cozy student bedroom" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4F_Jhq9DGGBF8b8yN7m_kN1fUtFF_FNXQRDRHZ1cnj0__dxdGAH_jsNoFmaM_JI8tZeDQzorvdGWohwR-rSIiKYsDGI3zJhZc4lHntaimF77hc6MM3Yxl9d0KHTZVj1fFL5apPy2J8_amBetYwdxzvCOw_8CZS-WOSA0tdi4MZaw8v3-pI9q7ikUaggQulSjbpEzJ-ngETPq90qmfQnwWddc1o3ZC6LgmRM1xn5hp6WvcnhqZeRNS4PVp9AkY3A1U5O6Sh5CbQMQ"/>
+</div>
+<div class="space-y-4">
+<img class="rounded-xl aspect-[3/4] object-cover" data-alt="Students socializing in kitchen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmwJTCgOg2F1gVj9EhyXLtin8AZN1Tw8ITP7O6uIpk8YAJI4vRrNDUSgzztvyz_B1ZgvGAdyrVHifYSniOMO4sUnNdf0tnYdAUpuZ82FUlEDAsH2-7e8lbYYubEu7h8I3GhZZq9_Mgyv6GeL-XN1oe-ytvGUCKZK7tBFGvhgWmzWundheSLGD_DMVCFOtfxWxYAXoeLCd2LBH2FKOhF-MDdZnb3TQgfFphK4WuuGPMS_t13_G0kzvnnQOfv-fVtQUJ-2Ju8ylgXx4"/>
+<img class="rounded-xl aspect-square object-cover" data-alt="Modern campus architecture Africa" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfkHBSlZSjZwQaklIMLtdfKE93PpT0leheOMrnyyOaxIWZ8T_EWsATYWhhvTkQ31TikuZN7KmKdhnVxc1StZx8Q8vR-PxzzoGqcQlNxMCoJkxs4gmhuT8eAEERcCVBwYj2SyVcrve3myQ4yD_1Gz2arHZ1TuFZjIEqHVjYeL9xuwKM8dfPd1xrnVWMsQ4Dd11SZrKlrO85Ws1t9Q1M_bsIbI6KDVZbnDSnC7HOZB2qT0Pdbd3iaLewvQQ3_4bo3dHFHNMW7IMXO7M"/>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="max-w-7xl mx-auto px-4 mb-24">
+<h2 class="text-center text-4xl font-black text-primary dark:text-white mb-16 tracking-tight">How Kaza Works</h2>
+<div class="grid lg:grid-cols-2 gap-16">
+<!-- Tenants -->
+<div class="bg-white dark:bg-slate-900 p-10 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-blue-400 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">key</span>
+</div>
+<h3 class="text-2xl font-bold">For Tenants</h3>
+</div>
+<div class="space-y-10">
+<div class="flex gap-6">
+<div class="text-3xl font-black text-slate-200 dark:text-slate-800 shrink-0">01</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Discovery</h4>
+<p class="text-slate-500">Search through verified listings with high-quality photos and 3D tours.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="text-3xl font-black text-slate-200 dark:text-slate-800 shrink-0">02</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Secure Booking</h4>
+<p class="text-slate-500">Pay through our secure escrow platform. Your funds are protected.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="text-3xl font-black text-slate-200 dark:text-slate-800 shrink-0">03</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Live Effortlessly</h4>
+<p class="text-slate-500">Move in and manage your stay through our dedicated tenant app.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Owners -->
+<div class="bg-white dark:bg-slate-900 p-10 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-14 h-14 bg-green-50 dark:bg-green-900/30 text-accent-green rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">real_estate_agent</span>
+</div>
+<h3 class="text-2xl font-bold">For Owners</h3>
+</div>
+<div class="space-y-10">
+<div class="flex gap-6">
+<div class="text-3xl font-black text-slate-200 dark:text-slate-800 shrink-0">01</div>
+<div>
+<h4 class="font-bold text-lg mb-2">List &amp; Screen</h4>
+<p class="text-slate-500">Market your property to verified professionals and top-tier students.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="text-3xl font-black text-slate-200 dark:text-slate-800 shrink-0">02</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Property Mgmt</h4>
+<p class="text-slate-500">Automated rent collection, maintenance tracking, and reporting.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="text-3xl font-black text-slate-200 dark:text-slate-800 shrink-0">03</div>
+<div>
+<h4 class="font-bold text-lg mb-2">Maximize Yield</h4>
+<p class="text-slate-500">Dynamic pricing and data insights to ensure your asset is performing.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Simple Newsletter -->
+<section class="bg-slate-100 dark:bg-slate-950 py-20 px-4">
+<div class="max-w-4xl mx-auto text-center">
+<h2 class="text-3xl font-black text-primary dark:text-white mb-4">Stay ahead of the market</h2>
+<p class="text-slate-500 mb-10 text-lg">Receive exclusive invitations to new premium listings and local market insights.</p>
+<div class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+<input class="flex-1 rounded-xl border-slate-200 focus:border-primary focus:ring-primary p-4 bg-white dark:bg-slate-900 dark:border-slate-800" placeholder="Your email address" type="email"/>
+<button class="bg-primary text-white font-bold py-4 px-8 rounded-xl hover:bg-primary/90 transition-all">Join Kaza</button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 py-16 px-4">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
+<div class="col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-3xl text-primary">domain</span>
+<h1 class="text-xl font-extrabold tracking-tighter text-primary dark:text-white uppercase">Kaza</h1>
+</div>
+<p class="text-slate-500 text-sm leading-relaxed max-w-xs mb-8">
+                        The definitive proptech platform connecting modern dwellers with premium real estate across Africa's fastest-growing cities.
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">share</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-bold mb-6">Explore</h5>
+<ul class="space-y-4 text-sm text-slate-500 font-medium">
+<li><a class="hover:text-primary" href="#">Featured Properties</a></li>
+<li><a class="hover:text-primary" href="#">New Developments</a></li>
+<li><a class="hover:text-primary" href="#">Student Suites</a></li>
+<li><a class="hover:text-primary" href="#">Shared Housing</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6">Support</h5>
+<ul class="space-y-4 text-sm text-slate-500 font-medium">
+<li><a class="hover:text-primary" href="#">Help Center</a></li>
+<li><a class="hover:text-primary" href="#">Owner Guide</a></li>
+<li><a class="hover:text-primary" href="#">Safety Measures</a></li>
+<li><a class="hover:text-primary" href="#">Contact Us</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6">Legal</h5>
+<ul class="space-y-4 text-sm text-slate-500 font-medium">
+<li><a class="hover:text-primary" href="#">Terms of Service</a></li>
+<li><a class="hover:text-primary" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between gap-4">
+<p class="text-xs text-slate-400 font-medium">© 2024 KAZA Proptech S.A. All rights reserved.</p>
+<div class="flex gap-6 text-xs text-slate-400 font-bold uppercase tracking-widest">
+<span>English (US)</span>
+<span>Francais (FR)</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

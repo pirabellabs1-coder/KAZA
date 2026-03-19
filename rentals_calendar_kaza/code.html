@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA Owner Dashboard</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 bg-white dark:bg-background-dark px-6 py-4 lg:px-10">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<span class="material-symbols-outlined text-3xl font-bold">domain</span>
+<h2 class="text-xl font-black leading-tight tracking-tight uppercase">KAZA <span class="font-normal text-sm opacity-70">Owner</span></h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#">Calendar / Calendrier</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Properties / Propriétés</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Insights</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-primary/5">
+<div class="text-primary/60 flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-sm placeholder:text-primary/40 px-3" placeholder="Search bookings..." value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">translate</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full bg-primary/20 border-2 border-primary/10 overflow-hidden" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoUC6XGv7yPsyD1lkq1lx095jlEhTAWwVvhm2UfV-cHVTMgORTaL0tD8MLEIHXg7OTI2oqo9irJ26RynLdopJYNRH0p4WEUBjgvWit5KlnZ0Tptq17235nHHBt1i-jtEhthTpSc7nCApp2ut3u6nDSMuwnGPbn20lt8hpaLVJgM00kp8SjC_qz_ROCRMNbTx5MTGb93rpnyBPw1f6Nme0EQmmMc-LucYEBXCGedPtQBf8AlfhXuo8UxOsnwrkVLzEP7dHFDNx6q2o"); background-size: cover;'>
+</div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<!-- Sidebar Nav -->
+<aside class="hidden lg:flex flex-col w-64 border-r border-primary/10 bg-white dark:bg-background-dark p-6 gap-8">
+<div class="flex flex-col gap-2">
+<p class="text-xs font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Main Menu</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-semibold">Overview / Aperçu</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-lg shadow-primary/20" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-semibold">Calendar / Calendrier</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">book_online</span>
+<span class="text-sm font-semibold">Bookings / Réservations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-semibold">Finances</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-semibold">Settings / Paramètres</span>
+</a>
+</div>
+<div class="mt-auto p-4 rounded-xl bg-primary/5 border border-primary/10">
+<p class="text-xs font-bold text-primary mb-1">Support</p>
+<p class="text-xs text-slate-500 mb-3">Need help with availability?</p>
+<button class="w-full py-2 bg-white dark:bg-background-dark border border-primary/20 rounded-lg text-xs font-bold text-primary hover:bg-primary/5">Contact KAZA</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 overflow-y-auto bg-background-light dark:bg-background-dark">
+<!-- Page Title & Actions -->
+<div class="flex flex-wrap items-center justify-between gap-4 p-6 lg:px-10">
+<div>
+<h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Calendar / Calendrier</h1>
+<p class="text-slate-500 text-sm">Villa Azure - Nice, France</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-lg">sync</span>
+                                Sync iCal
+                            </button>
+<button class="flex items-center gap-2 px-5 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+                                Add Booking / Ajouter
+                            </button>
+</div>
+</div>
+<!-- Calendar Section -->
+<div class="px-6 lg:px-10 pb-10 flex flex-col lg:flex-row gap-6">
+<!-- Left: Calendar Grid -->
+<div class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+<!-- Calendar Header Controls -->
+<div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4">
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><span class="material-symbols-outlined">chevron_left</span></button>
+<h3 class="text-lg font-bold">October 2023 / Octobre 2023</h3>
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+<div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<button class="px-3 py-1 text-xs font-bold rounded-md bg-white dark:bg-slate-700 shadow-sm text-primary">Month / Mois</button>
+<button class="px-3 py-1 text-xs font-bold rounded-md text-slate-500">Week / Semaine</button>
+</div>
+</div>
+<!-- Legend -->
+<div class="flex gap-4 p-4 border-b border-slate-50 dark:border-slate-800 text-[10px] uppercase font-bold tracking-wider text-slate-400">
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-emerald-500"></span> Confirmed</div>
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-amber-400"></span> Pending</div>
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-slate-400"></span> Blocked</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-7 border-collapse">
+<!-- Days of Week -->
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-r border-b dark:border-slate-800">Sun</div>
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-r border-b dark:border-slate-800">Mon</div>
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-r border-b dark:border-slate-800">Tue</div>
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-r border-b dark:border-slate-800">Wed</div>
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-r border-b dark:border-slate-800">Thu</div>
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-r border-b dark:border-slate-800">Fri</div>
+<div class="p-3 text-center text-xs font-bold text-slate-400 uppercase border-b dark:border-slate-800">Sat</div>
+<!-- Rows of days -->
+<!-- Week 1 -->
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 text-slate-300">24</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 text-slate-300">25</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 text-slate-300">26</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 text-slate-300">27</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 text-slate-300">28</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 text-slate-300">29</div>
+<div class="min-h-[100px] p-2 border-b dark:border-slate-800 text-slate-300">30</div>
+<!-- Week 2 (October Start) -->
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">1</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">
+<span class="text-sm font-medium">2</span>
+<div class="mt-1 p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded truncate border-l-4 border-emerald-500">J. Smith</div>
+</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">
+<span class="text-sm font-medium">3</span>
+<div class="mt-1 p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded truncate border-l-4 border-emerald-500">J. Smith</div>
+</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">4</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">5</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">
+<span class="text-sm font-medium">6</span>
+<div class="mt-1 p-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold rounded truncate border-l-4 border-slate-400">Maintenance</div>
+</div>
+<div class="min-h-[100px] p-2 border-b dark:border-slate-800">7</div>
+<!-- Week 3 -->
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 bg-primary/5">8</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">9</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">10</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">11</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 relative">
+<span class="text-sm font-medium">12</span>
+<div class="mt-1 p-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold rounded truncate border-l-4 border-amber-400">M. Dubois</div>
+</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">13</div>
+<div class="min-h-[100px] p-2 border-b dark:border-slate-800">14</div>
+<!-- Week 4 -->
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">15</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">16</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800 bg-primary/5 font-black text-primary">17</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">18</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">19</div>
+<div class="min-h-[100px] p-2 border-r border-b dark:border-slate-800">
+<span class="text-sm font-medium">20</span>
+<div class="mt-1 p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded truncate border-l-4 border-emerald-500">L. Chen</div>
+</div>
+<div class="min-h-[100px] p-2 border-b dark:border-slate-800">
+<span class="text-sm font-medium">21</span>
+<div class="mt-1 p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded truncate border-l-4 border-emerald-500">L. Chen</div>
+</div>
+</div>
+</div>
+<!-- Right: Side Panel Quick Details -->
+<aside class="w-full lg:w-80 flex flex-col gap-6">
+<!-- Selected Booking Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-50 px-2 py-1 rounded">Confirmed</span>
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-xl">edit</span></button>
+</div>
+<h4 class="text-lg font-bold mb-1">Jean-Pierre Smith</h4>
+<p class="text-slate-500 text-xs mb-4">Reservation #KZ-9921</p>
+<div class="space-y-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Dates</p>
+<p class="text-sm font-semibold">Oct 2, 2023 - Oct 5, 2023</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-xl">group</span>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Guests / Voyageurs</p>
+<p class="text-sm font-semibold">4 Adults, 2 Children</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase">Revenue / Revenus</p>
+<p class="text-sm font-semibold text-emerald-600">€1,240.00</p>
+</div>
+</div>
+</div>
+<hr class="my-5 border-slate-100 dark:border-slate-800"/>
+<div class="flex flex-col gap-2">
+<button class="w-full py-2 bg-primary/5 text-primary text-xs font-bold rounded-lg hover:bg-primary/10 transition-all">Message Guest</button>
+<button class="w-full py-2 text-slate-400 text-xs font-bold hover:text-red-500 transition-all">Cancel Booking / Annuler</button>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="bg-primary text-white rounded-xl p-6 shadow-xl shadow-primary/20">
+<h4 class="text-sm font-bold opacity-80 mb-4 tracking-wide uppercase">October Stats / Stats Octobre</h4>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-2xl font-black">78%</p>
+<p class="text-[10px] font-bold opacity-70 uppercase">Occupancy</p>
+</div>
+<div>
+<p class="text-2xl font-black">€8.4k</p>
+<p class="text-[10px] font-bold opacity-70 uppercase">Earnings</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-white/10">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold opacity-70 uppercase">Target / Objectif</span>
+<span class="text-[10px] font-bold">92%</span>
+</div>
+<div class="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-white w-[78%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Help / Upcoming -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+<h4 class="text-xs font-bold text-slate-400 uppercase mb-3">Pending Action / En attente</h4>
+<div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/50">
+<span class="material-symbols-outlined text-amber-500">pending_actions</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-slate-900 dark:text-slate-100">Booking Request</p>
+<p class="text-[10px] text-slate-500 italic">Marie Dubois - Oct 12</p>
+</div>
+<button class="p-1.5 bg-amber-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

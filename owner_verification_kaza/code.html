@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#003366",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+            },
+            fontFamily: {
+              "display": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      :root {
+        --radio-dot-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27%23003366%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e');
+      }
+    </style>
+<title>KAZA - Owner Verification</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 px-6 lg:px-40 py-4 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 lg:gap-8 items-center">
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">EN | FR</a>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<button class="hidden md:block px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary">Save &amp; Exit</button>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8 px-6 lg:px-40">
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1">
+<div class="flex flex-col gap-4 mb-8">
+<div class="flex items-center justify-between">
+<span class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Identity Verification / Vérification d'identité</span>
+<span class="text-primary text-sm font-bold">Step 2 of 4</span>
+</div>
+<div class="w-full h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 40%;"></div>
+</div>
+</div>
+<div class="mb-10">
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl lg:text-4xl font-extrabold tracking-tight mb-3">Verify your profile</h1>
+<p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed">
+                            Let's verify your identity to start listing properties. Select the profile type that matches your situation. / Vérifions votre identité pour commencer à inscrire des propriétés.
+                        </p>
+</div>
+<div class="space-y-6">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Choose verification type / Type de vérification</h3>
+<div class="grid gap-4">
+<label class="group relative flex cursor-pointer flex-col gap-4 rounded-xl border-2 border-slate-200 dark:border-slate-800 p-6 transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+<div class="flex items-center justify-between">
+<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[28px]">domain</span>
+</div>
+<input checked="" class="h-6 w-6 border-2 border-slate-300 dark:border-slate-700 bg-transparent text-primary checked:border-primary checked:bg-[image:--radio-dot-svg] focus:ring-0" name="account_type" type="radio"/>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">Business Entity / Entité commerciale</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                                        Verify using company registration documents, tax ID, and legal representative info. / Vérifier à l'aide des documents d'enregistrement.
+                                    </p>
+</div>
+</label>
+<label class="group relative flex cursor-pointer flex-col gap-4 rounded-xl border-2 border-slate-200 dark:border-slate-800 p-6 transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+<div class="flex items-center justify-between">
+<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 group-has-[:checked]:bg-primary/10 group-has-[:checked]:text-primary">
+<span class="material-symbols-outlined text-[28px]">person</span>
+</div>
+<input class="h-6 w-6 border-2 border-slate-300 dark:border-slate-700 bg-transparent text-primary checked:border-primary checked:bg-[image:--radio-dot-svg] focus:ring-0" name="account_type" type="radio"/>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">Personal Identity / Identité personnelle</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                                        Verify using your government-issued ID and a quick selfie check. / Vérifier à l'aide d'une pièce d'identité officielle.
+                                    </p>
+</div>
+</label>
+</div>
+</div>
+<div class="mt-12 p-6 bg-slate-100 dark:bg-slate-800/50 rounded-xl flex items-start gap-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<div>
+<p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Why do I need to verify?</p>
+<p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                Verification helps build trust within the KAZA community and ensures the safety of all hosts and guests. Your data is encrypted and secure.
+                            </p>
+</div>
+</div>
+<div class="mt-12 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+<button class="w-full sm:w-auto px-8 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                            Back / Retour
+                        </button>
+<button class="w-full sm:w-auto px-10 py-3 rounded-xl bg-primary text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20">
+                            Continue / Continuer
+                        </button>
+</div>
+<footer class="mt-20 py-8 border-t border-slate-200 dark:border-slate-800 text-center">
+<p class="text-slate-400 dark:text-slate-600 text-xs">
+                            © 2024 KAZA Property Management. Secured by Industry Standards.
+                        </p>
+</footer>
+</div>
+</main>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA Proptech - Tenant Requests</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 lg:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary dark:text-slate-100">
+<div class="size-6 flex items-center justify-center bg-primary rounded text-white">
+<span class="material-symbols-outlined text-sm">domain</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">KAZA Proptech</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Properties</a>
+<a class="text-primary dark:text-white text-sm font-semibold border-b-2 border-primary" href="#">Tenants</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Requests</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+<div class="text-slate-500 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input w-full border-none bg-transparent focus:ring-0 text-sm placeholder:text-slate-500" placeholder="Search applicants..." value=""/>
+</div>
+</label>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar of a professional property owner" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCCla9z6PUwidwSfm3NwZbgUUR5hB-dub9X8NI0_AXwrvFzSu055ZBbotCgLAAS1OgVaZ3eBiSWljwtffWxWT6OD7pydBDMkJxLtN2PEQ7XK2MjuEiZ1Yzzh46BqYl5dJFDA7FLArIvhl_gEGS0suAnYF5WdsonlHZzJUNEviV72caJsNITA5VNAZfOIezNt5u61XS_9Ifed9mhtZiPRm_xfuxDJBz5a3m_kb3dp3kVcw4gusuXF4I2XWAeXcT_4AztA8LM1NjvN4Y");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 lg:px-10 py-8">
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Sidebar Navigation -->
+<aside class="w-full lg:w-64 flex flex-col gap-2">
+<div class="p-4 bg-primary/5 dark:bg-primary/10 rounded-xl mb-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary text-white flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-slate-100 text-sm font-bold">Owner Portal</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">James Wilson</p>
+</div>
+</div>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-md" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="text-sm font-medium">Tenant Applications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="text-sm font-medium">Maintenance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Payments</span>
+</a>
+<div class="my-4 border-t border-slate-200 dark:border-slate-800"></div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</aside>
+<!-- Main Content Area -->
+<section class="flex-1 min-w-0">
+<div class="mb-8">
+<h2 class="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-2">Applicant Management</h2>
+<p class="text-slate-500 dark:text-slate-400">Review, screen, and approve prospective tenants for your properties.</p>
+</div>
+<!-- Filter Tabs -->
+<div class="flex border-b border-slate-200 dark:border-slate-800 mb-6 overflow-x-auto">
+<button class="px-6 py-4 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap">Pending (12)</button>
+<button class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-b-2 border-transparent transition-colors whitespace-nowrap">Screening (5)</button>
+<button class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-b-2 border-transparent transition-colors whitespace-nowrap">Approved (24)</button>
+<button class="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border-b-2 border-transparent transition-colors whitespace-nowrap">Declined</button>
+</div>
+<!-- Applicants Table Container -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Applicant</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Credit Score</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Annual Income</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of applicant Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzuielhj_b3Hh0xsnoAF1OCjKk6NSW0aylE53Y2hjHveXGUC-sD53jUEWfc5CRF1XtF08MiKu9QwCR_iNvqF7jNbQVAdSV9nGSn-80SuXNFBrdE4Q6_DLUqbgFDh_2ED9np31z3wqnE_m3S__xXtW9qvV-sfxMkxhealJqHDJsyCsYo9RyhRZvOyAnfcyGL_TQnHd4QMZD15scUUVcPXDOyJ61Zqp1nGn6l53yOrEDWWMbMcMvBpWfzOsq8yyJvQn0SesAs27lhp8')"></div>
+<div>
+<div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Sarah Jenkins</div>
+<div class="text-xs text-slate-500 dark:text-slate-400">Apply for: Oak Ridge Apt 4B</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+                                                765
+                                            </span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                            $92,500
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-amber-500"></div>
+<span class="text-xs font-medium text-amber-700 dark:text-amber-400">Pending Review</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm">Approve</button>
+<button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Decline</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of applicant Marcus Thompson" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB2580i7qBW2bNjS119LwWCSNRe7tHjz5m50he9LVMv92cCsePkUGFrLfSG_tLteM8d-hkMHcrOwTjKRNAQLXMNs72VgXVS4RYk5PjhFMKKnpabQv2re2LXTob-xhZ-c-bGkgNY1SYuYtY8YAz7NVtZBCfmsaDpXylkvznNZ0BxgPE-T0LK8folk-QuNHa3BPqifgzUFQ4VIB8_U8gRMgTFfwOiYKoMcmClAt8rjDeEuH-MqiuLWP1eD1wLUxP8dazd1S7QCsixk1U')"></div>
+<div>
+<div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Marcus Thompson</div>
+<div class="text-xs text-slate-500 dark:text-slate-400">Apply for: Sunset Villa 12</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold">
+                                                680
+                                            </span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                            $78,000
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-blue-500"></div>
+<span class="text-xs font-medium text-blue-700 dark:text-blue-400">Screening</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm">Approve</button>
+<button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Decline</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of applicant Elena Rodriguez" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB-kiXPDhFlJ1xebWcr2HzAPwe6MF8kXdL5lW6uvj_m4qKYTx5sLGOu_41CimAUpUdzMhj3QeIReBrs0_tIglfNKOBrjyfcnBZxwz9kC19UTVvoeEh34psYT9lUcFDKLXIKxc2Nyl0KSfZWihAOOvYhb5GUZl-UDfHyHuG_C3a9tmqwt9SWqvcFBfgUOdSZ-b9mm_8vqskyPrItA1iKRFpGr8DpN4O0f2jNGmR2SP7CcVMntz0yelisw4ADCxBOwgxG5y6N7Y5AzKE')"></div>
+<div>
+<div class="text-sm font-semibold text-slate-900 dark:text-slate-100">Elena Rodriguez</div>
+<div class="text-xs text-slate-500 dark:text-slate-400">Apply for: City View Loft 302</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+                                                810
+                                            </span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                            $145,000
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-amber-500"></div>
+<span class="text-xs font-medium text-amber-700 dark:text-amber-400">Pending Review</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm">Approve</button>
+<button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Decline</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of applicant David Lee" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0ehQ0RBH03gB8rKXCWQ-2MiHRsBPcBRwjEF61J8_-x_dsj5OyNfsNI3LzjI0jGITUXwBiYI_lQf3_mGak9yrSsimvY_C1CGcW1zHPJ5jqOXPn4BmmZ3GJQhcm-xTnHAPEiGc9zbmAI59tURTJE2f7cwfHUrYNJ9NFHUMIHqN0L8R05ihlaMF2i7YjcX6Tsc6fr_P4VurRQ5Cj15j6vVhuH8jtrLfTOHMjKK-PGSBg-Jwn6g1_BGIqch0M9c7b4ZnjzF39Rj_gYgw')"></div>
+<div>
+<div class="text-sm font-semibold text-slate-900 dark:text-slate-100">David Lee</div>
+<div class="text-xs text-slate-500 dark:text-slate-400">Apply for: Oak Ridge Apt 2A</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold">
+                                                590
+                                            </span>
+</td>
+<td class="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
+                                            $52,000
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-amber-500"></div>
+<span class="text-xs font-medium text-amber-700 dark:text-amber-400">Pending Review</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-sm">Approve</button>
+<button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Decline</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+<span class="text-xs text-slate-500 dark:text-slate-400">Showing 4 of 12 pending applications</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400">Previous</button>
+<button class="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 text-xs font-medium bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400">Next</button>
+</div>
+</div>
+</div>
+<!-- Market Insights (New Component) -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Avg Credit Score</span>
+<span class="material-symbols-outlined text-primary">assessment</span>
+</div>
+<div class="text-2xl font-black text-slate-900 dark:text-slate-100">712</div>
+<div class="text-xs text-emerald-600 font-medium mt-1">+12 from last month</div>
+</div>
+<div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Time to Fill</span>
+<span class="material-symbols-outlined text-primary">schedule</span>
+</div>
+<div class="text-2xl font-black text-slate-900 dark:text-slate-100">8.5 Days</div>
+<div class="text-xs text-emerald-600 font-medium mt-1">-2.1 days improvement</div>
+</div>
+<div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Approval Rate</span>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+<div class="text-2xl font-black text-slate-900 dark:text-slate-100">42%</div>
+<div class="text-xs text-slate-500 font-medium mt-1">Consistent with market</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</div>
+</body></html>

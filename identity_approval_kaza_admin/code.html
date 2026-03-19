@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA Admin - Identity Approval</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Header -->
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 lg:px-20">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary dark:text-slate-100">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">shield_person</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">KAZA Admin</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary font-semibold border-b-2 border-primary py-1" href="#">Verifications</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Users</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Reports</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2 w-64">
+<span class="material-symbols-outlined text-slate-400 text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-400" placeholder="Search users or ID..." value=""/>
+</div>
+<button class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden">
+<img alt="Admin Profile" data-alt="Profile picture of the system administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDKuXevNKkrBY-0YLBRi-iNG82XgHgHCudlTvkbKF8zi8Eh-PWorpgn1XI-XUGu2xpo4uWrhRlig1Xyp9jBQcdC7uwbt6_AeO1xNnkc_tjA4JYgXyWWLspz8-hOKdRX1pJ9bJ2nkYX1-5dRuW2DE0ewJ7nEEBYP53wfYieelxuoqZ_G9B6XQU4MdlGiHNJ9R09iBvBa7DIkxGiZaIvYL-Q9bZYNWWEPfOC9sCrWkCVN2aEYiJDQb2t5JVOvXFn_jWW72e2YVNfHN4"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-8">
+<!-- Tabs -->
+<div class="mb-8 border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-8">
+<a class="flex flex-col items-center justify-center border-b-4 border-primary text-primary pb-3" href="#">
+<p class="text-sm font-bold">Pending / En attente (12)</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-4 border-transparent text-slate-500 pb-3 hover:text-primary transition-colors" href="#">
+<p class="text-sm font-bold">Approved / Approuvé</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-4 border-transparent text-slate-500 pb-3 hover:text-primary transition-colors" href="#">
+<p class="text-sm font-bold">Rejected / Rejeté</p>
+</a>
+</div>
+</div>
+<!-- Header Info -->
+<div class="mb-8">
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Identity Approval / Approbation d'identité</h1>
+<p class="text-slate-600 dark:text-slate-400 text-lg">
+                    Review user KYC documents and selfies / Examiner les documents KYC et les selfies des utilisateurs
+                </p>
+</div>
+<!-- KYC Review Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-wrap justify-between items-center gap-4">
+<div class="flex items-center gap-4">
+<div class="h-14 w-14 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl text-slate-400">person</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Jean Dupont</h3>
+<p class="text-sm text-slate-500 font-mono">ID: 88291 • Joined: Oct 24, 2023</p>
+</div>
+</div>
+<div class="flex gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+<span class="material-symbols-outlined text-sm">info</span>
+                            High Priority
+                        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                            Pending Review
+                        </span>
+</div>
+</div>
+<!-- Comparison Grid -->
+<div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- ID Document -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h4 class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">badge</span>
+                                ID Document / Pièce d'identité
+                            </h4>
+<button class="text-primary text-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">zoom_in</span> View Fullscreen
+                            </button>
+</div>
+<div class="aspect-video w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden relative group">
+<img alt="Passport Document" class="object-cover w-full h-full opacity-90 group-hover:scale-105 transition-transform duration-500" data-alt="High resolution scan of a European passport document" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDztidMY-A9RGVGnb12MAD1MH-dCiyDs4bv-cvqa8r_QfyV_Gp6rYvnOoCzcO6GDZNkhnE06ypZIlciIIEjihACYWf4-HyX3g9Pc1HKtplv7rhNJaEusaNotBthWOKcILYHh-4EGr0RMhVdsPF2Le8-9_KWBeW1yRtHUeoMV9RCgShnOYbpY7O2ArRdh7ovHbHSQBk_LsplQ7quXeMCy2cru34LEZIpCySBhRjQB9EeUYxCm7t07joqOaDJ-oPkuhf98fw1ZykdKzg"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="text-white font-bold bg-primary px-4 py-2 rounded-lg">Scan Details</span>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Document Type</p>
+<p class="font-medium">Passport (France)</p>
+</div>
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Expiry Date</p>
+<p class="font-medium">2028-10-12</p>
+</div>
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">MRZ Check</p>
+<p class="text-emerald-600 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> Valid
+                                    </p>
+</div>
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Document Number</p>
+<p class="font-medium">FRA220918-91</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Selfie -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h4 class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">face</span>
+                                Live Selfie / Selfie en direct
+                            </h4>
+<div class="flex items-center gap-2">
+<span class="text-emerald-600 text-sm font-bold px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/20 rounded">94% Match</span>
+</div>
+</div>
+<div class="aspect-video w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden relative group">
+<img alt="User Selfie" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Clear frontal selfie portrait of a man for identity verification" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqsIqqp-IKi5XBD8FCSDVpqQSsE7BfBK-M-ANJ6moF2nhyOdt0BMSx7SYCI43zQPXW9WX6oaCHe2PX8tEw4UMNguvHI_DGyRqOTBx3W4vjF_h1KOY_m4S1KfAeQIh7T0R18kgfB7tIXDn4AW0cs2U4ZSJVgI5epxs03zlFfznwLvYo2hQJeDC344jaU6faevmpzpX_EUYFRFck5LqZ5IBUZuOPYVL37KRdcOqNtRgOFpcZfuXow2HmtNFmQ7zkwLNCIkLh7R9QSww"/>
+<div class="absolute inset-0 border-4 border-primary/40 rounded-xl pointer-events-none"></div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Liveness Detection</p>
+<p class="text-emerald-600 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">verified</span> Passed
+                                    </p>
+</div>
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Captured</p>
+<p class="font-medium">Today, 09:42 AM</p>
+</div>
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Device IP</p>
+<p class="font-medium">192.168.1.45 (Paris, FR)</p>
+</div>
+<div>
+<p class="text-slate-500 uppercase text-[10px] font-bold">Attempt</p>
+<p class="font-medium">1st Attempt</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="p-6 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-6">
+<div class="flex flex-col gap-2 flex-1 min-w-[300px]">
+<label class="text-xs font-bold text-slate-500 uppercase">Reviewer Notes (Optional)</label>
+<textarea class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-primary h-20" placeholder="Add a note about this verification..."></textarea>
+</div>
+<div class="flex gap-4">
+<button class="px-8 py-3 rounded-xl border-2 border-red-200 text-red-600 font-bold hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-900/20 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">close</span>
+                            Reject / Rejeter
+                        </button>
+<button class="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+<span class="material-symbols-outlined">check</span>
+                            Approve / Approuver
+                        </button>
+</div>
+</div>
+</div>
+<!-- Queue Preview -->
+<div class="mt-12">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Upcoming in Queue / Suivant dans la file</h3>
+<button class="text-primary font-semibold hover:underline">View all pending</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Queue Item 1 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4 hover:border-primary cursor-pointer transition-colors">
+<div class="h-12 w-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">person</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Marie Claire</p>
+<p class="text-xs text-slate-500">ID: 88295 • Driver License</p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+<!-- Queue Item 2 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4 hover:border-primary cursor-pointer transition-colors">
+<div class="h-12 w-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">person</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Thomas Müller</p>
+<p class="text-xs text-slate-500">ID: 88298 • Passport</p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+<!-- Queue Item 3 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4 hover:border-primary cursor-pointer transition-colors">
+<div class="h-12 w-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400">person</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Sarah Jenkins</p>
+<p class="text-xs text-slate-500">ID: 88301 • ID Card</p>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-6 lg:px-20">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2 opacity-50">
+<span class="material-symbols-outlined">security</span>
+<span class="text-xs font-medium uppercase tracking-widest">Secure Admin Portal</span>
+</div>
+<div class="flex gap-8">
+<a class="text-xs font-medium text-slate-500 hover:text-primary" href="#">Help Center</a>
+<a class="text-xs font-medium text-slate-500 hover:text-primary" href="#">Privacy Policy</a>
+<a class="text-xs font-medium text-slate-500 hover:text-primary" href="#">Compliance Logs</a>
+</div>
+<p class="text-xs text-slate-400">© 2024 KAZA Identity Services</p>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA - Tenant Booking Requests</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 md:px-10 py-3 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined">corporate_fare</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">My Requests</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Messages</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Listings</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile picture of a young man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOj7MZffjTBouy3gtGYC6aJxI3xs7KSHWzviuSA1u43wCkLWrZyXucE8Bcg5suoftzns_-17aoVGTfteAZDUPsx7ODE7-yK7nd6l1fPnbe3o6k1rrsmHdAphA1Oje5KgofnaeJ2IMLOkNfXGEmrcf7j7l-R6OeoaP8s5SX-fc3n0sGdkzd_z34NlZ2bA0LqxQx5aPLFcHhqDBG3mP2jICNFfCkdgJ6CeYOtQo0N7z1nVuWpjH79fvW3wX229TdrxZDA7g52kUS2II");'></div>
+</div>
+</header>
+<main class="flex-1 flex flex-col max-w-5xl mx-auto w-full p-4 md:p-8 gap-6">
+<!-- User Welcome Section -->
+<div class="flex items-center justify-between">
+<div class="flex gap-4 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-white shadow-sm" data-alt="User avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqne-eNa1O9LmgB6iJE5HXFGfNdVNX0OFCzZUkgSWDlkVOk59uegk67KplJn92mhTyYHs-tJAi6IuUib-QK9hvpcQauu20F-XQJghC4xleo9-EZ0v8FfaOBF07-YEcX1UYXWECXJ80cL2dBmzfOwK5YyRtJZyNf2kLPEsTY6x45C3ja-m7nKUFVCLzh_g_Q0DdDBcTK5nUMu7E2D-OxB2-E1_5b9RKT-emXbpHTk291D567KEJgikNEgqPLztlfOsHdsOGgkkBW14");'></div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">Welcome, Alex</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Tenant Account / Compte Locataire</p>
+</div>
+</div>
+<button class="bg-primary text-white px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-md">
+<span class="material-symbols-outlined text-[20px]">search</span>
+<span>Find New Home</span>
+</button>
+</div>
+<!-- Tabs Section -->
+<div class="border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-8">
+<a class="flex flex-col items-center border-b-2 border-primary text-primary pb-3 transition-all" href="#">
+<p class="text-sm font-bold tracking-wide">All Requests / Toutes</p>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-700" href="#">
+<p class="text-sm font-bold tracking-wide">Active / Actives</p>
+</a>
+<a class="flex flex-col items-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-700" href="#">
+<p class="text-sm font-bold tracking-wide">Archived / Archivées</p>
+</a>
+</div>
+</div>
+<!-- Status Filters -->
+<div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/10 border border-primary/20 px-5 text-primary">
+<span class="material-symbols-outlined text-[18px]">list</span>
+<p class="text-sm font-semibold leading-normal">All / Tout</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 text-slate-600 dark:text-slate-300 hover:border-primary/50 cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-amber-500">pending</span>
+<p class="text-sm font-medium leading-normal">Pending / En attente</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 text-slate-600 dark:text-slate-300 hover:border-primary/50 cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span>
+<p class="text-sm font-medium leading-normal">Approved / Approuvé</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 text-slate-600 dark:text-slate-300 hover:border-primary/50 cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-rose-500">cancel</span>
+<p class="text-sm font-medium leading-normal">Declined / Refusé</p>
+</div>
+</div>
+<!-- Request Cards Grid -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Pending Request -->
+<div class="flex flex-col md:flex-row items-stretch justify-between gap-6 rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition-shadow">
+<div class="flex flex-1 flex-col justify-between gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Pending / En attente</span>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium italic">Sent 2 days ago</p>
+</div>
+<h3 class="text-slate-900 dark:text-white text-xl font-bold">Modern Studio - Plateau Mont-Royal</h3>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Montreal, QC</span>
+</div>
+<p class="text-primary font-bold text-lg">$1,450 <span class="text-slate-400 text-sm font-normal">/ month</span></p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 md:flex-none flex items-center justify-center rounded-lg h-10 px-6 bg-primary text-white gap-2 text-sm font-bold hover:bg-primary/90">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span>Message Landlord</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="w-full md:w-64 h-48 bg-center bg-no-repeat bg-cover rounded-xl shadow-inner relative" data-alt="Modern studio apartment interior with wooden floor" data-location="Montreal" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5ioUaHDllzYs8EqVqf1VE2P18Vs2begi5LX061G1JFFaDcah0g70dQIoOhe2c4ru9BaLYmRPHt_UHo6vI_z7om8P8vMsKL6Wdw_Mze0m080J3RK6UAHufEUM0-Gs_7beQg2RKX-rCG1gq5L8AO5m1yBj_tBFGN-f_-OGdBqImr09UlFM5fPXvfmoyDAhKsC3TfVIpNUzXl36y4TpGFvR1M35Tqc_US3w7vDxeLOd-Nm95-x1q2qUCSI_Em_WkUq_U7NQzpDqwGPg");'>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-2 py-1 rounded text-[10px] font-bold shadow-sm">ID: #44921</div>
+</div>
+</div>
+<!-- Approved Request -->
+<div class="flex flex-col md:flex-row items-stretch justify-between gap-6 rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition-shadow">
+<div class="flex flex-1 flex-col justify-between gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Approved / Approuvé</span>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium italic">Sent 1 week ago</p>
+</div>
+<h3 class="text-slate-900 dark:text-white text-xl font-bold">Luxury 1BR - Downtown Core</h3>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Toronto, ON</span>
+</div>
+<p class="text-primary font-bold text-lg">$2,100 <span class="text-slate-400 text-sm font-normal">/ month</span></p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 md:flex-none flex items-center justify-center rounded-lg h-10 px-6 bg-emerald-600 text-white gap-2 text-sm font-bold hover:bg-emerald-700">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span>Sign Lease / Signer</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">chat</span>
+</button>
+</div>
+</div>
+<div class="w-full md:w-64 h-48 bg-center bg-no-repeat bg-cover rounded-xl shadow-inner relative" data-alt="Bright luxury apartment with city view" data-location="Toronto" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD43WFNmHM6N0SpPg0pDBuVdV8c-9MquH-_lTPgTAR-eozW0ZdoLGCgo7ei95x2XQKvXZ15xQXds5O_Or7rJM9xHgaw2PhY2yoijpYRhlmdPKF0r9khvTMCsbVh_liICtfWsrTJ04ieRCx7g5XDQEIG9Rdz6GXkllLP7RL8a4GV8ADSDXKuUfNZoqT3tOm83i9zmidMXHHRo1ViipY1p8f7Z3iV-5ixkKuB40_R26v1nkIisjIdENw95GNnzpuh2YxBWfrjNzAh17E");'>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-2 py-1 rounded text-[10px] font-bold shadow-sm">ID: #43882</div>
+</div>
+</div>
+<!-- Declined Request -->
+<div class="flex flex-col md:flex-row items-stretch justify-between gap-6 rounded-xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-100 dark:border-slate-800 opacity-80 grayscale-[0.3] hover:grayscale-0 transition-all">
+<div class="flex flex-1 flex-col justify-between gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Declined / Refusé</span>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium italic">Sent 3 days ago</p>
+</div>
+<h3 class="text-slate-900 dark:text-white text-xl font-bold">Cozy Loft - Vieux-Québec</h3>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Quebec City, QC</span>
+</div>
+<p class="text-slate-400 font-bold text-lg">$1,100 <span class="text-slate-400 text-sm font-normal">/ month</span></p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 md:flex-none flex items-center justify-center rounded-lg h-10 px-6 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 gap-2 text-sm font-bold cursor-not-allowed">
+<span class="material-symbols-outlined text-[20px]">block</span>
+<span>Closed / Fermé</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined">chat</span>
+</button>
+</div>
+</div>
+<div class="w-full md:w-64 h-48 bg-center bg-no-repeat bg-cover rounded-xl shadow-inner relative" data-alt="Traditional attic loft with brick walls" data-location="Quebec City" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB7ugLf7wxEYkoL2N41f3AVIUxFhPmSV5VVb3y10laZDIDb9SUZQZVZci0_0xjVmMuOnQgEecrWGxmRRoooJ0gn4XKNNv5qNf6pXlmqvyrYciF9Rx0CEi8J54pByu8gHFQP2N_qFOhTpTa78f_kox1Zc2VhDx1IdngILqxFj3CldKxPolGY3iQbH3_F128BV23Lk4YudG0EYIwg9wKJns1YKzzCcfvTeVLVPxQdhSSPFYb3as852fxc3u_NefMGYVoKwgyEwAeHri4");'>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-2 py-1 rounded text-[10px] font-bold shadow-sm">ID: #44551</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Mobile Nav (Simulated for layout) -->
+<footer class="md:hidden sticky bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around py-3 px-4">
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[10px] font-medium">Bookings</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">forum</span>
+<span class="text-[10px] font-medium">Messages</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

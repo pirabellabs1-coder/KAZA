@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "accent-success": "#078838",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA Admin - Analytics Dashboard</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-6 py-3 bg-white dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary dark:text-slate-100">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">KAZA <span class="text-primary/70">Admin</span></h2>
+</div>
+<div class="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-primary/5 dark:bg-slate-800">
+<div class="text-primary/60 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:outline-0 focus:ring-0 h-full placeholder:text-primary/40 px-4 text-sm font-normal" placeholder="Recherche / Search..." value=""/>
+</div>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-primary font-semibold text-sm border-b-2 border-primary py-1" href="#">Tableau de bord</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Analyse</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Annonces</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Utilisateurs</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Revenus</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/5 dark:bg-slate-800 text-primary dark:text-slate-100 hover:bg-primary/10">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/5 dark:bg-slate-800 text-primary dark:text-slate-100 hover:bg-primary/10">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-[1px] bg-primary/10 mx-1"></div>
+<div class="flex items-center gap-3 pl-2">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-primary dark:text-slate-100 uppercase">Global Admin</p>
+<p class="text-[10px] text-slate-500">EN / FR</p>
+</div>
+<div class="aspect-square bg-primary/20 rounded-full size-10 border-2 border-primary/10 flex items-center justify-center" data-alt="User profile avatar placeholder">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<!-- Sidebar -->
+<aside class="hidden xl:flex w-64 flex-col justify-between bg-white dark:bg-background-dark border-r border-primary/10 p-4">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col">
+<h1 class="text-primary text-sm font-bold uppercase tracking-wider px-3">KAZA Analytics</h1>
+<p class="text-slate-500 text-xs font-medium px-3 italic">Réseau Afrique / Africa Network</p>
+</div>
+<nav class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-md shadow-primary/20">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-semibold">Vue d'ensemble</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all">
+<span class="material-symbols-outlined">storefront</span>
+<p class="text-sm font-medium">Marché / Marketplace</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-medium">Utilisateurs</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-medium">Finances</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-all mt-4 border-t border-primary/5 pt-6">
+<span class="material-symbols-outlined">language</span>
+<p class="text-sm font-medium">Langue: FR/EN</p>
+</div>
+</nav>
+</div>
+</aside>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-4 md:p-8 lg:px-12 bg-background-light dark:bg-background-dark">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="space-y-1">
+<h2 class="text-3xl font-black text-primary dark:text-white tracking-tight">Tableau de Bord <span class="font-light text-slate-400">/ Dashboard</span></h2>
+<p class="text-slate-600 dark:text-slate-400">Performance globale et croissance en Afrique • Africa performance metrics</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-primary/10 text-primary dark:text-slate-100 text-sm font-bold shadow-sm hover:shadow-md transition-all">
+<span class="material-symbols-outlined text-xl">calendar_month</span>
+<span>30 Derniers Jours</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-xl">download</span>
+<span>Rapport Complet</span>
+</button>
+</div>
+</div>
+<!-- Key Metrics Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Annonces Actives</p>
+<span class="material-symbols-outlined text-primary/40">list_alt</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-primary dark:text-white">12,450</p>
+<p class="text-accent-success text-sm font-bold">+5.2%</p>
+</div>
+<p class="text-xs text-slate-400 font-medium">Active Listings</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Utilisateurs</p>
+<span class="material-symbols-outlined text-primary/40">groups</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-primary dark:text-white">85.2k</p>
+<p class="text-accent-success text-sm font-bold">+8.1%</p>
+</div>
+<p class="text-xs text-slate-400 font-medium">Total Users</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Revenu Mensuel</p>
+<span class="material-symbols-outlined text-primary/40">monetization_on</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-primary dark:text-white">$420k</p>
+<p class="text-accent-success text-sm font-bold">+14.3%</p>
+</div>
+<p class="text-xs text-slate-400 font-medium">Monthly Revenue</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10 shadow-sm flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">Taux de Croissance</p>
+<span class="material-symbols-outlined text-primary/40">trending_up</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-primary dark:text-white">12.5%</p>
+<p class="text-accent-success text-sm font-bold">+2.1%</p>
+</div>
+<p class="text-xs text-slate-400 font-medium">Avg. Growth Rate</p>
+</div>
+</div>
+<!-- Main Analytics Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Country Distribution (Map Placeholder & List) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-primary/10 shadow-sm overflow-hidden flex flex-col">
+<div class="p-6 border-b border-primary/5 flex justify-between items-center">
+<h3 class="text-lg font-bold text-primary dark:text-white">Annonces par Pays <span class="font-normal text-slate-400">/ Listings by Country</span></h3>
+<span class="material-symbols-outlined text-primary/40">public</span>
+</div>
+<div class="flex flex-col md:flex-row h-full">
+<div class="p-6 flex-1 flex flex-col gap-4">
+<div class="space-y-4">
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-6 bg-slate-100 rounded flex items-center justify-center text-[10px] font-bold">NG</div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Nigeria</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 75%"></div>
+</div>
+<span class="text-sm font-bold text-primary dark:text-white">3,120</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-6 bg-slate-100 rounded flex items-center justify-center text-[10px] font-bold">KE</div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Kenya</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 62%"></div>
+</div>
+<span class="text-sm font-bold text-primary dark:text-white">2,850</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-6 bg-slate-100 rounded flex items-center justify-center text-[10px] font-bold">ZA</div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">South Africa</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 58%"></div>
+</div>
+<span class="text-sm font-bold text-primary dark:text-white">2,110</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-6 bg-slate-100 rounded flex items-center justify-center text-[10px] font-bold">GH</div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Ghana</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-primary/60 h-full rounded-full" style="width: 45%"></div>
+</div>
+<span class="text-sm font-bold text-primary dark:text-white">1,640</span>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-6 bg-slate-100 rounded flex items-center justify-center text-[10px] font-bold">CI</div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Côte d'Ivoire</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="bg-primary/40 h-full rounded-full" style="width: 30%"></div>
+</div>
+<span class="text-sm font-bold text-primary dark:text-white">1,210</span>
+</div>
+</div>
+</div>
+<button class="mt-auto text-primary text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all">
+                                            Voir tous les pays / View all <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="flex-1 min-h-[300px] bg-slate-100/50 dark:bg-slate-900/50 relative p-4 flex items-center justify-center" data-location="Africa" style="">
+<div class="w-full h-full rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border-2 border-dashed border-primary/10">
+<div class="text-center space-y-2">
+<span class="material-symbols-outlined text-6xl text-primary/20">map</span>
+<p class="text-slate-400 font-medium text-sm">Interactive Map Interface</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Revenue Chart Sidebar -->
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-primary/10 shadow-sm p-6 flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-bold text-primary dark:text-white">Flux de Revenus</h3>
+<span class="material-symbols-outlined text-primary/40">bar_chart</span>
+</div>
+<div class="flex-1 flex items-end gap-3 h-48 px-2">
+<div class="flex-1 bg-primary/20 rounded-t-lg relative group transition-all hover:bg-primary/40" style="height: 40%">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[10px] py-1 px-2 rounded">$45k</div>
+</div>
+<div class="flex-1 bg-primary/30 rounded-t-lg relative group transition-all hover:bg-primary/50" style="height: 60%">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[10px] py-1 px-2 rounded">$68k</div>
+</div>
+<div class="flex-1 bg-primary/40 rounded-t-lg relative group transition-all hover:bg-primary/60" style="height: 55%">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[10px] py-1 px-2 rounded">$62k</div>
+</div>
+<div class="flex-1 bg-primary/60 rounded-t-lg relative group transition-all hover:bg-primary/80" style="height: 85%">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[10px] py-1 px-2 rounded">$98k</div>
+</div>
+<div class="flex-1 bg-primary rounded-t-lg relative group transition-all hover:brightness-110" style="height: 100%">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[10px] py-1 px-2 rounded">$115k</div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-slate-400 px-2">
+<span>JAN</span><span>FEV</span><span>MAR</span><span>AVR</span><span>MAI</span>
+</div>
+<div class="space-y-3 mt-4">
+<div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-primary"></div>
+<span class="text-sm font-medium">Abonnements</span>
+</div>
+<span class="text-sm font-bold">$280k</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-primary/40"></div>
+<span class="text-sm font-medium">Commissions</span>
+</div>
+<span class="text-sm font-bold">$140k</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Growth Table -->
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-primary/5 flex justify-between items-center">
+<div>
+<h3 class="text-lg font-bold text-primary dark:text-white">Utilisateurs Récents <span class="font-normal text-slate-400">/ Recent Users</span></h3>
+<p class="text-xs text-slate-500">Dernières inscriptions par région • Latest signups</p>
+</div>
+<button class="text-primary text-sm font-bold border border-primary/10 px-4 py-2 rounded-lg hover:bg-primary/5">Tout voir / See all</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 text-xs font-bold uppercase">
+<th class="px-6 py-4">Utilisateur / User</th>
+<th class="px-6 py-4">Région</th>
+<th class="px-6 py-4">Type</th>
+<th class="px-6 py-4">Date</th>
+<th class="px-6 py-4">Statut</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">MA</div>
+<div>
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">Moussa Adamou</p>
+<p class="text-[10px] text-slate-400">m.adamou@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Dakar, SN</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">Premium</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Hier, 14:20</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-1.5 rounded-full bg-accent-success"></div>
+<span class="text-xs font-bold text-accent-success">Actif</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">CO</div>
+<div>
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">Chinua Okoro</p>
+<p class="text-[10px] text-slate-400">c.okoro@example.ng</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Lagos, NG</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider">Basic</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">12 Mai 2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-1.5 rounded-full bg-accent-success"></div>
+<span class="text-xs font-bold text-accent-success">Actif</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">SB</div>
+<div>
+<p class="text-sm font-bold text-slate-700 dark:text-slate-300">Sonia Bekker</p>
+<p class="text-[10px] text-slate-400">s.bekker@kaza.za</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Cape Town, ZA</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">Premium</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">11 Mai 2024</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-1.5 rounded-full bg-amber-500"></div>
+<span class="text-xs font-bold text-amber-500">Vérification</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

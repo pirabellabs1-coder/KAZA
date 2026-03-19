@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA Proptech - Saved Properties</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-6 md:px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary text-white rounded-lg">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-extrabold leading-tight tracking-tight">KAZA Proptech</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Properties</a>
+<a class="text-primary text-sm font-semibold border-b-2 border-primary pb-1" href="#">Favorites</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Compare</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Alerts</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<label class="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-slate-100 dark:bg-slate-800">
+<div class="text-slate-500 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-sm placeholder:text-slate-500" placeholder="Search by area..." value=""/>
+</div>
+</label>
+<div class="flex items-center gap-4">
+<button class="relative p-2 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar close up" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCo-EJKz0uQ5CPjoDQ75G3aBVPxB9HhEzCnOvwIIMZk72FwfIHyOLM0kKoq-bFBYrEhHk8hsHbORyJB8GI8CQ8UziLG2ZMi7JAFrgM1faeQUuBlJ8xZjlkCS54c9sUQ1Bo6YeEr5FBLL_mj70oOaVC9g77BXMsjLVusBCfKKbUbgziaoYiNqwSiD-n9-LylTVHkTNidW1-3UWrSWkIUSndpkuz2aQlzSfrNyhxcEoM-kzkgNTeML4LAqZjdVTPfbDOVSoVhA-c03Kc");'>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto w-full px-6 py-8 flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+<div class="flex flex-col gap-2">
+<nav class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-1">
+<a class="hover:text-primary transition-colors" href="#">Dashboard</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary">Favorites</span>
+</nav>
+<h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight">Saved Properties</h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg">Manage, compare, and get updates on 6 favorited listings.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary font-bold rounded-lg hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-xl">compare_arrows</span>
+                    Compare (2)
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+<span class="material-symbols-outlined text-xl">share</span>
+                    Share List
+                </button>
+</div>
+</div>
+<!-- Filters & Sort -->
+<div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-200 dark:border-slate-800">
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    Property Type <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    Price Range <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    Location <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm text-slate-500 font-medium">Sort by:</span>
+<select class="bg-transparent border-none text-sm font-bold text-slate-900 dark:text-white focus:ring-0 cursor-pointer">
+<option>Recently Added</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+</select>
+<div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<button class="p-1.5 rounded bg-white dark:bg-slate-700 shadow-sm text-primary">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-1.5 rounded text-slate-400">
+<span class="material-symbols-outlined">list</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Property Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Modern white villa with blue pool at dusk" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAYAdG5Cz-EVk_T46stKCBzFtnl068KVSz8b3ms_ITBTvF0sZxQnDKl4fY6cpkLk9solHufjV2aNO9DLPne3OC8dgn6NgEtjqDfvOqezhD1lIFkuNncl8DAVS3tNkMr7aR0ojYoaS7VoALy2eWsPxN-HKrS64qRF_lHRKx9PnJ_Kl0-TuFUW-njYC7KQwNmC2xJ2gg9kKNAWXkwtF8rm07V4PY2_7TmIKEfjhUkfVD1vPVYNzgmUaGqo8jEw0Htw1gqzOprthSZtYk");'></div>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full uppercase tracking-wider">New Arrival</span>
+</div>
+<button class="absolute top-4 right-4 size-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 transition-transform active:scale-90 shadow-lg">
+<span class="material-symbols-outlined filled-icon">favorite</span>
+</button>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Azure Bay Penthouse</h3>
+<p class="text-2xl font-black text-primary">$1,250,000</p>
+</div>
+<p class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Marina District, Miami, FL
+                    </p>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bed</span> 3</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bathtub</span> 2</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">square_foot</span> 2,400</span>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">compare_arrows</span> Compare
+                        </button>
+<button class="flex-1 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Luxury suburban home with manicured lawn" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD6Q5mSv5cYb2Bh56eFtxVdmw85USSuXi294rw4gyaDhb4lE0zLYuGKv5hEgcEwoJouAdXeKxSuY6XKuQPFSmg2IDPCA4S3oinEDSUjGbOUxedaR4LwbZoZXLOEkLkdDMzfg0Hb94fATh2tNv-BevWmOiwtlMo6QBWbdDee_zsFA2ZZKRfWULMMRh-xfnr-VM5_0HxXKeH2jmhtTPGsUi_4yCFqQFgsTTPdDtzmuD1xtyoClTLcKf57hZXBYfh-u1SnH3bJU0JprG8");'></div>
+<button class="absolute top-4 right-4 size-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 transition-transform active:scale-90 shadow-lg">
+<span class="material-symbols-outlined filled-icon">favorite</span>
+</button>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Oakwood Manor</h3>
+<p class="text-2xl font-black text-primary">$845,000</p>
+</div>
+<p class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Scarsdale, NY
+                    </p>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bed</span> 4</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bathtub</span> 3</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">square_foot</span> 3,200</span>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 py-2.5 bg-primary/10 text-primary text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 border-2 border-primary/20">
+<span class="material-symbols-outlined text-lg filled-icon">check_circle</span> Added
+                        </button>
+<button class="flex-1 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Interior of a luxury modern loft living room" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDohdT0NamK7mknJIXzlgXDxva84IHEU-UJAEj9gFMOFjIuVqrGc_G_eXA3DDby72UL3L0c3mc05muy9Y8vDdpuSi8X7yeL3Kt-ofsFUTyM6nIrgkhsU59vsiMTy7DaP9TgoXKYGXX9KVHzDSSCgM78OS8eXWt3nq9ZhOfXKimaB0rra6V_kmiZb0Bj0WW5X5-rOmXDdWQMGJXgHap3e4kcsxNVtLMPLXMuCKDxpJ9OmWVhjD2dDw1iQukgr9AsgPU0xAARVpHuvmY");'></div>
+<button class="absolute top-4 right-4 size-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 transition-transform active:scale-90 shadow-lg">
+<span class="material-symbols-outlined filled-icon">favorite</span>
+</button>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Skyline Loft</h3>
+<p class="text-2xl font-black text-primary">$1,100,000</p>
+</div>
+<p class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Tribeca, Manhattan, NY
+                    </p>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bed</span> 2</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bathtub</span> 2</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">square_foot</span> 1,850</span>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">compare_arrows</span> Compare
+                        </button>
+<button class="flex-1 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Modern house architecture with large glass windows" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB8tlU9rxfXtf81NND9QWIh17cKvr9_TWsKDfO4Tefx3kfz0U5VeiyByh7M0O20gPqGUljl0X0GV69wgvxX76xZWIW3dI0Igc5INnU2mgQeCjyRIf-Tog15gq9az2w7HmOu5Y1T0oiaMWxbGNoExIZgyl6Tc2nYgXSXsxVCg6yl0w1Kh7DK5C3NxY04LDEwnXSkN2BfxsSyd1BlMaTSutjfQBo64HKDY3uZJnV2gGvmSJL5eqTZP1cX9JuNQI-QpPz1OVwMeyBxzz0");'></div>
+<button class="absolute top-4 right-4 size-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 transition-transform active:scale-90 shadow-lg">
+<span class="material-symbols-outlined filled-icon">favorite</span>
+</button>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">The Glass Pavilion</h3>
+<p class="text-2xl font-black text-primary">$3,400,000</p>
+</div>
+<p class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Malibu, CA
+                    </p>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bed</span> 5</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bathtub</span> 6</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">square_foot</span> 5,200</span>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">compare_arrows</span> Compare
+                        </button>
+<button class="flex-1 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Luxurious mansion with sprawling pool and palms" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgH0gj4z0bnpWVsk5RqMdbh2NGJASg12RnQlduie_26iQFtp-wz2m1X5UoW7jLT0dsrJgyM6IhSYMHDk7Zl6rSH99n8dVBni4k2uZP1u72ssmpbEEUROAbmA82RvisscaxS93QdoBrJh3JNvDHMtoSbZTjYnLa1H9JVlcXY2uhaomkqGATgUCte590NaDiLJJH5deuTmz0i6m8tvVi0Dwk5UllXiKZd1JcRmgb3-5CnMyjMD5YmI-XM6NrQVXJThuBNFO0SBzJ1UM");'></div>
+<button class="absolute top-4 right-4 size-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 transition-transform active:scale-90 shadow-lg">
+<span class="material-symbols-outlined filled-icon">favorite</span>
+</button>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Villa Mediterranean</h3>
+<p class="text-2xl font-black text-primary">$4,900,000</p>
+</div>
+<p class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Palm Beach, FL
+                    </p>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bed</span> 6</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bathtub</span> 7</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">square_foot</span> 8,100</span>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">compare_arrows</span> Compare
+                        </button>
+<button class="flex-1 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Contemporary dark grey house exterior" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4grBr9wdVYj3XIqcxFK5eS-U8rlcKzzL8AwINrS-fNCXg4WGXoXHYdB5z2xmWr3avGztPoo9amU4iZepP92Q8Jj3YHTX9UPlOl6kF_wtnXreW3nshKNlJkOKxLmcTcCxZ_2ijbZv3mfiSpv7tdEHAACGq_Rfsv6jok0Ccm2Q7CyclgCC1TAolKytuAMGh_Q_9UkBRvcce_0YZV0ZlhwxjHwG8spIGtqunpov0tuqlXS1FQSvClz2xGA9FsuPyDNQvk9eKnwcAnao");'></div>
+<button class="absolute top-4 right-4 size-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 transition-transform active:scale-90 shadow-lg">
+<span class="material-symbols-outlined filled-icon">favorite</span>
+</button>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">The Graphite House</h3>
+<p class="text-2xl font-black text-primary">$1,850,000</p>
+</div>
+<p class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Austin, TX
+                    </p>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bed</span> 4</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">bathtub</span> 3</span>
+<span class="flex items-center gap-1 text-sm font-medium"><span class="material-symbols-outlined text-lg">square_foot</span> 3,450</span>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">compare_arrows</span> Compare
+                        </button>
+<button class="flex-1 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Compare Bar (Floating) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 flex items-center justify-between z-50">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<div class="size-12 rounded-lg border-2 border-white dark:border-slate-900 bg-cover bg-center" data-alt="Penthouse thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCW6bZehbe2nFoMOdN_0FLtyaAo_7_vq0ZHdnj7-OwPZKs9zAYhgLILdwvUrSvMV0lBococpB-0JsQqPul7z2fA3vrrz0ZzEJlYvusDVSIc0-nvKA-6v5JGbTBleg0FGkAhPMevNEacGjN4im5kzSq2Vf4Jh5iSBXEPv6y5_Nmd41V2Pjjoh5gnKYjraHD8HaqkztffXVh31ACV-BkrAevNd5yBXPrFZ3bRyz45sG6yhKgodjJmPAyZfFheNBxMEDDY-C2JKXet9XU')"></div>
+<div class="size-12 rounded-lg border-2 border-white dark:border-slate-900 bg-cover bg-center" data-alt="Manor thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpEp483HOYgfV7gmfmqBo7qjqYUVKpBvHIsLBR159emXeRH7VOIoosDCz9xHGDzRb-ws_Gm_LwMRfKYiVJLtkDnehBK--ffq7ZbyzKcp4D3ndREmR-kfNwiTIJUxBsM2yra14wAzaSa7jiKPHS5iaAjoz5ldAb7sa1YdYCDGpgTA7v5UfC1UsWOjvrnfDR1-zu6D9n_HXUiCXpVSWR5JbxLPAVObn05djvINKJVfPckis3zvRztns85zpE9qrgfg6xzyIpIso4Wuw')"></div>
+<div class="size-12 rounded-lg border-2 border-white dark:border-slate-900 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400">
+<span class="material-symbols-outlined">add</span>
+</div>
+</div>
+<div class="hidden sm:block">
+<p class="text-slate-900 dark:text-white font-bold text-sm">2 properties selected</p>
+<p class="text-slate-500 text-xs">Compare specs, amenities and price</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white text-sm font-bold transition-colors">Clear All</button>
+<button class="px-6 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:scale-105 transition-transform">Compare Now</button>
+</div>
+</div>
+</main>
+<!-- Footer Space -->
+<footer class="mt-20 py-10 border-t border-slate-200 dark:border-slate-800 text-center">
+<p class="text-slate-500 text-sm">© 2024 KAZA Proptech Inc. All rights reserved.</p>
+</footer>
+</div>
+</body></html>

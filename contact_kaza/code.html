@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Contact Us - KAZA Proptech</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen flex-col">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 md:px-10 lg:px-40 py-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary dark:text-slate-100">
+<div class="size-8">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">KAZA Proptech</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<nav class="flex items-center gap-9">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Platform</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Solutions</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Company</a>
+</nav>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold transition-transform active:scale-95">
+                    Get Started
+                </button>
+</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center">
+<!-- Hero Section -->
+<div class="w-full max-w-7xl px-6 lg:px-10 py-12 md:py-20">
+<div class="max-w-2xl mb-12">
+<h1 class="text-4xl md:text-5xl font-black leading-tight tracking-tight mb-4">Get in touch</h1>
+<p class="text-slate-600 dark:text-slate-400 text-lg md:text-xl">We're here to help you scale your real estate operations with next-generation property technology.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+<!-- Contact Form -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h3 class="text-2xl font-bold mb-6">Send us a message</h3>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">First Name</span>
+<input class="rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:ring-primary focus:border-primary" placeholder="John" type="text"/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name</span>
+<input class="rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:ring-primary focus:border-primary" placeholder="Doe" type="text"/>
+</label>
+</div>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Work Email</span>
+<input class="rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:ring-primary focus:border-primary" placeholder="john@company.com" type="email"/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Subject</span>
+<select class="rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 focus:ring-primary focus:border-primary">
+<option>General Inquiry</option>
+<option>Sales &amp; Demo</option>
+<option>Partnership</option>
+<option>Support</option>
+</select>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Message</span>
+<textarea class="rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-4 focus:ring-primary focus:border-primary" placeholder="How can we help you?" rows="4"></textarea>
+</label>
+<button class="w-full bg-primary text-white font-bold h-12 rounded-lg hover:opacity-90 transition-opacity" type="submit">
+                                Send Message
+                            </button>
+</form>
+</div>
+<!-- Offices & Map -->
+<div class="space-y-10">
+<!-- Map Placeholder -->
+<div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Abstract map layout of New York City" data-location="New York, NY" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC8goQYqno6ssP4FHXtcTIwW2Is8GM_IeeW-fWT3757LRM14hjsb5wOILRuwT0Ub-UsCvCkZ2mA2Vm4FPJh9wPbQgEfODg8Ycpy__6JITV427oymNdWb-l0DixvUGiSe_ga7LLKN9GAXVdKMz6oeu0pUK9K7SE4C3eacxzOB9R96gC-tGQsAs5Sntzn4PXQT1vzIUNjdvKbNvYKW-MD8YOKQ_zrH9dF0mm4OdgwFWSOA-QLyH84-r0EEmfwzr3aXUXoDPy6HLKGI2M');"></div>
+<div class="absolute inset-0 bg-primary/10 flex items-center justify-center pointer-events-none">
+<div class="bg-white dark:bg-slate-900 p-3 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-primary text-4xl">location_on</span>
+</div>
+</div>
+</div>
+<!-- Office Locations -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">apartment</span>
+<h4 class="font-bold text-lg">New York Headquarters</h4>
+</div>
+<p class="text-slate-600 dark:text-slate-400">
+                                    250 Park Avenue South<br/>
+                                    New York, NY 10003<br/>
+                                    United States
+                                </p>
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span class="material-symbols-outlined text-base">call</span>
+<span>+1 (555) 123-4567</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">corporate_fare</span>
+<h4 class="font-bold text-lg">London Office</h4>
+</div>
+<p class="text-slate-600 dark:text-slate-400">
+                                    71-75 Shelton Street<br/>
+                                    Covent Garden, London<br/>
+                                    WC2H 9JQ, UK
+                                </p>
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span class="material-symbols-outlined text-base">mail</span>
+<span>hello@kazaprop.tech</span>
+</div>
+</div>
+</div>
+<!-- Social & Support -->
+<div class="pt-8 border-t border-slate-200 dark:border-slate-800">
+<h4 class="font-bold mb-4">Follow us</h4>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="w-full border-t border-slate-200 dark:border-slate-800 py-10 bg-white dark:bg-background-dark">
+<div class="max-w-7xl mx-auto px-6 lg:px-10 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="font-bold text-slate-900 dark:text-slate-100">KAZA Proptech</span>
+</div>
+<div class="flex gap-8 text-sm text-slate-500">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Cookie Policy</a>
+</div>
+<p class="text-sm text-slate-500">© 2024 KAZA Proptech Inc. All rights reserved.</p>
+</div>
+</footer>
+</div>
+</body></html>

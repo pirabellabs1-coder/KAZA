@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA - Secure Payment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 md:px-20 py-4">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary text-white rounded-lg">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">KAZA</h2>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Payments</a>
+</nav>
+<div class="bg-primary/10 border border-primary/20 rounded-full p-1">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8" data-alt="User profile avatar portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBf1EnsGR9D-NqnM1iFH8N2MSWjjqN-a0T9k-fnMroB7JD0paI4wv5sNG1Zuht6NHvsf8GWf5QWEoAPnOz_JlsWHp7uem-WX6i-43RfZNXtzyzvEKOMci65zOwH_aQzZSJ5n2yPseqO_RdepUA41cZtgUmubqh1Qx-pLHih21o3BN4Img5QwdBwYyG92wTKVYhISAXaALcvFURcSeClJ1BTE5wpRrlNdMOEnTMgi06BEjI6LAdhXYTW5-DaiSuV770npM-KaSmSRpo");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-6xl mx-auto w-full px-6 py-10">
+<div class="flex items-center gap-2 mb-8 text-sm">
+<a class="text-primary font-medium" href="#">Checkout</a>
+<span class="text-slate-400 material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-slate-500">Payment</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<div class="lg:col-span-7 flex flex-col gap-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Card Payment / Paiement par Carte</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">verified_user</span>
+                            Secure checkout powered by KAZA
+                        </p>
+</div>
+<div class="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start gap-4">
+<span class="material-symbols-outlined text-primary">lock</span>
+<div>
+<p class="font-semibold text-primary text-sm">Escrow Payment Active / Paiement Sécurisé</p>
+<p class="text-primary/70 text-sm">Funds are held safely and only released when the service is delivered. / Les fonds sont retenus en toute sécurité.</p>
+</div>
+</div>
+<section class="flex flex-col gap-6">
+<h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Card Details / Détails de la carte</h3>
+<div class="flex flex-col gap-5">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Card Number / Numéro de carte</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined">credit_card</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" placeholder="0000 0000 0000 0000" type="text"/>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+<div class="flex gap-1 opacity-50">
+<div class="w-8 h-5 bg-slate-200 dark:bg-slate-700 rounded-sm"></div>
+<div class="w-8 h-5 bg-slate-200 dark:bg-slate-700 rounded-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Expiry / Expiration</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-base">calendar_month</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" placeholder="MM / YY" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">CVC / CVV</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-base">lock_open</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" placeholder="123" type="text"/>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Cardholder Name / Nom du titulaire</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-base">person</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" placeholder="Full name as it appears on card" type="text"/>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 mt-4">
+<span>Pay $1,250.00 / Payer $1,250.00</span>
+</button>
+<div class="flex items-center justify-center gap-6 mt-2">
+<img class="h-4 grayscale hover:grayscale-0 transition-all" data-alt="Visa payment network logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj1t_GeyAyeNckZm46ogcQTT3IVe2dq9_HPuHIAo3oxcocRzW2p9REt_LcRvrWmJU27yOMg11HF0GSioTFso9G2uy6htixbu8sgJQ4hfM_XdQQBOyN96agpx2105XxVypdOXoPzwhPpuFVowgtO9FB9xbP-0D8hz7zQR4Z7zfF_Tye1ObXCLvngkjf1eVagesxUUKKKJcNEknCSV5y2WfGm742BHYXYJG-15TOMFgRL47R-9no88gNm2TXnJGLAJ42VCpdJdBhBlQ"/>
+<img class="h-6 grayscale hover:grayscale-0 transition-all" data-alt="Mastercard payment network logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf42pxMZTkbgt1zcOlNbwoGEiUJUOL8W5sDjFGgGFmzZzznmMs4SGI8zSH2CBrGkOP4RpY_zBP402SfTvWuvUiCjVp0rHv52zg_6gmEpxLnWLgUqZpQVz6fEZiGitiinAG7uZRyRI7qBvHFjimMYITxyh0WU1TXTcyJKbTVKSjcw1dCToMDtxU-poxUwaE66f-A6dtyNy4CiF1qqeWSOh5gw9Y7ALBsHLXLHvwrg_pukcHo314zTXPHnOLdwqJDCc07RD6DLToG8o"/>
+<img class="h-5 grayscale hover:grayscale-0 transition-all" data-alt="Secured by Stripe badge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJmHvqou0kFXzgoMCyGHWddYl14FbmTDW38luMyawZzMgbV9LT0Z0w82x2uGEPMCrlN5KClJICNnuKc4AH4sgvL816zuHkoJqbZKrUuI-q3a2O4edUuBYIRb9febWTWvBlH5HBlolQd9-1UzJPlEPsMnhBfOKDJgfcKiHRI9dSgDN-ncFi1hzX_nzP-k0ywnNdzAtBSUQhaK8z6GTUwDtx-_OPu2WPU2JVGRica7HvbMkZ6wEVj-596oIbVZ_0bepEM8NXS0pVWFY"/>
+</div>
+</section>
+</div>
+<div class="lg:col-span-5">
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 sticky top-8">
+<h3 class="text-lg font-bold mb-6 text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-4">Order Summary / Résumé</h3>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-medium text-slate-900 dark:text-white">Pro SaaS Annual Subscription</p>
+<p class="text-xs text-slate-500">10 users, Unlimited storage</p>
+</div>
+<span class="font-semibold text-slate-900 dark:text-white">$1,190.00</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500">Service Fee / Frais</span>
+<span class="text-slate-900 dark:text-white">$60.00</span>
+</div>
+<div class="flex justify-between items-center text-sm pt-2 border-t border-slate-100 dark:border-slate-800">
+<span class="text-slate-500">Subtotal</span>
+<span class="text-slate-900 dark:text-white">$1,250.00</span>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 mb-8">
+<div class="flex justify-between items-center">
+<span class="text-lg font-bold text-slate-900 dark:text-white">Total Amount</span>
+<span class="text-2xl font-black text-primary">$1,250.00</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-start gap-3 text-xs text-slate-500">
+<span class="material-symbols-outlined text-sm mt-0.5">info</span>
+<p>By clicking "Pay", you agree to the KAZA Terms of Service and Privacy Policy. Your funds are protected by our Escrow service.</p>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg">
+<span class="material-symbols-outlined text-green-600 text-sm">shield</span>
+<span class="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">PCI DSS Compliant / Certifié PCI DSS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-10">
+<div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2 opacity-50">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-bold">KAZA</span>
+<span class="text-xs ml-2">© 2024 Kaza Payments Inc.</span>
+</div>
+<div class="flex gap-8 text-xs text-slate-500 font-medium">
+<a class="hover:text-primary" href="#">Legal / Mentions Légales</a>
+<a class="hover:text-primary" href="#">Privacy / Confidentialité</a>
+<a class="hover:text-primary" href="#">Help Center / Aide</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

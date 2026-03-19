@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA - Property Search</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<!-- Header -->
+<header class="sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="flex items-center p-4 justify-between">
+<div class="text-primary dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</div>
+<h2 class="text-primary dark:text-slate-100 text-xl font-bold leading-tight tracking-tight flex-1 text-center pr-10">KAZA</h2>
+</div>
+<!-- Filters Scrollable Row -->
+<div class="flex gap-2 p-3 overflow-x-auto no-scrollbar border-b border-primary/5">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary text-white px-4">
+<span class="material-symbols-outlined text-sm">tune</span>
+<p class="text-sm font-medium">Filters / Filtres</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-slate-100 px-4">
+<p class="text-sm font-medium">Price / Prix</p>
+<span class="material-symbols-outlined text-lg">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-slate-100 px-4">
+<p class="text-sm font-medium">Beds / Chambres</p>
+<span class="material-symbols-outlined text-lg">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary dark:text-slate-100 px-4">
+<p class="text-sm font-medium">Type</p>
+<span class="material-symbols-outlined text-lg">expand_more</span>
+</button>
+</div>
+</header>
+<main class="pb-24">
+<!-- Results Info -->
+<div class="px-4 pt-4 pb-2">
+<p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">142 Properties found / Propriétés trouvées</p>
+</div>
+<!-- Property Card 1 -->
+<div class="p-4 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl overflow-hidden shadow-lg shadow-primary/5 bg-white dark:bg-slate-800/50 border border-primary/5">
+<div class="relative w-full aspect-[4/3] bg-center bg-no-repeat bg-cover" data-alt="Modern luxury villa with pool at dusk" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPNXtZPUygpsZ03QdAoqBmxyKrX36vtiD1OlfZNUhdJsAe5KpNEeCXUfWK72Up6XvHLnGRLbeE0u5fp8fgrWuMP0gMjfYQCn_LizVm64yY30MdoUkqWUu04uBW7TvFTEf5LiMBDQMvJ-tSclwwBTiMmxo7j7QEhP-hVreo3vpwWI9rYavTOcWIPdjc1wxcD8MrJeVtxC4bvSxHtyq_g7274xLSKdFi0hyJPxGNmmuGVj8FKvc_iHmkIGFyku36Sr18gM43ShjyNaw");'>
+<div class="absolute top-3 right-3 p-2 bg-white/80 dark:bg-black/40 backdrop-blur rounded-full text-primary dark:text-slate-100">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<div class="absolute bottom-3 left-3 px-3 py-1 bg-primary text-white text-xs font-bold rounded-full uppercase">
+                        New / Nouveau
+                    </div>
+</div>
+<div class="flex w-full flex-col gap-2 p-4">
+<div class="flex justify-between items-start">
+<p class="text-primary dark:text-slate-100 text-2xl font-bold tracking-tight">$2,400,000</p>
+</div>
+<div class="flex flex-col gap-2">
+<p class="text-slate-600 dark:text-slate-300 text-base font-semibold leading-normal">Plateau-Mont-Royal, QC</p>
+<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">bed</span>
+<span class="text-sm font-medium">3 Bed / Ch.</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">bathtub</span>
+<span class="text-sm font-medium">2 Bath / Sdb.</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">square_foot</span>
+<span class="text-sm font-medium">1,850 ft²</span>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm italic leading-relaxed">Modern loft with private rooftop terrace. / Loft moderne avec terrasse privée.</p>
+</div>
+<button class="mt-2 w-full flex cursor-pointer items-center justify-center rounded-xl h-12 bg-primary text-white text-sm font-bold transition-all active:scale-[0.98]">
+<span class="truncate">View Details / Voir Détails</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Property Card 2 -->
+<div class="p-4 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl overflow-hidden shadow-lg shadow-primary/5 bg-white dark:bg-slate-800/50 border border-primary/5">
+<div class="relative w-full aspect-[4/3] bg-center bg-no-repeat bg-cover" data-alt="Charming historic apartment interior with brick walls" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAy5yMKFvCxcgWIy6w_FJ3mwZPj0MfFyqz3ifxv5yZqS_ObK75q9EM44LFVZb7GlHujZjkgeYPkjspEyexPp3g_fvxgZiNjI6jRBz4mQuNqpEM9Ecuc0l3rXhDBcCyFkvItl__ZHRF7nmfqlhWYzVMnrsU-gafwlO6PrsAegu_CtJSzQWojZJ6g_42x2snpSF-_Au-Eepo-0CD32uEUactBNiAGszbAA5HuGM47_LQnfsMaml-W7v588anO3YO-3Hv3RW_2ByZPszI");'>
+<div class="absolute top-3 right-3 p-2 bg-white/80 dark:bg-black/40 backdrop-blur rounded-full text-slate-400">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+</div>
+<div class="flex w-full flex-col gap-2 p-4">
+<div class="flex justify-between items-start">
+<p class="text-primary dark:text-slate-100 text-2xl font-bold tracking-tight">$850,000</p>
+</div>
+<div class="flex flex-col gap-2">
+<p class="text-slate-600 dark:text-slate-300 text-base font-semibold leading-normal">Old Montreal / Vieux-Montréal</p>
+<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">bed</span>
+<span class="text-sm font-medium">2 Bed / Ch.</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">bathtub</span>
+<span class="text-sm font-medium">1 Bath / Sdb.</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">square_foot</span>
+<span class="text-sm font-medium">1,100 ft²</span>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm italic leading-relaxed">Historic charm meets modern living. / Charme historique et vie moderne.</p>
+</div>
+<button class="mt-2 w-full flex cursor-pointer items-center justify-center rounded-xl h-12 bg-primary text-white text-sm font-bold transition-all active:scale-[0.98]">
+<span class="truncate">View Details / Voir Détails</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Property Card 3 -->
+<div class="p-4 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl overflow-hidden shadow-lg shadow-primary/5 bg-white dark:bg-slate-800/50 border border-primary/5">
+<div class="relative w-full aspect-[4/3] bg-center bg-no-repeat bg-cover" data-alt="Contemporary white architecture house with garden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBthbq-lCVsZouJ8J_jT0eT68n9qhibhaZ7-IX_odRXt22UF8RzjWn6LZg4XMWFVCsew3uACA-jBYV0s6ONiTU2PBB-k8u6G7FokMEFqGLGYuVqNOnaK_bflUudtWUm37GeuwezD0_SLgdW8OUkEEdwOGxtdH1IMzVYANQPkiD36xOm_XEiLKIlcQ_6cppfpt806EKBvLFTniPC_YCcBJahNGgRlM1tY_f4ACX2hcAXUiXi7Xh-MNzsm9dHYfdKJN1DhA7ufT5WulE");'>
+<div class="absolute top-3 right-3 p-2 bg-white/80 dark:bg-black/40 backdrop-blur rounded-full text-slate-400">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+</div>
+<div class="flex w-full flex-col gap-2 p-4">
+<div class="flex justify-between items-start">
+<p class="text-primary dark:text-slate-100 text-2xl font-bold tracking-tight">$1,250,000</p>
+</div>
+<div class="flex flex-col gap-2">
+<p class="text-slate-600 dark:text-slate-300 text-base font-semibold leading-normal">Griffintown, QC</p>
+<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">bed</span>
+<span class="text-sm font-medium">2 Bed / Ch.</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">bathtub</span>
+<span class="text-sm font-medium">2 Bath / Sdb.</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">square_foot</span>
+<span class="text-sm font-medium">1,400 ft²</span>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm italic leading-relaxed">Bright corner unit with water views. / Unité de coin lumineuse avec vue sur l'eau.</p>
+</div>
+<button class="mt-2 w-full flex cursor-pointer items-center justify-center rounded-xl h-12 bg-primary text-white text-sm font-bold transition-all active:scale-[0.98]">
+<span class="truncate">View Details / Voir Détails</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Map Button -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-30">
+<button class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 font-bold hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">map</span>
+<span>Map / Carte</span>
+</button>
+</div>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-primary/10 px-4 pb-6 pt-2">
+<div class="flex justify-around items-center max-w-lg mx-auto">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">search</span>
+<p class="text-[10px] font-bold leading-none tracking-tight">Search</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">favorite</span>
+<p class="text-[10px] font-medium leading-none tracking-tight">Saved</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">chat_bubble</span>
+<p class="text-[10px] font-medium leading-none tracking-tight">Inbox</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+<p class="text-[10px] font-medium leading-none tracking-tight">Profile</p>
+</a>
+</div>
+</nav>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

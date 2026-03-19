@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#003366",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+            },
+            fontFamily: {
+              "display": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden pb-24">
+<!-- Top Navigation -->
+<div class="flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 p-4 pb-2 justify-between">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-primary/10 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">KAZA</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-primary/10 text-primary">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+<!-- Hero Image Gallery -->
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="bg-cover bg-center flex flex-col justify-end overflow-hidden bg-slate-200 dark:bg-slate-800 @[480px]:rounded-xl min-h-80 relative" data-alt="Luxury modern villa with pool at sunset" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDg7r5_ZbuQ5oOLkow_1WmwfCPc1nrtCEGOvnKNFR54o3E1ULWJKIG5bk5Vmu3sN4vn1LWOGTUPaJsy6iSAPyQXRZA7eqPt1Ix7EsWusXx6f6ZfpksTdfes7cMtHr6T1TsdoRXVdCE7_dgSEPUL_Yl1SgPJgRgIOdBOOShoMUZgzEqGbopNEEBFVd-k8E0Ue5oSzZLDwoOuSkEKsspuoatq7YziChAI75K-A7v17VzWW89IIYvkWl1_wKqGc4SlEdDlqv5ER82earA");'>
+<div class="absolute top-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-sm text-yellow-500">star</span>
+                        4.9 (128)
+                    </div>
+<div class="flex justify-center gap-2 p-5">
+<div class="size-1.5 rounded-full bg-white"></div>
+<div class="size-1.5 rounded-full bg-white/50"></div>
+<div class="size-1.5 rounded-full bg-white/50"></div>
+<div class="size-1.5 rounded-full bg-white/50"></div>
+<div class="size-1.5 rounded-full bg-white/50"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Header Content -->
+<div class="px-4 pt-6">
+<div class="flex justify-between items-start mb-2">
+<h1 class="text-slate-900 dark:text-slate-100 tracking-tight text-2xl font-bold leading-tight flex-1">
+                    Modern Villa / Villa Moderne
+                </h1>
+<button class="text-primary p-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0">favorite</span>
+</button>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                Downtown, Montreal • Plateau Mont-Royal
+            </p>
+</div>
+<!-- Amenities Grid -->
+<div class="grid grid-cols-2 gap-3 p-4">
+<div class="flex flex-1 gap-3 rounded-lg border border-primary/10 bg-white dark:bg-slate-800/50 p-4 flex-col">
+<div class="text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold leading-tight">3 Guests / 3 Voyageurs</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Capacity / Capacité</p>
+</div>
+</div>
+<div class="flex flex-1 gap-3 rounded-lg border border-primary/10 bg-white dark:bg-slate-800/50 p-4 flex-col">
+<div class="text-primary">
+<span class="material-symbols-outlined">bed</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold leading-tight">2 Bedrooms / 2 Chambres</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Sleeps 4 / 4 Personnes</p>
+</div>
+</div>
+<div class="flex flex-1 gap-3 rounded-lg border border-primary/10 bg-white dark:bg-slate-800/50 p-4 flex-col">
+<div class="text-primary">
+<span class="material-symbols-outlined">bathtub</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold leading-tight">2 Bath / 2 Salles de bain</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Full / Complètes</p>
+</div>
+</div>
+<div class="flex flex-1 gap-3 rounded-lg border border-primary/10 bg-white dark:bg-slate-800/50 p-4 flex-col">
+<div class="text-primary">
+<span class="material-symbols-outlined">wifi</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold leading-tight">Free WiFi / WiFi Gratuit</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">High speed / Haute vitesse</p>
+</div>
+</div>
+</div>
+<!-- Property Description -->
+<div class="px-4 py-4 space-y-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">About this place / À propos</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                Experience ultimate luxury in the heart of Montreal. This architecturally stunning villa offers spacious living areas, a gourmet kitchen, and floor-to-ceiling windows with breathtaking city views.
+                <br/><br/>
+                Vivez l'expérience du luxe ultime au cœur de Montréal. Cette villa à l'architecture époustouflante offre des espaces de vie spacieux, une cuisine gastronomique et des baies vitrées offrant une vue imprenable sur la ville.
+            </p>
+<button class="text-primary font-bold text-sm underline underline-offset-4">Read more / Voir plus</button>
+</div>
+<!-- Map Section -->
+<div class="px-4 py-4 space-y-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Location / Emplacement</h3>
+<div class="h-48 w-full rounded-xl bg-slate-200 dark:bg-slate-800 overflow-hidden relative">
+<img alt="Map of Montreal" class="w-full h-full object-cover grayscale opacity-50 dark:opacity-30" data-alt="Map view of Montreal downtown area" data-location="Montreal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3GgyXN0ZysXXzdNXrIZQYtxVJZEZtONRF8rVAWhqWeHSu_79PURwbevP1WEYDVhZSpvgySSWujGx-f47QXp6O-McB2Jb2Nffuj5T4xkBpXJpwM-ZE__nLBB1USPulAQrCL40ySMInGbKJq0hpCOXYunZ4d5Wt4m5djo6GJVx6RGmVuK9qrTXEgh1L9qkaIkmR3f7iPKHZ1XR9MqHiqDnWQETHEdaH8uGNlUdX1n9mjiewHoUrt4dnwMtjF7KZWf5T8cYu0mV7FaA"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-primary p-3 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-white">location_on</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer Booking -->
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 px-6 flex items-center justify-between z-50">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1">
+<span class="text-lg font-bold text-slate-900 dark:text-slate-100">$245</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">/ night (nuit)</span>
+</div>
+<div class="text-xs text-primary font-medium underline">Jan 12 - 17</div>
+</div>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all">
+                Book Now / Réserver
+            </button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA | Shared Rent Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 lg:px-20">
+<div class="flex items-center gap-4">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-primary dark:text-slate-100">KAZA</h2>
+</div>
+<nav class="hidden md:flex flex-1 justify-center gap-8">
+<a class="text-sm font-semibold text-primary border-b-2 border-primary pb-1" href="#">Dashboard / Tableau</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Expenses / Dépenses</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Rent / Loyer</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Settings / Paramètres</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-full h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border-2 border-primary/20" data-alt="User profile avatar of a smiling young person">
+<img alt="Profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAB4KpxPxu0uTJaPaeCPd1OkamhELw_ymBbCcg-WSeu-C5bD853UVbWC9LkxVm-u-0i-DYLA0a9nYf8qRbKoH0d-0AcHrGrPBEcXKpyelP2WkltUBhCL8FupE4Q9obmIDEG0qUNjcv_7ZvI3zHFc4F4C3Zh4eCpTFIuJ9iFHkaxzMcyZT8SvG9Yz5zWRT65QC2wGOery4hRg13iK-whX3G6zU9m9v3BAKmn2fFdXr9d6ESyVfB_-SptLEpoZK6lcuimC_5A8yVr77w"/>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="hidden sm:inline">New Expense</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-6 py-8 lg:px-20 max-w-[1440px] mx-auto w-full">
+<!-- Hero Header -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Active Month: October</span>
+</div>
+<h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Our Home <span class="text-slate-400 font-normal">/ Notre Maison</span></h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Shared management for 123 Rue de la Paix, Montreal</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50">EN</button>
+<button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium">FR</button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<p class="text-slate-500 text-sm font-medium">Total Budget / Budget Total</p>
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<p class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">$3,450.00</p>
+<div class="mt-4 h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 100%"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<p class="text-slate-500 text-sm font-medium">Paid So Far / Payé à ce jour</p>
+<span class="material-symbols-outlined text-emerald-500">check_circle</span>
+</div>
+<p class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">$2,280.00</p>
+<div class="mt-4 h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500" style="width: 66%"></div>
+</div>
+<p class="text-xs text-emerald-600 mt-2 font-medium">66% of total bills covered</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm border-l-4 border-l-orange-400">
+<div class="flex items-center justify-between mb-4">
+<p class="text-slate-500 text-sm font-medium">Remaining / Restant</p>
+<span class="material-symbols-outlined text-orange-400">pending_actions</span>
+</div>
+<p class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">$1,170.00</p>
+<div class="mt-4 h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-orange-400" style="width: 34%"></div>
+</div>
+<p class="text-xs text-orange-600 mt-2 font-medium">Due in 5 days (Nov 1st)</p>
+</div>
+</div>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Roommates Progress Section -->
+<div class="lg:col-span-1 flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">group</span>
+                            Roommates / Colocataires
+                        </h3>
+<div class="space-y-6">
+<!-- Roommate 1 -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">MA</div>
+<span class="font-semibold">Marc-Antoine</span>
+</div>
+<span class="text-emerald-600 font-bold">Paid / Payé</span>
+</div>
+<div class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500" style="width: 100%"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-400 uppercase font-bold">
+<span>Rent: $1,150</span>
+<span>Utilities: $120</span>
+</div>
+</div>
+<!-- Roommate 2 -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-600">SJ</div>
+<span class="font-semibold">Sarah Jenkins</span>
+</div>
+<span class="text-primary font-bold">Partial / Partiel</span>
+</div>
+<div class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 75%"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-400 uppercase font-bold">
+<span>Rent: $1,150 (Paid)</span>
+<span class="text-orange-500">Utilities: $120 (Pending)</span>
+</div>
+</div>
+<!-- Roommate 3 -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-pink-100 flex items-center justify-center text-xs font-bold text-pink-600">LL</div>
+<span class="font-semibold">Léa Lefebvre</span>
+</div>
+<span class="text-slate-400 font-bold">Unpaid / Non payé</span>
+</div>
+<div class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-slate-200 dark:bg-slate-700" style="width: 0%"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-400 uppercase font-bold">
+<span>Rent: $1,150</span>
+<span>Utilities: $120</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-2.5 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-500 text-sm font-medium hover:border-primary hover:text-primary transition-all">
+                            + Invite Roommate
+                        </button>
+</div>
+</div>
+<!-- Recent Transactions Section -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h3 class="text-lg font-bold">Recent Expenses / Dépenses récentes</h3>
+<button class="text-primary text-sm font-bold hover:underline">View Ledger</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-[11px] uppercase tracking-wider text-slate-500 font-bold">
+<tr>
+<th class="px-6 py-3">Expense / Item</th>
+<th class="px-6 py-3">Paid By / Par</th>
+<th class="px-6 py-3 text-right">Amount / Montant</th>
+<th class="px-6 py-3">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Hydro-Québec (Electricity)</p>
+<p class="text-xs text-slate-400">Oct 24, 2023</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600">MA</div>
+<span class="text-sm">Marc-Antoine</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="font-bold text-sm">$184.20</p>
+<p class="text-[10px] text-slate-400">Split 3 ways</p>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase">Settled</span>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined">wifi</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Bell Internet</p>
+<p class="text-xs text-slate-400">Oct 21, 2023</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-purple-100 flex items-center justify-center text-[10px] font-bold text-purple-600">SJ</div>
+<span class="text-sm">Sarah J.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="font-bold text-sm">$95.00</p>
+<p class="text-[10px] text-slate-400">Split 3 ways</p>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-orange-100 text-orange-700 uppercase">Pending</span>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Cleaning Supplies / Ménage</p>
+<p class="text-xs text-slate-400">Oct 18, 2023</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600">MA</div>
+<span class="text-sm">Marc-Antoine</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="font-bold text-sm">$42.50</p>
+<p class="text-[10px] text-slate-400">Marc pays extra</p>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase">Settled</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Shared Map/Location Card -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h4 class="text-sm font-bold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                Neighborhood / Quartier
+                            </h4>
+<div class="aspect-video w-full rounded-lg bg-slate-100 overflow-hidden relative" data-location="Montreal, Canada" style="">
+<img class="w-full h-full object-cover grayscale opacity-50" data-alt="Stylized map of Montreal urban street layout" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDENkRN6tY6cvEEotHthMD491ZDSMH8ppiP_2-RlzstLpT8j3svXs5hkMoy3BTwWDdqPexop6jQaavi_jQsrqj7fausb6rHlYGKhEBtSGXUDWOXpyhW_aV-w52MBqr8KN1HkQtImUXD1DbsshqFv7vjDA31iIeQ3XmKC3Pu4atd-aLqocedtiH1n3AiSnmUZCHiq0EzzdDhMBtmyCu_42BNRePEE5dtoH2oCCV8dYRD0RviWGa8EMhCQqu6UOhcYskZ3vVtj_fkUq8"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-4xl">location_on</span>
+</div>
+</div>
+</div>
+<div class="bg-primary text-white p-6 rounded-xl shadow-lg relative overflow-hidden group">
+<div class="relative z-10 h-full flex flex-col justify-between">
+<div>
+<h4 class="text-xl font-bold">Premium Plan</h4>
+<p class="text-primary-200 text-sm mt-1">Unlock advanced reports and receipt scanning.</p>
+</div>
+<button class="mt-4 bg-white text-primary px-4 py-2 rounded-lg text-sm font-bold w-fit hover:bg-slate-100">Upgrade Now</button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-[120px]">diamond</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-8 lg:px-20">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">apartment</span>
+<span class="font-bold text-primary">KAZA</span>
+<span class="text-slate-400 text-sm ml-4">© 2023 Shared Living Solutions Inc.</span>
+</div>
+<div class="flex gap-6 text-sm text-slate-500">
+<a class="hover:text-primary" href="#">Privacy / Confidentialité</a>
+<a class="hover:text-primary" href="#">Terms / Conditions</a>
+<a class="hover:text-primary" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

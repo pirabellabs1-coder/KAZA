@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA - Find Your Ideal Roommate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent": "#2D6A4F",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-background-dark/80">
+<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-primary dark:text-slate-100">
+<span class="material-symbols-outlined text-3xl font-bold">domain</span>
+<h2 class="text-xl font-black tracking-tight">KAZA</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-semibold text-primary border-b-2 border-primary pb-1" href="#">Trouver un colocataire</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400" href="#">Mes Matchs</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400" href="#">Messages</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<div class="relative hidden sm:block w-full max-w-xs">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+<span class="material-symbols-outlined text-sm">search</span>
+</span>
+<input class="block w-full rounded-xl border-none bg-slate-100 py-2 pl-10 pr-3 text-sm placeholder-slate-500 focus:ring-2 focus:ring-primary dark:bg-slate-800" placeholder="Search University, City..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500"></span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<!-- Hero & Language Toggle -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl font-black text-slate-900 dark:text-white sm:text-4xl">Trouver votre colocataire idéal</h1>
+<p class="mt-2 text-lg text-slate-600 dark:text-slate-400">Find the perfect match for your student life. (EN/FR)</p>
+</div>
+<div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg self-start">
+<button class="px-3 py-1 text-xs font-bold bg-white dark:bg-slate-700 rounded shadow-sm">FR</button>
+<button class="px-3 py-1 text-xs font-medium text-slate-500">EN</button>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="mb-8 flex flex-wrap gap-3">
+<button class="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                    Tous les filtres
+                </button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+<span class="material-symbols-outlined text-lg">smoke_free</span>
+                    Non-fumeur
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+<span class="material-symbols-outlined text-lg">pets</span>
+                    Animaux acceptés
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                    Secteur
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+<span class="material-symbols-outlined text-lg">payments</span>
+                    Budget
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<!-- Profiles Grid -->
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+<!-- Card 1 -->
+<div class="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200 transition-all hover:shadow-md dark:bg-slate-900 dark:border-slate-800">
+<div class="aspect-[4/3] w-full relative overflow-hidden">
+<img alt="Marc" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Portrait of a friendly male student smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8AEfDG6QAPQDlrcM-i3H6KFvyxPf7pHFm_OF2i8TDkPL3qxxKeyOqO7eR3P0QZF6X8cpoGZTc21lybnKGK-6U-aHeg3wLqxhUfCUeku-8X7XvUfMsRUKYhSed-jFTwRxPOTRRykIQAe8EIMQi_WUAXeyjvkDTuoQ5obJjTz9MFksDG4dNF2a4Eh0D56pTuCV7c3rsVtQ7D9MVxW8nAhB0nEaCmPI03QU3Yfrp1-y9jkkO3hBpAI_AJzhtrk60cW-gZit7GeSZH90"/>
+<div class="absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-sm filled-icon">bolt</span> 98% Match
+                        </div>
+</div>
+<div class="flex flex-1 flex-col p-5">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Marc, 21</h3>
+<p class="text-sm font-medium text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">school</span> Sorbonne Université
+                                </p>
+</div>
+<div class="text-right">
+<span class="text-lg font-black text-accent">650€</span>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Budget Max</p>
+</div>
+</div>
+<p class="mt-3 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">Étudiant en Master d'Économie. J'aime cuisiner, le tennis et je suis très organisé.</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Cuisine</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Tennis</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Jazz</span>
+</div>
+<div class="mt-auto pt-6 flex gap-3">
+<button class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary/90">Contacter</button>
+<button class="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200 transition-all hover:shadow-md dark:bg-slate-900 dark:border-slate-800">
+<div class="aspect-[4/3] w-full relative overflow-hidden">
+<img alt="Léa" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Portrait of a female student with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNq8BaOqvwLO5ywSg4UWsTsdP0u4SEEggPSlwsALSsmXdsji2advZmIo0NVLDpozeYBP36nG16kl4JcTxnaXscQl2Ly4yy4qNUqPRD9Lt--P4pS7oDZGNlQgbQ6tAvFzpVl-AC0IhYW1jf-17hCOtfYIgP5EppBXpMCsrVwsXZH5kK_VMdoXAHwfk-9_ZWTvxTV9I5n8Yma1CYO4CpgPiMhxAwq1na8bvy0zFC9fypzYOgo-R7GSd_kZVkWxAI3Bp1ibIBwYkHSnU"/>
+<div class="absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-sm filled-icon">bolt</span> 92% Match
+                        </div>
+</div>
+<div class="flex flex-1 flex-col p-5">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Léa, 19</h3>
+<p class="text-sm font-medium text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">school</span> Sciences Po
+                                </p>
+</div>
+<div class="text-right">
+<span class="text-lg font-black text-accent">800€</span>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Budget Max</p>
+</div>
+</div>
+<p class="mt-3 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">Recherche coloc calme. Non-fumeuse, j'ai un petit chat très sage.</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Lecture</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Yoga</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Animaux OK</span>
+</div>
+<div class="mt-auto pt-6 flex gap-3">
+<button class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary/90">Contacter</button>
+<button class="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200 transition-all hover:shadow-md dark:bg-slate-900 dark:border-slate-800">
+<div class="aspect-[4/3] w-full relative overflow-hidden">
+<img alt="Thomas" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Portrait of a young man with a backpack" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfGs7T2f2qDiNjSsqlF-DWU5UuJDlP64MLQxDWJix4z9GmIC_P_4-vQDSyHjlfOjT60_eZaRtSWS2T8oEjqeNTknOLya65RDhe4HN2o4k659jy9lIfa2dukcSUd-gZ_oz9GwZgA2auJzeBRB6peLLJ03FO5AONm3C_7L4r2Xlv9epKoxTjFIUZa-1QbhK_88oudcj9tBvEbVT7UW_Sc9HDfZfureNop6xHwC0wWoJ7BIJUYxLfTTH9bdfeJnJ1Da2EU6KIEQYObdI"/>
+<div class="absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-sm filled-icon">bolt</span> 85% Match
+                        </div>
+</div>
+<div class="flex flex-1 flex-col p-5">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Thomas, 23</h3>
+<p class="text-sm font-medium text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">school</span> HEC Paris
+                                </p>
+</div>
+<div class="text-right">
+<span class="text-lg font-black text-accent">950€</span>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Budget Max</p>
+</div>
+</div>
+<p class="mt-3 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">International student from UK. Looking for a friendly flatshare in 5th or 6th district.</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Gaming</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Travel</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Bilingual</span>
+</div>
+<div class="mt-auto pt-6 flex gap-3">
+<button class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary/90">Contacter</button>
+<button class="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200 transition-all hover:shadow-md dark:bg-slate-900 dark:border-slate-800">
+<div class="aspect-[4/3] w-full relative overflow-hidden">
+<img alt="Inès" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="Portrait of a female student in an art studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGROnEYy_VBZmIAxBV29loXbtJCnvvEcg9ek8kia6PeLZMIJw_iDEGEEN9DGFyk4yBPV_hmElNieXCLNHWqB_nPIiLheG1dIstrRzWuukgg7uNeTes-J805WvuFBUbNyzQv77t_CVFIDvqMBBwlE_AqmzCHiZi-aRfT_-qPzU7cF_JWo_dQ1ygeBNYBKzjA2QtqUg34v1VykrYz1qTjrC0c6QPm5aCreAVNXDrn8xuXVNzOswCLKTV4CI3XtIW_Qq-zWhRQmYXPLI"/>
+<div class="absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-sm filled-icon">bolt</span> 78% Match
+                        </div>
+</div>
+<div class="flex flex-1 flex-col p-5">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Inès, 20</h3>
+<p class="text-sm font-medium text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">school</span> École Boulle
+                                </p>
+</div>
+<div class="text-right">
+<span class="text-lg font-black text-accent">550€</span>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Budget Max</p>
+</div>
+</div>
+<p class="mt-3 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">Passionnée de design et d'art. Je cherche une coloc créative et conviviale.</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Art</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Design</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold rounded text-slate-500 uppercase">Non-fumeur</span>
+</div>
+<div class="mt-auto pt-6 flex gap-3">
+<button class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary/90">Contacter</button>
+<button class="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State / Load More (Optional) -->
+<div class="mt-12 flex justify-center">
+<button class="rounded-xl border-2 border-primary px-8 py-3 text-sm font-bold text-primary transition-all hover:bg-primary hover:text-white">
+                    Afficher plus de profils
+                </button>
+</div>
+</main>
+<!-- Sidebar / Map Toggle (Mobile Floating Button) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 md:hidden">
+<button class="flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-2xl dark:bg-white dark:text-slate-900">
+<span class="material-symbols-outlined">map</span>
+                Voir la carte
+            </button>
+</div>
+<!-- Simple Footer -->
+<footer class="mt-auto border-t border-slate-200 bg-white py-12 dark:border-slate-800 dark:bg-background-dark">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+<div class="flex items-center gap-2 text-primary/60 dark:text-slate-500">
+<span class="material-symbols-outlined text-2xl font-bold">domain</span>
+<h2 class="text-lg font-black tracking-tight">KAZA</h2>
+</div>
+<p class="text-sm text-slate-500">© 2024 KAZA Student Roommate Matching. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-sm font-medium text-slate-500 hover:text-primary" href="#">Conditions</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary" href="#">Confidentialité</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary" href="#">Aide</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

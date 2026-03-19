@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA Proptech - Owner Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-gradient { background: linear-gradient(180deg, #003366 0%, #001f3d 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="sidebar-gradient w-64 flex-shrink-0 flex flex-col text-white fixed h-full lg:relative">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 bg-white/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl">domain</span>
+</div>
+<div>
+<h1 class="font-black text-xl tracking-tight">KAZA</h1>
+<p class="text-[10px] uppercase tracking-widest text-white/60">Proptech Platform</p>
+</div>
+</div>
+<nav class="flex-1 px-4 mt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Vue d'ensemble</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">apartment</span>
+<span>Mes Propriétés</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span>Demandes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Finances</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Calendrier</span>
+</a>
+</nav>
+<div class="p-4 mt-auto border-t border-white/10">
+<div class="bg-white/5 rounded-xl p-4">
+<p class="text-xs text-white/50 mb-3">Besoin d'aide ?</p>
+<button class="w-full py-2 bg-white text-primary rounded-lg text-sm font-bold">Support Client</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center justify-between px-8 py-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-sm" placeholder="Rechercher une propriété, un locataire..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-sm">language</span>
+                        EN / FR
+                    </button>
+<div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
+<button class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 ml-4">
+<div class="text-right">
+<p class="text-sm font-bold">Jean Dupont</p>
+<p class="text-[10px] text-slate-500 uppercase">Propriétaire Premium</p>
+</div>
+<img class="size-10 rounded-full border-2 border-white shadow-sm" data-alt="Photo de profil de l'utilisateur" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMtK0OplY0slTcP4Hkf-zFPaHtBkt7yy_JrJ8MX6mrwNQ5-mZuN_09xAps6m5ZQivlE4WChdnVWG4HFIn5DjLM_XXvmcmYiBvNSVrW37WGUzozQr32wP-aX_Og8r7_zrv7RK1Vs6fyvMZFX3EO1e4Yml-87P4l1Zjb9K5poLgdnCs0Bmo64r5n4ad1FJW1OGkhPcrVbHk5IwvXAgx63QtPICRVegu_3TVC2HOfHlaLmJyX1yBtWb-dWah1Hbi02YRmqWLdAvmWj3I"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Body -->
+<div class="p-8">
+<!-- Welcome & Stats -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Tableau de bord</h2>
+<p class="text-slate-500">Bienvenue, voici l'état de votre patrimoine immobilier aujourd'hui.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-semibold text-sm hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Rapport PDF
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg">add</span>
+                            Ajouter un bien
+                        </button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+5.4%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Revenus mensuels</p>
+<h3 class="text-2xl font-black mt-1">12 450 €</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Optimal</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Taux d'occupation</p>
+<h3 class="text-2xl font-black mt-1">94%</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">8 urgentes</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Demandes en attente</p>
+<h3 class="text-2xl font-black mt-1">12</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+<span class="material-symbols-outlined">home</span>
+</div>
+<span class="text-xs font-bold text-slate-400">Total actifs</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Nombre de propriétés</p>
+<h3 class="text-2xl font-black mt-1">18</h3>
+</div>
+</div>
+<!-- Main Grid Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Revenue Overview (Chart Simulation) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-xl font-bold">Aperçu des revenus</h3>
+<select class="bg-slate-50 border-none rounded-lg text-sm font-medium py-1.5 focus:ring-0 cursor-pointer">
+<option>Les 6 derniers mois</option>
+<option>Année 2023</option>
+</select>
+</div>
+<!-- Visual Graph Placeholder -->
+<div class="relative h-64 w-full flex items-end justify-between gap-4 pt-4">
+<div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-t-lg h-[40%] relative group">
+<div class="absolute inset-0 bg-primary/20 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100">8.2k</div>
+</div>
+<div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-t-lg h-[55%] relative group">
+<div class="absolute inset-0 bg-primary/20 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100">9.1k</div>
+</div>
+<div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-t-lg h-[45%] relative group">
+<div class="absolute inset-0 bg-primary/20 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100">8.5k</div>
+</div>
+<div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-t-lg h-[75%] relative group">
+<div class="absolute inset-0 bg-primary/20 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100">11.2k</div>
+</div>
+<div class="flex-1 bg-primary rounded-t-lg h-[85%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold text-primary">12.4k</div>
+</div>
+<div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-t-lg h-[60%] relative group">
+<div class="absolute inset-0 bg-primary/20 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100">9.8k</div>
+</div>
+</div>
+<div class="flex justify-between mt-4 px-1 text-xs font-bold text-slate-400 uppercase tracking-tighter">
+<span>Jan</span><span>Fév</span><span>Mar</span><span>Avr</span><span>Mai</span><span>Juin</span>
+</div>
+</div>
+<!-- Pending Tenant Requests -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold">Demandes locataires</h3>
+<a class="text-primary text-sm font-bold hover:underline" href="#">Voir tout</a>
+</div>
+<div class="space-y-4 flex-1">
+<div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-3">
+<div class="bg-amber-100 text-amber-600 p-2 rounded-lg">
+<span class="material-symbols-outlined text-sm">build</span>
+</div>
+<div>
+<p class="text-sm font-bold">Fuite d'eau - Appt 4B</p>
+<p class="text-xs text-slate-500 mt-1">Signalé par Sophie Martin il y a 2h</p>
+</div>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-3">
+<div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+<span class="material-symbols-outlined text-sm">description</span>
+</div>
+<div>
+<p class="text-sm font-bold">Renouvellement bail</p>
+<p class="text-xs text-slate-500 mt-1">Thomas Leroy - Studio 12</p>
+</div>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="flex items-start gap-3">
+<div class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold">Paiement reçu</p>
+<p class="text-xs text-slate-500 mt-1">Loyer Juillet - Famille Wagner</p>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 bg-primary/10 text-primary rounded-xl font-bold text-sm hover:bg-primary/20 transition-all">
+                            Traiter les urgences
+                        </button>
+</div>
+<!-- Property Status Summary -->
+<div class="lg:col-span-3 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-xl font-bold">Statut des propriétés</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-slate-100 text-xs font-bold rounded-lg text-slate-600">Tout</button>
+<button class="px-3 py-1 text-xs font-bold rounded-lg text-slate-400">Loué</button>
+<button class="px-3 py-1 text-xs font-bold rounded-lg text-slate-400">Vacant</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="text-left text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-4">
+<th class="pb-4 font-black">Propriété</th>
+<th class="pb-4 font-black">Localisation</th>
+<th class="pb-4 font-black">Statut</th>
+<th class="pb-4 font-black">Loyer Mensuel</th>
+<th class="pb-4 font-black">Prochaine Échéance</th>
+<th class="pb-4 font-black">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50">
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Photo moderne de façade de maison" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt8SwVT3w_1Urp0UP9RuqUa9G26OBdBcPAZucxcEmo6Hd9oK0zs-8_XddYnqge8clq0TfSFeo70NAnfsHqeO8K5o6CJscnPQA-w8wayP2mUwAniDwpZR0Pq3CdyEP648GG1UDYv5D8WmR-iiS4jfbEiznyFrKMOBOurlZBbMoGpYp7fok5XuSLzt804-SEUR9ZPDqkv3buS2zt-KPmyDBjgAbs5IXXdDwqKdFQkKQ0urWol7siRWZNhjZjnviM6p2cYBZAjca1QjA"/>
+</div>
+<span class="font-bold text-sm">Villa Modern Blue</span>
+</div>
+</td>
+<td class="py-4 text-sm text-slate-500">Paris, France</td>
+<td class="py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600">
+<span class="size-1.5 bg-emerald-600 rounded-full"></span> Loué
+                                            </span>
+</td>
+<td class="py-4 font-bold text-sm">2 450 €</td>
+<td class="py-4 text-sm">05 Août 2024</td>
+<td class="py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Photo d'un appartement de luxe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa60hSoSwYVb7lVOn8e7sk851xWZTDPdPDP57l9M2y3Xb4_GAjKNWvRNVYAne9T4lSm6L4VyzazTeIIifWUPEyfWQtb-5LQCXs46z6eph9h_2qSLlQ2P2WshIUov8dkMdND5JMr4jYb3vEMtfcIDQ-BOrLW2-Qr3wN2xwSsT88ldZ96ZSrxsPnGc7R1MFp2999lT5yHG81SOONc8BC_NqZB6MvkZfK6sx2LQE1L3bWNAxcXYYctCXxcIiHMhXSCOBf_Db9oLczUQE"/>
+</div>
+<span class="font-bold text-sm">Penthouse Étoile</span>
+</div>
+</td>
+<td class="py-4 text-sm text-slate-500">Cannes, France</td>
+<td class="py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-bold bg-amber-50 text-amber-600">
+<span class="size-1.5 bg-amber-600 rounded-full"></span> Vacant
+                                            </span>
+</td>
+<td class="py-4 font-bold text-sm">4 800 €</td>
+<td class="py-4 text-sm text-slate-400">N/A</td>
+<td class="py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Photo d'un loft industriel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVlflLpO97hAosLuv5WgRf9JonTmmRnajHJTFk9WA0v9tkC0PAeblzAeNkxiridecz0HDVJqKmM0Hl-OgE-GNUPVX2iq8KRolyAGLXPGNYvJTa9QHkp2Q2ljcpu29qv0S5AsT81RKKeczDFpBsr9OIBi0Q9mwaXwA_FMITCiSnI-sqbd8liAMxh8ve-TZ9a7pOOcELgi-aIomrNWrFNoPIN2gYJkxmxGpkRKX76cFecPxCF2dMg6w4gdOGCe1qT_sEWC9tF51hOG8"/>
+</div>
+<span class="font-bold text-sm">Loft Gambetta</span>
+</div>
+</td>
+<td class="py-4 text-sm text-slate-500">Bordeaux, France</td>
+<td class="py-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600">
+<span class="size-1.5 bg-emerald-600 rounded-full"></span> Loué
+                                            </span>
+</td>
+<td class="py-4 font-bold text-sm">1 150 €</td>
+<td class="py-4 text-sm">01 Août 2024</td>
+<td class="py-4 text-right">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

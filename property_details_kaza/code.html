@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA - Villa Lumina</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-primary/10 bg-background-light/80 backdrop-blur-md dark:bg-background-dark/80 px-6 lg:px-20 py-4">
+<div class="mx-auto flex max-w-7xl items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<svg class="size-8" fill="currentColor" viewbox="0 0 48 48">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<h1 class="text-2xl font-black tracking-tight text-primary">KAZA</h1>
+</div>
+<nav class="hidden md:flex flex-1 justify-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Properties / Propriétés</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">About / À propos</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20">
+<span class="material-symbols-outlined text-[20px]">translate</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-cover bg-center border-2 border-primary/20" data-alt="User profile avatar silhouette" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBrEQSvhwCYkGTTiP1_rP3E6ozOmcrMfwbJffsMx-XJLNX5UU56mntGGXtYUbn6wU62BmfhYKDzgpSreQYZYmIlWsprx4XkLO6RHn4Mb_BGDAz8WFQz0JK36NtEgB7Ub39pFZUU7Vlr1Z3KvYE6lfjFYlKccmF3eq-dVQFxFl8Ekc1tTKyk3kMJmuZD3axuqTmtcB931cVNgP91BZblx6W6g1LJNuUdduwA-vjBDk-FnQfIMjiGSB5rDx-6ugxc1WcivG53Xmkn1tU");'></div>
+</div>
+</div>
+</header>
+<main class="mx-auto w-full max-w-7xl px-4 py-8 lg:px-10">
+<!-- Hero Gallery Section -->
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[500px] mb-8 overflow-hidden rounded-xl lg:rounded-2xl">
+<div class="md:col-span-2 md:row-span-2 bg-cover bg-center relative cursor-pointer group" data-alt="Large luxurious villa exterior with pool" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC1_u5PIHygdX8hgXJT8OVJOh8rgl98yNXM8KziV5aA2V7fTT-Ne76_kzaW3_j-RyP432aZmuj3CFg6NRxCI15AKvWDuXLRZWDcqXWdPO50b3NnhGupsZ5Iu7_JSdD-jFWaJm-EZYSNCcO6umBcb40Yor4Cqk0z7Vpcu7pdvVQKYTBgLcmVkLe9zHVJgUVhf7W12iqZnsu5UKmnSGFXG18vie_D25N4V7GWAazWkadaXhO-a4KuY099oG4H6BxeIiwV30aXQ0UDAYM");'>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all"></div>
+</div>
+<div class="bg-cover bg-center cursor-pointer group" data-alt="Modern minimalist living room interior" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRCXvinoSi7YVwAtHL1VxQhJb-o3zQiiCJ-0seP6UPu2S6c2l9D7eREB37zTQO0_-VK-DDJxV6B8LTdS6zswzeL-Os-FGdF85uFrqyIIcUc9KBdHgnKs-otnHnwiaKhYqKwSFz_B0p21j98P2nHCBV_SxrejwOiaRvDE3LuRQZ9-H5BbCPpol5_93dYNuX8ju6O2RM5QX6omtEw5x8FrjWacgHN5XPZERyes8FaHfK7n0NEEoeZMTaaQ7vPEDCYeEEvjA1ORdkCP4");'></div>
+<div class="bg-cover bg-center cursor-pointer group" data-alt="Master bedroom with ocean view" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDoGwVN_gRJcBjTiB9BP3iwKqcTXPSzOD5w5Lv8AEw2lVwk91iRj89mKxS1yE83A1aC5HdQHDG4HELgpHAREczmfmg4SioT_rRMy8Lg5WI077sL8fyVulL59BYMoTiEb2Z19il7Tnm9cowtZ_4armqpcKIdnv5DORbj60pReV6INQXBmz7XqvdBPXY-gw96BK_BroFAJnrZtY3-_JMConY3WvGjM1tmca5ZVGE9himQq0qjaBZFpNp5waXaxmihFk16X8BdOtnTqJ4");'></div>
+<div class="bg-cover bg-center cursor-pointer group" data-alt="High-end designer kitchen island" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBeHlCAaUVJ_ClFLoLEoFPGTxuYZtSRvN3Mk-5t7pLZqExrPoi7bOekMzRqPFoazQ7FUvkq1olh-E6DEKmD_JvrGL0PmkqD4BQLqWWnhnMEItEiJaZXoEhWpQJUZgeBt9zyQp_xDV0Zl0ZTRWgFG3HqS2syAGODhTawh8mm5xsgUXAln9JONbKi5sed9sbqV3Phb11fK3WceScd8LXwocgNpYSEPNzl3S1cv2YvB3G9d8KpDpaH1Aa-WX9XfufZta0BD2bhiMBuW7w");'></div>
+<div class="bg-cover bg-center relative cursor-pointer group" data-alt="Patio with outdoor lounge furniture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCZlLJ-OoBTL5rYz17jpCd49KomCEwcgHuw454ioglikAT_dFs_-yOxhYNv8tTychRTZz2QH3rZwebp4N1BQbpqgb1sb6Ii0F5tT5H1aNSZ6fXLTkuVhzUeeJMKqzqnRgkS3EUmd6ULos4k3eVDc2bu83UE3iNJ4o0Ks4xI4WL2Trd82-Fmm2-XJsKDCNR_mhevNCzqiOrPvxvjvLDa4vu8wRLsPnygJeQmKqmHJSiiIHwpi2t449WjdEa6Zx14z4_ED-w7qTLV9B0");'>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+<span class="text-white font-bold text-lg">+12 Photos</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-12">
+<!-- Left Column: Details -->
+<div class="flex-1">
+<div class="mb-8 border-b border-primary/10 pb-8">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h2 class="text-4xl font-black tracking-tight text-slate-900 mb-2">Villa Lumina</h2>
+<p class="text-lg text-primary/70 font-medium">Biarritz, France · Côte Basque</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 rounded-lg border border-primary/20 px-4 py-2 text-sm font-semibold hover:bg-primary/5">
+<span class="material-symbols-outlined text-sm">share</span> Share
+                            </button>
+</div>
+</div>
+<div class="flex flex-wrap gap-6 mt-6">
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined">group</span> 5 guests / invités
+                        </div>
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined">bed</span> 3 bedrooms / chambres
+                        </div>
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined">bathtub</span> 2 baths / sdb
+                        </div>
+<div class="flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined">wifi</span> High-speed WiFi
+                        </div>
+</div>
+</div>
+<!-- Host Snippet -->
+<div class="flex items-center gap-4 mb-10 p-4 bg-primary/5 rounded-xl border border-primary/10">
+<div class="h-14 w-14 rounded-full bg-cover bg-center" data-alt="Portrait of the property host" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCk8_5Lufh9C6GQ0MsZhMaGt2wD3Jflh6iTP4Xu3vl1l004ZIEVeGv8eVtp8PFKf7afzq5canwmxQ49DcMW-HFw_BEiItRpuyLMLbTrPo7RhaCC4k9972DFoG1pxZv_qna_RRaXNTlPxAWQppIVj7Ip8SLfQY28aEMuz3jtLmLlJkisYiJs_d6vMmCG1IlKKeWG22WM0bUN2cW7cgLh5WsOFfycG2en3zLSeLkyHJuffxosTLOKHQwFbOtYi6Q71klaQ_ufv-X_Ybk");'></div>
+<div>
+<h4 class="font-bold text-slate-900">Hosted by Sophie / Géré par Sophie</h4>
+<p class="text-sm text-slate-500">Superhost · Joined in 2018 · Fast response</p>
+</div>
+</div>
+<!-- Description -->
+<div class="space-y-6 mb-12">
+<h3 class="text-2xl font-bold">About this place / À propos de ce logement</h3>
+<p class="text-slate-600 leading-relaxed">
+                        Experience coastal luxury in this stunning architect-designed villa overlooking the Atlantic. Villa Lumina offers a perfect blend of modern comfort and Basque charm, featuring floor-to-ceiling windows that bathe every room in natural light.
+                    </p>
+<p class="text-slate-600 leading-relaxed italic border-l-4 border-primary/20 pl-4">
+                        Découvrez le luxe côtier dans cette superbe villa d'architecte surplombant l'Atlantique. La Villa Lumina offre un mélange parfait de confort moderne et de charme basque.
+                    </p>
+<button class="text-primary font-bold underline decoration-primary/30 underline-offset-4">Read more / Lire la suite</button>
+</div>
+<!-- Amenities -->
+<div class="mb-12">
+<h3 class="text-2xl font-bold mb-6">What this place offers / Équipements</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4">
+<div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary/60">waves</span> Ocean view / Vue mer</div>
+<div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary/60">pool</span> Private pool / Piscine privée</div>
+<div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary/60">cooking</span> Gourmet kitchen / Cuisine équipée</div>
+<div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary/60">local_parking</span> Free parking / Parking gratuit</div>
+<div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary/60">ac_unit</span> Air conditioning / Climatisation</div>
+<div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary/60">dry_cleaning</span> Essentials provided / Linge fourni</div>
+</div>
+<button class="mt-8 rounded-xl border-2 border-slate-900 px-6 py-3 font-bold hover:bg-slate-900 hover:text-white transition-all">
+                        Show all 32 amenities / Voir tous les équipements
+                    </button>
+</div>
+<!-- Location Map -->
+<div class="mb-12">
+<h3 class="text-2xl font-bold mb-6">Location / Emplacement</h3>
+<div class="h-64 w-full bg-primary/10 rounded-xl overflow-hidden relative border border-primary/20">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Map showing Biarritz coastal area" data-location="Biarritz, France" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEqLRor32FRSzFAwiODUnpGaVEl5fW4moPQk2JPwxJOoqqIyIdjVEIs5PaA7MSsC85TSY4fXH3JkZZuMH5P2ZuyScMbXaJB7ve3abpKh2qW5szY2gkjxiL5-YdNFkKl5xx1htT1GjNXrdWx0DFJ1bTTie7WZjNIxtt2blmlletBt2RcWCjIaXswcAjjFJ0UaCLy__CAOvUvN2Uj6xHx-pzg3rIftxn7LccBMyp3ab31wVQuog7DZ5GBoheAzCwEacLfJniugqLdLw");'></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+</div>
+<p class="mt-4 text-slate-600 font-medium">Biarritz, Nouvelle-Aquitaine, France</p>
+</div>
+</div>
+<!-- Right Column: Booking Sidebar -->
+<div class="lg:w-[400px]">
+<div class="sticky top-28 rounded-2xl border border-primary/10 bg-white p-8 shadow-xl dark:bg-slate-900">
+<div class="flex justify-between items-baseline mb-6">
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-black">€450</span>
+<span class="text-slate-500">/ night</span>
+</div>
+<div class="flex items-center gap-1 text-sm font-bold">
+<span class="material-symbols-outlined text-primary scale-75">star</span>
+                            4.92 · <span class="underline text-slate-500 font-medium">128 reviews</span>
+</div>
+</div>
+<div class="grid grid-cols-2 border border-slate-300 rounded-lg overflow-hidden mb-6">
+<div class="p-3 border-r border-b border-slate-300">
+<label class="block text-[10px] font-black uppercase tracking-wider text-slate-500">Check-in</label>
+<span class="text-sm">12/05/2024</span>
+</div>
+<div class="p-3 border-b border-slate-300">
+<label class="block text-[10px] font-black uppercase tracking-wider text-slate-500">Checkout</label>
+<span class="text-sm">17/05/2024</span>
+</div>
+<div class="col-span-2 p-3">
+<label class="block text-[10px] font-black uppercase tracking-wider text-slate-500">Guests</label>
+<span class="text-sm">2 guests</span>
+</div>
+</div>
+<button class="w-full bg-primary py-4 rounded-xl text-white font-bold text-lg hover:bg-primary/90 transition-all mb-4">
+                        Request Visit / Réserver
+                    </button>
+<p class="text-center text-sm text-slate-500 mb-6">You won't be charged yet</p>
+<div class="space-y-3 mb-6">
+<div class="flex justify-between text-slate-600">
+<span class="underline">€450 x 5 nights</span>
+<span>€2,250</span>
+</div>
+<div class="flex justify-between text-slate-600">
+<span class="underline">Cleaning fee</span>
+<span>€120</span>
+</div>
+<div class="flex justify-between text-slate-600">
+<span class="underline">KAZA service fee</span>
+<span>€330</span>
+</div>
+</div>
+<div class="pt-6 border-t border-slate-200 flex justify-between font-black text-xl">
+<span>Total</span>
+<span>€2,700</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reviews Section -->
+<div class="mt-20 border-t border-primary/10 pt-16">
+<div class="flex items-center gap-3 mb-10">
+<span class="material-symbols-outlined text-primary text-3xl">star</span>
+<h3 class="text-3xl font-black">4.92 · 128 reviews / commentaires</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-10">
+<!-- Single Review Item -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-cover bg-center" data-alt="Reviewer profile photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDN-8W4eR0bS5SVl2OKDDkc3iTF7n_J06jM1YsAgGB98a2apyOiSujFWXhps_K-SId1ryaqQ75Q7o9nPyUkVpOb1tpjtSmfIxC-81fQw52TS81WaEiJFk_asLMawAVovyye53HcNoG5KKS-XxlkyvVkenF-Lun7PmiWG2w5tO2HMbSAx5cP0ie6pUbxOYvc_dNBK5LeQPUV3R_4EH3G31r5hLIX2y0MBnPLYmtxMxAdA_Stmu0wojCUE6bYxd4h0Hw1pDfgahrQUMo");'></div>
+<div>
+<h5 class="font-bold">Jean-Marc</h5>
+<p class="text-xs text-slate-500">April 2024</p>
+</div>
+</div>
+<p class="text-slate-600 leading-relaxed">
+                        "An incredible stay at Villa Lumina. The view of the ocean every morning was breathtaking. The house is even more beautiful than the photos."
+                    </p>
+</div>
+<!-- Single Review Item -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-cover bg-center" data-alt="Reviewer profile photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMx2PzclG_vX1FAgFejBOxlvAZx58jgBhRRFs63NUQp_1xDaphdp6A5tSCfuXQly4tY7Njwg3QVkYxMger6Ufw1xDTOd8qe7lN4CpTbDDao5gmhrSboYCQbiSfv1tmtGlEqJRMEEYEm3x5pfKzLCzN7t8vFC3a9F13OPlgUgj0px5i_wZNSQedbEvnTlNgch0vgV9qtdT9AVV_aeN0s9pmNh5O0CJRUplx0ISuBCYOhS1VG0f2buIpHZQ-vg_XFCblUS8iyrfaa1g");'></div>
+<div>
+<h5 class="font-bold">Emma</h5>
+<p class="text-xs text-slate-500">March 2024</p>
+</div>
+</div>
+<p class="text-slate-600 leading-relaxed">
+                        "Perfect location for surfers and families alike. Sophie was a wonderful host and provided great local recommendations. Highly recommend!"
+                    </p>
+</div>
+<!-- Single Review Item -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-cover bg-center" data-alt="Reviewer profile photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDXXrqB7LZtVwjdbrWViwEc3Ulq8Fl8EoT44nWq-l2aMkPn_DGo04JeM6nHcVnUr931axVi8T94rv_JqxJhtwxIsoYIXltt8EzgIlmYYl_RFfsRp2bc-1uw2B16tjouGoKuYU59wh0CBSn8wohSVRLHxas3xN0ZKE140p0jn3SH0MPeBcx0c0Ec0BGIcOUCoq1GaOQEt4mCZYSpRWzKPFb_l0Hn5QOC59qLetB1zA1q1JvQbHux1RRQBDU_VXnZ7NNfd2oaPEab_ZM");'></div>
+<div>
+<h5 class="font-bold">David</h5>
+<p class="text-xs text-slate-500">February 2024</p>
+</div>
+</div>
+<p class="text-slate-600 leading-relaxed">
+                        "Un séjour magnifique. La villa est spacieuse et très bien équipée. Nous reviendrons sans hésiter pour nos prochaines vacances à Biarritz."
+                    </p>
+</div>
+<!-- Single Review Item -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-cover bg-center" data-alt="Reviewer profile photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSEPnHsBHJ-soU0TYXuodHW3GgA0lQd6z0T_S4CV_ru2iTTFe_TKwaJX5H0ZPuxUBPygHKLb552q5Da-fq-xQDYk2n9t2RLfsWf8BL06rEP91HVRYDOVbUcurtvI2hp2Ok4YO36u2i9qc1aOUZ4ZqXNlf8U2lGDJpdfIWoalR9-0ddlcf5E5qJ8ZUmvonKISxBl7q6pulhEkzFIMNMCRRk_HVPQUAsAOYXeSWevCBLA6Y8c1ifoHt4T4sMWzX-A3CCWUQ0fJX5--s");'></div>
+<div>
+<h5 class="font-bold">Sarah</h5>
+<p class="text-xs text-slate-500">January 2024</p>
+</div>
+</div>
+<p class="text-slate-600 leading-relaxed">
+                        "Everything was seamless. The booking process, the check-in, and the stay itself. Truly a premium experience in one of France's best coastal towns."
+                    </p>
+</div>
+</div>
+<button class="mt-12 rounded-xl border-2 border-slate-900 px-8 py-4 font-bold hover:bg-slate-900 hover:text-white transition-all">
+                Show all 128 reviews / Voir tous les avis
+            </button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-20 bg-slate-100 dark:bg-slate-900 py-12 px-6 lg:px-20 border-t border-slate-200">
+<div class="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-10">
+<div class="col-span-1">
+<div class="flex items-center gap-2 mb-4 text-primary">
+<svg class="size-6" fill="currentColor" viewbox="0 0 48 48">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+<span class="text-xl font-black">KAZA</span>
+</div>
+<p class="text-slate-500 text-sm">Curating the world's most beautiful homes for your next escape.</p>
+</div>
+<div>
+<h6 class="font-bold mb-4">Support</h6>
+<ul class="text-slate-500 text-sm space-y-2">
+<li><a class="hover:text-primary" href="#">Help Center</a></li>
+<li><a class="hover:text-primary" href="#">Safety information</a></li>
+<li><a class="hover:text-primary" href="#">Cancellation options</a></li>
+</ul>
+</div>
+<div>
+<h6 class="font-bold mb-4">Hosting</h6>
+<ul class="text-slate-500 text-sm space-y-2">
+<li><a class="hover:text-primary" href="#">List your home</a></li>
+<li><a class="hover:text-primary" href="#">Hosting resources</a></li>
+<li><a class="hover:text-primary" href="#">Community forum</a></li>
+</ul>
+</div>
+<div>
+<h6 class="font-bold mb-4">Company</h6>
+<ul class="text-slate-500 text-sm space-y-2">
+<li><a class="hover:text-primary" href="#">Careers</a></li>
+<li><a class="hover:text-primary" href="#">Investors</a></li>
+<li><a class="hover:text-primary" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="mx-auto max-w-7xl mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between text-slate-500 text-sm gap-4">
+<p>© 2024 KAZA Inc. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">English (US)</a>
+<a class="hover:text-primary" href="#">Français (FR)</a>
+<a class="hover:text-primary" href="#">€ EUR</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

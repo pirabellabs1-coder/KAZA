@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA - Sarah's Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#003366",
+                "background-light": "#f5f7f8",
+                "background-dark": "#0f1923",
+              },
+              fontFamily: {
+                "display": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 md:px-20 lg:px-40 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-primary text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<button class="flex items-center justify-center rounded-xl h-10 bg-primary/10 hover:bg-primary/20 text-primary px-4 transition-colors">
+<span class="material-symbols-outlined mr-2">translate</span>
+<span class="text-sm font-bold">FR</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar placeholder image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCPYiIxTfr57xG0hislfkKe53m6Tr-PG1jLN5yxCdS0fGsAwp0bvwxBypl3h9JAEaGVEcVdbl6QZvctCKnpDeZjg5cKbKTE-LxdWWkL8HoGYjX1AK3UAuLcDD7tbBl275S1XU2bdC9Suha8IXuCA79c_ELk8uzndPolz1vIx0efnz6F6bveQ_iYcNJBf9e1AuITwqhv6niGQHdU5JiwMYhr_6PC3e40qrPFBmZriFqOzrKXbGxFnNuaOzrcrsGnFLjQNyuDvhPUDog");'></div>
+</div>
+</header>
+<main class="flex-1 px-4 md:px-20 lg:px-40 py-8">
+<div class="max-w-[1000px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Sidebar: Profile Summary -->
+<div class="lg:col-span-1 flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-40 border-4 border-primary/10 mb-4" data-alt="Young female student portrait smiling outdoor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVkb0whhJ9XvQMa_C7OKuYHXwHdimKPywEhWOnJ8BdCh40iSpqE_VmGFixh7Nrv3j-BUpwpk9eZlesujcPwjS5jtRh0CEUAym6Yx8HaL3wovYMWmRgu95v5pJGc081STt93f3ahFxjv06LYAl00eGsFzhXXa0NpF8fVxg6OBjGtgY3kox4bP9dJd608tMXNs4CharZj_U4S4P8CG4_gvhrd69ID-3UgHjbluE4G8g7iosNJLZaxBd0w5oFyKnUSxvX1iTSHkDJGpo");'></div>
+<div class="absolute bottom-6 right-2 bg-green-500 size-5 rounded-full border-4 border-white dark:border-slate-900"></div>
+</div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Sarah LeBlanc</h1>
+<p class="text-primary font-medium">McGill University</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Economics &amp; Political Science • Year 3</p>
+<div class="flex flex-col w-full gap-3">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined">send</span>
+<span>Message Sarah</span>
+</button>
+<button class="w-full bg-primary/10 hover:bg-primary/20 text-primary font-bold py-3 rounded-xl transition-all">
+                                Save Profile / Enregistrer
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">verified</span>
+                            Compatibility / Compatibilité
+                        </h3>
+<div class="flex items-center gap-4 mb-4">
+<div class="relative size-16 flex items-center justify-center">
+<svg class="size-full" viewbox="0 0 36 36">
+<path class="stroke-slate-200 dark:stroke-slate-800 fill-none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-width="3"></path>
+<path class="stroke-primary fill-none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="94, 100" stroke-width="3"></path>
+</svg>
+<span class="absolute text-sm font-bold">94%</span>
+</div>
+<div>
+<p class="text-sm font-bold">High Match</p>
+<p class="text-xs text-slate-500">Based on your preferences</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Lifestyle</span>
+<span class="font-medium text-green-600">Excellent</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Cleanliness</span>
+<span class="font-medium text-green-600">Very High</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Social</span>
+<span class="font-medium text-primary">Balanced</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Content: Bio & Details -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Bio Section -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h2 class="text-xl font-bold mb-4">About Me / À propos</h2>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                            Hi! I'm Sarah, a 3rd-year Economics student at McGill. I'm looking for a roommate who enjoys a clean and quiet living space but is also up for occasional dinners or movie nights. I'm bilingual (EN/FR) and spent my summer interning in Montreal.
+                        </p>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                            Salut ! Je suis Sarah, étudiante en économie à McGill. Je recherche une colocataire qui apprécie un espace calme et propre, mais qui est aussi partante pour des dîners ou soirées ciné de temps en temps. Je suis bilingue et j'adore explorer les nouveaux cafés du Plateau.
+                        </p>
+<div class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
+<div class="flex flex-col">
+<span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Location</span>
+<span class="font-medium">Montreal, QC</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Languages</span>
+<span class="font-medium">English, Français</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Budget</span>
+<span class="font-medium text-primary">$900 - $1,200</span>
+</div>
+</div>
+</div>
+<!-- Lifestyle Tags -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">style</span>
+                            Lifestyle / Mode de vie
+                        </h2>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-base">sunny</span> Early Bird
+                            </span>
+<span class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-base">auto_awesome</span> Very Clean
+                            </span>
+<span class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-base">smoke_free</span> Non-smoker
+                            </span>
+<span class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-base">restaurant</span> Occasional Cook
+                            </span>
+<span class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-base">group</span> Guest-friendly
+                            </span>
+<span class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-base">pets</span> Pet-friendly
+                            </span>
+</div>
+</div>
+<!-- Interests -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">favorite</span>
+                            Interests / Intérêts
+                        </h2>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-primary/10 bg-primary/5">
+<span class="material-symbols-outlined text-primary text-3xl">coffee</span>
+<span class="text-sm font-medium">Coffee</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-primary/10 bg-primary/5">
+<span class="material-symbols-outlined text-primary text-3xl">menu_book</span>
+<span class="text-sm font-medium">Reading</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-primary/10 bg-primary/5">
+<span class="material-symbols-outlined text-primary text-3xl">fitness_center</span>
+<span class="text-sm font-medium">Fitness</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-primary/10 bg-primary/5">
+<span class="material-symbols-outlined text-primary text-3xl">travel_explore</span>
+<span class="text-sm font-medium">Hiking</span>
+</div>
+</div>
+</div>
+<!-- Map Preview -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+                            Preferred Areas / Quartiers
+                        </h2>
+<p class="text-slate-500 text-sm mb-4">Le Plateau-Mont-Royal, Mile End, Downtown</p>
+<div class="w-full h-48 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-60" data-alt="Map showing downtown Montreal area neighborhoods" data-location="Montreal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXxRE8hcXFO91sjE5qQwp0uXauKvS-S0lx6upZVRWjl0BHY4l153q-edg_sfl_0XDjK6U6soGe9GBMQnJ-eePs817XlBsjPDQR7L1Gw3CiqJfj-E6EEHszk-4U8VBJgY8djJ9yD8z7Et8iRg1a1nw-ICEnpD_oBND8ulOasfV2msrjbYAHLEX1odcuoBQFrrnRAbEiyw9MKMZEjkh2aS6r0oZQr7P5RNuaumc_Lod5US1bQKuRreB_Rfhv4SEy_acvUcJ_jz_4ggo"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6 md:px-20 lg:px-40 mt-12">
+<div class="max-w-[1000px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">domain</span>
+<span class="font-bold text-primary">KAZA Roommate Finder</span>
+</div>
+<div class="flex gap-8 text-sm text-slate-500">
+<a class="hover:text-primary transition-colors" href="#">Privacy / Confidentialité</a>
+<a class="hover:text-primary transition-colors" href="#">Safety / Sécurité</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+</div>
+<p class="text-xs text-slate-400">© 2024 KAZA Inc. All rights reserved.</p>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

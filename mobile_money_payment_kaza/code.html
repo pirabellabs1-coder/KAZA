@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#003366",
+                "accent-green": "#22c55e",
+                "background-light": "#f5f7f8",
+                "background-dark": "#0f1923",
+              },
+              fontFamily: {
+                "display": ["Inter", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<title>KAZA - Mobile Money Payment</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-20 lg:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-6 py-4 bg-white dark:bg-slate-900 rounded-t-xl">
+<div class="flex items-center gap-4">
+<div class="text-primary dark:text-blue-400">
+<svg class="size-8" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4">
+<button class="flex items-center justify-center rounded-xl h-10 bg-primary/10 text-primary dark:bg-blue-500/20 dark:text-blue-200 px-4 text-sm font-bold">
+<span class="material-symbols-outlined mr-2" data-icon="translate">translate</span>
+                            FR / EN
+                        </button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB931gFnNoXVcOe4fSd8p9vcxVX2Jt3B3t1eB2N2-G6o0HKHf3lK49AmZq5mqSC57n5n6JwRft4BH1C-1gbk0hbmqlu9k-PrEKld38tGsSeSXSamDpc60KH04tsiB3tXLn2ALrYHMsHyQLuWHio9GZsMcFDxpiQm-dqb38Y0oTj2oilCFTaXxXJ0L_Nrltw-BwME4VrNAUz7Tmr43qF5-eTkEvIH24IOdvSAbOY5a6EikX6QewzpqBJdrGNxXELGhOCX05TcFxTsaQ");'>
+</div>
+</div>
+</header>
+<main class="bg-white dark:bg-slate-900 p-6 md:p-10 shadow-sm rounded-b-xl border-x border-b border-primary/5">
+<!-- Progress Bar -->
+<div class="flex flex-col gap-3 mb-8">
+<div class="flex gap-6 justify-between items-end">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Step 1 of 3: Select Provider</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm italic">Étape 1 sur 3 : Choisir l'opérateur</p>
+</div>
+<p class="text-primary dark:text-blue-400 text-lg font-bold">33%</p>
+</div>
+<div class="h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 33%;"></div>
+</div>
+</div>
+<div class="text-center mb-10">
+<h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Mobile Money Payment</h1>
+<h2 class="text-xl md:text-2xl font-semibold text-primary dark:text-blue-300">Paiement Mobile Money</h2>
+</div>
+<!-- Provider Selection Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+<!-- M-Pesa -->
+<div class="group cursor-pointer flex flex-col items-center gap-4 p-4 rounded-xl border-2 border-transparent hover:border-primary/40 bg-slate-50 dark:bg-slate-800/50 transition-all shadow-sm">
+<div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-2 shadow-inner">
+<div class="w-full h-full bg-contain bg-center bg-no-repeat" data-alt="M-Pesa brand logo red" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjxfWA4iu00BUgzPUhZvJhpm4rZ1_HLrRvP-f4RxI7U0MpeCqUVoOj2rbO9wRs5DzXOzQjDulDrEL-fjMn9OPXeBj-LMxdvyEG_l_ZWMzXzQOiVmP0Gy9HdTBuXeqB-eUdG24UgChuiJRQ5RVOlIOMpKd-iQVUfjJ1umquUa8OMJkyWJSieY5LuIBkfz5ZYLgqwRZf_q45hqt0Sm9FT6KSrc-S5YlgMn0LLfewxQ_h9eSdx4eF6VsIDD7frK16StdmjzChT7hQ12o");'></div>
+</div>
+<div class="text-center">
+<p class="text-slate-900 dark:text-white font-bold">M-Pesa</p>
+<p class="text-accent-green text-xs font-semibold">Available</p>
+</div>
+</div>
+<!-- Orange Money -->
+<div class="group cursor-pointer flex flex-col items-center gap-4 p-4 rounded-xl border-2 border-primary bg-primary/5 dark:bg-blue-900/20 transition-all shadow-md">
+<div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-2 shadow-inner">
+<div class="w-full h-full bg-contain bg-center bg-no-repeat" data-alt="Orange Money brand logo orange" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcgEptlRAQVzblGIJEGCgUc96POt2PDrMWRwvY5bzJKz84oRxTtEfjewPBUNm4Kc0meciK0XgBi2yikvy8UiR2WZ0tplhJjZZ1d4TVqdEN7lGQ0DBmSlgIE1z3j5LolN_gjhximJDv5-69ytitnAdzygrocdItKks7ia0Tv__5H-WYkYPjoEUaqm2rYJxbioADy2gqH5r3q1b1ArL50oKF1XXepprQaVBeLGkVmVZ9WzjxXG235zvFHDFXiD962cea9HJgFhOq41o");'></div>
+</div>
+<div class="text-center">
+<p class="text-slate-900 dark:text-white font-bold">Orange Money</p>
+<p class="text-accent-green text-xs font-semibold">Selected / Sélectionné</p>
+</div>
+</div>
+<!-- MTN -->
+<div class="group cursor-pointer flex flex-col items-center gap-4 p-4 rounded-xl border-2 border-transparent hover:border-primary/40 bg-slate-50 dark:bg-slate-800/50 transition-all shadow-sm">
+<div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-2 shadow-inner">
+<div class="w-full h-full bg-contain bg-center bg-no-repeat" data-alt="MTN brand logo yellow" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuANwsrPS9j9GFkFaIPwAJT3Ki1ob22CaMi0rkHmWZmTLWtsRNxgnJEGEdZiPYRhwaMPFUl5F-wnp7ktpRL2MkGvOlNRFHSf5OSQ0ugpyoCCwcN2BeBdWgarguJ33zz96G3qiFv6wVltKPaNY-3qj93WXcnz8PGhAJF28Gzlm5oZqA0kC8FKijdnDEJS4oUU3DX1SUTu45mJS8UgA3QHr0JihegfSdYvb194qI_N7BqyH6Xrpj96mSVZhttBXe5p1YR10cT-Y-ZQ8XQ");'></div>
+</div>
+<div class="text-center">
+<p class="text-slate-900 dark:text-white font-bold">MTN MoMo</p>
+<p class="text-accent-green text-xs font-semibold">Available</p>
+</div>
+</div>
+<!-- Wave -->
+<div class="group cursor-pointer flex flex-col items-center gap-4 p-4 rounded-xl border-2 border-transparent hover:border-primary/40 bg-slate-50 dark:bg-slate-800/50 transition-all shadow-sm">
+<div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-2 shadow-inner">
+<div class="w-full h-full bg-contain bg-center bg-no-repeat" data-alt="Wave mobile money logo blue" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD3d-xApk3Npe9HxaqVJhPFeCASY3SJHHWrs1hlacH22dhIbw-zwHDRa1XVcXlHd8-bNlsHTUcdNefgUJAIeajFU5KlyAxHHzNtvHhEMnXtzlKsZOWzJxUAMerHdCeepaHKMb6TZcjRo82fLr12qcx9K7n-oCR8vtWEP-cC34inHz2OOkDcD57kNhr1w48kV5r8im3KwAqk3Xhb82tfj9Yk-vLsf6JcTSEbW3ciJ8lByLXZy_n2TOeSWiqpKBTPPywrZHM7BmSMNg0");'></div>
+</div>
+<div class="text-center">
+<p class="text-slate-900 dark:text-white font-bold">Wave</p>
+<p class="text-accent-green text-xs font-semibold">Available</p>
+</div>
+</div>
+</div>
+<!-- Input Section -->
+<div class="max-w-md mx-auto flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-700 dark:text-slate-300">Phone Number / Numéro de téléphone</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">+243</span>
+<input class="w-full pl-16 pr-4 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:border-primary outline-none transition-all text-lg tracking-widest font-mono" placeholder="000 000 000" type="tel"/>
+</div>
+<p class="text-xs text-slate-500">Enter the number without the country code / Entrez le numéro sans le code pays</p>
+</div>
+<button class="w-full bg-accent-green hover:brightness-110 text-white font-bold py-5 rounded-xl text-lg flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.98]">
+                            CONTINUE / CONTINUER
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Security & Trust -->
+<div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-wrap justify-center items-center gap-8 md:gap-16">
+<div class="flex items-center gap-3 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-3xl" data-icon="lock">lock</span>
+<div class="flex flex-col">
+<span class="text-xs font-bold leading-none">SSL SECURE</span>
+<span class="text-[10px]">256-bit Encryption</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-3xl" data-icon="verified_user">verified_user</span>
+<div class="flex flex-col">
+<span class="text-xs font-bold leading-none">ESCROW PROTECTED</span>
+<span class="text-[10px]">Funds guaranteed</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-3xl" data-icon="shield">shield</span>
+<div class="flex flex-col">
+<span class="text-xs font-bold leading-none">PCI COMPLIANT</span>
+<span class="text-[10px]">Standard security</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Text -->
+<div class="mt-6 text-center text-slate-500 dark:text-slate-400 text-xs px-10">
+<p>© 2024 KAZA Payment Gateway. All rights reserved. Your security is our priority.</p>
+<p class="mt-2">Besoin d'aide ? Contactez notre support 24/7 via l'application. / Need help? Contact support 24/7 via the app.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

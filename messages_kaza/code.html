@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA Proptech - Messaging</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-80 flex-shrink-0 border-r border-primary/10 flex flex-col bg-white dark:bg-slate-900">
+<div class="p-6 border-b border-primary/10">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<h1 class="text-primary font-bold text-lg leading-tight">KAZA Proptech</h1>
+<p class="text-xs text-primary/60 font-medium">Tenant Portal</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-sm font-medium">Properties</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-sm font-medium">Messages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm font-medium">Leases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+</div>
+<div class="flex-1 overflow-y-auto">
+<div class="p-4 border-b border-primary/10 bg-primary/5">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-lg">search</span>
+<input class="w-full bg-white dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary" placeholder="Search conversations..." type="text"/>
+</div>
+</div>
+<!-- Conversation List -->
+<div class="divide-y divide-primary/5">
+<div class="p-4 bg-primary/5 border-l-4 border-primary cursor-pointer flex gap-3">
+<div class="relative">
+<img class="size-12 rounded-full border-2 border-white shadow-sm" data-alt="Profile photo of landlord Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdd6N_arhOWSEdIxfD3RwQa8varJhbkwjWbYf9kdUOmlJNXgiD2wK0FBVLl4F-UK57btI4KPgSLN_OJmm_8az8_GlfZZUPZASyIlsy9nLHDadxLIVk3qTkB5h6uj8YeUnTn1KMIgNLgUNOEVp3tWDb701mxhT2gTmUY5BGyEh9ADd6xqew1FIJUYI3vTalgH6kTmuoaDvrsjYFZFsq2Kj8D74-BEfN6MmUAGv7mTxxvsMTUgnL8az0YNWQCFw-W9mSr57P6z4BjOo"/>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-semibold text-sm truncate">Sarah (Maple Ave)</h3>
+<span class="text-[10px] text-slate-400 font-medium">10:30 AM</span>
+</div>
+<p class="text-xs text-primary font-medium truncate">The maintenance request has been scheduled...</p>
+</div>
+</div>
+<div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex gap-3">
+<img class="size-12 rounded-full border-2 border-transparent" data-alt="Profile photo of tenant John" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTGjP9_qMp97KabD22_AGzkJykLblndD6UXg1wT4nZeDXknNoPaauRod5Pv4bSm1YD24GNh2HQKTGm9tW59mH7he5b2Wbp41cZYE-RMTcyIGDtsSvBa67qvfZKrHoea5zVhhLUXPZpWkqdDSIgqjhnD5a_xZQddXEMrrRW_a9dhmJI5JGfLAebCowDFqe-Fx3w6RrE0BtlnZG1h7PcGNu_-7Fg8ttFC_s4CHiHCei8WRtE0pxht_1h8cerjofaVu4hsLE1Pqs8yCI"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-semibold text-sm truncate">John (Unit 402)</h3>
+<span class="text-[10px] text-slate-400 font-medium">9:15 AM</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">When is the next inspection? I need to know the date.</p>
+</div>
+<div class="size-2 bg-primary rounded-full mt-2"></div>
+</div>
+<div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex gap-3">
+<img class="size-12 rounded-full border-2 border-transparent" data-alt="Management logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDvNGUepTASy47yiKbSw8T88IQpiWs1YxKwL0HefhFqjryqkWUi0YajMnsv-KDWTr8z1g23WSnnDn4DmTue_enXOfLp-dUCSNqvgx9zf_ffbBWDA_1vtPmAXCf1E2IpTFN4fHi57bKSkQsPom1I0FNhVFojHLAaN4E-iADP-YUM764xdyPCRLARo4to_n0vuzDUiIVI_GwVyD7jJx9e0mxtWArGIRbQBivDFuQgUH1FgYJgxvA_FREJiHMHJDqzVJFR7AD8yl11wI"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h3 class="font-semibold text-sm truncate">Main Management</h3>
+<span class="text-[10px] text-slate-400 font-medium">Yesterday</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Rent invoice for October is now available in your portal.</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col bg-white dark:bg-slate-950">
+<!-- Header -->
+<header class="h-16 flex-shrink-0 border-b border-primary/10 px-6 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img class="size-10 rounded-full" data-alt="Profile photo of landlord Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdMQQnjd05YcrUYvN9elTyQujrEpvK-kqXLNDvVfR6YKOBn2MjzKhdblwuTOFtBAJwY4fuG12vehlYSys1uyQ4CRSUpPlof5T7ZDwiN1atOw2orj7WW9LOrFmqMsslWuDTL5Zv5_PBP5xjlofTJ0ieMZLBYZ0v4dfxOToQKg3FZjkFX-o7eA0-6R25KyH4AZraZQ3hQzYYhd9lSGXG4ZHylKeL4Wes9ESv_Vy7v4u2ducuNWaJb2C95HhalQ1ZcCniQYTK0CcetWs"/>
+<div>
+<h2 class="font-bold text-slate-900 dark:text-slate-100 leading-none">Sarah Williams</h2>
+<span class="text-xs text-green-500 font-medium flex items-center gap-1">
+<span class="size-1.5 bg-green-500 rounded-full inline-block"></span>
+                        Active now
+                    </span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-primary/5 rounded-lg text-slate-500 transition-colors">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="p-2 hover:bg-primary/5 rounded-lg text-slate-500 transition-colors">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<button class="p-2 hover:bg-primary/5 rounded-lg text-slate-500 transition-colors border-l border-primary/10 ml-2 pl-4">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</header>
+<!-- Chat Area -->
+<section class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50 dark:bg-slate-900/20">
+<div class="flex justify-center">
+<span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold bg-white dark:bg-slate-800 px-3 py-1 rounded-full shadow-sm">Yesterday</span>
+</div>
+<!-- Message Received -->
+<div class="flex gap-3 max-w-2xl">
+<img class="size-8 rounded-full self-end" data-alt="Profile photo of landlord Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUd1sW8dG1BVJcv6AaFltjXYjH3PC_PQCFzTvNqUsAYO91c7t4Vti0bhcRdRyDt3LDspv0DK12WdtElnQYjTsUVy7CAv1EoKq3GpXrbvkzOTGqUmDxu6NMVPn1SuiJ-gHhljd-WAEtryEiY3PS6U6sQG1uHDWa9yvTb1ej00latTlG3jvNL8TTL39kGANyywhFp0D6OVMAikwyyKKTXIF-gcdf50Taib2WmmBaaP09EZ_cb9WahxF96UmBck72nbo4wK1nwIyvRyU"/>
+<div class="space-y-1">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl rounded-bl-none shadow-sm border border-primary/5">
+<p class="text-sm leading-relaxed">Hi Alex! I've confirmed with the plumber. They will be at Maple Ave, Unit 204 tomorrow between 10:00 AM and 12:00 PM to fix the faucet leak.</p>
+</div>
+<span class="text-[10px] text-slate-400 ml-1">4:12 PM</span>
+</div>
+</div>
+<!-- Message Sent -->
+<div class="flex gap-3 max-w-2xl ml-auto flex-row-reverse">
+<div class="space-y-1 text-right">
+<div class="bg-primary p-4 rounded-xl rounded-br-none shadow-sm">
+<p class="text-sm leading-relaxed text-white">That's great! I'll be home to let them in. Do they need any specific access codes or just the main buzzer?</p>
+</div>
+<div class="flex items-center justify-end gap-1">
+<span class="text-[10px] text-slate-400">4:15 PM</span>
+<span class="material-symbols-outlined text-[12px] text-primary">done_all</span>
+</div>
+</div>
+</div>
+<div class="flex justify-center pt-4">
+<span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold bg-white dark:bg-slate-800 px-3 py-1 rounded-full shadow-sm">Today</span>
+</div>
+<!-- Message Received -->
+<div class="flex gap-3 max-w-2xl">
+<img class="size-8 rounded-full self-end" data-alt="Profile photo of landlord Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-b2Fji3c85Zd-RK2exKnHvJTV5nnNfk1Xi4BfUXjS9urJXbxrAp9lyWD2eDGBKDeWJ4VhfgKhRGFi1MdtqNVfr6C8eIrrUjZQ34-tMukW3a2SamEn2dNIiMs4jft3ZzxwiuYTG1qcN4An39JoDTjZ-OEoUPl_BlPCvdpiG2wEdVNpoXHrrPTNr44qWD11uBjyJpKpdLdiUlX9_-F1TPPNl-vIj5Lt8vpedPjwFL7JSme1VYij6sM6tBd-y6KERL5B_JZ55sWPTBQ"/>
+<div class="space-y-2">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl rounded-bl-none shadow-sm border border-primary/5">
+<p class="text-sm leading-relaxed">The main buzzer is fine. Also, I'm attaching the maintenance form they need you to sign once the work is complete. You can upload it here or leave it on the counter.</p>
+</div>
+<!-- Attachment -->
+<div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-primary/10 flex items-center gap-3 w-64 group cursor-pointer hover:border-primary/30 transition-all">
+<div class="size-10 bg-red-50 text-red-600 rounded flex items-center justify-center">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold truncate">Maintenance_Form_204.pdf</p>
+<p class="text-[10px] text-slate-400">1.2 MB • PDF Document</p>
+</div>
+<button class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">download</button>
+</div>
+<span class="text-[10px] text-slate-400 ml-1">10:30 AM</span>
+</div>
+</div>
+<div class="flex gap-3 max-w-2xl">
+<img class="size-8 rounded-full self-end" data-alt="Profile photo of landlord Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASMnb91P7q8t3zvo52W5CwSfCQud6h7fr1UGdJN32a_a2B3_ouPgicQZ64O1vrXG_J5N-O5s1W_GP9gRtxttJ8MCkOfHZRlHCoYY-NhpP10PTKjXpX5v2_natrtc7bTmwa7jvClauFKreYMSW_J7fFLzc3_ZFCQJef4qVJa5ZAEndcXDUQ3PKdUicIG8dSt587vZNzNpOHTdczshE0nOGtgjLblDNKZKJAn5LI5q5iYodiZw12rTO-tHzl2UdDV4dgZ1P8gfd07Qk"/>
+<div class="space-y-1">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl rounded-bl-none shadow-sm border border-primary/5">
+<p class="text-sm leading-relaxed">Let me know if you have any questions! 👋</p>
+</div>
+<span class="text-[10px] text-slate-400 ml-1">10:31 AM</span>
+</div>
+</div>
+</section>
+<!-- Message Input -->
+<footer class="p-6 border-t border-primary/10 bg-white dark:bg-slate-950">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-end gap-3 bg-slate-100 dark:bg-slate-900 rounded-xl p-2 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<div class="flex items-center">
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</button>
+</div>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 text-sm resize-none py-2 max-h-32 placeholder:text-slate-400" placeholder="Type a message..." rows="1"></textarea>
+<div class="flex items-center gap-1">
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">image</span>
+</button>
+<button class="bg-primary text-white p-2 rounded-lg hover:bg-primary/90 transition-transform active:scale-95 flex items-center justify-center ml-1">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+<div class="mt-2 flex justify-between items-center">
+<p class="text-[10px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">translate</span>
+                        Translated from Spanish (Localize)
+                    </p>
+<p class="text-[10px] text-slate-400 italic">Press Enter to send</p>
+</div>
+</div>
+</footer>
+</main>
+<!-- Context/Detail Panel (Optional for rich UI) -->
+<aside class="w-72 border-l border-primary/10 hidden xl:flex flex-col bg-slate-50 dark:bg-slate-900 overflow-y-auto">
+<div class="p-6 text-center border-b border-primary/10">
+<img class="size-20 rounded-full mx-auto mb-4 border-4 border-white shadow-md" data-alt="Profile photo of landlord Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdUi9wwaKCU3_CL7I-a664u5Y2NCUHYkY7c7X6pSe_TCM70UCpxquGh3_xjj1NzSZekxbIUc3j_nb-BrY_qtDLX3TRPF8VRN_gZxciWegqrc2_7b_7qXfzNTavl9AwMfPNGqxEcZNmvMkZ6Z93OFT3whMsUnnbLNuvnO2hDWnrk5zoQYNGpFUBfHdCzuVHLyJE9VFSVftUv4vNw39eZogWgAjkfJNhTxPrashZIW34CdiRDp_mqS4WGIELhs_7w1I4uXIUJ7innGA"/>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Sarah Williams</h3>
+<p class="text-xs text-primary font-medium">Property Owner • Maple Avenue</p>
+</div>
+<div class="p-6 space-y-6">
+<div>
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Linked Property</h4>
+<div class="bg-white dark:bg-slate-800 rounded-lg p-3 border border-primary/5 shadow-sm">
+<div class="aspect-video bg-slate-200 rounded-md mb-2 bg-cover bg-center" data-alt="Image of Maple Avenue apartments" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDwvJ9kl3cBSV1lgzZZVEOr50Tid-NEgsOkzBhgOVb4qvYC5vxffMevT_irUPNL7_hUW-s5vsHHMkPqPo-AcpnYjTtY6ebZRmTcJUNADMaD9VLUT1dyokhbdF77pz9oBYpF80LbISj81FOSHf76104iWfI_daIFT5J6XqHv__wWCf9wp1Cvat-E_QZ_Sy9s7VNeN3Sm3fGiizhuHwGbmkoSpUm76rPpNCKTcntGmC4jxmFI1QiMyWvuzVQ6bVIk3_wRv0vcWtjcIXQ')"></div>
+<h5 class="text-xs font-bold truncate">Maple Avenue Apartments</h5>
+<p class="text-[10px] text-slate-500">Unit 204, Seattle, WA</p>
+</div>
+</div>
+<div>
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Shared Files</h4>
+<div class="space-y-2">
+<div class="flex items-center gap-2 p-2 hover:bg-white dark:hover:bg-slate-800 rounded-md cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-primary/60 text-lg">description</span>
+<span class="text-[11px] font-medium flex-1 truncate">Lease_Agreement_2024.pdf</span>
+</div>
+<div class="flex items-center gap-2 p-2 hover:bg-white dark:hover:bg-slate-800 rounded-md cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-primary/60 text-lg">image</span>
+<span class="text-[11px] font-medium flex-1 truncate">Bathroom_Leak_Photo.jpg</span>
+</div>
+</div>
+<button class="w-full mt-3 text-[10px] font-bold text-primary hover:underline">View all files</button>
+</div>
+<div>
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Privacy &amp; Settings</h4>
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between p-2 text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 rounded-md transition-colors">
+                        Mute Notifications
+                        <span class="material-symbols-outlined text-sm">notifications_off</span>
+</button>
+<button class="w-full flex items-center justify-between p-2 text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 rounded-md transition-colors">
+                        Report Issue
+                        <span class="material-symbols-outlined text-sm">report</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</body></html>

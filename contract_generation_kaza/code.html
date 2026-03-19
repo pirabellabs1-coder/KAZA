@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA - Lease Generator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased font-display">
+<div class="relative flex min-h-screen flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<svg class="w-8 h-8" fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight">KAZA</h2>
+</div>
+<div class="flex items-center gap-8">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Properties</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Tenants</a>
+<a class="text-sm font-medium text-primary underline underline-offset-4" href="#">Leases</a>
+</nav>
+<div class="flex items-center gap-4 border-l pl-8 border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center rounded-xl bg-primary text-white text-sm font-bold h-10 px-6 hover:bg-primary/90 transition-all">
+                    Save Draft
+                </button>
+<div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden" data-alt="User profile avatar circle">
+<img alt="Profile" class="h-full w-full object-cover" data-alt="Portrait of a smiling professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcNEL6ihey2-GAHu9DIln5oYbvmOab6hBjcopMmt1ortUnO0xi9Ijpb8vdvPJaCGULkYqPC_l08n5UAZ5SNSp2VPx9SDpTfWzLGuWn-YP8T7FVIgaut-K8Meeupu7nDQYrGkrhIUZl3lO4M0cmJXGxFcM5Jdx3u5ExT4pm7JMZXYmJMxq0SgNx3S6xcP68GY-9DfwR0jb2zy03j0G-vYU04HQT3GJTOBaIAohcbgppSApgJtpze5_Y9MyiyRsfMA7ZMaK1HxSLP4Q"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar Steps -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0 p-6 hidden lg:flex flex-col gap-6">
+<div>
+<h1 class="text-lg font-bold">KAZA Contract</h1>
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1">Lease Generator</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-primary/10 text-primary font-semibold" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm">Contract Details</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm">Tenant Selection</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-sm">Property Info</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="text-sm">Terms &amp; Clauses</span>
+</a>
+</nav>
+<div class="mt-auto p-4 rounded-xl bg-background-light dark:bg-background-dark border border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="text-xs font-bold uppercase">Legal Compliance</span>
+</div>
+<p class="text-[11px] leading-relaxed text-slate-500">All generated leases comply with regional housing authority regulations as of Oct 2023.</p>
+</div>
+</aside>
+<!-- Main Form Area -->
+<main class="flex-1 overflow-y-auto no-scrollbar p-6 lg:p-10">
+<div class="max-w-3xl mx-auto">
+<div class="mb-8">
+<div class="flex items-center gap-2 text-primary font-medium text-sm mb-2">
+<a href="#">Leases</a>
+<span>/</span>
+<span class="text-slate-900 dark:text-white">New Lease</span>
+</div>
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div>
+<h2 class="text-3xl font-black tracking-tight">Generate Rental Lease</h2>
+<p class="text-slate-500 mt-1">Fill out the information below to create a legal rental agreement.</p>
+</div>
+<div class="flex h-10 w-48 rounded-xl bg-slate-200 dark:bg-slate-800 p-1">
+<label class="flex-1 flex items-center justify-center rounded-lg cursor-pointer text-xs font-bold has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm transition-all">
+<span>English (EN)</span>
+<input checked="" class="sr-only" name="lang" type="radio"/>
+</label>
+<label class="flex-1 flex items-center justify-center rounded-lg cursor-pointer text-xs font-bold has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm transition-all">
+<span>Français (FR)</span>
+<input class="sr-only" name="lang" type="radio"/>
+</label>
+</div>
+</div>
+</div>
+<!-- Form Sections -->
+<div class="space-y-8">
+<!-- Section 1: Parties -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">person_add</span>
+</div>
+<h3 class="text-xl font-bold">Parties Involved</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-sm font-semibold">Property Owner (Lessor)</label>
+<select class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm focus:ring-primary">
+<option>Jean-Luc Picard (Current User)</option>
+<option>Enterprise Holdings Ltd.</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold">Tenant Selection (Lessee)</label>
+<div class="relative">
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm pl-10" placeholder="Search saved tenants..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 2: Property & Dates -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<h3 class="text-xl font-bold">Property &amp; Term</h3>
+</div>
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="text-sm font-semibold">Select Property</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 border-2 border-primary rounded-xl bg-primary/5 flex items-center gap-4">
+<div class="h-12 w-12 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0" data-alt="Modern apartment building facade">
+<img class="object-cover h-full w-full" data-alt="Close up of a luxury apartment window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ82xlp_sG_vEdQT0KSx9F3dwwImoaKR3WwSgr0-iXMRz3qRQBGuh-4vrUT0iZHo0cdA_cZivA-CxACFSTpSS2mJflA51WDWO7iP3WJa5p3hJs3MUKp_BVlBZX3xQzJn2ZIwhfRL0k2321Flj83QT1-L8sXfzgB2D0DYexowKzDD8fP64Jibb9_nPOgXU1hlgXpmmQXz8cdqDpex-a-BKhTskH5uP5RyMfL9by7RhLC9mLYLcfsxc57i_kcTBHts54_MjDc3-BQi0"/>
+</div>
+<div>
+<p class="font-bold text-sm">The Heights #402</p>
+<p class="text-xs text-slate-500">123 Pine St, Montreal</p>
+</div>
+</div>
+<button class="p-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-sm font-bold">Add Property</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="space-y-2">
+<label class="text-sm font-semibold">Start Date</label>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm" type="date" value="2024-01-01"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold">Lease Duration</label>
+<select class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm">
+<option>12 Months (Standard)</option>
+<option>24 Months</option>
+<option>Month to Month</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Financials -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<h3 class="text-xl font-bold">Financial Terms</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-sm font-semibold">Monthly Rent (CAD)</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-slate-400 text-sm">$</span>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm pl-8" type="number" value="1850"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-semibold">Security Deposit</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-slate-400 text-sm">$</span>
+<input class="w-full rounded-lg border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm pl-8" type="number" value="1850"/>
+</div>
+</div>
+</div>
+<div class="mt-6 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/50 flex gap-3">
+<span class="material-symbols-outlined text-yellow-600">info</span>
+<p class="text-xs text-yellow-800 dark:text-yellow-200">Legal Note: In Quebec, security deposits are generally not permitted. Ensure your selection matches local regulations.</p>
+</div>
+</div>
+<div class="flex justify-between pt-4">
+<button class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+                            Previous Step
+                        </button>
+<button class="px-10 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20">
+                            Proceed to Signing
+                        </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Preview Panel -->
+<aside class="w-[450px] bg-slate-100 dark:bg-slate-900/50 border-l border-slate-200 dark:border-slate-800 flex-shrink-0 hidden xl:flex flex-col">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900">
+<h4 class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">visibility</span>
+                    Real-time Preview
+                </h4>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined text-sm">zoom_in</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined text-sm">print</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-10 flex justify-center no-scrollbar">
+<!-- Mock Paper -->
+<div class="w-full max-w-[340px] aspect-[1/1.414] bg-white shadow-2xl p-8 text-[10px] leading-relaxed relative border border-slate-100">
+<div class="text-center font-bold text-xs uppercase mb-6 border-b pb-4">Residential Lease Agreement</div>
+<div class="space-y-4">
+<section>
+<p class="font-bold uppercase text-[8px] text-slate-400 mb-1">1. The Parties</p>
+<p>This lease is made on <span class="bg-primary/5 px-1 rounded text-primary font-medium">October 24, 2023</span> between:</p>
+<p class="mt-1 font-semibold italic">Lessor: Jean-Luc Picard</p>
+<p class="font-semibold italic">Lessee: [Awaiting Tenant Selection]</p>
+</section>
+<section>
+<p class="font-bold uppercase text-[8px] text-slate-400 mb-1">2. Premises</p>
+<p>The Lessor hereby leases to the Lessee the premises located at:</p>
+<p class="mt-1 font-semibold">123 Pine St, Apt #402, Montreal, QC H3B 1A2</p>
+</section>
+<section>
+<p class="font-bold uppercase text-[8px] text-slate-400 mb-1">3. Term</p>
+<p>The term of this lease shall be for <span class="bg-primary/5 px-1 rounded text-primary font-medium">12 Months</span> commencing on Jan 01, 2024 and ending on Dec 31, 2024.</p>
+</section>
+<section>
+<p class="font-bold uppercase text-[8px] text-slate-400 mb-1">4. Rent</p>
+<p>The Lessee shall pay the Lessor a monthly sum of <span class="bg-primary/5 px-1 rounded text-primary font-medium">$1,850.00 CAD</span> payable on the 1st of each month.</p>
+</section>
+<div class="mt-12 space-y-4 border-t pt-4">
+<div class="flex justify-between">
+<div class="w-32 border-b border-slate-300 pb-1 text-[7px] text-slate-400">Signature of Lessor</div>
+<div class="w-32 border-b border-slate-300 pb-1 text-[7px] text-slate-400">Signature of Lessee</div>
+</div>
+</div>
+</div>
+<!-- Watermark -->
+<div class="absolute bottom-4 right-4 opacity-20">
+<svg class="w-12 h-12" fill="currentColor" viewbox="0 0 48 48">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+</div>
+</div>
+<div class="p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">download</span>
+                    Download Draft PDF
+                </button>
+</div>
+</aside>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA - Student Payment Split</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 lg:px-10">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<h2 class="text-primary text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 lg:gap-8">
+<div class="flex gap-2">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">translate</span>
+</button>
+</div>
+<div class="bg-primary/20 rounded-full size-10 overflow-hidden ring-2 ring-primary/30">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="User profile picture of a young male student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCqR5k8JBk3RmHKACv1T0nXRwpKPUZ8WWQluUWO5VnTFlibyeF_ybMnkWdpMBlQJuZzcvD6EFji_s8RCzP52e9ptFHRcXHYbsIlSUgl1GQQQZx2iVUAaR91PmLylr-AmXDPGbmujVha9iRP7YUee-bbyqV0fd449C5p0LYjAH998aSxWxX6Uy6Ov6sPXkQ90SRfVzumUJYTdsOes6Pn7GhU5Z6U2cTkOLG7tOG0rTEQi7d_tmmVXjYWHlUTE5mcRv9DXeXB7hFIxc"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 flex-col lg:flex-row">
+<!-- Sidebar -->
+<aside class="w-full lg:w-72 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 lg:p-6 shrink-0">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col">
+<h1 class="text-primary text-lg font-bold">Dashboard</h1>
+<p class="text-slate-500 text-sm font-normal">Student Living / Vie étudiante</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">home</span>
+<span class="text-slate-700 dark:text-slate-300 font-medium">Home / Accueil</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-bold">Payments / Paiements</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">receipt_long</span>
+<span class="text-slate-700 dark:text-slate-300 font-medium">Expenses / Dépenses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">settings</span>
+<span class="text-slate-700 dark:text-slate-300 font-medium">Settings / Paramètres</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
+<div class="rounded-xl bg-slate-100 dark:bg-slate-800 p-4">
+<p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Household / Foyer</p>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-emerald-500"></div>
+<span class="text-sm font-medium">Unit 402, McGill Ghetto</span>
+</div>
+<button class="w-full py-2 bg-white dark:bg-slate-700 text-xs font-bold rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 hover:bg-slate-50 transition-colors">Manage Group</button>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 bg-background-light dark:bg-background-dark p-4 lg:p-10">
+<div class="max-w-5xl mx-auto space-y-8">
+<!-- Top Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 text-sm font-medium">Total Paid / Total payé</p>
+<p class="text-primary tracking-tight text-3xl font-bold leading-tight">$2,450.00</p>
+<div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-sm font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>75% collected</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 text-sm font-medium">Remaining / Restant</p>
+<p class="text-rose-600 tracking-tight text-3xl font-bold leading-tight">$850.00</p>
+<div class="flex items-center gap-1 text-rose-500 text-sm font-bold">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Due in 3 days</span>
+</div>
+</div>
+<div class="hidden lg:flex flex-col gap-2 rounded-xl p-6 bg-primary text-white shadow-lg">
+<p class="text-white/70 text-sm font-medium">Utility Split / Partage services</p>
+<p class="tracking-tight text-3xl font-bold leading-tight">$142.20</p>
+<div class="flex items-center gap-1 text-white/90 text-sm font-medium">
+<span class="material-symbols-outlined text-sm">bolt</span>
+<span>Hydro &amp; Internet included</span>
+</div>
+</div>
+</div>
+<!-- Content Tabs -->
+<div class="space-y-6">
+<div class="flex border-b border-slate-200 dark:border-slate-800 gap-8">
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-2" href="#">
+<p class="text-sm font-bold leading-normal tracking-wide">Monthly Rent / Loyer Mensuel</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 pb-3 pt-2 hover:text-primary transition-colors" href="#">
+<p class="text-sm font-bold leading-normal tracking-wide">Utilities / Services publics</p>
+</a>
+</div>
+<!-- Roommate Status Table -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Roommate Status / État des colocataires</h2>
+<button class="flex items-center gap-2 text-primary text-sm font-bold bg-primary/10 px-4 py-2 rounded-lg hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-sm">mail</span>
+                                        Send All Reminders
+                                    </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Roommate / Coloc</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Amount / Montant</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Status / Statut</th>
+<th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Sarah" class="w-full h-full object-cover" data-alt="Female roommate avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwv_ZJZFy2JyiunqHFAMCxx5uOS7XyOe2vpH-EvVK1GbBkGHUXOXEWtjqO2vkf4-5gsnAm33bj_iD7veVYa6NAmYQIbDfDQG8YLGhgfOd_zNNDmG1E5b9xfogwK6sfUsYJc-C_w_HhYm-CoeCKS2Frmb7z5iolw58Xvc4tapHDUl2BR5Q2hLhhFXPhQNCNa5knAL-f7NMzPpWm4e1z5Ps0WNka5QZhXXw2J69YyQ7Vu7cfmQ9mOzDPmaMj0qj3PtPivu8F3ehBtNU"/>
+</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-slate-100">Sarah Tremblay</p>
+<p class="text-xs text-slate-500">Paid on Oct 1st</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-semibold">$825.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                                        Paid / Payé
+                                                    </span>
+</td>
+<td class="px-6 py-4 text-slate-400">
+<span class="material-symbols-outlined cursor-default text-emerald-500">check_circle</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Alex" class="w-full h-full object-cover" data-alt="Male roommate avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa-i4_BQEICFpZ3tEKvylwOM9y_Y8aY08hwTtxjBIq8PUgSkfm0qhbiPEDlUBrJsUECc3HwjKCybyjr-B3T1sHrTUVCMWUIi1Ia_0XRW360V7WrSe3ckEn-GUmfOn8VOaOImVBUeZoEiCZv3w9Zogzb_hxolb35-fjApfN-9DbMdxWKMfOKQfE5Hcl7RjasHK3IdxGWb6Vgiyz3KFVL_PGeaXsKNZfWey_3HUM1GqPC0xMUFcQb2j4yDSzgiUQNvgE513qSSNnJ2U"/>
+</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-slate-100">Alex Johnson</p>
+<p class="text-xs text-slate-500">Reminder sent yesterday</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-semibold">$825.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                                                        Pending / En attente
+                                                    </span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-primary/70 transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Chloe" class="w-full h-full object-cover" data-alt="Female roommate avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsOPmPhv90AIKy_YfUCELNyEwRTWX5bAYObZfVbXs44P_X1MpyF4l5QEFJyK1VMy73O3kr-dLCoN2pDRPN1itC3s2XrP5FMNEanNMUPPnIEZ3oFBGpO0Q9Xxx29v0c3QE2SXledx4HsokJ1QnJKPEiC1erWhDfOb3ddbWBEweE10aumJoY-K5R6AZppax4z0kJuOAOLabcbadMWgmVg_FcrZMT9-nDcNmjD781v3fAm2AfcFgyxgp8ExEtcra5Ydv7nWtZvN5jzvM"/>
+</div>
+<div>
+<p class="font-bold text-slate-900 dark:text-slate-100">Chloé Dubois</p>
+<p class="text-xs text-slate-500">Due Oct 5th</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 font-semibold">$825.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                                                        Pending / En attente
+                                                    </span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-primary/70 transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Payment & Reminders Setup -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">auto_mode</span>
+                                    Automated Reminders / Rappels
+                                </h3>
+<p class="text-slate-500 text-sm">Keep everyone on track with smart notifications.</p>
+<div class="space-y-3">
+<label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<div class="flex-1">
+<p class="text-sm font-bold">3 Days Before Due Date</p>
+<p class="text-xs text-slate-500">Send gentle reminder to unpaid members</p>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<div class="flex-1">
+<p class="text-sm font-bold">On Due Date Morning</p>
+<p class="text-xs text-slate-500">Urgent notification if payment missing</p>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<input class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+<div class="flex-1">
+<p class="text-sm font-bold">Overdue Escalation</p>
+<p class="text-xs text-slate-500">Auto-ping every 24h after deadline</p>
+</div>
+</label>
+</div>
+<button class="w-full mt-4 bg-primary text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity">
+                                    Update Settings / Mettre à jour
+                                </button>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">qr_code_2</span>
+                                    Easy Pay / Paiement Facile
+                                </h3>
+<div class="flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+<div class="text-center space-y-3">
+<div class="inline-block p-4 bg-white rounded-lg shadow-sm border border-slate-200">
+<img alt="QR Code" class="w-32 h-32" data-alt="Mock QR code for Interac payment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtYYaFB96KhKAYvEGtdLfjPjfi1AQna8a812NLN-IDuCxm5p1mCkoRh30UOaDr1gFCm16OM9RE2lvm-W3UTbAaZ0VOU65tzpiHVdcyJw5__yahciX9hM5slZbV-Af2kxwqo0yJtG42i7fD80rsshcyTGekVXRvJy3czDRhogBXFP4XX6DtMRyKF6EfxpeiZXuB3r4urAWTtK7WhobgmTG_rHruTcZFIyJ9MG4zzXtEYFmJJ5I71rqOZ0Q1EIz_T2qh9bin_2_bISw"/>
+</div>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">Scan for Interac e-Transfer</p>
+<div class="flex flex-col gap-1 text-xs text-slate-500">
+<p>Email: pay@kazaliving.com</p>
+<p>Reference: #402-OCT-23</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-base">content_copy</span> Copy Email
+                                    </button>
+<button class="flex items-center justify-center gap-2 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-base">download</span> QR Image
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</body></html>

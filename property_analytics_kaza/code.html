@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA | Property Analytics Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent-green": "#10b981",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-bar { background: linear-gradient(0deg, #003366 0%, #004d99 100%); }
+        .chart-bar-green { background: linear-gradient(0deg, #059669 0%, #10b981 100%); }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 py-3 lg:px-10">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<h2 class="text-primary dark:text-white text-xl font-bold leading-tight tracking-tight">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-1.5 w-64">
+<span class="material-symbols-outlined text-slate-500 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-500" placeholder="Search portfolio..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex h-9 items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
+<button class="px-3 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-700 shadow-sm">EN</button>
+<button class="px-3 py-1 text-xs font-semibold text-slate-500">FR</button>
+</div>
+<button class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="hidden lg:block text-right">
+<p class="text-sm font-bold leading-none">Alexander Wright</p>
+<p class="text-xs text-slate-500 mt-1">Portfolio Manager</p>
+</div>
+<img alt="User Profile" class="size-10 rounded-full border-2 border-primary/20" data-alt="Professional headshot of a property owner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpM5MameBCKOiH-MLddKnbEYQ_NPSkKXB16nAyxlxWem99dOkF5bN_mdIvZ_ki434RdhVUgbscXuWFK_PhjQiGs0IbrKLPNLl0-uoE-daSA35pKKp4em7D_iKUbWRlqLjkanklwusGcKORY3o-79NeDoJAV1CANuQ3nwmksBvPbOKwePqFLXWWlxPVVvVhyKrWS5CnhkTBILh6epGBN8LY27zVU1HeaAEX7UDXQ42WG1LsSRnybxnI-GwgswQtp8okS6l2ZG_K5YE"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Sidebar Navigation -->
+<aside class="hidden lg:flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark p-6 gap-8">
+<nav class="flex flex-col gap-2">
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Main Menu</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-primary/10 text-primary font-semibold" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">domain</span>
+<span>Properties</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Tenants</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Leases</span>
+</a>
+</nav>
+<nav class="flex flex-col gap-2">
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Analytics</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Revenue</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span>Occupancy</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Tax Reports</span>
+</a>
+</nav>
+<div class="mt-auto bg-primary rounded-2xl p-4 text-white">
+<p class="text-xs font-medium opacity-80">Portfolio Value</p>
+<p class="text-xl font-bold mt-1">$12.4M</p>
+<div class="mt-3 flex items-center gap-1 text-[10px] bg-white/20 rounded-full px-2 py-0.5 w-fit">
+<span class="material-symbols-outlined text-[12px]">trending_up</span>
+<span>+4.2% YTD</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 bg-slate-50 dark:bg-slate-900/50 p-6 lg:p-10 overflow-y-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Property Performance</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Detailed portfolio overview for Fiscal Year 2024</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+<span>Last 12 Months</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+<span>Export PDF</span>
+</button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<span class="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-md">+12.4%</span>
+</div>
+<div class="mt-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Monthly Revenue</p>
+<h3 class="text-2xl font-bold mt-1">$142,500</h3>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-lg">
+<span class="material-symbols-outlined">meeting_room</span>
+</div>
+<span class="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-md">+2.1%</span>
+</div>
+<div class="mt-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Occupancy Rate</p>
+<h3 class="text-2xl font-bold mt-1">96.8%</h3>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-amber-50 dark:bg-amber-900/30 text-amber-600 rounded-lg">
+<span class="material-symbols-outlined">engineering</span>
+</div>
+<span class="text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-md">-4.5%</span>
+</div>
+<div class="mt-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Maintenance Cost</p>
+<h3 class="text-2xl font-bold mt-1">$12,480</h3>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-purple-50 dark:bg-purple-900/30 text-purple-600 rounded-lg">
+<span class="material-symbols-outlined">hourglass_empty</span>
+</div>
+<span class="text-xs font-bold text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-md">Stable</span>
+</div>
+<div class="mt-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Avg. Days to Lease</p>
+<h3 class="text-2xl font-bold mt-1">14 Days</h3>
+</div>
+</div>
+</div>
+<!-- Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+<!-- Revenue Graph -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-lg font-bold">Revenue Growth</h3>
+<p class="text-xs text-slate-500">Gross income over the last 6 months</p>
+</div>
+<div class="flex gap-2">
+<span class="flex items-center gap-1.5 text-xs font-medium text-slate-500"><span class="size-2 rounded-full bg-primary"></span> Commercial</span>
+<span class="flex items-center gap-1.5 text-xs font-medium text-slate-500"><span class="size-2 rounded-full bg-accent-green"></span> Residential</span>
+</div>
+</div>
+<div class="relative h-64 w-full flex items-end justify-between gap-2 px-2">
+<!-- Simplified Bar Chart Representative -->
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full flex gap-1 items-end h-full">
+<div class="chart-bar w-1/2 rounded-t-md h-[40%]"></div>
+<div class="chart-bar-green w-1/2 rounded-t-md h-[60%]"></div>
+</div>
+<span class="text-[10px] text-slate-400">Jan</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full flex gap-1 items-end h-full">
+<div class="chart-bar w-1/2 rounded-t-md h-[45%]"></div>
+<div class="chart-bar-green w-1/2 rounded-t-md h-[55%]"></div>
+</div>
+<span class="text-[10px] text-slate-400">Feb</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full flex gap-1 items-end h-full">
+<div class="chart-bar w-1/2 rounded-t-md h-[55%]"></div>
+<div class="chart-bar-green w-1/2 rounded-t-md h-[70%]"></div>
+</div>
+<span class="text-[10px] text-slate-400">Mar</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full flex gap-1 items-end h-full">
+<div class="chart-bar w-1/2 rounded-t-md h-[60%]"></div>
+<div class="chart-bar-green w-1/2 rounded-t-md h-[65%]"></div>
+</div>
+<span class="text-[10px] text-slate-400">Apr</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full flex gap-1 items-end h-full">
+<div class="chart-bar w-1/2 rounded-t-md h-[75%]"></div>
+<div class="chart-bar-green w-1/2 rounded-t-md h-[85%]"></div>
+</div>
+<span class="text-[10px] text-slate-400">May</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-full">
+<div class="w-full flex gap-1 items-end h-full">
+<div class="chart-bar w-1/2 rounded-t-md h-[80%]"></div>
+<div class="chart-bar-green w-1/2 rounded-t-md h-[95%]"></div>
+</div>
+<span class="text-[10px] text-slate-400">Jun</span>
+</div>
+</div>
+</div>
+<!-- Demographic Pie Chart -->
+<div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<h3 class="text-lg font-bold">Tenant Demographics</h3>
+<p class="text-xs text-slate-500 mb-6">Portfolio-wide age distribution</p>
+<div class="relative size-48 mx-auto mb-6">
+<!-- Simulated Pie Chart -->
+<div class="absolute inset-0 rounded-full border-[20px] border-primary clip-path-polygon-[0%_0%,100%_0%,100%_100%,0%_100%]" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);"></div>
+<div class="absolute inset-0 rounded-full border-[20px] border-accent-green" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 40%);"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-bold">840</span>
+<span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Total Tenants</span>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">18-35 Years</span>
+</div>
+<span class="text-sm font-bold">42%</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-accent-green"></span>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">36-55 Years</span>
+</div>
+<span class="text-sm font-bold">38%</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full border-2 border-slate-200 bg-slate-50"></span>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">55+ Years</span>
+</div>
+<span class="text-sm font-bold">20%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Property Table -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-50 dark:border-slate-700 flex justify-between items-center">
+<h3 class="text-lg font-bold">Recent Transactions</h3>
+<button class="text-primary text-sm font-bold hover:underline">View All Activities</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-900/50">
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Property Name</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Tenant</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Type</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Amount</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-400 uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50 dark:divide-slate-700">
+<tr>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-800 dark:text-slate-200">The Grandview Apartments</span>
+<span class="text-xs text-slate-500">Unit 402 • Montreal, QC</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Marc-André Dubois</td>
+<td class="px-6 py-4 text-sm text-slate-500">Rent Payment</td>
+<td class="px-6 py-4 text-sm font-bold">$2,850.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 text-[10px] font-bold uppercase">Completed</span>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-800 dark:text-slate-200">Oak Ridge Commercial Hub</span>
+<span class="text-xs text-slate-500">Suite A • Toronto, ON</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Lumina Tech Solutions</td>
+<td class="px-6 py-4 text-sm text-slate-500">Service Fee</td>
+<td class="px-6 py-4 text-sm font-bold">$14,200.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 text-[10px] font-bold uppercase">Pending</span>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-slate-800 dark:text-slate-200">Riverside Lofts</span>
+<span class="text-xs text-slate-500">Unit 112 • Vancouver, BC</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Sarah Jenkins</td>
+<td class="px-6 py-4 text-sm text-slate-500">Security Deposit</td>
+<td class="px-6 py-4 text-sm font-bold">$1,950.00</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 text-[10px] font-bold uppercase">Completed</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

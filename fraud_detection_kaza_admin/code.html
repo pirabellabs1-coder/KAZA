@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA Admin - Fraud Detection Panel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen flex-col">
+<header class="flex items-center justify-between border-b border-primary/10 bg-white dark:bg-slate-900 px-6 py-4 lg:px-10">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined block">shield_person</span>
+</div>
+<div>
+<h2 class="text-primary dark:text-slate-100 text-xl font-bold leading-tight">KAZA <span class="text-primary/60">Admin</span></h2>
+</div>
+</div>
+<div class="hidden md:flex flex-col min-w-64">
+<div class="flex w-full items-stretch rounded-xl h-10 bg-primary/5 dark:bg-slate-800 border border-primary/10">
+<div class="text-primary/50 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="w-full border-none bg-transparent focus:ring-0 text-sm placeholder:text-primary/40" placeholder="Search accounts, tx IDs, or users..."/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-primary dark:text-slate-300 text-sm font-semibold hover:text-primary/70 transition-colors" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Transactions</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Users / Utilisateurs</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Logs</a>
+</nav>
+<div class="h-6 w-px bg-primary/10 mx-2"></div>
+<div class="flex gap-2">
+<button class="relative flex items-center justify-center rounded-xl h-10 w-10 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+<div class="bg-primary/20 rounded-full w-10 h-10 border-2 border-primary/10 overflow-hidden">
+<img alt="Admin Avatar" class="w-full h-full object-cover" data-alt="Profile avatar of the administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgMR6VWhMsfwGH_lhpqTBn98ulbMwVSCZu-KS9wlangDgDWDH-037UTn_t0n5RYWUZw_6WQ-eJlZcc5O9Zj4W7mdFdBlosPwdW6tHzGonUYFCqoTib9_5ROacO3iy9riztVrTNdfyHAzufjS6Q3aXFG6EV0rRgdnhcHxmfegpfIi1FfKxrw7z1ch0xiK1bq9X-Aybzr228UXyNj9LotcBf0LRW7RwrpKGsv3p7mIFQfEYmRqGEB0hJw2cbrvYUr0bh5kdweU4j6M8"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="hidden xl:flex w-72 flex-col border-r border-primary/5 bg-white dark:bg-slate-900/50 p-6 gap-8">
+<div class="flex flex-col gap-2">
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-primary/40 px-3">Main Menu</h3>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<p class="text-sm font-semibold">Security Overview</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-xl">warning</span>
+<p class="text-sm font-medium">Fraud Alerts (FR: Alertes)</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-xl">query_stats</span>
+<p class="text-sm font-medium">Risk Analytics</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-xl">list_alt</span>
+<p class="text-sm font-medium">System Logs</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<div class="bg-primary/5 rounded-2xl p-4 border border-primary/10">
+<p class="text-xs font-bold text-primary uppercase">System Status</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-sm text-slate-600 dark:text-slate-400 font-medium">Monitoring Active</span>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-6 lg:p-10">
+<div class="max-w-[1200px] mx-auto flex flex-col gap-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Fraud Detection Dashboard</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1 font-medium">Real-time monitoring &amp; behavior analysis (Surveillance en temps réel)</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-white dark:bg-slate-800 border border-primary/10 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">download</span>
+                                Export Report
+                            </button>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">refresh</span>
+                                Refresh Data
+                            </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-tight">Total Flagged</p>
+<span class="material-symbols-outlined text-primary/40">flag</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">1,284</p>
+<p class="text-xs font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded">+12%</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-tight">High Risk</p>
+<span class="material-symbols-outlined text-red-500/60">error</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">156</p>
+<p class="text-xs font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded">+5%</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-tight">Avg Risk Score</p>
+<span class="material-symbols-outlined text-primary/40">percent</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">42%</p>
+<p class="text-xs font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded">-3%</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-tight">Resolved</p>
+<span class="material-symbols-outlined text-green-500/60">check_circle</span>
+</div>
+<div class="flex items-baseline gap-2 mt-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">89%</p>
+<p class="text-xs font-bold text-green-600 bg-green-100 px-1.5 py-0.5 rounded">+8%</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-lg">Transaction Velocity</p>
+<p class="text-slate-500 text-sm font-medium">Rate per hour over 24h</p>
+</div>
+<div class="text-right">
+<p class="text-2xl font-black text-primary">12k/hr</p>
+<p class="text-xs text-green-600 font-bold">+15% vs yesterday</p>
+</div>
+</div>
+<div class="h-48 w-full mt-4">
+<svg class="w-full h-full" fill="none" preserveaspectratio="none" viewbox="0 0 478 150">
+<path d="M0 109C18 109 18 21 36 21C54 21 54 41 72 41C90 41 90 93 108 93C127 93 127 33 145 33C163 33 163 101 181 101C199 101 199 61 217 61C236 61 236 45 254 45C272 45 272 121 290 121C308 121 308 149 326 149C344 149 344 1 363 1C381 1 381 81 399 81C417 81 417 129 435 129C453 129 453 25 472 25V149H0V109Z" fill="url(#velocity-gradient)" fill-opacity="0.1"></path>
+<path d="M0 109C18 109 18 21 36 21C54 21 54 41 72 41C90 41 90 93 108 93C127 93 127 33 145 33C163 33 163 101 181 101C199 101 199 61 217 61C236 61 236 45 254 45C272 45 272 121 290 121C308 121 308 149 326 149C344 149 344 1 363 1C381 1 381 81 399 81C417 81 417 129 435 129C453 129 453 25 472 25" stroke="#003366" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<lineargradient id="velocity-gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#003366"></stop>
+<stop offset="100%" stop-color="#003366" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="flex justify-between mt-4 text-[11px] font-bold text-slate-400">
+<span>00:00</span>
+<span>06:00</span>
+<span>12:00</span>
+<span>18:00</span>
+<span>23:59</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-lg">Risk Distribution (FR: Distribution)</p>
+<p class="text-slate-500 text-sm font-medium">Incidents by severity level</p>
+</div>
+<select class="bg-primary/5 border-none text-xs font-bold text-primary rounded-lg py-1 focus:ring-0">
+<option>Weekly View</option>
+<option>Monthly View</option>
+</select>
+</div>
+<div class="flex flex-col gap-6">
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase">
+<span>High Severity</span>
+<span class="text-red-600">423 Cases</span>
+</div>
+<div class="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-red-500 h-full rounded-full" style="width: 65%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase">
+<span>Medium Severity</span>
+<span class="text-amber-600">1,102 Cases</span>
+</div>
+<div class="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-full rounded-full" style="width: 85%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-bold text-slate-500 uppercase">
+<span>Low Severity</span>
+<span class="text-primary">2,481 Cases</span>
+</div>
+<div class="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 45%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-2xl border border-primary/5 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-primary/5 flex items-center justify-between">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Flagged Transactions / Transactions Signalées</h3>
+<button class="text-primary text-sm font-bold hover:underline">View All Logs</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-tight">Transaction ID</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-tight">User / Utilisateur</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-tight">Amount</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-tight">Risk Score</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-tight">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-tight text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<tr>
+<td class="px-6 py-4 text-sm font-mono text-slate-600 dark:text-slate-400">TX-948231</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+<img alt="User 1" class="w-full h-full" data-alt="Small round user profile icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMmP0IBoLaN6bIftsh0qKl6GRu27QiPHmnYY3F0JJKDgnfTNQv0aX6ifzOLW7cxQGI4pMwqZQdcGmtVsMjbf2VZ_oxYLlryjvvXZ0mR2noUtqfUl9Q6H85UfpJ9YdqhgTAkbGwir9yCl2XnxxRxcmwHiL_g11uss2NNxqGtdRFAoybk21r3CTlfVxjud1HHxWyiDSCJC3x6ryTT9JI5mc6YVGRGa2PhVsGOViLbti13TSJrYsc6nMKVe2Pr8qWMMUCveyECwnOAhQ"/>
+</div>
+<div class="text-sm">
+<p class="font-bold text-slate-900 dark:text-white leading-none">Johnathan D.</p>
+<p class="text-slate-500 text-xs mt-1">New York, US</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">$12,400.00</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold">94% Critical</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-100 text-amber-700">Pending Review</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/70"><span class="material-symbols-outlined">more_horiz</span></button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 text-sm font-mono text-slate-600 dark:text-slate-400">TX-230911</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+<img alt="User 2" class="w-full h-full" data-alt="Small round user profile icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD_ockFVXVdDVqMrrN0rbZJMHcJoOYuIP-UPlxdOf6-OkvWj3WztApAXzmV2eCMFTnpSOxAbJoB9YioLjKatRl4v858fdZW9FOFPLlAZXAS9PbJlkSJOD5OTalVJyGI-69srRjT8clti_RZfotK38fa_TSSygoKXzXrnHn39P7PHqNnXc8AxXrbzr1Q6G13VEBYQGFtRS9h7J5jz69AKKBnTW2Q30B7l2sLSSB2q7HTHrmvCqxxLq87Vm1qMVHFjwi8K_ZCRJYcxY"/>
+</div>
+<div class="text-sm">
+<p class="font-bold text-slate-900 dark:text-white leading-none">Marc Lemoine</p>
+<p class="text-slate-500 text-xs mt-1">Paris, FR</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">€850.00</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-bold">62% Warning</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-100 text-red-700">Blocked / Bloquée</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/70"><span class="material-symbols-outlined">more_horiz</span></button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 text-sm font-mono text-slate-600 dark:text-slate-400">TX-551022</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+<img alt="User 3" class="w-full h-full" data-alt="Small round user profile icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL-Y2kb7190Mh61qR1-BFqsJ9iPkGUjHeOP6Smq7XhPKobphrl6HzlFVO_RIILXFHk8KjcYm81LG4SRdRpTikuTT-C7NiKLMDKzKUkYjBNuvL_u0Bx3m16eMkwY3zHQdt5jvalr-081eauYPjmgUEze2GxaufbxlRcQYk10QkOSsasy73_Wr1IWXji9k-Aj8xLe8QFcMZORWjTHbm8bxVf-s9Ar5HsbQwnNm7OweRQIsZ1WjTgHp1stp4IZ2hucogvCXI6A6fs6rM"/>
+</div>
+<div class="text-sm">
+<p class="font-bold text-slate-900 dark:text-white leading-none">Sarah Connor</p>
+<p class="text-slate-500 text-xs mt-1">London, UK</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">£2,150.00</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="px-2 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold">12% Safe</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-100 text-green-700">Cleared / Validée</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/70"><span class="material-symbols-outlined">more_horiz</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

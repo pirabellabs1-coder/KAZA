@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA - Transaction History</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 bg-white dark:bg-background-dark px-10 py-3 sticky top-0 z-50 shadow-sm">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-3xl">account_balance</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-[-0.015em]">KAZA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Properties</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary" href="#">Transactions</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Settings</a>
+</nav>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-xl size-10 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl size-10 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-primary/20" data-alt="User profile avatar portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCeajYIQPDhz5mlfXzYzN1CUb6QcQW2Z5NT8uW9SSvF6A56zNstIT6wSb8NERKrbbWMiiKeEz4QryPButT2lsEaHhpaqPqfFoHitrsg9iJFXPaB5TaYYzNt70IHea9NOw_95C1rd1IGKh0rXacwDHII4ce5i-BcaOZ32fEmtM2zeSmahSNiCj3Fg8Lq0dipNc0NwdaYwdc5SN4jIw8bT7WV0B7DMFPOqwSBuaiy57aKMt9H4TlakUDE_jEaH9sLBLp6GW8IFsrnMHw");'></div>
+</div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col w-full max-w-[1200px] px-6 lg:px-10 gap-6">
+<!-- Page Header -->
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">
+                            Transaction History / <span class="text-primary">Historique des Transactions</span>
+</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">
+                            Manage and export your financial records in English and French.
+                        </p>
+</div>
+<button class="flex min-w-[140px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl h-11 px-5 bg-primary text-white text-sm font-bold shadow-md hover:bg-primary/90 transition-all">
+<span class="material-symbols-outlined text-lg">download</span>
+<span class="truncate">Export (PDF/CSV)</span>
+</button>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-primary/5">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/5 hover:bg-primary/10 border border-primary/10 px-4 transition-colors">
+<span class="material-symbols-outlined text-primary text-lg">calendar_month</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Date Range / Période</p>
+<span class="material-symbols-outlined text-slate-400 text-lg">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/5 hover:bg-primary/10 border border-primary/10 px-4 transition-colors">
+<span class="material-symbols-outlined text-primary text-lg">category</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Type: All / Tous</p>
+<span class="material-symbols-outlined text-slate-400 text-lg">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/5 hover:bg-primary/10 border border-primary/10 px-4 transition-colors">
+<span class="material-symbols-outlined text-primary text-lg">payments</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Amount / Montant</p>
+<span class="material-symbols-outlined text-slate-400 text-lg">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/5 hover:bg-primary/10 border border-primary/10 px-4 transition-colors">
+<span class="material-symbols-outlined text-primary text-lg">verified</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Status / État</p>
+<span class="material-symbols-outlined text-slate-400 text-lg">expand_more</span>
+</button>
+</div>
+<!-- Table Container -->
+<div class="w-full overflow-hidden rounded-xl border border-primary/10 bg-white dark:bg-slate-900 shadow-lg">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 border-b border-primary/10">
+<th class="px-6 py-4 text-primary text-sm font-bold uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 text-primary text-sm font-bold uppercase tracking-wider">Type</th>
+<th class="px-6 py-4 text-primary text-sm font-bold uppercase tracking-wider">Amount / Montant</th>
+<th class="px-6 py-4 text-primary text-sm font-bold uppercase tracking-wider">Status / État</th>
+<th class="px-6 py-4 text-primary text-sm font-bold uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<!-- Row 1 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-5 text-slate-700 dark:text-slate-300 text-sm font-medium">2023-10-01</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            Rent / Loyer
+                                        </span>
+</td>
+<td class="px-6 py-5 text-slate-900 dark:text-white text-sm font-bold">$1,200.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                                            Paid / Payé
+                                        </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="inline-flex items-center gap-2 text-primary hover:text-primary/70 font-bold text-xs uppercase transition-colors">
+<span class="material-symbols-outlined text-lg">receipt_long</span>
+                                            Receipt
+                                        </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-5 text-slate-700 dark:text-slate-300 text-sm font-medium">2023-09-15</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                            Service Fee / Frais
+                                        </span>
+</td>
+<td class="px-6 py-5 text-slate-900 dark:text-white text-sm font-bold">$50.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                                            Paid / Payé
+                                        </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="inline-flex items-center gap-2 text-primary hover:text-primary/70 font-bold text-xs uppercase transition-colors">
+<span class="material-symbols-outlined text-lg">receipt_long</span>
+                                            Receipt
+                                        </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-5 text-slate-700 dark:text-slate-300 text-sm font-medium">2023-09-01</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            Rent / Loyer
+                                        </span>
+</td>
+<td class="px-6 py-5 text-slate-900 dark:text-white text-sm font-bold">$1,200.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                                            Paid / Payé
+                                        </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="inline-flex items-center gap-2 text-primary hover:text-primary/70 font-bold text-xs uppercase transition-colors">
+<span class="material-symbols-outlined text-lg">receipt_long</span>
+                                            Receipt
+                                        </button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-5 text-slate-700 dark:text-slate-300 text-sm font-medium">2023-08-20</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+                                            Deposit / Dépôt
+                                        </span>
+</td>
+<td class="px-6 py-5 text-slate-900 dark:text-white text-sm font-bold">$600.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300">
+<span class="size-1.5 rounded-full bg-slate-400"></span>
+                                            Refunded / Remboursé
+                                        </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="inline-flex items-center gap-2 text-primary hover:text-primary/70 font-bold text-xs uppercase transition-colors">
+<span class="material-symbols-outlined text-lg">receipt_long</span>
+                                            Receipt
+                                        </button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-5 text-slate-700 dark:text-slate-300 text-sm font-medium">2023-08-01</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            Rent / Loyer
+                                        </span>
+</td>
+<td class="px-6 py-5 text-slate-900 dark:text-white text-sm font-bold">$1,200.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+<span class="size-1.5 rounded-full bg-red-500"></span>
+                                            Overdue / En retard
+                                        </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="inline-flex items-center gap-2 text-primary hover:text-primary/70 font-bold text-xs uppercase transition-colors">
+<span class="material-symbols-outlined text-lg">priority_high</span>
+                                            Notice
+                                        </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-primary/10">
+<p class="text-sm text-slate-500 dark:text-slate-400">Showing 1 to 5 of 48 transactions</p>
+<div class="flex items-center gap-2">
+<button class="flex size-9 items-center justify-center rounded-lg border border-primary/10 hover:bg-primary/5 text-primary">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="flex size-9 items-center justify-center rounded-lg bg-primary text-white font-bold text-sm shadow-sm">1</button>
+<button class="flex size-9 items-center justify-center rounded-lg border border-primary/10 hover:bg-primary/5 text-slate-700 dark:text-slate-300 font-medium text-sm">2</button>
+<button class="flex size-9 items-center justify-center rounded-lg border border-primary/10 hover:bg-primary/5 text-slate-700 dark:text-slate-300 font-medium text-sm">3</button>
+<span class="px-2 text-slate-400">...</span>
+<button class="flex size-9 items-center justify-center rounded-lg border border-primary/10 hover:bg-primary/5 text-slate-700 dark:text-slate-300 font-medium text-sm">10</button>
+<button class="flex size-9 items-center justify-center rounded-lg border border-primary/10 hover:bg-primary/5 text-primary">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto py-8 border-t border-primary/10 text-center">
+<p class="text-slate-500 dark:text-slate-400 text-sm">© 2023 KAZA Property Management. All rights reserved.</p>
+</footer>
+</div>
+</div>
+</body></html>

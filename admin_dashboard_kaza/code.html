@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZA Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between border-b border-primary/10 bg-white dark:bg-slate-900 px-6 py-3 lg:px-10">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-primary dark:text-white text-xl font-bold leading-tight tracking-tight">KAZA Admin</h2>
+</div>
+<div class="hidden md:flex flex-col min-w-64">
+<div class="flex w-full items-stretch rounded-xl h-10 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+<div class="text-slate-500 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="w-full border-none bg-transparent focus:ring-0 text-sm placeholder:text-slate-400" placeholder="Search data, users, properties..." value=""/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden xl:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1" href="#"><span class="material-symbols-outlined text-lg">group</span> Users</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1" href="#"><span class="material-symbols-outlined text-lg">home_work</span> Properties</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1" href="#"><span class="material-symbols-outlined text-lg">payments</span> Payments</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1" href="#"><span class="material-symbols-outlined text-lg">gavel</span> Moderation</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1" href="#"><span class="material-symbols-outlined text-lg">settings</span> Settings</a>
+</nav>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined">translate</span>
+</button>
+<button class="relative flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<div class="size-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden">
+<img alt="Admin Avatar" class="w-full h-full object-cover" data-alt="Admin user profile picture profile circular" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGkaoYYZiLSEA0JKybOkUn1EcVDJh2mzYCxHy05zV2n3u4r6bhdDTJLfQhBnD6qpp0_f26UXRzmn7BGdrphYC2DogpxxXFH_CtMj0DUFMVNiy5azpbAIKvL8o6D0RJ3dQuO-YnsIVFtG7zutvAqLBzgET7MPIePNjUq77kjsbCeaPinqVwgU1t9wMgTdYSvpdRro7tBNFkHETa_v5gYruq9Cn-OV0AQc4glAVFAzRYcx2qNEo7V74Dh9vBZysSNl4eQX10Uq5mas8"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col p-6 lg:p-10 max-w-[1600px] mx-auto w-full gap-8">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="flex flex-col gap-1">
+<h1 class="text-3xl font-extrabold text-primary dark:text-white tracking-tight">Dashboard Overview / Aperçu</h1>
+<p class="text-slate-500 dark:text-slate-400 font-medium">Bilingual SaaS Performance Tracking &amp; High Precision Analytics</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm hover:bg-slate-50">
+<span class="material-symbols-outlined text-lg">download</span> Export Report
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90">
+<span class="material-symbols-outlined text-lg">add</span> New Entry
+                </button>
+</div>
+</div>
+<!-- Key Metrics -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider">Total Users / Utilisateurs</p>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">group</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-slate-900 dark:text-white">12,450</p>
+<p class="text-emerald-600 text-sm font-bold flex items-center"><span class="material-symbols-outlined text-sm">trending_up</span> 12%</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full w-[70%]"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider">Active Listings / Annonces</p>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">list_alt</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-slate-900 dark:text-white">3,820</p>
+<p class="text-emerald-600 text-sm font-bold flex items-center"><span class="material-symbols-outlined text-sm">trending_up</span> 5%</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider">Revenue / Revenu Mensuel</p>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">account_balance_wallet</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-slate-900 dark:text-white">$45,200</p>
+<p class="text-emerald-600 text-sm font-bold flex items-center"><span class="material-symbols-outlined text-sm">trending_up</span> 18%</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider">Pending KYC / Attente KYC</p>
+<span class="material-symbols-outlined text-amber-500 bg-amber-500/10 p-2 rounded-lg">verified_user</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-slate-900 dark:text-white">124</p>
+<p class="text-rose-600 text-sm font-bold flex items-center"><span class="material-symbols-outlined text-sm">trending_down</span> 2%</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-amber-500 h-full w-[30%]"></div>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Revenue Growth / Croissance</h3>
+<p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Net Earnings Over Last 6 Months</p>
+</div>
+<select class="bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-xs font-bold py-1.5 px-3">
+<option>Last 6 Months</option>
+<option>Last Year</option>
+</select>
+</div>
+<div class="h-64 flex items-end w-full gap-2 px-2">
+<!-- Simple CSS chart representation -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
+<div class="w-full bg-primary/10 group-hover:bg-primary/20 rounded-t-lg transition-all" style="height: 40%"></div>
+<span class="text-[10px] font-bold text-slate-400">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
+<div class="w-full bg-primary/10 group-hover:bg-primary/20 rounded-t-lg transition-all" style="height: 55%"></div>
+<span class="text-[10px] font-bold text-slate-400">FEB</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
+<div class="w-full bg-primary/40 group-hover:bg-primary/50 rounded-t-lg transition-all" style="height: 65%"></div>
+<span class="text-[10px] font-bold text-slate-400">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
+<div class="w-full bg-primary/40 group-hover:bg-primary/50 rounded-t-lg transition-all" style="height: 75%"></div>
+<span class="text-[10px] font-bold text-slate-400">APR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
+<div class="w-full bg-primary group-hover:bg-primary/90 rounded-t-lg transition-all" style="height: 85%"></div>
+<span class="text-[10px] font-bold text-slate-400">MAY</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
+<div class="w-full bg-primary group-hover:bg-primary/90 rounded-t-lg transition-all" style="height: 100%"></div>
+<span class="text-[10px] font-bold text-slate-400">JUN</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">User Activity / Activité</h3>
+<p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">New signups vs active sessions</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">Active</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="size-2 rounded-full bg-slate-300"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">Signups</span>
+</div>
+</div>
+</div>
+<div class="relative h-64 w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Background grid -->
+<line stroke="rgba(0,0,0,0.05)" stroke-width="0.5" x1="0" x2="100" y1="20" y2="20"></line>
+<line stroke="rgba(0,0,0,0.05)" stroke-width="0.5" x1="0" x2="100" y1="40" y2="40"></line>
+<line stroke="rgba(0,0,0,0.05)" stroke-width="0.5" x1="0" x2="100" y1="60" y2="60"></line>
+<line stroke="rgba(0,0,0,0.05)" stroke-width="0.5" x1="0" x2="100" y1="80" y2="80"></line>
+<!-- Area Chart -->
+<path d="M0,80 Q10,75 20,60 T40,65 T60,30 T80,45 T100,10 V100 H0 Z" fill="rgba(0,51,102,0.1)"></path>
+<path d="M0,80 Q10,75 20,60 T40,65 T60,30 T80,45 T100,10" fill="none" stroke="#003366" stroke-width="2"></path>
+<!-- Secondary line -->
+<path d="M0,90 Q15,85 30,75 T55,80 T75,60 T100,65" fill="none" stroke="#cbd5e1" stroke-dasharray="4" stroke-width="2"></path>
+</svg>
+<div class="absolute bottom-0 w-full flex justify-between px-2 pt-2">
+<span class="text-[10px] font-bold text-slate-400">MON</span>
+<span class="text-[10px] font-bold text-slate-400">TUE</span>
+<span class="text-[10px] font-bold text-slate-400">WED</span>
+<span class="text-[10px] font-bold text-slate-400">THU</span>
+<span class="text-[10px] font-bold text-slate-400">FRI</span>
+<span class="text-[10px] font-bold text-slate-400">SAT</span>
+<span class="text-[10px] font-bold text-slate-400">SUN</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Moderation & Recent Alerts Table -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-primary/5 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex flex-col">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Moderation Queue / File de Modération</h3>
+<p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Urgent alerts and verification tasks</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 text-slate-600 bg-white">All Tasks</button>
+<button class="px-3 py-1.5 text-xs font-bold rounded-lg bg-primary/10 text-primary border border-primary/20">Pending (12)</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">User/Entity</th>
+<th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Type</th>
+<th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Severity</th>
+<th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Status</th>
+<th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Date</th>
+<th class="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="User 1" class="size-8 rounded-full" data-alt="User profile thumbnail image small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKpKKmsPWcW-CVBAXVk4VhkJ-MzyUxFGy-P1RAMfFxjSLKn-25FR5ElAHp7bU0voDNCPytESXfpCuq9utjsEoPPFOWpPg6QDcjeP2Xdo17QpWY2adfddGX12MpBIajKz1EhZeys9zHGmeU5y2jHB00KXgV7cg7OShu-m_ZWR2kmks1YRvnchzWcPWBLPxCSoX_NmS4cEbAh9aTzBFvuj1kzeVzYT9XATStXBV-PEy00mMN9EjtJnfim_qchhWd6_rPoQC1UYrTIOM"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800 dark:text-slate-200">Jean Dupont</span>
+<span class="text-[10px] text-slate-400 font-medium">jean.dupont@email.com</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-600 dark:text-slate-400">KYC Verification</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 uppercase">Medium</span>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1 text-sm font-bold text-amber-500">
+<span class="size-1.5 rounded-full bg-amber-500"></span> Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Oct 24, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 text-primary hover:bg-primary/5 rounded">
+<span class="material-symbols-outlined text-xl">open_in_new</span>
+</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="Prop 1" class="size-8 rounded-full" data-alt="Property listing thumbnail image small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHy6DVrFRpTdmmx1BkaYon87IMT3eBG7wj-MJX2AJ5w1mreJttL2QqyMiuAefnB4Zhf2-kRcG-c1vs5-N5zaH0IFOkRG1m5iuEg_f7ZPpqK_Zq8duJUwBI2uQtXxSMSdTFe3vdmi8oFjmnSFqZbe4a2YA5csu1eRo_bN-LVcq1YgY0ADZQvX9GB2Ugs7SHu__2lBh4kKrpSou9ShYPlaU3tjOVydXmEOSCMzxxW3mDOopcAgN6m7SxO-ZzNj-7EHjVj85dU4kwL90"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800 dark:text-slate-200">Modern Villa, Nice</span>
+<span class="text-[10px] text-slate-400 font-medium">Listing ID: #44021</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-600 dark:text-slate-400">Listing Review</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 uppercase">High</span>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1 text-sm font-bold text-amber-500">
+<span class="size-1.5 rounded-full bg-amber-500"></span> Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Oct 23, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 text-primary hover:bg-primary/5 rounded">
+<span class="material-symbols-outlined text-xl">open_in_new</span>
+</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="User 2" class="size-8 rounded-full" data-alt="User profile thumbnail image small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZspQe3TPiZBjJaX39AWNZ6zNmPzyikTM1ndQdPDVfCFnD2sxbv3QIscKVCWh4WGTHjTCDZD4EmYcb4ypUO9ofFQ8J8Qcp3ZYHV5kdaBFZlPIRegkIyhXc_5TAQEk2ZnpF0_3ARvK3JPpaYhx57Ra5n31AWdWBp5x4XJxVEOHSn-nXGDMhO_Lc5uEnA9y2ohkR0M_Ek2AaxthASmLsglZv4ImtCV1isyxmSUVO_axohKVk6meezuUxfHeku10jP9WTM_yeIGAqQ5s"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-800 dark:text-slate-200">Sarah Williams</span>
+<span class="text-[10px] text-slate-400 font-medium">s.williams@web.co</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-600 dark:text-slate-400">Account Flag</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase">Critical</span>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1 text-sm font-bold text-amber-500">
+<span class="size-1.5 rounded-full bg-amber-500"></span> Investigating
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Oct 22, 2023</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 text-primary hover:bg-primary/5 rounded">
+<span class="material-symbols-outlined text-xl">open_in_new</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 flex items-center justify-center">
+<button class="text-sm font-bold text-primary hover:underline">View All Tasks / Voir toutes les tâches</button>
+</div>
+</div>
+</main>
+<!-- Footer / Global Stats -->
+<footer class="bg-primary text-white p-6 mt-10">
+<div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-4">
+<div class="size-10 bg-white/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div>
+<h4 class="text-sm font-bold">System Status: Operational</h4>
+<p class="text-xs text-white/60">Server latency: 42ms | Database uptime: 99.99%</p>
+</div>
+</div>
+<div class="flex gap-10">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-black text-white/40">Active Nodes</span>
+<span class="text-lg font-bold">14</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-black text-white/40">API Requests/m</span>
+<span class="text-lg font-bold">2.4k</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-black text-white/40">Avg Response</span>
+<span class="text-lg font-bold">0.8s</span>
+</div>
+</div>
+<div class="text-xs text-white/40 font-medium">
+                © 2024 KAZA Property Group. Precision SaaS v2.4.1
+            </div>
+</div>
+</footer>
+</div>
+</body></html>

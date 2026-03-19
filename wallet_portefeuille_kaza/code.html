@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wallet / Portefeuille - KAZA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#003366",
+                "success": "#28A745",
+                "background-light": "#f5f7f8",
+                "background-dark": "#0f1923",
+              },
+              fontFamily: {
+                "display": ["Inter", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex min-h-screen flex-col">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark/50 backdrop-blur-md px-6 md:px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">KAZA</h2>
+</div>
+<nav class="hidden md:flex flex-1 justify-center gap-8">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-semibold transition-colors" href="#">Dashboard</a>
+<a class="text-primary border-b-2 border-primary text-sm font-bold pb-1" href="#">Wallet</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-semibold transition-colors" href="#">Properties</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-semibold transition-colors" href="#">Investments</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex text-slate-500 text-xs font-bold gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<span class="px-2 py-1 bg-white dark:bg-slate-700 rounded shadow-sm text-primary">FR</span>
+<span class="px-2 py-1">EN</span>
+</div>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-primary/10 border-2 border-primary/20 rounded-full p-0.5">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 bg-slate-300" data-alt="User profile avatar portrait"></div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col lg:flex-row w-full max-w-[1440px] mx-auto p-4 md:p-8 gap-8">
+<aside class="w-full lg:w-64 flex flex-col gap-2 shrink-0">
+<div class="flex flex-col gap-1 mb-6">
+<h1 class="text-2xl font-black text-slate-900 dark:text-white leading-tight">Wallet / Portefeuille</h1>
+<p class="text-slate-500 text-sm">Manage your funds &amp; assets</p>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 group" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-semibold text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-semibold text-sm">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="font-semibold text-sm">Payment Methods</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-semibold text-sm">Settings</span>
+</a>
+<div class="mt-auto pt-8">
+<div class="bg-primary/5 dark:bg-primary/20 rounded-xl p-4 border border-primary/10">
+<p class="text-xs font-bold text-primary mb-2 uppercase tracking-wider">Need help?</p>
+<p class="text-xs text-slate-600 dark:text-slate-400 mb-3">Contact our bilingual support for any assistance.</p>
+<button class="w-full py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-primary rounded-lg text-xs font-bold">Contact Support</button>
+</div>
+</div>
+</aside>
+<section class="flex-1 flex flex-col gap-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-4 rounded-2xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-12 translate-x-12"></div>
+<div class="flex justify-between items-start z-10">
+<div>
+<p class="text-slate-500 text-sm font-medium mb-1">Balance CFA (XOF)</p>
+<h3 class="text-3xl font-bold text-slate-900 dark:text-white">2,500,000 <span class="text-lg font-medium opacity-60 uppercase">xof</span></h3>
+</div>
+<div class="p-2 bg-success/10 text-success rounded-lg">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-success text-sm font-bold z-10">
+<span>+12.4%</span>
+<span class="text-slate-400 font-normal">this month</span>
+</div>
+</div>
+<div class="flex flex-col gap-4 rounded-2xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-12 translate-x-12"></div>
+<div class="flex justify-between items-start z-10">
+<div>
+<p class="text-slate-500 text-sm font-medium mb-1">Balance Euro (EUR)</p>
+<h3 class="text-3xl font-bold text-slate-900 dark:text-white">3,811.23 <span class="text-lg font-medium opacity-60 uppercase">€</span></h3>
+</div>
+<div class="p-2 bg-primary/10 text-primary rounded-lg">
+<span class="material-symbols-outlined">euro</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-primary text-sm font-bold z-10">
+<span>+0.5%</span>
+<span class="text-slate-400 font-normal">this month</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 items-center justify-between">
+<h4 class="text-lg font-bold">Quick Actions / Actions Rapides</h4>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+                            Top up / Recharger
+                        </button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">payments</span>
+                            Withdraw / Retirer
+                        </button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">send</span>
+                            Transfer / Transférer
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<div class="xl:col-span-2 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h4 class="text-lg font-bold">Recent Transactions</h4>
+<a class="text-primary text-sm font-bold" href="#">View all</a>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Transaction</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Date</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Amount</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<div>
+<p class="text-sm font-bold">Property Investment</p>
+<p class="text-xs text-slate-500">Residence Horizon - Dakar</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Oct 24, 2023</td>
+<td class="px-6 py-4 text-sm font-bold text-right">- 500,000 XOF</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-success/10 text-success">
+                                                    Completed
+                                                </span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined">add</span>
+</div>
+<div>
+<p class="text-sm font-bold">Wallet Top-up</p>
+<p class="text-xs text-slate-500">Bank Transfer (EUR)</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Oct 22, 2023</td>
+<td class="px-6 py-4 text-sm font-bold text-right text-success">+ 1,500.00 €</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-600">
+                                                    Pending
+                                                </span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div>
+<p class="text-sm font-bold">Withdrawal</p>
+<p class="text-xs text-slate-500">To Mobile Money</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Oct 20, 2023</td>
+<td class="px-6 py-4 text-sm font-bold text-right">- 50,000 XOF</td>
+<td class="px-6 py-4 text-center">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-success/10 text-success">
+                                                    Completed
+                                                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h4 class="text-lg font-bold">Saved Methods</h4>
+<button class="text-primary text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add</span> Add
+                            </button>
+</div>
+<div class="space-y-4">
+<div class="p-4 rounded-xl bg-gradient-to-br from-primary to-slate-900 text-white shadow-xl relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-8xl">contactless</span>
+</div>
+<div class="flex justify-between items-start mb-8">
+<span class="material-symbols-outlined text-3xl">credit_card</span>
+<span class="text-xs font-medium tracking-widest">VISA</span>
+</div>
+<div>
+<p class="text-lg font-mono tracking-widest mb-2">•••• •••• •••• 4291</p>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-[10px] opacity-60 uppercase">Exp. Date</p>
+<p class="text-sm font-bold">08/26</p>
+</div>
+<span class="text-xs font-bold">Primary</span>
+</div>
+</div>
+</div>
+<div class="p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div>
+<p class="text-sm font-bold">Société Générale</p>
+<p class="text-xs text-slate-500">FR76 •••• •••• 0981</p>
+</div>
+</div>
+</div>
+<div class="p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined">phone_android</span>
+</div>
+<div>
+<p class="text-sm font-bold">Orange Money</p>
+<p class="text-xs text-slate-500">+221 77 ••• •• 12</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-8 px-6 md:px-10">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-slate-500 text-sm">© 2023 KAZA Proptech. All rights reserved.</p>
+<div class="flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Security</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

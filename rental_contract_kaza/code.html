@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>KAZA Proptech - Contract View</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 md:px-10 py-4 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">KAZA Proptech</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Documents</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Support</a>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyar22U300oZj653YzEt5zbjsxMshspejN58jb7DnujYacDQYGubwQNTVBOUsSerEj6ovbZ0vLiKC-h7doAS4FsXg-t8gT6kB1LAeQ0-XxXmuCLEjlepzCBfG9tjp1I18ncaQBBQ_6Wv61-mfilSrUju7L6oE6JKkOvFRxdzGF3GOWR-QjAJhsEMs_F75k5yOAnxOmCQwD97cx02XzsKZ0R2xdEsO3dTIyV_F-AjDcCi9OjiCzNk5Aa8zrAxKTiOu4wIvQdKsVVIM");'></div>
+</div>
+</header>
+<main class="flex-1 flex justify-center py-8 px-4 md:px-10">
+<div class="layout-content-container flex flex-col max-w-[1024px] flex-1">
+<nav class="flex items-center gap-2 mb-6">
+<a class="text-primary/70 dark:text-primary/90 text-sm font-medium hover:underline" href="#">Lease Agreements</a>
+<span class="text-slate-400 text-sm font-medium">/</span>
+<span class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Contract #88291</span>
+</nav>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Residential Lease Agreement</h1>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-amber-500"></span>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal">Draft version • Last updated 2 hours ago</p>
+</div>
+</div>
+<button class="flex w-full md:w-auto items-center justify-center rounded-xl h-12 px-8 bg-primary text-white text-base font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+<span class="material-symbols-outlined mr-2">draw</span>
+                            Sign Electronically
+                        </button>
+</div>
+<section class="mb-10">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] mb-4">Key Terms Summary</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Monthly Rent</p>
+<p class="text-primary dark:text-blue-400 tracking-tight text-3xl font-black leading-tight">$2,400</p>
+<p class="text-slate-400 text-xs italic">Due on the 1st of each month</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Security Deposit</p>
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-black leading-tight">$4,800</p>
+<p class="text-slate-400 text-xs italic">Fully refundable per terms</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Duration</p>
+<div class="flex items-baseline gap-1">
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-black leading-tight">12</p>
+<p class="text-slate-600 dark:text-slate-400 font-bold">Months</p>
+</div>
+<p class="text-slate-400 text-xs italic">Oct 01, 2023 - Sep 30, 2024</p>
+</div>
+</div>
+</section>
+<section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="border-b border-slate-100 dark:border-slate-800 px-8 py-4 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+<h3 class="text-slate-900 dark:text-white font-bold">Document Content</h3>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">zoom_in</span>
+</button>
+<button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">print</span>
+</button>
+</div>
+</div>
+<div class="p-8 md:p-12 space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed max-h-[600px] overflow-y-auto custom-scrollbar">
+<div class="space-y-4">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">1. PARTIES</h4>
+<p>This Residential Lease Agreement ("Agreement") is made this 15th day of September, 2023, by and between <strong>Skyline Property Management LLC</strong> ("Landlord") and <strong>Alex J. Rivera</strong> ("Tenant").</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">2. PREMISES</h4>
+<p>Landlord hereby leases to Tenant and Tenant hereby leases from Landlord the following real property: <strong>452 Oak Avenue, Unit 3B, San Francisco, CA 94102</strong>.</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">3. TERM</h4>
+<p>The initial term of this lease shall be for 12 months, commencing on October 1, 2023, and ending on September 30, 2024. Upon expiration of the term, this Agreement shall automatically renew on a month-to-month basis unless either party provides 30 days' written notice of termination.</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">4. RENT PAYMENTS</h4>
+<p>Tenant shall pay to Landlord a monthly rent of $2,400.00, payable in advance on the first day of every month. Payments shall be made via the KAZA Proptech portal or as otherwise directed by Landlord. A late fee of $100.00 shall be charged for any payment received after the 5th day of the month.</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">5. SECURITY DEPOSIT</h4>
+<p>Upon execution of this Agreement, Tenant shall deposit with Landlord the sum of $4,800.00 as security for any damage caused to the Premises during the term hereof or any other default by Tenant. This deposit will be returned to Tenant, less any allowable deductions, within 21 days after Tenant vacates the premises.</p>
+</div>
+<div class="p-6 bg-primary/5 dark:bg-primary/10 rounded-xl border-l-4 border-primary">
+<p class="text-sm italic">Note: Please review all sections carefully. By signing this document, you acknowledge that you have read and understood all terms and conditions set forth above.</p>
+</div>
+</div>
+</section>
+<div class="mt-8 flex flex-col md:flex-row items-center justify-between p-6 rounded-2xl bg-primary/5 dark:bg-slate-900 border border-primary/20">
+<div class="flex items-center gap-4 mb-4 md:mb-0">
+<div class="p-3 bg-primary/10 dark:bg-primary/20 rounded-full text-primary">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold">Ready to finalize?</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Secure e-signature is legally binding.</p>
+</div>
+</div>
+<div class="flex gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Decline</button>
+<button class="flex-1 md:flex-none px-8 py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">Sign Now</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto py-8 px-10 border-t border-slate-200 dark:border-slate-800 text-center">
+<p class="text-slate-400 text-sm">© 2023 KAZA Proptech Solutions Inc. All rights reserved.</p>
+</footer>
+</div>
+</div>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+    </style>
+</body></html>

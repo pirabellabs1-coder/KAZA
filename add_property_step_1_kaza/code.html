@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>KAZA Proptech - Add Property</title>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between border-b border-primary/10 bg-white dark:bg-slate-900 px-6 py-4 lg:px-20">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-primary dark:text-slate-100 text-xl font-bold tracking-tight">KAZA Proptech</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8 px-4 lg:px-20">
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-primary/5 mb-6">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<span class="text-sm font-semibold uppercase tracking-wider text-primary">Step 1 of 4</span>
+<span class="text-sm font-medium text-slate-500">25% Complete</span>
+</div>
+<div class="h-2.5 w-full rounded-full bg-primary/10 overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 25%;"></div>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-primary font-bold text-lg">General Information</p>
+<p class="text-slate-400 text-xs italic">Draft saved automatically</p>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-8 shadow-sm border border-primary/5">
+<div class="mb-8">
+<h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">Property Listing Details</h1>
+<p class="text-slate-500 dark:text-slate-400">Please provide the core identity of your property. These details help potential tenants or buyers find your listing.</p>
+</div>
+<form class="flex flex-col gap-8">
+<div class="grid grid-cols-1 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 font-semibold text-sm">Property Title</label>
+<input class="w-full rounded-lg border border-primary/20 bg-slate-50 dark:bg-slate-800 p-4 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" placeholder="e.g. Modern 2-Bedroom Apartment in Downtown" type="text"/>
+<p class="text-xs text-slate-400">A catchy title improves click-through rates by up to 30%.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 font-semibold text-sm">Property Category</label>
+<div class="relative">
+<select class="w-full appearance-none rounded-lg border border-primary/20 bg-slate-50 dark:bg-slate-800 p-4 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+<option disabled="" selected="" value="">Select category</option>
+<option value="residential">Residential</option>
+<option value="commercial">Commercial</option>
+<option value="industrial">Industrial</option>
+<option value="land">Land/Plot</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 font-semibold text-sm">Listing Type</label>
+<div class="relative">
+<select class="w-full appearance-none rounded-lg border border-primary/20 bg-slate-50 dark:bg-slate-800 p-4 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+<option value="rent">For Rent</option>
+<option value="sale">For Sale</option>
+<option value="lease">Leasehold</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-slate-700 dark:text-slate-300 font-semibold text-sm">Property Description</label>
+<textarea class="w-full rounded-lg border border-primary/20 bg-slate-50 dark:bg-slate-800 p-4 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400 resize-none" placeholder="Describe the unique features, surroundings, and amenities..." rows="6"></textarea>
+</div>
+</div>
+<div class="flex items-center justify-between pt-6 border-t border-primary/10">
+<button class="px-6 py-3 rounded-lg font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" type="button">
+                                    Save Draft
+                                </button>
+<button class="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity" type="submit">
+                                    Next Step
+                                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<div class="mt-8 flex items-center justify-center gap-8 py-4">
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="text-xs font-medium">Verified Platform</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="text-xs font-medium">Secure Encryption</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="text-xs font-medium">Listing Support</span>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto py-6 text-center text-slate-400 text-sm">
+                © 2023 KAZA Proptech. All rights reserved.
+            </footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-6 py-4 bg-white dark:bg-slate-900 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<div>
+<h1 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">KAZA Wallet</h1>
+<p class="text-xs text-slate-500">Portefeuille Numérique</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center rounded-full w-10 h-10 bg-primary/10 text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-full w-10 h-10 bg-primary/10 text-primary">
+<span class="material-symbols-outlined">translate</span>
+</button>
+</div>
+</header>
+<main class="flex-1 max-w-4xl mx-auto w-full px-4 py-6 space-y-6">
+<div class="flex bg-primary/5 p-1.5 rounded-xl border border-primary/10">
+<label class="flex cursor-pointer h-10 grow items-center justify-center rounded-lg px-2 has-[:checked]:bg-primary has-[:checked]:text-white text-slate-600 dark:text-slate-400 text-sm font-semibold transition-all">
+<span>English</span>
+<input checked="" class="hidden" name="lang" type="radio" value="en"/>
+</label>
+<label class="flex cursor-pointer h-10 grow items-center justify-center rounded-lg px-2 has-[:checked]:bg-primary has-[:checked]:text-white text-slate-600 dark:text-slate-400 text-sm font-semibold transition-all">
+<span>Français</span>
+<input class="hidden" name="lang" type="radio" value="fr"/>
+</label>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-primary text-white shadow-lg shadow-primary/20">
+<div class="flex justify-between items-center">
+<p class="text-white/80 text-sm font-medium">Total Balance (CFA)</p>
+<span class="material-symbols-outlined text-white/60">payments</span>
+</div>
+<p class="text-3xl font-bold tracking-tight">655,957 <span class="text-lg font-normal">CFA</span></p>
+<p class="text-xs text-white/60 mt-2">Solde Total en Francs CFA</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-primary/10 shadow-sm">
+<div class="flex justify-between items-center">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Balance (EUR)</p>
+<span class="material-symbols-outlined text-primary/40">euro</span>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-3xl font-bold tracking-tight">1,000.00 <span class="text-lg font-normal text-slate-500">€</span></p>
+<p class="text-xs text-slate-500 mt-2">Solde Total en Euro</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl bg-white dark:bg-slate-900 border border-primary/10 hover:border-primary transition-colors group">
+<div class="rounded-full bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<span class="text-xs font-semibold text-center">Add Funds<br/><span class="font-normal opacity-70">Ajouter</span></span>
+</button>
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl bg-white dark:bg-slate-900 border border-primary/10 hover:border-primary transition-colors group">
+<div class="rounded-full bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">send</span>
+</div>
+<span class="text-xs font-semibold text-center">Send<br/><span class="font-normal opacity-70">Envoyer</span></span>
+</button>
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl bg-white dark:bg-slate-900 border border-primary/10 hover:border-primary transition-colors group">
+<div class="rounded-full bg-primary/10 p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">call_received</span>
+</div>
+<span class="text-xs font-semibold text-center">Request<br/><span class="font-normal opacity-70">Demander</span></span>
+</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold">Add Funds / Ajouter des fonds</h2>
+<span class="text-xs text-primary font-semibold cursor-pointer">View all methods</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="flex items-center gap-4 p-4 rounded-xl border border-primary/10 bg-white dark:bg-slate-900 cursor-pointer hover:shadow-md transition-shadow">
+<div class="w-12 h-12 rounded-lg bg-[#F79E1B]/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#F79E1B]">smartphone</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Mobile Money</p>
+<p class="text-xs text-slate-500">Orange, MTN, Wave</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-xl border border-primary/10 bg-white dark:bg-slate-900 cursor-pointer hover:shadow-md transition-shadow">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">credit_card</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Debit/Credit Card</p>
+<p class="text-xs text-slate-500">Visa, Mastercard</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold">Recent Activity / Activité</h2>
+<button class="text-primary text-sm font-semibold">History</button>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-primary/10 overflow-hidden">
+<div class="flex items-center justify-between p-4 border-b border-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">arrow_downward</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Mobile Money Deposit</p>
+<p class="text-xs text-slate-500">Today, 10:45 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm text-green-600">+25,000 CFA</p>
+<p class="text-[10px] text-slate-400">Ref: KZ-9921</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 border-b border-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">shopping_bag</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Merchant Payment</p>
+<p class="text-xs text-slate-500">Yesterday, 06:12 PM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm text-slate-900 dark:text-slate-100">-12,450 CFA</p>
+<p class="text-[10px] text-slate-400">Supermarché KAZA</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 border-b border-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">currency_exchange</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Currency Swap (EUR → CFA)</p>
+<p class="text-xs text-slate-500">24 Oct, 09:30 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm text-slate-900 dark:text-slate-100">+327,978 CFA</p>
+<p class="text-xs text-slate-500">-500.00 €</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">person</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Transfer to Amadou</p>
+<p class="text-xs text-slate-500">22 Oct, 02:15 PM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm text-slate-900 dark:text-slate-100">-5,000 CFA</p>
+<p class="text-[10px] text-slate-400">KZ-USER-882</p>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-xl overflow-hidden relative h-48 border border-primary/10 shadow-sm">
+<img alt="Financial charts background" class="w-full h-full object-cover" data-alt="Abstract deep blue data visualization patterns" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcAoBdc4gPU4jkKJS_SEdVDlp6stQpgQRCEg9NJ9eUU2rUTBssR85kFkwZlSC3neOQjqhbTJOuPbUB9-dC9ql-gewaevVR60KFdgrWRHYAJDIcVIbsMFsDEZ5smP_kZlF9BDIw-T609-VzORT1IEoEH9PDpfMKc4Fq0965rx5p-QNYzVVHsg4nei9_6t5EM4IaVivXBzdzbJKsqUVK8VqSbmlVHqAmv5OxHn3OZhCgxcWCnM0o3W-_9PL7tdE-Ablg2MVUe3Gn-go"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary to-transparent flex flex-col justify-center px-8 text-white">
+<h3 class="text-xl font-bold">KAZA Insights</h3>
+<p class="text-sm opacity-80 max-w-[200px] mt-2">See your spending habits and save more with AI tips.</p>
+<button class="mt-4 px-4 py-2 bg-white text-primary text-xs font-bold rounded-lg w-fit">Explore Now</button>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-900 border-t border-primary/10 p-6 text-center">
+<p class="text-xs text-slate-500">© 2024 KAZA Wallet. Fast, Secure, Reliable.<br/>Rapide, Sécurisé, Fiable.</p>
+</footer>
+</div>
+</div>
+</body></html>

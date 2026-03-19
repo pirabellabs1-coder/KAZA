@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#003366",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<title>KAZA Student Dashboard</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 bg-white dark:bg-background-dark px-6 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-primary text-xl font-bold leading-tight tracking-[-0.015em]">KAZA</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-primary text-sm font-semibold leading-normal border-b-2 border-primary pb-1" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Matches</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Rooms</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Payments</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-primary/5 dark:bg-primary/20">
+<div class="text-primary/60 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 h-full placeholder:text-primary/40 px-3 text-sm font-normal" placeholder="Search rooms, mates..."/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-xl size-10 bg-primary/5 dark:bg-primary/20 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 px-3 bg-primary/5 dark:bg-primary/20 text-primary gap-2 text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+<span>EN | FR</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile picture of a young male student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBMl7vxs2w5tgkVM4ByKlz3Fe6U2ZT3sCkGuU4-y8iM_ZlBRd3cOrIiSBl8i6S5LUjj1rFR_fESREFmfQIQDAUF1jblthoopuQ0zWL5jCoeJxziNdvO_EyKrA-pj3nWZ3vRJUXZE-tpqyxMVPhq-XVVLg_2EwTJsO3N3mYG1x_FTfLHDttSLrMZjM6r4syIbUVpk6V4Y2Mp4p_qRv2eaQ4ogOxsLpFQrIuEXtpgthr-DsL53909Ei3_a5-pP_8VwKK_9nBhOhEYk5M");'></div>
+</div>
+</header>
+<main class="flex flex-1 flex-col lg:flex-row gap-6 p-6 md:p-10 max-w-[1440px] mx-auto w-full">
+<!-- Sidebar Nav -->
+<aside class="w-full lg:w-64 flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-primary/5">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">grid_view</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined">forum</span>
+<p class="text-sm font-medium">Messages</p>
+<span class="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+<p class="text-sm font-medium">Saved Rooms</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<p class="text-sm font-medium">Payments</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</div>
+</div>
+</div>
+<!-- Roommate Chat Shortcuts -->
+<div class="bg-white dark:bg-slate-800/50 p-5 rounded-xl border border-primary/5 flex flex-col gap-4">
+<h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Active Chats</h3>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="size-10 rounded-full bg-center bg-cover border-2 border-green-500" data-alt="Portrait of Sarah, a potential roommate" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVEjh-Y3bl7PBMOyKVeuqBzJrzpKGGr4_UUAeoDK0d42X9SuRnkEfCk0BhFg2uvSW0PNBKkN9dhn2kXm5F3so6V0iireA29GzkMt_cJddcZaLiZqAlHJcSB8l66cBDA4DABoADlxlCE5EXp1dh4NAyP4fro3QueCXIkMGDbBpF2WIQ9gPo_srqm65CYubJsLuJmCom1S2vfUVW8BW95umJKRELTzvwbrv0pA9NWcrIY00CIhkkH96JziQEysc6Lsy2ckfWJJDc3q0");'></div>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-bold group-hover:text-primary transition-colors">Sarah J.</p>
+<p class="text-xs text-slate-500 truncate">Is the room still free?</p>
+</div>
+<div class="size-2 bg-primary rounded-full"></div>
+</div>
+<div class="flex items-center gap-3 cursor-pointer group opacity-70 hover:opacity-100">
+<div class="size-10 rounded-full bg-center bg-cover border-2 border-slate-200" data-alt="Portrait of Marc, current roommate" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBpmFqp47nPSnFkA7wMt1QwsgmRYKA-g2Qz_sH44YECS7F6CKSrFG1K1mmbRg9zQCC-MDy3gGKBF_mUfpn4id8syrwm5FQR8YcK24L-6VBW7zdX3W3KwPw6pJlqnlLhY6Pov8ZFutqr8FGZuY9VgaVO9_0n_RplUlYuOBmzvFZ52-v3KSrzp1oDwTRSU_qIlZQ9yzVLFM8xKADNEIPFotT9VcKF15lKwzHPFv54YciFqvQNps8o_NjehHtC_tdMtgjz8lUmShDwHcM");'></div>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-bold group-hover:text-primary transition-colors">Marc Leroy</p>
+<p class="text-xs text-slate-500 truncate">Rent was paid today!</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Content Area -->
+<section class="flex-1 flex flex-col gap-8">
+<header>
+<h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Welcome back, Alex! <span class="text-primary font-normal text-lg block md:inline md:ml-2">Salut Alex !</span></h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Ready to find your perfect student home or manage your current one?</p>
+</header>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-primary text-white p-6 rounded-xl flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[100px]">handshake</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-white/70">Matching Status</p>
+<p class="text-3xl font-black mt-2">85% Match</p>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold">+5% increase</span>
+<p class="text-[10px] text-white/70 italic">Based on lifestyle tags</p>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/5 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[100px]">house</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-slate-400">Saved Rooms</p>
+<p class="text-3xl font-black mt-2 text-primary">12 Rooms</p>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">2 new today</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/5 flex flex-col justify-between relative overflow-hidden group border-l-4 border-l-red-500">
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[100px]">event_repeat</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-slate-400">Next Payment</p>
+<p class="text-3xl font-black mt-2 text-slate-900 dark:text-white">€450.00</p>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="text-red-500 text-[10px] font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span> Due in 3 days
+                                </span>
+</div>
+</div>
+</div>
+<!-- Main Sections Split -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+<!-- Upcoming Payments -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold">Upcoming Rent <span class="text-slate-400 font-medium">Loyer à venir</span></h2>
+<button class="text-primary text-sm font-bold hover:underline">View History</button>
+</div>
+<div class="flex flex-col gap-3">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-primary/5 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+<div class="size-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="flex-1">
+<p class="font-bold">October 2023 Rent</p>
+<p class="text-xs text-slate-500">Flat 4B - Shared Residence</p>
+</div>
+<div class="text-right">
+<p class="font-black text-primary">€450.00</p>
+<p class="text-[10px] text-red-500 font-bold uppercase tracking-tighter">Due Oct 1st</p>
+</div>
+<button class="bg-primary text-white p-2 rounded-lg leading-none">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-primary/5 flex items-center gap-4 opacity-75 grayscale hover:grayscale-0 transition-all cursor-pointer">
+<div class="size-12 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div class="flex-1">
+<p class="font-bold">Utility Bill (Electric)</p>
+<p class="text-xs text-slate-500">Shared cost split</p>
+</div>
+<div class="text-right">
+<p class="font-black">€32.40</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Due Oct 5th</p>
+</div>
+<button class="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 p-2 rounded-lg leading-none">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Saved Rooms -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold">Top Matches <span class="text-slate-400 font-medium">Top Logements</span></h2>
+<button class="text-primary text-sm font-bold hover:underline">Explore More</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="group relative overflow-hidden rounded-xl bg-white dark:bg-slate-800 border border-primary/5 hover:shadow-xl transition-all">
+<div class="h-40 bg-center bg-cover transition-transform group-hover:scale-105" data-alt="Modern minimalist student bedroom with large window" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDfuQgHqgKa97ZQXwSodRbMFQgcd-gvLxUymhQl2Y9nDL0xGNN3oqeBr5GZLd-D7fTtUr_R-vtgeKDx0UekeRlBqWkx6pqccbLx_uexY171sQ9ANj3_1Fb94LtoYEMaXzggT4gpTH_4lCv1rGmNp0oxIo-cHrqfavrO-Ske7fUMNmEUfrLcsKMuj89o7ufW4SE9IWpUg9dlPR97WaYth6zgIo5KUXj25fcMIfyn_gzpCDWHP30yk7IBzIhueMouV0WoLV_iCr2CjLk");'>
+</div>
+<div class="absolute top-2 right-2 flex flex-col gap-1">
+<span class="bg-primary text-white text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase tracking-wider">94% Match</span>
+<button class="bg-white/90 p-1.5 rounded-full text-red-500 shadow hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[18px] fill-1">favorite</span>
+</button>
+</div>
+<div class="p-3">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-sm truncate">L'Atelier Studio</h4>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Paris, 5th Arr.
+                                                </p>
+</div>
+<p class="text-primary font-black text-sm">€650<span class="text-[10px] font-normal text-slate-500">/mo</span></p>
+</div>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-xl bg-white dark:bg-slate-800 border border-primary/5 hover:shadow-xl transition-all">
+<div class="h-40 bg-center bg-cover transition-transform group-hover:scale-105" data-alt="Spacious shared apartment living room with vibrant decor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA4go3-bMFs6MAwHFmDId5K8oaGcfRFMqFba9wlSPPnw4-cQSS1f3zN-ieerQkzRGHvkvNERgFSbGdteKniwUPrz6498Egx4p5ZeXIe8sBAkXmJwLK0J_qPkUb57VlfekmCQsUShAjH08KH8qah2PPQ9qZ9wkztABMgpYpUv3xBrF71XwyBdTzXrL_Nu9SzY2khwFV_S6DtXHDxMOU2ZMxqaA-Tvzn0wexbJ6_wdh_Vg5zFZgCwqMW1VwdYpZofU5aGIobTlt5Rv_0");'>
+</div>
+<div class="absolute top-2 right-2 flex flex-col gap-1">
+<span class="bg-primary text-white text-[10px] font-black px-2 py-1 rounded shadow-lg uppercase tracking-wider">89% Match</span>
+<button class="bg-white/90 p-1.5 rounded-full text-red-500 shadow hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[18px] fill-1">favorite</span>
+</button>
+</div>
+<div class="p-3">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-sm truncate">Campus Vibe Shared</h4>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Lille, Centre
+                                                </p>
+</div>
+<p class="text-primary font-black text-sm">€420<span class="text-[10px] font-normal text-slate-500">/mo</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Map/Location Preview (Optional Visual) -->
+<div class="bg-primary/5 dark:bg-primary/20 rounded-xl p-6 border border-dashed border-primary/30 flex flex-col items-center justify-center min-h-[200px] text-center gap-4">
+<div class="size-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-primary shadow-lg border border-primary/10">
+<span class="material-symbols-outlined text-[32px]">map</span>
+</div>
+<div>
+<h3 class="font-bold">Interactive Room Search</h3>
+<p class="text-sm text-slate-500 max-w-sm">Use our map tool to find student residences near your university campus.</p>
+</div>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-bold text-sm hover:shadow-lg transition-all active:scale-95">Open Map Explorer</button>
+<div class="hidden" data-location="Paris" style=""></div>
+</div>
+</section>
+</main>
+<footer class="mt-auto border-t border-primary/5 bg-white dark:bg-background-dark py-8 px-6 md:px-10">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">domain</span>
+<span class="font-black tracking-tight">KAZA</span>
+</div>
+<div class="flex gap-8 text-sm text-slate-500 font-medium">
+<a class="hover:text-primary" href="#">Help Center</a>
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Contact</a>
+</div>
+<p class="text-xs text-slate-400">© 2023 KAZA Student Living Solutions. All rights reserved.</p>
+</div>
+</footer>
+</div>
+</div>
+</body></html>
