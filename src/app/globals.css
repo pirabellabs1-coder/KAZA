@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* ============================================
+   KAZA Design System - CSS Variables
+   Palette from PRD + shadcn/ui integration
+   ============================================ */
+
+:root {
+  /* === Couleurs Primaires (Navy Blue) === */
+  --color-primary-navy: #1A3A52;
+  --color-primary-navy-light: #2E5A7B;
+  --color-primary-navy-dark: #0F2535;
+
+  /* === Accents === */
+  --color-accent-blue: #1976D2;
+  --color-accent-green: #4CAF50;
+  --color-accent-teal: #20B2AA;
+
+  /* === Neutres === */
+  --color-white: #FFFFFF;
+  --color-light-gray: #F5F5F5;
+  --color-gray: #E0E0E0;
+  --color-dark-gray: #757575;
+  --color-text: #212121;
+  --color-text-secondary: #666666;
+
+  /* === Statuts === */
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-error: #F44336;
+  --color-info: #2196F3;
+
+  /* === shadcn/ui theme variables (light mode only) === */
+  --background: var(--color-white);
+  --foreground: var(--color-text);
+  --card: var(--color-white);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-text);
+  --primary: var(--color-primary-navy);
+  --primary-foreground: var(--color-white);
+  --secondary: var(--color-light-gray);
+  --secondary-foreground: var(--color-text);
+  --muted: var(--color-light-gray);
+  --muted-foreground: var(--color-dark-gray);
+  --accent: var(--color-light-gray);
+  --accent-foreground: var(--color-text);
+  --destructive: var(--color-error);
+  --destructive-foreground: var(--color-white);
+  --border: var(--color-gray);
+  --input: var(--color-gray);
+  --ring: var(--color-accent-blue);
+  --radius: 0.5rem;
+
+  /* === Chart colors === */
+  --chart-1: var(--color-accent-blue);
+  --chart-2: var(--color-accent-green);
+  --chart-3: var(--color-accent-teal);
+  --chart-4: var(--color-warning);
+  --chart-5: var(--color-primary-navy-light);
+
+  /* === Sidebar (dashboard) === */
+  --sidebar-background: var(--color-primary-navy);
+  --sidebar-foreground: var(--color-white);
+  --sidebar-primary: var(--color-accent-blue);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-primary-navy-light);
+  --sidebar-accent-foreground: var(--color-white);
+  --sidebar-border: var(--color-primary-navy-light);
+  --sidebar-ring: var(--color-accent-blue);
+}
+
+/* Force light mode - no dark mode for MVP */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--color-white);
+    --foreground: var(--color-text);
+  }
+}
+
+/* === Tailwind v4 theme configuration === */
+@theme inline {
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* KAZA specific colors */
+  --color-kaza-navy: var(--color-primary-navy);
+  --color-kaza-navy-light: var(--color-primary-navy-light);
+  --color-kaza-navy-dark: var(--color-primary-navy-dark);
+  --color-kaza-blue: var(--color-accent-blue);
+  --color-kaza-green: var(--color-accent-green);
+  --color-kaza-teal: var(--color-accent-teal);
+  --color-kaza-success: var(--color-success);
+  --color-kaza-warning: var(--color-warning);
+  --color-kaza-error: var(--color-error);
+  --color-kaza-info: var(--color-info);
+
+  /* Typography */
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-poppins);
+
+  /* Border radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* === Base styles === */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* === Gradient utilities === */
+.gradient-hero {
+  background: linear-gradient(135deg, rgba(26, 58, 82, 0.7) 0%, rgba(47, 90, 123, 0.5) 100%);
+}
+
+.gradient-overlay {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* === Scrollbar styling === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-light-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-gray);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}

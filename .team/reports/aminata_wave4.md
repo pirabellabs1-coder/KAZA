@@ -1,0 +1,19 @@
+# Aminata Traore - Wave 4 - Finitions Backend
+
+## Fichiers crees
+
+- `src/actions/push-tokens.ts` — Server Actions `registerPushToken({token, platform})` et `unregisterPushToken(token)`. Upsert sur `user_push_tokens` avec `onConflict: 'user_id,token'`, remet `enabled=true` et rafraichit `last_used_at`. Best-effort : log + `success: false` sans throw. Cast `as any` sur la table en attendant la regeneration des types Supabase (migration 00007 par Kwame).
+- `src/components/shared/push-token-register.tsx` — Banniere client mount-on-demand (slide-in au-dessus du bottom-nav, meme positionnement que `InstallPrompt`). Garde-fous : ne rend rien si `window.Notification` absent, si `permission !== 'default'` ou si `localStorage['kaza-push-asked']` deja set. Au clic "Activer" : `Notification.requestPermission()` puis import dynamique de `firebase/app` + `firebase/messaging` pour recuperer un vrai token via `getToken({vapidKey})`. **Fallback** : si le package `firebase` n'est pas installe OU si les env vars `NEXT_PUBLIC_FIREBASE_*` sont absentes, on enregistre quand meme un token sentinelle `'browser-notification-only'` pour conserver l'intention (la permission native reste accordee).
+
+## Fichiers modifies
+
+- `src/app/(dashboard)/student/colocations/page.tsx` — Branche sur Supabase via `fetchWithFallback`. Helper `loadStudentColocations` : `from('rentals').select('*, property:properties!inner(*, photos:property_photos(*))').eq('tenant_id', user.id).eq('property.property_type', 'ROOM')`. La colonne `co_tenants` n'existe pas dans le schema 00001, donc filtrage simple sur `tenant_id` + `property_type='ROOM'`. Fallback mock via `getRentalsByTenantId('u-005-student-fatou')`. La vue "membres" (colocataires) reste sur le mock `mockRoommateGroups`/`mockRoommateMembers` car la table `roommate_groups` n'est pas migree — affichage uniquement si Supabase ne renvoie rien (mode dev).
+- `src/app/sitemap.ts` — Sitemap dynamique async. 16 URLs statiques (`/`, `/search`, `/properties`, `/student-living`, `/about`, `/pricing`, `/faq`, `/how-it-works`, `/contact`, `/carrieres`, 4 legales, `/login`, `/signup`) + URLs proprietes ACTIVES via `fetchWithFallback` sur `properties WHERE status='AVAILABLE'` + URLs carrieres via `JOBS` importe de `@/app/(main)/carrieres/page`. `BASE_URL` = `NEXT_PUBLIC_APP_URL` ou `https://kaza.africa`. `changeFrequency`/`priority` calibres (legales `yearly/0.3`, home `daily/1.0`, proprietes `weekly/0.8`).
+
+## Points de vigilance
+
+1. **Dependance `firebase` non installee** — le package n'est pas dans `package.json`. Tant que `firebase` (ou au moins `firebase/app` + `firebase/messaging`) n'est pas ajoute via `npm install firebase`, le token enregistre sera la sentinelle `'browser-notification-only'` et FCM ne pourra pas l'utiliser. Le composant ne casse pas (try/catch sur l'import dynamique), mais l'envoi push reel cote `sendPush` (Kwame) renverra une erreur FCM `InvalidRegistration`. **Action** : `npm install firebase` + ajouter `NEXT_PUBLIC_FIREBASE_*` (apiKey, authDomain, projectId, messagingSenderId, appId) + `NEXT_PUBLIC_FIREBASE_VAPID_KEY` au `.env.example`.
+2. **Service Worker FCM** — `firebase/messaging` requiert un `firebase-messaging-sw.js` a la racine de `/public`. A creer en meme temps que l'install de Firebase.
+3. **Types Supabase** — `user_push_tokens` cast en `any` (idem `notifications` chez moi en Wave 1). A regenerer apres `supabase gen types typescript`.
+4. **Integration `<PushTokenRegister />`** — A monter dans `src/app/(dashboard)/layout.tsx` (ou layout root) pour etre visible apres login. Pas fait ici pour rester dans le perimetre.
+5. **Schema colocation** — la notion de groupe de colocataires (members, roles) n'a pas de table DB. La page degrade gracieusement vers les mocks tant que la migration `roommate_groups` n'est pas livree.
