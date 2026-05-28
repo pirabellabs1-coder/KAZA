@@ -49,3 +49,10 @@ supabase/.temp/
 coverage/
 playwright-report/
 test-results/
+
+.vercel
+
+# Local ops scripts (contain Supabase Management PAT) — keep out of git
+scripts/
+.team/dev-server.log
+.claude/scheduled_tasks.lock

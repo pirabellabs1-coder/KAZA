@@ -1,362 +1,277 @@
-"use client";
-
-import { useState } from "react";
-import { Eye, Ban, RotateCcw, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import type { Metadata } from "next";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Users,
+  CheckCircle2,
+  Clock,
+  Ban,
+  ShieldOff,
+  Activity,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import {
-  DataTable,
-  type DataTableColumn,
-} from "@/components/admin/data-table";
-import { StatusBadge } from "@/components/admin/status-badge";
-import { cn, getInitials } from "@/lib/utils";
+  AUDIT_LOGS,
+  formatNumber,
+  type AdminUser,
+  type UserStatus,
+  type UserRole,
+  type VerificationStatus,
+} from "@/lib/mock/admin-platform-data";
+import { listAllUsers, type AdminUserRow } from "@/lib/queries/admin";
 
-type UserStatus = "active" | "suspended";
-type UserRole = "OWNER" | "TENANT" | "STUDENT" | "ADMIN";
+import { UsersManager } from "./users-manager";
 
-interface UserRow {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: UserRole;
-  isVerified: boolean;
-  status: UserStatus;
-  registeredAt: string;
-  [key: string]: unknown;
+// Mappings utilisés pour les sections "Comptes signalés" et "VIPs" — vides
+// pour l'instant car ces concepts (reports, flags VIP/Press) n'existent pas
+// encore dans la table public.users. À brancher quand on aura une table
+// `user_flags` ou similaire.
+
+// Map verification_status DB → libellé UI mock.
+const VERIF_MAP: Record<AdminUserRow["verificationStatus"], VerificationStatus> = {
+  APPROVED: "VERIFIED",
+  PENDING: "PENDING",
+  REJECTED: "REJECTED",
+  UNVERIFIED: "NOT_SUBMITTED",
+};
+
+// Adapter Supabase → shape `AdminUser` attendue par UsersManager (UI mock).
+// Les champs qui n'existent pas en DB (trustScore, totalSpentFcfa, flag, etc.)
+// sont remplis avec des valeurs neutres tant qu'on n'a pas branché l'audit
+// log et la facturation.
+function toAdminUser(u: AdminUserRow): AdminUser {
+  return {
+    id: u.id,
+    firstName: u.firstName || "Utilisateur",
+    lastName: u.lastName || "",
+    email: u.email,
+    phone: u.phone ?? "",
+    role: u.role as UserRole,
+    status: (u.isVerified ? "ACTIVE" : "PENDING_KYC") as UserStatus,
+    verification: VERIF_MAP[u.verificationStatus],
+    signupAt: u.createdAt,
+    lastLoginAt: u.updatedAt,
+    country: "BJ",
+    city: u.address ?? "",
+    totalSpentFcfa: 0,
+    reportsAgainst: 0,
+    trustScore: u.isVerified ? 80 : 50,
+    hasTwoFactor: false,
+  };
 }
 
-const allUsers: UserRow[] = [
-  {
-    id: "u-001",
-    firstName: "Aminata",
-    lastName: "Sow",
-    email: "aminata.sow@gmail.com",
-    role: "TENANT",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-25",
-  },
-  {
-    id: "u-002",
-    firstName: "Pierre",
-    lastName: "Hounsou",
-    email: "p.hounsou@yahoo.fr",
-    role: "OWNER",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-24",
-  },
-  {
-    id: "u-003",
-    firstName: "Moussa",
-    lastName: "Adékambi",
-    email: "moussa.a@gmail.com",
-    role: "OWNER",
-    isVerified: false,
-    status: "active",
-    registeredAt: "2026-05-23",
-  },
-  {
-    id: "u-004",
-    firstName: "Fatima",
-    lastName: "Adjovi",
-    email: "fatima.adjovi@etu.uac.bj",
-    role: "STUDENT",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-22",
-  },
-  {
-    id: "u-005",
-    firstName: "Eric",
-    lastName: "Tchégoun",
-    email: "eric.t@orange.bj",
-    role: "OWNER",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-21",
-  },
-  {
-    id: "u-006",
-    firstName: "Karim",
-    lastName: "Lawal",
-    email: "karim.lawal@gmail.com",
-    role: "TENANT",
-    isVerified: false,
-    status: "suspended",
-    registeredAt: "2026-05-20",
-  },
-  {
-    id: "u-007",
-    firstName: "Rose",
-    lastName: "Akpovi",
-    email: "rose.akpovi@hotmail.com",
-    role: "OWNER",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-19",
-  },
-  {
-    id: "u-008",
-    firstName: "Antoine",
-    lastName: "Zinsou",
-    email: "antoine.z@kaza.dev",
-    role: "ADMIN",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-18",
-  },
-  {
-    id: "u-009",
-    firstName: "Yvonne",
-    lastName: "Dossou",
-    email: "y.dossou@gmail.com",
-    role: "TENANT",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-17",
-  },
-  {
-    id: "u-010",
-    firstName: "Pascal",
-    lastName: "Agbo",
-    email: "p.agbo@outlook.com",
-    role: "OWNER",
-    isVerified: true,
-    status: "active",
-    registeredAt: "2026-05-16",
-  },
-  {
-    id: "u-011",
-    firstName: "Lucie",
-    lastName: "Houessou",
-    email: "lucie.h@gmail.com",
-    role: "STUDENT",
-    isVerified: false,
-    status: "active",
-    registeredAt: "2026-05-15",
-  },
-  {
-    id: "u-012",
-    firstName: "Jean",
-    lastName: "Sossa",
-    email: "jean.sossa@yahoo.fr",
-    role: "OWNER",
-    isVerified: true,
-    status: "suspended",
-    registeredAt: "2026-05-14",
-  },
-];
-
-const roleLabels: Record<UserRole, string> = {
-  OWNER: "Propriétaire",
-  TENANT: "Locataire",
-  STUDENT: "Étudiant",
-  ADMIN: "Admin",
+export const metadata: Metadata = {
+  title: "Gestion des utilisateurs — Admin KAZA",
+  description:
+    "Suspendez, bannissez, réactivez et auditez les comptes utilisateurs de la plateforme KAZA.",
 };
 
-const roleBadgeClasses: Record<UserRole, string> = {
-  OWNER: "bg-blue-100 text-blue-700 border-blue-200",
-  TENANT: "bg-purple-100 text-purple-700 border-purple-200",
-  STUDENT: "bg-teal-100 text-teal-700 border-teal-200",
-  ADMIN: "bg-kaza-navy/10 text-kaza-navy border-kaza-navy/20",
-};
+// Force dynamic — toujours afficher l'état réel de la base.
+export const dynamic = "force-dynamic";
 
-export default function AdminUsersPage() {
-  const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [verifiedFilter, setVerifiedFilter] = useState<string>("all");
 
-  const rows = allUsers.filter((u) => {
-    if (roleFilter !== "all" && u.role !== roleFilter) return false;
-    if (statusFilter !== "all" && u.status !== statusFilter) return false;
-    if (verifiedFilter === "yes" && !u.isVerified) return false;
-    if (verifiedFilter === "no" && u.isVerified) return false;
-    return true;
-  });
-
-  const columns: DataTableColumn<UserRow>[] = [
-    {
-      key: "user",
-      label: "Utilisateur",
-      sortValue: (row) => `${row.lastName} ${row.firstName}`,
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <Avatar className="size-9">
-            <AvatarFallback className="bg-kaza-navy/10 text-xs text-kaza-navy">
-              {getInitials(row.firstName, row.lastName)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium text-foreground">
-              {row.firstName} {row.lastName}
-            </span>
-            <span className="text-xs text-muted-foreground">#{row.id}</span>
-          </div>
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  accent,
+  hint,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: string;
+  accent: string;
+  hint?: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {label}
+          </p>
+          <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-kaza-navy">
+            {value}
+          </p>
+          {hint && <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>}
         </div>
-      ),
-    },
-    {
-      key: "email",
-      label: "Email",
-      sortValue: (row) => row.email,
-      render: (row) => <span className="text-sm">{row.email}</span>,
-    },
-    {
-      key: "role",
-      label: "Rôle",
-      sortValue: (row) => row.role,
-      render: (row) => (
         <span
           className={cn(
-            "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-            roleBadgeClasses[row.role]
+            "inline-flex size-9 items-center justify-center rounded-xl",
+            accent,
           )}
         >
-          {roleLabels[row.role]}
+          <Icon className="size-4" />
         </span>
-      ),
-    },
-    {
-      key: "verified",
-      label: "Vérifié",
-      sortValue: (row) => (row.isVerified ? 1 : 0),
-      render: (row) =>
-        row.isVerified ? (
-          <Badge className="border-green-200 bg-green-100 text-green-700">
-            <CheckCircle2 className="size-3" />
-            Vérifié
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="text-muted-foreground">
-            Non vérifié
-          </Badge>
-        ),
-    },
-    {
-      key: "status",
-      label: "Statut",
-      sortValue: (row) => row.status,
-      render: (row) => <StatusBadge status={row.status} />,
-    },
-    {
-      key: "registeredAt",
-      label: "Inscrit le",
-      sortValue: (row) => row.registeredAt,
-      render: (row) => (
-        <span className="text-xs text-muted-foreground">
-          {new Date(row.registeredAt).toLocaleDateString("fr-FR")}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      align: "right",
-      render: (row) => (
-        <div className="flex items-center justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8"
-            title="Voir le profil"
-            onClick={() => console.log("view profile", row.id)}
-          >
-            <Eye className="size-4" />
-          </Button>
-          {row.status === "active" ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 text-kaza-error hover:bg-red-50 hover:text-kaza-error"
-              title="Suspendre"
-              onClick={() => console.log("suspend", row.id)}
-            >
-              <Ban className="size-4" />
-            </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 text-kaza-green hover:bg-green-50 hover:text-kaza-green"
-              title="Réactiver"
-              onClick={() => console.log("reactivate", row.id)}
-            >
-              <RotateCcw className="size-4" />
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ];
+      </div>
+    </div>
+  );
+}
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60_000);
+  if (m < 60) return `il y a ${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `il y a ${h} h`;
+  const d = Math.floor(h / 24);
+  return `il y a ${d} j`;
+}
+
+const ACTION_LABEL: Record<string, string> = {
+  USER_SUSPENDED: "a suspendu",
+  USER_BANNED: "a banni",
+  USER_REACTIVATED: "a réactivé",
+  USER_DELETED: "a supprimé",
+  USER_ROLE_CHANGED: "a modifié le rôle de",
+  USER_IMPERSONATED: "a impersonné",
+};
+
+export default async function AdminUsersPage() {
+  // Charge tous les utilisateurs depuis Supabase, mapping vers la shape UI.
+  const dbUsers = await listAllUsers({ limit: 500 });
+  const users: AdminUser[] = dbUsers.map(toAdminUser);
+
+  const total = users.length;
+  const active = users.filter((u) => u.status === "ACTIVE").length;
+  const pending = dbUsers.filter(
+    (u) => u.verificationStatus === "PENDING",
+  ).length;
+  // Statuts moderation (suspend/ban) pas encore en DB : 0 tant qu'on n'a
+  // pas migré users.status → enum dédié.
+  const suspended = 0;
+  const banned = 0;
+
+  const userAuditFeed = AUDIT_LOGS.filter((l) =>
+    l.action.startsWith("USER_"),
+  ).slice(0, 8);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+    <div className="space-y-8">
+      {/* Header */}
+      <header className="flex flex-col gap-1">
         <h1 className="font-heading text-2xl font-bold text-kaza-navy lg:text-3xl">
           Gestion des utilisateurs
         </h1>
         <p className="text-sm text-muted-foreground">
-          Consultez, suspendez ou réactivez les comptes utilisateurs de la
-          plateforme.
+          {formatNumber(total)} compte{total > 1 ? "s" : ""} au total
+          {pending > 0 ? ` · ${pending} KYC en attente` : ""}
         </p>
-      </div>
+      </header>
 
-      <DataTable
-        columns={columns}
-        rows={rows}
-        searchAccessor={(row) =>
-          `${row.firstName} ${row.lastName} ${row.email}`
-        }
-        searchPlaceholder="Rechercher par nom ou email..."
-        filters={
-          <>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les rôles</SelectItem>
-                <SelectItem value="OWNER">Propriétaire</SelectItem>
-                <SelectItem value="TENANT">Locataire</SelectItem>
-                <SelectItem value="STUDENT">Étudiant</SelectItem>
-                <SelectItem value="ADMIN">Admin</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Statut" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="active">Actif</SelectItem>
-                <SelectItem value="suspended">Suspendu</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={verifiedFilter} onValueChange={setVerifiedFilter}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Identité vérifiée" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Vérification (tous)</SelectItem>
-                <SelectItem value="yes">Vérifiés</SelectItem>
-                <SelectItem value="no">Non vérifiés</SelectItem>
-              </SelectContent>
-            </Select>
-          </>
-        }
-        emptyTitle="Aucun utilisateur"
-        emptyDescription="Aucun utilisateur ne correspond à ces filtres."
-      />
+      {/* Stats */}
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <StatCard
+          icon={Users}
+          label="Total"
+          value={formatNumber(total)}
+          accent="bg-kaza-navy/10 text-kaza-navy"
+          hint="comptes plateforme"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Actifs"
+          value={formatNumber(active)}
+          accent="bg-emerald-100 text-emerald-700"
+          hint={
+            total > 0
+              ? `${Math.round((active / total) * 100)}% du parc`
+              : "—"
+          }
+        />
+        <StatCard
+          icon={Clock}
+          label="KYC en attente"
+          value={formatNumber(pending)}
+          accent="bg-blue-100 text-blue-700"
+          hint="à traiter sous 24h"
+        />
+        <StatCard
+          icon={Ban}
+          label="Suspendus"
+          value={formatNumber(suspended)}
+          accent="bg-amber-100 text-amber-700"
+        />
+        <StatCard
+          icon={ShieldOff}
+          label="Bannis"
+          value={formatNumber(banned)}
+          accent="bg-red-100 text-red-700"
+        />
+      </section>
+
+      {/* Layout 2-col on xl */}
+      <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+        <div className="space-y-6">
+          {/* TODO: brancher "Comptes signalés" et "VIPs & Press" quand
+              les tables `reports` et `user_flags` seront en place. */}
+
+          {/* Empty state si la base est vide (premier déploiement). */}
+          {total === 0 && (
+            <section className="rounded-2xl border border-dashed border-border bg-muted/30 p-10 text-center">
+              <Users className="mx-auto size-10 text-muted-foreground" />
+              <h2 className="mt-3 font-heading text-base font-bold text-kaza-navy">
+                Aucun utilisateur encore inscrit
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Dès la première inscription, les comptes apparaîtront ici
+                avec leurs statuts KYC.
+              </p>
+            </section>
+          )}
+
+          {/* Interactive manager (toolbar + bulk bar + table + modals) */}
+          {total > 0 && (
+            <div className="space-y-4">
+              <UsersManager users={users} />
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar realtime audit */}
+        <aside className="space-y-3">
+          <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+            <header className="mb-3 flex items-center gap-2">
+              <span className="relative inline-flex size-2.5">
+                <span className="absolute inset-0 animate-ping rounded-full bg-kaza-green opacity-75" />
+                <span className="relative inline-block size-2.5 rounded-full bg-kaza-green" />
+              </span>
+              <h2 className="font-heading text-sm font-bold text-kaza-navy">
+                Activité admin temps réel
+              </h2>
+            </header>
+            <ol className="space-y-3">
+              {userAuditFeed.map((log) => (
+                <li key={log.id} className="flex gap-3 border-b border-border/60 pb-3 last:border-0 last:pb-0">
+                  <span className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-kaza-navy/10 text-kaza-navy">
+                    <Activity className="size-3.5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-foreground">
+                      <span className="font-semibold text-kaza-navy">
+                        {log.adminName}
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        {ACTION_LABEL[log.action] ?? log.action}
+                      </span>{" "}
+                      <span className="font-medium text-kaza-navy">
+                        {log.targetLabel}
+                      </span>
+                    </p>
+                    {log.reason && (
+                      <p className="mt-1 line-clamp-2 text-[11px] italic text-muted-foreground">
+                        « {log.reason} »
+                      </p>
+                    )}
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      {timeAgo(log.timestamp)} · IP {log.ipAddress}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

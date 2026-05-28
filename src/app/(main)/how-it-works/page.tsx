@@ -1,26 +1,25 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import {
-  Search,
-  Building2,
-  GraduationCap,
-  ShieldCheck,
-  Wallet,
-  Star,
   Play,
-  Eye,
-  CalendarCheck,
-  KeyRound,
-  Megaphone,
-  Inbox,
-  UserCheck,
-  Banknote,
   Users,
-  MessageCircle,
-  Calculator,
+  ArrowRight,
   Sparkles,
+  MapPin,
 } from "lucide-react";
-import { SectionHero } from "@/components/marketing/section-hero";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CtaBanner } from "@/components/marketing/cta-banner";
+import { FeatureHighlight } from "@/components/marketing/feature-highlight";
+import { TestimonialCard } from "@/components/marketing/testimonial-card";
+import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
+import { FadeIn } from "@/components/shared/fade-in";
+import { AnimatedGradientBg } from "@/components/shared/animated-gradient-bg";
+import { GlassPanel } from "@/components/shared/glass-panel";
+import { Marquee } from "@/components/shared/marquee";
+import { TESTIMONIALS } from "@/lib/marketing-data";
+import { HowItWorksTabs } from "./how-it-works-tabs";
 
 export const metadata: Metadata = {
   title: "Comment ça marche — KAZA",
@@ -34,297 +33,335 @@ export const metadata: Metadata = {
   },
 };
 
-type Step = {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-};
-
-type Profile = {
-  id: string;
-  emoji: string;
-  badge: string;
-  badgeColor: string;
-  title: string;
-  intro: string;
-  icon: React.ComponentType<{ className?: string }>;
-  steps: Step[];
-};
-
-const profiles: Profile[] = [
-  {
-    id: "tenant",
-    emoji: "🔑",
-    badge: "LOCATAIRES",
-    badgeColor: "bg-kaza-blue/10 text-kaza-blue",
-    title: "Trouvez le logement qui vous ressemble",
-    intro:
-      "De la recherche à la remise des clés, KAZA simplifie chaque étape de votre installation.",
-    icon: KeyRound,
-    steps: [
-      {
-        icon: Search,
-        title: "Recherchez",
-        description:
-          "Affinez votre recherche avec nos filtres puissants : ville, quartier, budget, surface, équipements. Plus de 5 000 annonces vérifiées vous attendent.",
-      },
-      {
-        icon: Eye,
-        title: "Visitez",
-        description:
-          "Explorez chaque bien en visite virtuelle 360° immersive ou planifiez une visite physique en quelques clics avec le propriétaire.",
-      },
-      {
-        icon: CalendarCheck,
-        title: "Réservez",
-        description:
-          "Bloquez le logement en payant la caution via l'escrow KAZA. Vos fonds restent sécurisés jusqu'à la remise effective des clés.",
-      },
-      {
-        icon: KeyRound,
-        title: "Emménagez",
-        description:
-          "Signez votre contrat numérique en quelques minutes, recevez vos clés, et profitez de votre nouveau chez-vous l'esprit tranquille.",
-      },
-    ],
-  },
-  {
-    id: "owner",
-    emoji: "🏠",
-    badge: "PROPRIÉTAIRES",
-    badgeColor: "bg-kaza-green/10 text-kaza-green",
-    title: "Louez votre bien plus vite, sans agence",
-    intro:
-      "Publiez, sélectionnez, encaissez. KAZA s'occupe du reste pour que vous gardiez le contrôle de votre patrimoine.",
-    icon: Building2,
-    steps: [
-      {
-        icon: Megaphone,
-        title: "Publiez votre annonce",
-        description:
-          "Ajoutez photos, plans et description en 10 minutes. Notre équipe valide votre annonce sous 24h et la rend visible auprès de milliers de candidats.",
-      },
-      {
-        icon: Inbox,
-        title: "Recevez les demandes",
-        description:
-          "Échangez via la messagerie intégrée avec les candidats. Consultez leur profil vérifié, leur score de fiabilité et leurs justificatifs.",
-      },
-      {
-        icon: UserCheck,
-        title: "Sélectionnez votre locataire",
-        description:
-          "Choisissez en toute confiance grâce aux vérifications KYC, à l'historique de paiement et aux références d'anciens bailleurs.",
-      },
-      {
-        icon: Banknote,
-        title: "Percevez vos loyers",
-        description:
-          "Encaissement automatique chaque mois via Mobile Money. Relances et reporting inclus. Plus jamais d'impayés non suivis.",
-      },
-    ],
-  },
-  {
-    id: "student",
-    emoji: "🎓",
-    badge: "ÉTUDIANTS",
-    badgeColor: "bg-amber-100 text-amber-700",
-    title: "La colocation pensée pour les étudiants",
-    intro:
-      "KAZA Academia, le meilleur de la colocation étudiante en Afrique de l'Ouest.",
-    icon: GraduationCap,
-    steps: [
-      {
-        icon: Search,
-        title: "Trouvez votre colocation",
-        description:
-          "Filtrez par université, budget et style de vie. Découvrez les logements meublés tout équipés près de votre campus.",
-      },
-      {
-        icon: MessageCircle,
-        title: "Discutez avec les colocs",
-        description:
-          "Échangez avec les colocataires actuels avant de vous engager. Vérifiez les vibes, les habitudes et l'organisation du quotidien.",
-      },
-      {
-        icon: Calculator,
-        title: "Partagez les frais",
-        description:
-          "Loyer, eau, électricité, internet : KAZA divise automatiquement et chaque coloc paie sa part directement. Zéro tension, zéro avance.",
-      },
-      {
-        icon: Sparkles,
-        title: "Vivez sereinement",
-        description:
-          "Concentrez-vous sur vos études. KAZA gère la maintenance, les relations avec le propriétaire et l'organisation du foyer.",
-      },
-    ],
-  },
-];
-
 const securityPillars = [
   {
-    icon: ShieldCheck,
+    icon: "ShieldCheck",
     title: "Vérification d'identité",
     description:
       "Chaque utilisateur est vérifié par KYC (pièce d'identité + selfie biométrique). Vous ne traitez qu'avec des profils réels et authentifiés.",
+    metric: "100 % comptes vérifiés",
   },
   {
-    icon: Wallet,
+    icon: "Wallet",
     title: "Escrow sécurisé",
     description:
       "Vos fonds (caution, premier loyer) sont bloqués sur un compte séquestre chiffré et libérés uniquement après la remise effective des clés.",
+    metric: "Fonds 100 % protégés",
   },
   {
-    icon: Star,
-    title: "Notation communautaire",
+    icon: "FileSignature",
+    title: "Contrats numériques",
     description:
-      "Propriétaires comme locataires reçoivent des avis après chaque location. Un système transparent qui valorise les comportements vertueux.",
+      "Bail conforme au droit béninois, signé électroniquement en quelques minutes. PDF archivé et juridiquement opposable.",
+    metric: "Signature électronique légale",
   },
 ];
 
-export default function HowItWorksPage() {
-  return (
-    <div>
-      <SectionHero
-        eyebrow="Mode d'emploi"
-        title="Comment fonctionne KAZA"
-        subtitle="Une plateforme pensée pour chaque profil. Découvrez le parcours qui correspond au vôtre, en seulement 4 étapes."
-        variant="navy"
-      />
+const KAZA_CITIES = [
+  { name: "Cotonou", country: "Bénin", active: true, lat: "6.36°N" },
+  { name: "Porto-Novo", country: "Bénin", active: true, lat: "6.49°N" },
+  { name: "Abomey-Calavi", country: "Bénin", active: true, lat: "6.45°N" },
+  { name: "Parakou", country: "Bénin", active: true, lat: "9.34°N" },
+  { name: "Bohicon", country: "Bénin", active: true, lat: "7.18°N" },
+  { name: "Natitingou", country: "Bénin", active: true, lat: "10.30°N" },
+  { name: "Lomé", country: "Togo", active: false, lat: "Bientôt" },
+  { name: "Abidjan", country: "Côte d'Ivoire", active: false, lat: "Bientôt" },
+  { name: "Dakar", country: "Sénégal", active: false, lat: "Bientôt" },
+];
 
-      {/* Video placeholder */}
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4 lg:px-8">
-          <div className="group relative aspect-video w-full overflow-hidden rounded-2xl bg-kaza-navy shadow-xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-kaza-navy via-kaza-navy to-kaza-blue/40" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button
-                type="button"
-                className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110"
-                aria-label="Lire la vidéo de présentation"
+export default function HowItWorksPage() {
+  const highlightedTestimonials = TESTIMONIALS.slice(0, 6);
+
+  return (
+    <div className="overflow-hidden">
+      {/* ===== HERO ANIMATED GRADIENT ================================ */}
+      <AnimatedGradientBg className="relative flex min-h-[70vh] items-center">
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-24 text-center lg:px-8">
+          <FadeIn>
+            <Badge className="mb-6 border-kaza-blue/20 bg-kaza-blue/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
+              <Sparkles className="mr-2 size-3.5" />
+              Mode d&apos;emploi
+            </Badge>
+          </FadeIn>
+          <FadeIn delay={100}>
+            <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-kaza-navy sm:text-5xl lg:text-7xl">
+              Comment fonctionne{" "}
+              <span className="bg-gradient-to-r from-kaza-blue via-kaza-green to-kaza-blue bg-clip-text text-transparent">
+                KAZA en 4 étapes
+              </span>
+            </h1>
+          </FadeIn>
+          <FadeIn delay={200}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+              Une plateforme pensée pour chaque profil. Découvrez le parcours
+              qui correspond au vôtre — simple, rapide, sécurisé.
+            </p>
+          </FadeIn>
+          <FadeIn delay={300}>
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <Button
+                asChild
+                size="lg"
+                className="h-14 rounded-full bg-kaza-navy px-8 text-base font-semibold hover:bg-kaza-blue"
               >
-                <Play className="ml-1 size-8 fill-kaza-navy text-kaza-navy" />
-              </button>
+                <Link href="/signup">
+                  Démarrer maintenant
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-14 rounded-full border-kaza-navy bg-white/60 px-8 text-base font-semibold text-kaza-navy backdrop-blur-md hover:bg-white"
+              >
+                <Link href="#video">
+                  <Play className="mr-2 size-4 fill-current" />
+                  Voir la vidéo
+                </Link>
+              </Button>
             </div>
-            <div className="absolute bottom-6 left-6 text-white">
-              <p className="text-xs font-semibold tracking-widest uppercase text-kaza-green">
+          </FadeIn>
+        </div>
+      </AnimatedGradientBg>
+
+      {/* ===== TABS PROFILES ========================================= */}
+      <section className="bg-white py-24" id="profils">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-12 text-center">
+              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
+                Trois parcours, une seule plateforme
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
+                Choisissez votre profil
+              </h2>
+            </div>
+          </RevealOnScroll>
+
+          <HowItWorksTabs />
+        </div>
+      </section>
+
+      {/* ===== VIDEO PLACEHOLDER ===================================== */}
+      <section
+        id="video"
+        className="relative isolate overflow-hidden bg-kaza-navy py-24 text-white"
+      >
+        <div
+          className="pointer-events-none absolute -top-32 -left-32 size-[28rem] rounded-full bg-kaza-blue/30 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -right-32 -bottom-32 size-[28rem] rounded-full bg-kaza-green/30 blur-3xl"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto max-w-5xl px-4 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-12 text-center">
+              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-green uppercase">
                 Présentation
               </p>
-              <p className="mt-1 text-lg font-semibold">
+              <h2 className="font-heading text-3xl font-bold sm:text-4xl lg:text-5xl">
                 KAZA en 90 secondes
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/75">
+                Découvrez en vidéo comment KAZA transforme l&apos;expérience
+                immobilière au Bénin.
               </p>
             </div>
-          </div>
+          </RevealOnScroll>
+
+          <RevealOnScroll>
+            <GlassPanel
+              intensity="strong"
+              tint="navy"
+              className="overflow-hidden rounded-3xl border-white/10 p-2"
+            >
+              <div className="group relative aspect-video w-full overflow-hidden rounded-2xl bg-gradient-to-br from-kaza-navy via-kaza-blue/30 to-kaza-navy">
+                <Image
+                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=80"
+                  alt=""
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 1024px"
+                  className="object-cover opacity-40 transition-transform duration-700 group-hover:scale-105"
+                  aria-hidden
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-kaza-navy/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <button
+                    type="button"
+                    className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-white/95 shadow-2xl ring-4 ring-white/20 backdrop-blur transition-all duration-300 hover:scale-110 hover:ring-8"
+                    aria-label="Lire la vidéo de présentation"
+                  >
+                    <Play
+                      className="ml-1 size-10 fill-kaza-navy text-kaza-navy"
+                      strokeWidth={1.5}
+                    />
+                  </button>
+                </div>
+              </div>
+            </GlassPanel>
+          </RevealOnScroll>
         </div>
       </section>
 
-      {/* Profile sections */}
-      {profiles.map((profile, idx) => (
-        <section
-          key={profile.id}
-          className={idx % 2 === 0 ? "bg-gray-50 py-16" : "bg-white py-16"}
-        >
-          <div className="mx-auto max-w-7xl px-4 lg:px-8">
-            <div className="grid items-start gap-12 lg:grid-cols-12">
-              <div className="lg:col-span-4">
-                <div
+      {/* ===== SÉCURITÉ CHEZ KAZA ==================================== */}
+      <section className="bg-white py-24">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-16 text-center">
+              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
+                Sécurité KAZA
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
+                Trois piliers pour protéger chaque transaction
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+                La sécurité n&apos;est pas une option chez KAZA — c&apos;est notre
+                fondation.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid gap-8 lg:grid-cols-3">
+            {securityPillars.map((p, i) => (
+              <RevealOnScroll key={p.title} delay={i * 120}>
+                <div className="group h-full rounded-3xl border border-gray-100 bg-white p-2 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
+                  <FeatureHighlight
+                    icon={p.icon}
+                    title={p.title}
+                    description={p.description}
+                    metric={p.metric}
+                  />
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+
+          <RevealOnScroll>
+            <div className="mt-16 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Users className="size-4 text-kaza-blue" />
+              <span>
+                Déjà plus de{" "}
+                <strong className="font-semibold text-kaza-navy">10 000</strong>{" "}
+                utilisateurs vérifiés sur KAZA
+              </span>
+            </div>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* ===== PRÉSENTS AU BÉNIN ===================================== */}
+      <section className="relative isolate overflow-hidden bg-gradient-to-br from-kaza-navy via-kaza-navy to-kaza-blue/40 py-24 text-white">
+        <Image
+          src="https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=2000&q=80"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-15"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -top-32 -right-32 size-[32rem] rounded-full bg-kaza-green/20 blur-3xl"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-16 text-center">
+              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-green uppercase">
+                Couverture géographique
+              </p>
+              <h2 className="font-heading text-3xl font-bold sm:text-4xl lg:text-5xl">
+                Présents au Bénin et bientôt au-delà
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-white/75">
+                Du littoral atlantique à l&apos;Atacora, et bientôt dans toute
+                l&apos;Afrique de l&apos;Ouest.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {KAZA_CITIES.map((c, i) => (
+              <RevealOnScroll key={c.name} delay={i * 60}>
+                <GlassPanel
+                  intensity="medium"
+                  tint="navy"
                   className={
-                    "inline-block rounded-full px-3 py-1 text-xs font-semibold tracking-wide " +
-                    profile.badgeColor
+                    "flex items-center gap-4 rounded-2xl border-white/10 p-5 transition-all hover:-translate-y-1 " +
+                    (c.active ? "bg-white/10" : "bg-white/5 opacity-70")
                   }
                 >
-                  {profile.badge}
-                </div>
-                <div className="mt-6 flex h-32 w-32 items-center justify-center rounded-3xl bg-white text-7xl shadow-md ring-1 ring-gray-100">
-                  <span aria-hidden>{profile.emoji}</span>
-                </div>
-                <h2 className="mt-6 font-heading text-2xl font-bold text-kaza-navy sm:text-3xl">
-                  {profile.title}
-                </h2>
-                <p className="mt-3 text-base text-muted-foreground">
-                  {profile.intro}
-                </p>
-              </div>
-
-              <div className="lg:col-span-8">
-                <div className="grid gap-5 sm:grid-cols-2">
-                  {profile.steps.map((step, i) => {
-                    const Icon = step.icon;
-                    return (
-                      <div
-                        key={step.title}
-                        className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kaza-blue/10">
-                            <Icon className="size-5 text-kaza-blue" />
-                          </div>
-                          <span className="font-heading text-sm font-bold text-gray-300">
-                            0{i + 1}
-                          </span>
-                        </div>
-                        <h3 className="mt-4 font-heading text-lg font-semibold text-kaza-navy">
-                          {step.title}
-                        </h3>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {step.description}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ))}
-
-      {/* Security pillars */}
-      <section className="bg-kaza-navy py-16 text-white">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold tracking-widest uppercase text-kaza-green">
-              Sécurité KAZA
-            </p>
-            <h2 className="mt-3 font-heading text-3xl font-bold sm:text-4xl">
-              Trois piliers pour protéger chaque transaction
-            </h2>
-            <p className="mt-4 text-white/70">
-              La sécurité n&apos;est pas une option chez KAZA, c&apos;est notre
-              fondation.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {securityPillars.map((pillar) => {
-              const Icon = pillar.icon;
-              return (
-                <div
-                  key={pillar.title}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-kaza-green/20">
-                    <Icon className="size-6 text-kaza-green" />
+                  <div
+                    className={
+                      "flex size-12 shrink-0 items-center justify-center rounded-full " +
+                      (c.active
+                        ? "bg-kaza-green/20 text-kaza-green"
+                        : "bg-white/10 text-white/60")
+                    }
+                  >
+                    <MapPin className="size-5" />
                   </div>
-                  <h3 className="mt-6 font-heading text-xl font-semibold">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-3 text-sm text-white/70">
-                    {pillar.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-12 flex items-center justify-center gap-2 text-sm text-white/60">
-            <Users className="size-4" />
-            <span>Déjà plus de 10 000 utilisateurs vérifiés sur KAZA</span>
+                  <div className="flex-1">
+                    <p className="font-heading text-base font-semibold">
+                      {c.name}
+                    </p>
+                    <p className="text-xs text-white/60">{c.country}</p>
+                  </div>
+                  {c.active ? (
+                    <Badge className="bg-kaza-green/20 text-xs font-semibold text-kaza-green">
+                      Actif
+                    </Badge>
+                  ) : (
+                    <Badge className="border-white/20 bg-white/10 text-xs font-semibold text-white/70">
+                      {c.lat}
+                    </Badge>
+                  )}
+                </GlassPanel>
+              </RevealOnScroll>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* ===== TÉMOIGNAGES MARQUEE =================================== */}
+      <section className="bg-gray-50 py-24">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-16 text-center">
+              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
+                Ce qu&apos;ils en disent
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
+                Des histoires vraies, des résultats concrets
+              </h2>
+            </div>
+          </RevealOnScroll>
+        </div>
+
+        <RevealOnScroll>
+          <Marquee speed={40} pauseOnHover contentWidth={2400}>
+            {highlightedTestimonials.map((t) => (
+              <div key={t.id} className="w-[360px]">
+                <TestimonialCard
+                  name={t.name}
+                  role={t.role}
+                  avatarSeed={t.avatarSeed}
+                  rating={t.rating}
+                  quote={t.quote}
+                  city={t.city}
+                  highlight={t.highlight}
+                />
+              </div>
+            ))}
+          </Marquee>
+        </RevealOnScroll>
+      </section>
+
+      {/* ===== CTA FINAL ============================================== */}
       <CtaBanner
         title="Prêt à essayer KAZA ?"
         description="Inscription gratuite en moins de 2 minutes. Sans engagement, sans carte bancaire."

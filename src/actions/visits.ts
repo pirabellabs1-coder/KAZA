@@ -12,10 +12,33 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/auth/demo-mode";
+import { dispatchNotification } from "@/lib/notifications/dispatch";
+import { track } from "@/lib/analytics/track";
 import type { VisitRequest } from "@/types/properties";
 import { visitRequestSchema } from "@/validators/property";
 
 import { createNotification, type ActionResult } from "./notifications";
+
+// En mode démo : pas de DB, on simule un succès pour ne pas casser l'UI.
+function demoVisitSuccess(
+  status: VisitRequest["status"] = "PENDING",
+): ActionResult<VisitRequest> {
+  return {
+    success: true,
+    data: {
+      id: `demo-${Date.now()}`,
+      property_id: "demo",
+      tenant_id: "demo",
+      requested_date: new Date().toISOString().slice(0, 10),
+      requested_time: null,
+      message: null,
+      status,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as unknown as VisitRequest,
+  };
+}
 
 // TODO: type manquant - voir note dans `properties.ts` (Database sans Relationships).
 async function getLooseClient(): Promise<SupabaseClient> {
@@ -48,6 +71,9 @@ export async function requestVisit(
     };
   }
 
+  // Mode démo : enregistrement simulé.
+  if (isDemoMode()) return demoVisitSuccess("PENDING");
+
   const supabase = await getLooseClient();
   const {
     data: { user },
@@ -59,7 +85,7 @@ export async function requestVisit(
 
   const { data: property, error: propertyError } = await supabase
     .from("properties")
-    .select("id, owner_id, title")
+    .select("id, owner_id, title, status")
     .eq("id", parsed.data.propertyId)
     .maybeSingle();
 
@@ -67,10 +93,34 @@ export async function requestVisit(
     return { success: false, error: "Annonce introuvable." };
   }
 
+  if (property.status !== "AVAILABLE") {
+    return {
+      success: false,
+      error: "Ce bien n'est plus disponible a la visite.",
+    };
+  }
+
   if (property.owner_id === user.id) {
     return {
       success: false,
       error: "Vous ne pouvez pas demander a visiter votre propre annonce.",
+    };
+  }
+
+  // Anti-doublon : pas deux demandes PENDING simultanees sur le meme bien.
+  const { data: existing } = await supabase
+    .from("visit_requests")
+    .select("id")
+    .eq("property_id", property.id)
+    .eq("tenant_id", user.id)
+    .eq("status", "PENDING")
+    .maybeSingle();
+
+  if (existing) {
+    return {
+      success: false,
+      error:
+        "Vous avez deja une demande de visite en attente sur ce bien.",
     };
   }
 
@@ -96,6 +146,13 @@ export async function requestVisit(
     };
   }
 
+  // Tracking analytics — best-effort, n'interrompt jamais le flow.
+  await track({
+    eventType: "VISIT_REQUESTED",
+    metadata: { property_id: property.id, visit_id: data.id },
+  });
+
+  // 1) Notification in-app (table notifications) — best-effort.
   await createNotification(supabase, {
     userId: property.owner_id,
     type: "VISIT_REQUESTED",
@@ -104,6 +161,35 @@ export async function requestVisit(
     link: `/owner/visits/${data.id}`,
   });
 
+  // 2) Dispatcher complet (email Resend + push FCM) — best-effort.
+  //    On recupere le nom du visiteur pour personnaliser le mail.
+  try {
+    const { data: tenant } = await supabase
+      .from("users")
+      .select("first_name, last_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const requesterName = tenant
+      ? `${tenant.first_name ?? ""} ${tenant.last_name ?? ""}`.trim() ||
+        "Un locataire"
+      : "Un locataire";
+
+    await dispatchNotification({
+      userId: property.owner_id,
+      type: "visit_request",
+      data: {
+        propertyTitle: property.title,
+        requesterName,
+        date: `${parsed.data.requestedDate} a ${parsed.data.requestedTime ?? "10:00"}`,
+      },
+    });
+  } catch (err) {
+    // Best-effort : un email rate ne bloque pas la creation de la visite.
+    console.warn("[requestVisit] dispatchNotification failed:", err);
+  }
+
+  revalidatePath(`/properties/${property.id}`);
   revalidatePath("/owner/visits");
   revalidatePath("/tenant/visits");
   return { success: true, data: data as unknown as VisitRequest };
@@ -178,6 +264,7 @@ async function transitionVisit(
 
 /** Le proprietaire accepte la demande de visite. */
 export async function acceptVisit(id: string): Promise<ActionResult<VisitRequest>> {
+  if (isDemoMode()) return demoVisitSuccess("CONFIRMED");
   return transitionVisit(id, "CONFIRMED", {
     type: "VISIT_CONFIRMED",
     title: "Visite confirmee",
@@ -187,6 +274,7 @@ export async function acceptVisit(id: string): Promise<ActionResult<VisitRequest
 
 /** Le proprietaire refuse la demande de visite. */
 export async function rejectVisit(id: string): Promise<ActionResult<VisitRequest>> {
+  if (isDemoMode()) return demoVisitSuccess("CANCELLED");
   return transitionVisit(id, "CANCELLED", {
     type: "VISIT_REJECTED",
     title: "Visite refusee",
@@ -203,6 +291,8 @@ export async function rejectVisit(id: string): Promise<ActionResult<VisitRequest
  * annuler avant la date prevue. La contrepartie recoit une notification.
  */
 export async function cancelVisit(id: string): Promise<ActionResult<VisitRequest>> {
+  if (isDemoMode()) return demoVisitSuccess("CANCELLED");
+
   const supabase = await getLooseClient();
   const {
     data: { user },

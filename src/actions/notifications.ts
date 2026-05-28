@@ -6,12 +6,9 @@
 // Convention de retour : `{ success: true } | { success: false; error: string }`
 // (Server Actions destinees a etre appelees depuis des composants client).
 //
-// NOTE IMPORTANTE : la table `notifications` n'existe pas encore dans le schema
-// Supabase (00001_initial_schema.sql). Les helpers ci-dessous sont prets a etre
-// branches des qu'elle sera creee (cf. rapport `.team/reports/aminata_wave1.md`).
-// En attendant, les operations sur la table sont "best-effort" : on log et on
-// echoue silencieusement plutot que de bloquer les flux metier (visites,
-// messages, etc.) qui creent des notifs en cascade.
+// La table `notifications` est livree par la migration 00004_notifications.sql :
+// elle utilise `read_at: timestamptz` (NULL = non lue) et `metadata: jsonb`
+// pour le payload structure.
 // =============================================================================
 
 import { revalidatePath } from "next/cache";
@@ -27,23 +24,51 @@ export type ActionResult<T = undefined> =
   | { success: true; data?: T }
   | { success: false; error: string };
 
-/** Categories de notification supportees par la plateforme. */
+/** Categories de notification supportees par la plateforme (alignees sur l'ENUM). */
 export type NotificationType =
-  | "VISIT_REQUESTED"
-  | "VISIT_CONFIRMED"
-  | "VISIT_REJECTED"
-  | "VISIT_CANCELLED"
-  | "MESSAGE_RECEIVED"
-  | "REVIEW_RECEIVED"
-  | "PROPERTY_PUBLISHED"
-  | "FAVORITE_PRICE_CHANGED";
+  | "visit_request"
+  | "visit_accepted"
+  | "visit_rejected"
+  | "message_received"
+  | "payment_received"
+  | "payment_failed"
+  | "payment_due"
+  | "property_approved"
+  | "property_rejected"
+  | "property_suspended"
+  | "contract_ready"
+  | "contract_signed"
+  | "review_received"
+  | "identity_approved"
+  | "identity_rejected"
+  | "system";
+
+// Compat retro : certains call sites utilisent encore les anciens libelles
+// UPPER_CASE. Cette table de mapping permet de les accepter sans casser
+// le contrat actuel (visites, messages, etc.).
+const LEGACY_TYPE_MAP: Record<string, NotificationType> = {
+  VISIT_REQUESTED: "visit_request",
+  VISIT_CONFIRMED: "visit_accepted",
+  VISIT_REJECTED: "visit_rejected",
+  VISIT_CANCELLED: "visit_rejected",
+  MESSAGE_RECEIVED: "message_received",
+  REVIEW_RECEIVED: "review_received",
+  PROPERTY_PUBLISHED: "property_approved",
+  FAVORITE_PRICE_CHANGED: "system",
+};
+
+function coerceType(value: string): NotificationType {
+  if (value in LEGACY_TYPE_MAP) return LEGACY_TYPE_MAP[value];
+  return value as NotificationType;
+}
 
 interface CreateNotificationInput {
   userId: string;
-  type: NotificationType;
+  type: NotificationType | string;
   title: string;
   body?: string;
   link?: string;
+  metadata?: Record<string, unknown>;
 }
 
 // ---------------------------------------------------------------------------
@@ -54,35 +79,27 @@ interface CreateNotificationInput {
  * Cree une notification pour un utilisateur donne.
  *
  * Utilise un client Supabase deja initialise (typiquement injecte depuis une
- * autre Server Action). Si la table `notifications` n'existe pas encore,
- * l'erreur est loguee et la promesse se resout silencieusement (`success: false`)
- * afin de ne pas casser le flux appelant (creation de visite, message, etc.).
+ * autre Server Action). En cas d'erreur (RLS, contrainte FK, etc.) on log et
+ * on resout silencieusement pour ne pas bloquer le flux appelant (creation
+ * de visite, message, etc.).
  */
 export async function createNotification(
   supabase: SupabaseClient,
-  input: CreateNotificationInput
+  input: CreateNotificationInput,
 ): Promise<ActionResult> {
   try {
-    // TODO: type manquant - la table `notifications` n'est pas encore dans
-    // `src/types/supabase.ts`. Demander a Yaw d'ajouter la migration + types.
-    const { error } = await supabase
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .from("notifications" as any)
-      .insert({
-        user_id: input.userId,
-        type: input.type,
-        title: input.title,
-        body: input.body ?? null,
-        link: input.link ?? null,
-        is_read: false,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+    const { error } = await supabase.from("notifications").insert({
+      user_id: input.userId,
+      type: coerceType(input.type),
+      title: input.title,
+      body: input.body ?? null,
+      link: input.link ?? null,
+      metadata: input.metadata ?? {},
+      read_at: null,
+    });
 
     if (error) {
-      console.warn(
-        "[notifications] insertion impossible (table absente ?)",
-        error.message
-      );
+      console.warn("[notifications] insertion impossible", error.message);
       return { success: false, error: error.message };
     }
 
@@ -102,7 +119,7 @@ export async function createNotification(
 
 /** Marque une notification comme lue. */
 export async function markNotificationRead(id: string): Promise<ActionResult> {
-  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -112,12 +129,9 @@ export async function markNotificationRead(id: string): Promise<ActionResult> {
     return { success: false, error: "Vous devez etre connecte." };
   }
 
-  // TODO: type manquant - table `notifications`.
   const { error } = await supabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .from("notifications" as any)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .update({ is_read: true } as any)
+    .from("notifications")
+    .update({ read_at: new Date().toISOString() })
     .eq("id", id)
     .eq("user_id", user.id);
 
@@ -128,13 +142,14 @@ export async function markNotificationRead(id: string): Promise<ActionResult> {
     };
   }
 
+  revalidatePath("/notifications");
   revalidatePath("/dashboard");
   return { success: true };
 }
 
 /** Marque toutes les notifications de l'utilisateur courant comme lues. */
 export async function markAllNotificationsRead(): Promise<ActionResult> {
-  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -145,12 +160,10 @@ export async function markAllNotificationsRead(): Promise<ActionResult> {
   }
 
   const { error } = await supabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .from("notifications" as any)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .update({ is_read: true } as any)
+    .from("notifications")
+    .update({ read_at: new Date().toISOString() })
     .eq("user_id", user.id)
-    .eq("is_read", false);
+    .is("read_at", null);
 
   if (error) {
     return {
@@ -159,13 +172,14 @@ export async function markAllNotificationsRead(): Promise<ActionResult> {
     };
   }
 
+  revalidatePath("/notifications");
   revalidatePath("/dashboard");
   return { success: true };
 }
 
 /** Supprime une notification appartenant a l'utilisateur courant. */
 export async function deleteNotification(id: string): Promise<ActionResult> {
-  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -176,8 +190,7 @@ export async function deleteNotification(id: string): Promise<ActionResult> {
   }
 
   const { error } = await supabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .from("notifications" as any)
+    .from("notifications")
     .delete()
     .eq("id", id)
     .eq("user_id", user.id);
@@ -189,6 +202,7 @@ export async function deleteNotification(id: string): Promise<ActionResult> {
     };
   }
 
+  revalidatePath("/notifications");
   revalidatePath("/dashboard");
   return { success: true };
 }

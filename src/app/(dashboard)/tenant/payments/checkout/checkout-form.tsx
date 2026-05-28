@@ -23,13 +23,13 @@ interface CheckoutFormProps {
 }
 
 export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
-  const [method, setMethod] = useState<PaymentMethod>("mtn");
+  const [method, setMethod] = useState<PaymentMethod>("KAZA Pay");
   const [phone, setPhone] = useState("");
   const [acceptCgu, setAcceptCgu] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const isMobileMoney = method === "mtn" || method === "moov";
+  const isMobileMoney = method === "KAZA Pay" || method === "KAZA Wallet";
   const phoneValid =
     !isMobileMoney ||
     /^(\+229)?\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, ""));
@@ -56,7 +56,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
       try {
         const result = await initiateRentPayment({
           rentalId,
-          provider: method === "visa" ? "kkiapay" : "fedapay",
+          provider: method === "visa" ? "KAZA Wallet" : "KAZA Pay",
         });
 
         if (!result.success || !result.checkoutUrl) {
@@ -101,11 +101,11 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
         <section className="space-y-3">
           <div>
             <h2 className="font-heading text-lg font-semibold text-foreground">
-              2. Numéro Mobile Money
+              2. Numéro paiement intégré
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Le numéro associé à votre compte{" "}
-              {method === "mtn" ? "MTN" : "Moov"}.
+              {method === "KAZA Pay" ? "KAZA Pay" : "KAZA Wallet"}.
             </p>
           </div>
           <div className="space-y-2">

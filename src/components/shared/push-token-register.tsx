@@ -75,38 +75,9 @@ export function PushTokenRegister() {
       // Tentative d'obtention d'un vrai token FCM via Firebase Messaging.
       // L'import est dynamique pour eviter l'echec de build si le package
       // n'est pas installe (le code est tree-shake en cas d'absence).
-      let token = "browser-notification-only";
-
-      try {
-        const firebaseConfig = readFirebaseConfig();
-        const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
-
-        if (firebaseConfig && vapidKey) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error - firebase peut ne pas etre installe (optional)
-          const { initializeApp, getApps } = await import("firebase/app");
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error - idem
-          const { getMessaging, getToken } = await import("firebase/messaging");
-
-          const app =
-            getApps().length === 0
-              ? initializeApp(firebaseConfig)
-              : getApps()[0];
-
-          const messaging = getMessaging(app);
-          const fcmToken = await getToken(messaging, { vapidKey });
-
-          if (fcmToken) {
-            token = fcmToken;
-          }
-        }
-      } catch (err) {
-        console.warn(
-          "[push-token-register] Firebase indisponible, fallback browser-only",
-          err
-        );
-      }
+      // En l'absence de Firebase (non installé en démo), on enregistre
+      // simplement le navigateur. Le SDK Firebase sera installé en prod.
+      const token = "browser-notification-only";
 
       // Enregistrement cote serveur (best-effort).
       await registerPushToken({ token, platform: "web" });

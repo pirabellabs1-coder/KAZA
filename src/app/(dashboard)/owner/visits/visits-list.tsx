@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import {
   CalendarCheck,
   Clock,
@@ -8,21 +8,23 @@ import {
   XCircle,
   MapPin,
   Loader2,
+  CalendarPlus,
+  Inbox,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDate, getInitials } from "@/lib/utils";
-import {
-  mockVisitRequests,
-  getPropertyById,
-  getUserById,
-} from "@/lib/mock-data";
-import { acceptVisit, rejectVisit } from "@/actions/visits";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/toast-helper";
+import { formatDate, getInitials } from "@/lib/utils";
+import { acceptVisit, rejectVisit } from "@/actions/visits";
+import type { OwnerVisit } from "@/lib/queries/owner-activity";
 
-function getStatusBadge(status: string) {
+type Filter = "ALL" | "PENDING" | "CONFIRMED" | "PAST";
+
+function statusBadge(status: string) {
   switch (status) {
     case "PENDING":
       return (
@@ -33,16 +35,16 @@ function getStatusBadge(status: string) {
       );
     case "CONFIRMED":
       return (
-        <Badge className="gap-1 bg-kaza-green text-white">
+        <Badge className="gap-1 bg-kaza-green text-white hover:bg-kaza-green/90">
           <CheckCircle className="size-3" />
           Confirmée
         </Badge>
       );
-    case "REJECTED":
+    case "CANCELLED":
       return (
         <Badge variant="destructive" className="gap-1">
           <XCircle className="size-3" />
-          Rejetée
+          Annulée
         </Badge>
       );
     case "COMPLETED":
@@ -50,6 +52,13 @@ function getStatusBadge(status: string) {
         <Badge variant="secondary" className="gap-1">
           <CheckCircle className="size-3" />
           Effectuée
+        </Badge>
+      );
+    case "NO_SHOW":
+      return (
+        <Badge variant="outline" className="gap-1">
+          <XCircle className="size-3" />
+          Absent
         </Badge>
       );
     default:
@@ -63,10 +72,66 @@ function formatTime(time: string | null): string {
   return `${hours}h${minutes}`;
 }
 
-export function VisitRequestsList() {
-  const [visits, setVisits] = useState(mockVisitRequests);
+function initialsFromName(name: string): string {
+  const parts = name.split(/\s+/);
+  const first = parts[0] ?? "";
+  const last = parts[1] ?? parts[0] ?? "";
+  return getInitials(first, last);
+}
+
+interface OwnerVisitsViewProps {
+  visits: OwnerVisit[];
+}
+
+export function OwnerVisitsView({ visits: initialVisits }: OwnerVisitsViewProps) {
+  const [visits, setVisits] = useState<OwnerVisit[]>(initialVisits);
+  const [filter, setFilter] = useState<Filter>("ALL");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+
+  const counts = useMemo(() => {
+    const now = new Date();
+    let pending = 0;
+    let confirmed = 0;
+    let past = 0;
+    for (const v of visits) {
+      if (v.status === "PENDING") pending += 1;
+      else if (v.status === "CONFIRMED") {
+        const d = v.proposedDate ? new Date(v.proposedDate) : null;
+        if (d && d < now) past += 1;
+        else confirmed += 1;
+      } else past += 1;
+    }
+    return { pending, confirmed, past };
+  }, [visits]);
+
+  const filtered = useMemo(() => {
+    if (filter === "ALL") return visits;
+    if (filter === "PENDING")
+      return visits.filter((v) => v.status === "PENDING");
+    if (filter === "CONFIRMED") {
+      const now = new Date();
+      return visits.filter((v) => {
+        if (v.status !== "CONFIRMED") return false;
+        const d = v.proposedDate ? new Date(v.proposedDate) : null;
+        return !d || d >= now;
+      });
+    }
+    // PAST
+    const now = new Date();
+    return visits.filter((v) => {
+      if (
+        v.status === "COMPLETED" ||
+        v.status === "CANCELLED" ||
+        v.status === "NO_SHOW"
+      )
+        return true;
+      if (v.status === "CONFIRMED" && v.proposedDate) {
+        return new Date(v.proposedDate) < now;
+      }
+      return false;
+    });
+  }, [filter, visits]);
 
   const handleAccept = (id: string) => {
     setPendingId(id);
@@ -75,18 +140,14 @@ export function VisitRequestsList() {
         const res = await acceptVisit(id);
         if (res.success) {
           setVisits((prev) =>
-            prev.map((v) => (v.id === id ? { ...v, status: "CONFIRMED" } : v)),
+            prev.map((v) =>
+              v.id === id ? { ...v, status: "CONFIRMED" } : v,
+            ),
           );
           toast.success("Visite confirmée.");
         } else {
           toast.error(res.error ?? "Impossible de confirmer la visite.");
         }
-      } catch {
-        // Si Supabase n'est pas configuré, on simule juste l'effet.
-        setVisits((prev) =>
-          prev.map((v) => (v.id === id ? { ...v, status: "CONFIRMED" } : v)),
-        );
-        toast.success("Visite confirmée.");
       } finally {
         setPendingId(null);
       }
@@ -100,104 +161,139 @@ export function VisitRequestsList() {
         const res = await rejectVisit(id);
         if (res.success) {
           setVisits((prev) =>
-            prev.map((v) => (v.id === id ? { ...v, status: "REJECTED" } : v)),
+            prev.map((v) =>
+              v.id === id ? { ...v, status: "CANCELLED" } : v,
+            ),
           );
-          toast.info("Visite rejetée.");
+          toast.info("Visite refusée.");
         } else {
-          toast.error(res.error ?? "Impossible de rejeter la visite.");
+          toast.error(res.error ?? "Impossible de refuser la visite.");
         }
-      } catch {
-        setVisits((prev) =>
-          prev.map((v) => (v.id === id ? { ...v, status: "REJECTED" } : v)),
-        );
-        toast.info("Visite rejetée.");
       } finally {
         setPendingId(null);
       }
     });
   };
 
+  const handleReschedule = () => {
+    toast.info(
+      "Bientôt disponible : proposez une nouvelle date au locataire directement depuis la fiche.",
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          Demandes de Visite
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {visits.length} demande{visits.length > 1 ? "s" : ""} au total
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-kaza-navy">
+            Demandes de visite
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {visits.length === 0
+              ? "Suivez ici toutes les demandes de visite reçues sur vos annonces."
+              : `${visits.length} demande${visits.length > 1 ? "s" : ""} au total · ${counts.pending} en attente`}
+          </p>
+        </div>
       </div>
 
-      {/* Visit cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visits.map((visit) => {
-          const property = getPropertyById(visit.property_id);
-          const tenant = getUserById(visit.tenant_id);
+      {/* Filtres */}
+      {visits.length > 0 && (
+        <Tabs
+          value={filter}
+          onValueChange={(v) => setFilter(v as Filter)}
+          className="w-full"
+        >
+          <TabsList>
+            <TabsTrigger value="ALL">Toutes ({visits.length})</TabsTrigger>
+            <TabsTrigger value="PENDING">
+              En attente ({counts.pending})
+            </TabsTrigger>
+            <TabsTrigger value="CONFIRMED">
+              Confirmées ({counts.confirmed})
+            </TabsTrigger>
+            <TabsTrigger value="PAST">Passées ({counts.past})</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
 
-          return (
-            <Card key={visit.id}>
-              <CardContent className="space-y-4">
-                {/* Tenant info */}
+      {/* Liste */}
+      {filtered.length === 0 ? (
+        <EmptyVisitsCard />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((visit) => (
+            <Card key={visit.id} className="rounded-2xl border-0 shadow-sm">
+              <CardContent className="space-y-4 p-5">
+                {/* Requester */}
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage
-                      src={tenant?.profile_photo_url || undefined}
-                      alt={
-                        tenant
-                          ? `${tenant.first_name} ${tenant.last_name}`
-                          : "Locataire"
-                      }
-                    />
-                    <AvatarFallback className="bg-kaza-navy text-white text-xs">
-                      {tenant
-                        ? getInitials(tenant.first_name, tenant.last_name)
-                        : "?"}
+                    <AvatarFallback className="bg-kaza-navy text-xs text-white">
+                      {initialsFromName(visit.requesterName) || "?"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      {tenant
-                        ? `${tenant.first_name} ${tenant.last_name}`
-                        : "Locataire inconnu"}
+                    <p className="truncate text-sm font-semibold text-kaza-navy">
+                      {visit.requesterName}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {tenant?.email}
+                      {visit.requesterEmail || "Email non renseigné"}
                     </p>
                   </div>
                 </div>
 
                 {/* Property */}
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="truncate text-sm font-medium">
-                    {property?.title || "Bien inconnu"}
+                <div className="rounded-xl bg-muted/50 p-3">
+                  <p className="line-clamp-1 text-sm font-medium">
+                    {visit.propertyTitle}
                   </p>
                   <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="size-3" />
-                    <span className="truncate">
-                      {property?.address || "Adresse inconnue"}
+                    <MapPin className="size-3 shrink-0" />
+                    <span className="line-clamp-1">
+                      {visit.propertyAddress || "Adresse inconnue"}
                     </span>
                   </div>
                 </div>
 
-                {/* Date and time */}
+                {/* Date / heure */}
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5 text-sm">
                     <CalendarCheck className="size-4 text-muted-foreground" />
-                    <span>{formatDate(visit.requested_date)}</span>
+                    <span>
+                      {visit.proposedDate
+                        ? formatDate(visit.proposedDate)
+                        : "Date à définir"}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <Clock className="size-4 text-muted-foreground" />
-                    <span>{formatTime(visit.requested_time)}</span>
-                  </div>
+                  {visit.proposedTime && (
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <Clock className="size-4 text-muted-foreground" />
+                      <span>{formatTime(visit.proposedTime)}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Status & actions */}
-                <div className="flex items-center justify-between border-t pt-3">
-                  {getStatusBadge(visit.status)}
+                {/* Message éventuel */}
+                {visit.message && (
+                  <p className="rounded-lg border bg-background p-2 text-xs italic text-muted-foreground">
+                    “{visit.message}”
+                  </p>
+                )}
 
-                  {visit.status === "PENDING" && (
+                {/* Status + actions */}
+                <div className="flex items-center justify-between border-t pt-3">
+                  {statusBadge(visit.status)}
+
+                  {visit.status === "PENDING" ? (
                     <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleReschedule}
+                        aria-label="Proposer une autre date"
+                      >
+                        <CalendarPlus className="size-3.5" />
+                      </Button>
                       <Button
                         size="sm"
                         className="bg-kaza-green hover:bg-kaza-green/90"
@@ -207,7 +303,7 @@ export function VisitRequestsList() {
                         {pendingId === visit.id ? (
                           <Loader2 className="mr-1 size-3 animate-spin" />
                         ) : null}
-                        Confirmer
+                        Accepter
                       </Button>
                       <Button
                         size="sm"
@@ -215,16 +311,35 @@ export function VisitRequestsList() {
                         onClick={() => handleReject(visit.id)}
                         disabled={pendingId === visit.id}
                       >
-                        Rejeter
+                        Refuser
                       </Button>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+function EmptyVisitsCard() {
+  return (
+    <Card className="rounded-2xl border-2 border-dashed bg-gradient-to-br from-white via-muted/20 to-kaza-blue/[0.04] shadow-sm">
+      <CardContent className="flex flex-col items-center justify-center px-6 py-16 text-center">
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-kaza-blue/10">
+          <Inbox className="size-8 text-kaza-blue" />
+        </div>
+        <h2 className="mt-6 font-heading text-xl font-bold text-kaza-navy">
+          Aucune demande de visite pour le moment
+        </h2>
+        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+          Les locataires peuvent demander à visiter vos annonces depuis la page
+          détail. Vous serez notifié dès qu’une demande arrive.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

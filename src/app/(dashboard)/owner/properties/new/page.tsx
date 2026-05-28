@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import { NewPropertyForm } from "./new-property-form";
+import { redirect } from "next/navigation";
+
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { PropertyCreateWizard } from "./property-create-wizard";
 
 export const metadata: Metadata = {
-  title: "Ajouter un bien",
+  title: "Publier un bien — KAZA",
+  description:
+    "Publiez votre bien immobilier en Afrique de l'Ouest sur KAZA en quelques minutes.",
 };
 
-export default function NewPropertyPage() {
-  return (
-    <div className="mx-auto w-full max-w-[720px] space-y-6 px-0 sm:px-2">
-      {/* Header */}
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          Ajouter un bien
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Publiez votre bien sur KAZA et trouvez des locataires qualifies.
-        </p>
-      </div>
+export default async function NewPropertyPage() {
+  const user = await getCurrentDisplayUser();
+  if (!user) {
+    redirect("/login?redirect=/owner/properties/new");
+  }
 
-      <NewPropertyForm />
+  return (
+    <div className="mx-auto w-full max-w-[1100px] px-0 sm:px-2">
+      <PropertyCreateWizard userId={user.id} />
     </div>
   );
 }

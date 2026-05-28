@@ -20,7 +20,9 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { generateOtp, hashOtp, sendSms } from "@/lib/sms/twilio";
+import { writeAuditLog } from "@/lib/audit/write-log";
 
 import type { ActionResult } from "./notifications";
 
@@ -461,4 +463,301 @@ export async function getMyVerification(): Promise<MyVerification | null> {
     .maybeSingle();
 
   return (data as MyVerification | null) ?? null;
+}
+
+// ===========================================================================
+// 6. Actions admin — approve / reject / signed URLs
+// ===========================================================================
+//
+// Le bucket `identity-documents` est privé. Pour permettre à l'admin de
+// visualiser les pièces, on génère des Signed URLs côté serveur via le
+// client service_role (bypass RLS). Les URLs sont à durée de vie courte
+// (10 min) pour limiter la fuite éventuelle dans l'historique navigateur.
+// ===========================================================================
+
+/** Vérifie que le caller est admin. Renvoie l'auth user en cas de succès. */
+async function assertAdmin(): Promise<
+  { ok: true; userId: string } | { ok: false; error: string }
+> {
+  const supabase = await getLooseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { ok: false, error: "Non authentifié" };
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if ((profile as { role?: string } | null)?.role !== "ADMIN") {
+    return { ok: false, error: "Accès réservé aux administrateurs" };
+  }
+
+  return { ok: true, userId: user.id };
+}
+
+/** Approuve une vérification d'identité (admin) et crédite +500 KAZA Points. */
+export async function approveVerification(
+  verificationId: string
+): Promise<ActionResult> {
+  if (!verificationId) {
+    return { success: false, error: "Identifiant manquant." };
+  }
+
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  // Service-role pour bypass RLS et exécuter les updates atomiquement
+  // sans dépendre du contexte cookie (utile pour le crédit kaza_points).
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  // Récupère le user_id ciblé.
+  const { data: verif, error: verifError } = await admin
+    .from("identity_verifications")
+    .select("user_id, status")
+    .eq("id", verificationId)
+    .maybeSingle();
+
+  if (verifError || !verif) {
+    return { success: false, error: "Vérification introuvable." };
+  }
+
+  const targetUserId = (verif as { user_id: string }).user_id;
+  const currentStatus = (verif as { status: string }).status;
+
+  if (currentStatus === "APPROVED") {
+    return { success: false, error: "Cette demande est déjà approuvée." };
+  }
+
+  // Update verif.
+  const { error: updateVerifError } = await admin
+    .from("identity_verifications")
+    .update({
+      status: "APPROVED",
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: guard.userId,
+      rejection_reason: null,
+    })
+    .eq("id", verificationId);
+
+  if (updateVerifError) {
+    return { success: false, error: "Impossible de mettre à jour la vérification." };
+  }
+
+  // Update user : badge vérifié.
+  await admin
+    .from("users")
+    .update({
+      is_verified: true,
+      verification_status: "APPROVED",
+    })
+    .eq("id", targetUserId);
+
+  // Bonus KAZA Points : +500 (table kaza_points_transactions, trigger met
+  // à jour la balance automatiquement). Best-effort, on n'échoue pas le
+  // workflow si cette table n'existe pas encore en environnement.
+  try {
+    await admin.from("kaza_points_transactions").insert({
+      user_id: targetUserId,
+      type: "KYC_APPROVED",
+      amount: 500,
+      description: "Identité vérifiée — bonus de confiance",
+    });
+  } catch (err) {
+    console.warn("[verification.approve] points credit skipped:", err);
+  }
+
+  // Crée une notification in-app pour l'utilisateur.
+  try {
+    await admin.from("notifications").insert({
+      user_id: targetUserId,
+      type: "identity_approved",
+      title: "Identité vérifiée",
+      body: "Votre pièce d'identité a été validée. Badge activé.",
+      link: "/profile",
+    });
+  } catch (err) {
+    console.warn("[verification.approve] notification skipped:", err);
+  }
+
+  // Audit trail (best-effort).
+  await writeAuditLog({
+    action: "KYC_APPROVED",
+    targetType: "USER",
+    targetId: targetUserId,
+    targetLabel: "Vérification identité approuvée",
+    metadata: { verificationId },
+  });
+
+  revalidatePath("/admin/verifications");
+  revalidatePath("/admin/audit-log");
+  revalidatePath("/verify-identity");
+  revalidatePath("/profile");
+
+  return { success: true };
+}
+
+/** Rejette une vérification d'identité (admin) avec un motif obligatoire. */
+export async function rejectVerification(
+  verificationId: string,
+  reason: string
+): Promise<ActionResult> {
+  if (!verificationId) {
+    return { success: false, error: "Identifiant manquant." };
+  }
+  const trimmed = reason?.trim() ?? "";
+  if (trimmed.length < 10) {
+    return {
+      success: false,
+      error: "Le motif doit comporter au moins 10 caractères.",
+    };
+  }
+
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  const { data: verif, error: verifError } = await admin
+    .from("identity_verifications")
+    .select("user_id")
+    .eq("id", verificationId)
+    .maybeSingle();
+
+  if (verifError || !verif) {
+    return { success: false, error: "Vérification introuvable." };
+  }
+
+  const targetUserId = (verif as { user_id: string }).user_id;
+
+  const { error: updateError } = await admin
+    .from("identity_verifications")
+    .update({
+      status: "REJECTED",
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: guard.userId,
+      rejection_reason: trimmed,
+    })
+    .eq("id", verificationId);
+
+  if (updateError) {
+    return { success: false, error: "Impossible de rejeter la vérification." };
+  }
+
+  await admin
+    .from("users")
+    .update({
+      verification_status: "REJECTED",
+      is_verified: false,
+    })
+    .eq("id", targetUserId);
+
+  try {
+    await admin.from("notifications").insert({
+      user_id: targetUserId,
+      type: "identity_rejected",
+      title: "Pièce d'identité non conforme",
+      body: trimmed,
+      link: "/verify-identity",
+    });
+  } catch (err) {
+    console.warn("[verification.reject] notification skipped:", err);
+  }
+
+  // Audit trail (best-effort).
+  await writeAuditLog({
+    action: "KYC_REJECTED",
+    targetType: "USER",
+    targetId: targetUserId,
+    targetLabel: "Vérification identité rejetée",
+    reason: trimmed,
+    metadata: { verificationId },
+  });
+
+  revalidatePath("/admin/verifications");
+  revalidatePath("/admin/audit-log");
+  revalidatePath("/verify-identity");
+
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// 7. Signed URLs pour visualisation admin
+// ---------------------------------------------------------------------------
+
+export interface VerificationFiles {
+  documentType: "national_id" | "passport" | "driver_license" | "voter_card";
+  documentNumber: string | null;
+  phoneNumber: string;
+  documentFrontUrl: string | null;
+  documentBackUrl: string | null;
+  selfieUrl: string | null;
+}
+
+/**
+ * Génère des Signed URLs (TTL court) pour le recto, le verso et le selfie
+ * d'une vérification donnée. Réservé aux admins — utilise le service_role
+ * pour bypass les policies du bucket privé.
+ */
+export async function getVerificationFiles(
+  verificationId: string
+): Promise<ActionResult<VerificationFiles>> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  const { data: verif, error } = await admin
+    .from("identity_verifications")
+    .select(
+      "document_type, document_number, phone_number, document_front_url, document_back_url, selfie_url"
+    )
+    .eq("id", verificationId)
+    .maybeSingle();
+
+  if (error || !verif) {
+    return { success: false, error: "Vérification introuvable." };
+  }
+
+  const row = verif as {
+    document_type: VerificationFiles["documentType"];
+    document_number: string | null;
+    phone_number: string;
+    document_front_url: string | null;
+    document_back_url: string | null;
+    selfie_url: string | null;
+  };
+
+  const sign = async (path: string | null): Promise<string | null> => {
+    if (!path) return null;
+    const { data, error: signError } = await admin.storage
+      .from(IDENTITY_BUCKET)
+      .createSignedUrl(path, 60 * 10); // 10 min
+    if (signError || !data?.signedUrl) {
+      console.error("[verification] signedUrl error:", signError?.message);
+      return null;
+    }
+    return data.signedUrl;
+  };
+
+  const [frontUrl, backUrl, selfieUrl] = await Promise.all([
+    sign(row.document_front_url),
+    sign(row.document_back_url),
+    sign(row.selfie_url),
+  ]);
+
+  return {
+    success: true,
+    data: {
+      documentType: row.document_type,
+      documentNumber: row.document_number,
+      phoneNumber: row.phone_number,
+      documentFrontUrl: frontUrl,
+      documentBackUrl: backUrl,
+      selfieUrl,
+    },
+  };
 }

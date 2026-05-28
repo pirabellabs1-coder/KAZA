@@ -4,10 +4,10 @@ import { Check, Smartphone, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // =============================================================================
-// KAZA - Sélecteur de moyen de paiement (Mobile Money + Carte)
+// KAZA - Sélecteur de moyen de paiement (paiement intégré + Carte)
 // =============================================================================
 
-export type PaymentMethod = "mtn" | "moov" | "visa";
+export type PaymentMethod = "KAZA Pay" | "KAZA Wallet" | "visa";
 
 interface PaymentMethodOption {
   id: PaymentMethod;
@@ -21,22 +21,22 @@ interface PaymentMethodOption {
 
 const PAYMENT_METHODS: PaymentMethodOption[] = [
   {
-    id: "mtn",
-    name: "MTN Mobile Money",
-    description: "Paiement instantané via votre compte MTN",
+    id: "KAZA Pay",
+    name: "KAZA Pay",
+    description: "Paiement instantané via votre compte KAZA Pay",
     fees: "Frais 1,5%",
     icon: Smartphone,
     logoBg: "bg-yellow-400",
-    logoText: "MTN",
+    logoText: "KAZA Pay",
   },
   {
-    id: "moov",
-    name: "Moov Money",
-    description: "Paiement instantané via votre compte Moov",
+    id: "KAZA Wallet",
+    name: "KAZA Wallet",
+    description: "Paiement instantané via votre compte KAZA Wallet",
     fees: "Frais 1,5%",
     icon: Smartphone,
     logoBg: "bg-sky-500",
-    logoText: "MOOV",
+    logoText: "KAZA Wallet",
   },
   {
     id: "visa",

@@ -2,26 +2,48 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MapPin, Bed, Bath, Maximize, Star } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Bed,
+  Bath,
+  Maximize,
+  Star,
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
+import { useState } from "react";
 import { cn, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
-interface PropertyCardProps {
+const PROPERTY_TYPE_LABELS: Record<string, string> = {
+  HOUSE: "Maison",
+  APARTMENT: "Appartement",
+  STUDIO: "Studio",
+  ROOM: "Chambre",
+  VILLA: "Villa",
+  OFFICE: "Bureau",
+};
+
+export interface PropertyCardProps {
   id: string;
   title: string;
   price: number;
   address: string;
-  bedrooms: number;
-  bathrooms: number;
-  squareMeters: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  squareMeters?: number;
   imageUrl: string;
   propertyType: string;
   rating?: number;
+  reviewsCount?: number;
   isVerified?: boolean;
+  isFeatured?: boolean;
   isFavorite?: boolean;
+  variant?: "default" | "featured" | "compact";
   onFavoriteToggle?: (id: string) => void;
+  className?: string;
 }
 
 export function PropertyCard({
@@ -29,15 +51,19 @@ export function PropertyCard({
   title,
   price,
   address,
-  bedrooms,
-  bathrooms,
-  squareMeters,
+  bedrooms = 0,
+  bathrooms = 0,
+  squareMeters = 0,
   imageUrl,
   propertyType,
   rating,
+  reviewsCount,
   isVerified,
+  isFeatured,
   isFavorite = false,
+  variant = "default",
   onFavoriteToggle,
+  className,
 }: PropertyCardProps) {
   const [favorite, setFavorite] = useState(isFavorite);
 
@@ -48,86 +74,286 @@ export function PropertyCard({
     onFavoriteToggle?.(id);
   };
 
+  const typeLabel = PROPERTY_TYPE_LABELS[propertyType] ?? propertyType;
+  const priceFormatted = formatPrice(price);
+
+  // === Variant COMPACT (horizontal, listings condensés) ============
+  if (variant === "compact") {
+    return (
+      <Link
+        href={`/properties/${id}`}
+        className={cn("group block", className)}
+      >
+        <article className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-500 hover:-translate-y-0.5 hover:shadow-xl sm:flex-row">
+          <div className="relative h-52 w-full shrink-0 overflow-hidden sm:h-auto sm:w-64">
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              sizes="(max-width: 640px) 100vw, 256px"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <FavoriteButton
+              favorite={favorite}
+              onClick={handleFavorite}
+            />
+            {isVerified && (
+              <Badge className="absolute left-3 top-3 gap-1 border-0 bg-kaza-green/95 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                <ShieldCheck className="size-3" />
+                Vérifié
+              </Badge>
+            )}
+          </div>
+
+          <div className="flex flex-1 flex-col justify-between p-5">
+            <div className="space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-heading line-clamp-2 text-lg font-semibold text-foreground transition-colors group-hover:text-kaza-blue">
+                  {title}
+                </h3>
+                {rating ? <RatingPill rating={rating} /> : null}
+              </div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="size-3.5 shrink-0" />
+                <span className="line-clamp-1">{address}</span>
+              </div>
+              <SpecsRow
+                bedrooms={bedrooms}
+                bathrooms={bathrooms}
+                squareMeters={squareMeters}
+                typeLabel={typeLabel}
+              />
+            </div>
+            <div className="mt-4 flex items-end justify-between">
+              <PriceTag price={priceFormatted} />
+              <span className="inline-flex items-center gap-1 text-sm font-medium text-kaza-blue opacity-0 transition-opacity group-hover:opacity-100">
+                Voir <ArrowRight className="size-3.5" />
+              </span>
+            </div>
+          </div>
+        </article>
+      </Link>
+    );
+  }
+
+  // === Variants DEFAULT et FEATURED (verticaux) ====================
+  const isFeaturedVariant = variant === "featured" || isFeatured;
+  const aspectClass = isFeaturedVariant ? "aspect-[3/2]" : "aspect-[4/3]";
+  const wrapperRing = isFeaturedVariant
+    ? "ring-1 ring-kaza-green/40 shadow-lg"
+    : "shadow-sm";
+
   return (
-    <Link href={`/properties/${id}`} className="group block">
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
+    <Link href={`/properties/${id}`} className={cn("group block", className)}>
+      <article
+        className={cn(
+          "relative flex h-full flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl",
+          wrapperRing,
+        )}
+      >
         {/* Image */}
-        <div className="relative h-[200px] w-full overflow-hidden">
+        <div className={cn("relative w-full overflow-hidden", aspectClass)}>
           <Image
             src={imageUrl}
             alt={title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.08]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
 
-          {/* Badges */}
-          <div className="absolute left-3 top-3 flex gap-2">
-            {isVerified && (
-              <Badge className="bg-kaza-green text-white">Vérifié</Badge>
+          {/* Overlay subtil au hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+          {/* Top-left badges */}
+          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {isFeaturedVariant && (
+              <Badge className="gap-1 border-0 bg-kaza-green px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+                <Sparkles className="size-3" />
+                À la une
+              </Badge>
             )}
+            {isVerified && (
+              <Badge className="gap-1 border-0 bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-kaza-green shadow-md backdrop-blur">
+                <ShieldCheck className="size-3" />
+                Vérifié
+              </Badge>
+            )}
+            <Badge className="gap-1 border-0 bg-kaza-navy/90 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur">
+              {typeLabel}
+            </Badge>
           </div>
 
-          {/* Favorite button */}
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="absolute right-3 top-3 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-            onClick={handleFavorite}
-            aria-label={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-          >
-            <Heart
-              className={cn(
-                "size-4",
-                favorite
-                  ? "fill-kaza-blue text-kaza-blue"
-                  : "text-muted-foreground"
-              )}
-            />
-          </Button>
+          {/* Top-right favorite */}
+          <FavoriteButton favorite={favorite} onClick={handleFavorite} />
 
-          {/* Price badge */}
-          <div className="absolute bottom-3 right-3 rounded-lg bg-kaza-blue px-3 py-1.5 text-sm font-semibold text-white">
-            {formatPrice(price)}
-            <span className="text-xs font-normal opacity-80">/mois</span>
+          {/* Bottom-left price (glass) */}
+          <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+            <div className="rounded-2xl bg-white/95 px-3.5 py-2 shadow-lg backdrop-blur-md">
+              <div className="flex items-baseline gap-1">
+                <span className="font-heading text-base font-bold text-kaza-navy">
+                  {priceFormatted}
+                </span>
+                <span className="text-[11px] font-medium text-muted-foreground">
+                  /mois
+                </span>
+              </div>
+            </div>
+
+            {/* Hover-only "Voir" pill */}
+            <span className="inline-flex translate-y-2 items-center gap-1 rounded-full bg-kaza-navy/95 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              Voir <ArrowRight className="size-3" />
+            </span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <div className="mb-2 flex items-start justify-between">
-            <h3 className="line-clamp-1 text-base font-semibold text-foreground">
+        <div className="flex flex-1 flex-col gap-3 p-5">
+          {/* Title + rating */}
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="font-heading line-clamp-2 text-base font-semibold leading-tight text-foreground transition-colors group-hover:text-kaza-blue sm:text-lg">
               {title}
             </h3>
-            {rating && (
-              <div className="flex items-center gap-1 text-sm">
-                <Star className="size-3.5 fill-kaza-warning text-kaza-warning" />
-                <span className="font-medium">{rating.toFixed(1)}</span>
-              </div>
-            )}
+            {rating ? (
+              <RatingPill rating={rating} reviewsCount={reviewsCount} />
+            ) : null}
           </div>
 
-          <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="size-3.5" />
+          {/* Address */}
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <MapPin className="size-3.5 shrink-0 text-kaza-blue" />
             <span className="line-clamp-1">{address}</span>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Bed className="size-3.5" />
-              <span>{bedrooms} Ch.</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Bath className="size-3.5" />
-              <span>{bathrooms} SdB</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Maximize className="size-3.5" />
-              <span>{squareMeters}m²</span>
-            </div>
-          </div>
+          {/* Specs */}
+          <SpecsRow
+            bedrooms={bedrooms}
+            bathrooms={bathrooms}
+            squareMeters={squareMeters}
+            className="mt-auto"
+          />
         </div>
-      </div>
+      </article>
     </Link>
+  );
+}
+
+// =============================================================================
+// Sub-components
+// =============================================================================
+
+function FavoriteButton({
+  favorite,
+  onClick,
+}: {
+  favorite: boolean;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+      className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kaza-blue"
+    >
+      <Heart
+        className={cn(
+          "size-[18px] transition-all duration-300",
+          favorite
+            ? "fill-red-500 text-red-500"
+            : "text-kaza-navy hover:fill-red-500/20",
+        )}
+      />
+    </button>
+  );
+}
+
+function RatingPill({
+  rating,
+  reviewsCount,
+}: {
+  rating: number;
+  reviewsCount?: number;
+}) {
+  return (
+    <div className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-xs">
+      <Star className="size-3 fill-amber-500 text-amber-500" />
+      <span className="font-semibold text-amber-900">{rating.toFixed(1)}</span>
+      {reviewsCount ? (
+        <span className="text-amber-700/70">({reviewsCount})</span>
+      ) : null}
+    </div>
+  );
+}
+
+function SpecsRow({
+  bedrooms,
+  bathrooms,
+  squareMeters,
+  typeLabel,
+  className,
+}: {
+  bedrooms: number;
+  bathrooms: number;
+  squareMeters: number;
+  typeLabel?: string;
+  className?: string;
+}) {
+  const items = [
+    bedrooms > 0
+      ? {
+          icon: Bed,
+          label: `${bedrooms} ch.`,
+          aria: `${bedrooms} chambres`,
+        }
+      : null,
+    bathrooms > 0
+      ? {
+          icon: Bath,
+          label: `${bathrooms} sdb`,
+          aria: `${bathrooms} salles de bain`,
+        }
+      : null,
+    squareMeters > 0
+      ? {
+          icon: Maximize,
+          label: `${squareMeters} m²`,
+          aria: `${squareMeters} mètres carrés`,
+        }
+      : null,
+  ].filter((x): x is { icon: typeof Bed; label: string; aria: string } => x !== null);
+
+  return (
+    <div
+      className={cn(
+        "flex flex-wrap items-center gap-3 border-t border-gray-100 pt-3 text-xs text-muted-foreground",
+        className,
+      )}
+    >
+      {typeLabel ? (
+        <span className="font-medium text-kaza-navy">{typeLabel}</span>
+      ) : null}
+      {items.map((item, i) => (
+        <span
+          key={i}
+          aria-label={item.aria}
+          className="inline-flex items-center gap-1"
+        >
+          <item.icon className="size-3.5" />
+          {item.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function PriceTag({ price }: { price: string }) {
+  return (
+    <div className="flex items-baseline gap-1">
+      <span className="font-heading text-xl font-bold text-kaza-navy">
+        {price}
+      </span>
+      <span className="text-xs font-medium text-muted-foreground">/mois</span>
+    </div>
   );
 }

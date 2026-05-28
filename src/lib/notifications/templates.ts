@@ -122,7 +122,7 @@ L'équipe KAZA`;
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Bienvenue sur KAZA, ${esc(firstName)} !</h2>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
       Nous sommes ravis de vous compter parmi nos utilisateurs. KAZA simplifie la location immobilière au Bénin :
-      milliers d'annonces vérifiées, contact direct avec les propriétaires, paiements Mobile Money sécurisés.
+      milliers d'annonces vérifiées, contact direct avec les propriétaires, Paiements 100% sécurisés.
     </p>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
       Pour commencer, connectez-vous à votre tableau de bord et complétez votre profil.

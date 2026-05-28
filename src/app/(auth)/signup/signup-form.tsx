@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import Link from "next/link";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Home, GraduationCap, Loader2 } from "lucide-react";
+import {
+  Building2,
+  Home,
+  GraduationCap,
+  Loader2,
+  Briefcase,
+  Gift,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +23,8 @@ import { signup } from "@/actions/auth";
 const roles = [
   {
     value: "OWNER" as const,
-    label: "Proprietaire",
-    description: "Je souhaite mettre en location",
+    label: "Propriétaire",
+    description: "Je mets en location",
     icon: Building2,
   },
   {
@@ -28,13 +35,21 @@ const roles = [
   },
   {
     value: "STUDENT" as const,
-    label: "Etudiant",
+    label: "Étudiant",
     description: "Je cherche une colocation",
     icon: GraduationCap,
+  },
+  {
+    value: "AGENCY" as const,
+    label: "Agence",
+    description: "Agence immobilière (B2B)",
+    icon: Briefcase,
   },
 ];
 
 export function SignupForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -54,17 +69,41 @@ export function SignupForm() {
       password: "",
       confirmPassword: "",
       role: undefined,
+      referralCode: "",
     },
   });
 
   const selectedRole = watch("role");
 
+  // Pre-remplit le code parrainage depuis ?ref=ABC123 (lien partage par
+  // un ambassadeur). Normalise en majuscules.
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      setValue("referralCode", ref.toUpperCase(), { shouldValidate: false });
+    }
+  }, [searchParams, setValue]);
+
   function onSubmit(data: SignupFormData) {
     setError(null);
     startTransition(async () => {
-      const result = await signup(data);
-      if (result?.error) {
-        setError(result.error);
+      try {
+        const result = await signup(data);
+        if (result?.error) {
+          setError(result.error);
+          return;
+        }
+        if (result?.success) {
+          // Compte créé → redirection immédiate vers l'espace
+          router.push(result.redirectTo ?? "/dashboard");
+          router.refresh();
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error && err.message
+            ? `Impossible de joindre le serveur d'inscription : ${err.message}`
+            : "Impossible de joindre le serveur. Réessayez dans un instant.",
+        );
       }
     });
   }
@@ -81,7 +120,7 @@ export function SignupForm() {
       {/* Role Selector */}
       <div className="space-y-2">
         <Label>Je suis</Label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {roles.map((role) => {
             const Icon = role.icon;
             const isSelected = selectedRole === role.value;
@@ -210,6 +249,35 @@ export function SignupForm() {
         )}
       </div>
 
+      {/* Code de parrainage (optionnel) */}
+      <div className="space-y-2">
+        <Label htmlFor="referralCode" className="flex items-center gap-1.5">
+          <Gift className="size-3.5 text-kaza-green" />
+          Code de parrainage{" "}
+          <span className="text-xs font-normal text-muted-foreground">
+            (optionnel)
+          </span>
+        </Label>
+        <Input
+          id="referralCode"
+          type="text"
+          placeholder="Ex : MARK1234"
+          autoComplete="off"
+          aria-invalid={!!errors.referralCode}
+          className="uppercase"
+          {...register("referralCode")}
+        />
+        {errors.referralCode && (
+          <p className="text-sm text-destructive">
+            {errors.referralCode.message}
+          </p>
+        )}
+        <p className="text-xs text-muted-foreground">
+          Recevez 500 KAZA Points de bienvenue supplementaires en
+          utilisant un code.
+        </p>
+      </div>
+
       {/* Submit */}
       <Button type="submit" className="w-full" size="lg" disabled={isPending}>
         {isPending ? (
@@ -222,16 +290,6 @@ export function SignupForm() {
         )}
       </Button>
 
-      {/* Login Link */}
-      <p className="text-center text-sm text-muted-foreground">
-        Deja un compte ?{" "}
-        <Link
-          href="/login"
-          className="font-medium text-kaza-blue transition-colors hover:underline"
-        >
-          Se connecter
-        </Link>
-      </p>
     </form>
   );
 }

@@ -7,6 +7,7 @@ import { CookieBanner } from "@/components/shared/cookie-banner";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
+import "@/styles/animations.css";
 
 const inter = Inter({
   variable: "--font-inter",

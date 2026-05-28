@@ -136,16 +136,7 @@ export interface SignContractResult {
 export async function signContract(
   input: SignContractInput
 ): Promise<SignContractResult> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser();
-
-  if (authErr || !user) {
-    return { success: false, error: "Authentification requise." };
-  }
-
+  // Validation signature (commune aux deux modes)
   if (!input.signatureDataUrl?.startsWith("data:image/")) {
     return { success: false, error: "Signature invalide." };
   }
@@ -154,6 +145,22 @@ export async function signContract(
       success: false,
       error: "Signature trop courte, veuillez signer à nouveau.",
     };
+  }
+
+  // Mode démo : pas de DB, on retourne un succès simulé.
+  const { isDemoMode } = await import("@/lib/auth/demo-mode");
+  if (isDemoMode()) {
+    return { success: true, status: "SIGNED" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+
+  if (authErr || !user) {
+    return { success: false, error: "Authentification requise." };
   }
 
   // Récupère contrat + parties pour identifier le rôle du signataire.

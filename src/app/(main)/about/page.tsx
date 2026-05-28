@@ -33,7 +33,7 @@ const values = [
     icon: Building2,
     title: "Innovation",
     description:
-      "Mobile Money intégré, visites virtuelles et contrats digitaux pour transformer le marché immobilier africain.",
+      "paiement intégré intégré, visites virtuelles et contrats digitaux pour transformer le marché immobilier africain.",
   },
 ];
 

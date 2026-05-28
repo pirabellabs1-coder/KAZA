@@ -1,16 +1,47 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Building2, Key } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  GraduationCap,
+  Home,
+  Key,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PropertyCard } from "@/components/property/property-card";
 import { PropertySearchBar } from "@/components/property/property-search-bar";
-import { fetchWithFallback } from "@/lib/data-fetcher";
-import { getFeaturedProperties as getMockFeaturedProperties } from "@/lib/mock-data";
-import { getFeaturedProperties } from "@/lib/supabase/queries";
+import {
+  getPlatformStats,
+  listPublicProperties,
+} from "@/lib/queries/properties";
+import {
+  TESTIMONIALS,
+  CITIES,
+  PARTNERS,
+  FEATURES,
+  BLOG_PREVIEWS,
+  PRESS,
+} from "@/lib/marketing-data";
+import { StatCounter } from "@/components/marketing/stat-counter";
+import { TestimonialCard } from "@/components/marketing/testimonial-card";
+import { CityCard } from "@/components/marketing/city-card";
+import { PartnerBar } from "@/components/marketing/partner-bar";
+import { GradientCard } from "@/components/marketing/gradient-card";
+import { FeatureHighlight } from "@/components/marketing/feature-highlight";
+import { PressStrip } from "@/components/marketing/press-strip";
+import { BlogPreviewCard } from "@/components/marketing/blog-preview-card";
+import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
+import { FadeIn } from "@/components/shared/fade-in";
+import { CountryFlag } from "@/components/shared/country-flag";
+import { Marquee } from "@/components/shared/marquee";
+import { GlassPanel } from "@/components/shared/glass-panel";
+import { PageTracker } from "@/components/analytics/page-tracker";
 
 const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1920&q=80";
+  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80";
 
 const STUDENT_IMAGES = [
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80",
@@ -19,26 +50,18 @@ const STUDENT_IMAGES = [
   "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80",
 ];
 
-const propertyCategories = [
-  { label: "Tous", value: "all", active: true },
-  { label: "Maisons", value: "HOUSE", active: false },
-  { label: "Appartements", value: "APARTMENT", active: false },
-  { label: "Colocation", value: "ROOM", active: false },
-  { label: "Studios", value: "STUDIO", active: false },
-];
-
 const tenantSteps = [
   {
     step: "01",
     title: "Découvrez",
     description:
-      "Parcourez des annonces vérifiées avec photos haute qualité et visites virtuelles.",
+      "Parcourez des annonces vérifiées avec photos haute qualité et visites virtuelles immersives.",
   },
   {
     step: "02",
-    title: "Réservez en toute sécurité",
+    title: "Réservez en sécurité",
     description:
-      "Payez via notre tunnel d'escrow sécurisé. Vos fonds sont protégés jusqu'à votre emménagement.",
+      "Payez via notre tunnel d'escrow sécurisé. Vos fonds sont protégés jusqu'à l'emménagement.",
   },
   {
     step: "03",
@@ -53,285 +76,909 @@ const ownerSteps = [
     step: "01",
     title: "Publiez & sélectionnez",
     description:
-      "Mettez votre bien en avant auprès de locataires et étudiants vérifiés.",
+      "Mettez votre bien en avant auprès de locataires vérifiés, avec une fiche premium en 5 minutes.",
   },
   {
     step: "02",
     title: "Gestion simplifiée",
     description:
-      "Encaissement automatique des loyers, suivi des visites et reporting clair.",
+      "Encaissement automatique des loyers, suivi des visites et reporting clair en un coup d'œil.",
   },
   {
     step: "03",
     title: "Maximisez vos revenus",
     description:
-      "Tarification dynamique et analyses pour optimiser le rendement de vos biens.",
+      "Tarification dynamique et analyses de marché pour optimiser le rendement de vos biens.",
   },
 ];
 
+const studentSteps = [
+  {
+    step: "01",
+    title: "Matching colocataires",
+    description:
+      "Notre algorithme vous propose des colocataires compatibles, vérifiés et notés par la communauté.",
+  },
+  {
+    step: "02",
+    title: "Frais partagés auto",
+    description:
+      "Loyer, eau, électricité, internet : tout se calcule et se répartit automatiquement chaque mois.",
+  },
+  {
+    step: "03",
+    title: "Bail numérique",
+    description:
+      "Signature électronique du bail, opposable et conforme au droit béninois. Plus de papiers perdus.",
+  },
+];
+
+const studentBenefits = [
+  { icon: CheckCircle2, label: "Colocataires vérifiés" },
+  { icon: CheckCircle2, label: "Frais partagés automatiquement" },
+  { icon: CheckCircle2, label: "Bail numérique légal" },
+  { icon: CheckCircle2, label: "Proche des campus UAC, IRGIB, EPAC" },
+];
+
 export default async function HomePage() {
-  const featuredProperties = await fetchWithFallback(
-    () => getFeaturedProperties(4),
-    () => getMockFeaturedProperties(),
-  );
+  const [stats, featuredProperties] = await Promise.all([
+    getPlatformStats(),
+    listPublicProperties({ limit: 6 }),
+  ]);
+
+  // Stats dynamiques calées sur Supabase. "Note moyenne" reste statique
+  // tant que les reviews ne sont pas branchées.
+  const platformStats: Array<{
+    value: number;
+    suffix?: string;
+    prefix?: string;
+    label: string;
+    description?: string;
+  }> = [
+    {
+      value: stats.totalAvailable,
+      label: "Propriétés disponibles",
+      description: "Annonces actives, vérifiées par notre équipe",
+    },
+    {
+      value: stats.totalUsers,
+      label: "Membres KAZA",
+      description: "Propriétaires, locataires et étudiants inscrits",
+    },
+    {
+      value: stats.totalCities,
+      label: "Villes couvertes",
+      description: "De Cotonou à Parakou, et au-delà",
+    },
+    {
+      value: 4.8,
+      suffix: "/5",
+      label: "Note moyenne",
+      description: "Basée sur les retours de nos utilisateurs",
+    },
+  ];
+
+  const hasFeatured = featuredProperties.length > 0;
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="relative flex min-h-[500px] items-center justify-center overflow-hidden bg-kaza-navy">
+    <div className="bg-white">
+      {/* Tracking PAGE_VIEW (client, best-effort) */}
+      <PageTracker path="/" />
+      {/* =================================================================== */}
+      {/* 1. HERO IMMERSIF                                                     */}
+      {/* =================================================================== */}
+      <section className="relative isolate flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-kaza-navy">
+        {/* Background image */}
         <Image
           src={HERO_IMAGE}
-          alt="Vue immobilière premium en Afrique"
+          alt="Villa moderne en Afrique de l'Ouest"
           fill
-          className="object-cover opacity-40"
           priority
           sizes="100vw"
+          className="object-cover"
         />
-        <div className="gradient-hero absolute inset-0" />
+        {/* Overlay gradient */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/55 to-kaza-navy/85"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-tr from-kaza-navy/70 via-transparent to-kaza-blue/30"
+          aria-hidden="true"
+        />
 
-        <div className="relative z-10 mx-auto max-w-4xl px-4 py-20 text-center">
-          <h1 className="font-heading text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-            Trouvez votre{" "}
-            <span className="text-kaza-green">logement idéal en Afrique</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/80">
-            Des espaces de vie modernes pour les professionnels, les familles et
-            les étudiants. Vérifiés, sécurisés, sans intermédiaire.
-          </p>
+        {/* Content */}
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-4 py-24 text-center lg:px-8 lg:py-32">
+          <FadeIn>
+            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-md sm:text-sm">
+              <CountryFlag code="BJ" className="h-3 w-4" />
+              N°1 de l&apos;immobilier en Afrique de l&apos;Ouest
+              <Sparkles className="size-3.5 text-kaza-green" aria-hidden />
+            </span>
+          </FadeIn>
 
-          <div className="mx-auto mt-8 max-w-3xl">
-            <PropertySearchBar variant="hero" />
-          </div>
-        </div>
-      </section>
+          <FadeIn delay={150}>
+            <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-7xl">
+              Trouvez votre{" "}
+              <span className="bg-gradient-to-r from-kaza-green via-emerald-400 to-kaza-blue bg-clip-text text-transparent">
+                logement de rêve
+              </span>
+              <br className="hidden sm:block" /> au Bénin
+            </h1>
+          </FadeIn>
 
-      {/* Filtres catégories */}
-      <section className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-4 lg:px-8">
-          {propertyCategories.map((cat) => (
-            <Badge
-              key={cat.value}
-              variant={cat.active ? "default" : "outline"}
-              className="shrink-0 cursor-pointer px-4 py-2 text-sm"
-            >
-              {cat.label}
-            </Badge>
-          ))}
-        </div>
-      </section>
+          <FadeIn delay={300}>
+            <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl">
+              Plus de 12 500 annonces vérifiées, Paiements 100% sécurisés
+              et contrats numériques.
+              <br className="hidden sm:block" />
+              Toute la confiance d&apos;une plateforme moderne, sans
+              intermédiaire.
+            </p>
+          </FadeIn>
 
-      {/* Annonces à la une */}
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="mb-8 flex items-end justify-between">
-            <div>
-              <h2 className="font-heading text-2xl font-bold sm:text-3xl">
-                Annonces à la une
-              </h2>
-              <p className="mt-1 text-muted-foreground">
-                Une sélection de biens premium dans les grandes villes du Bénin.
-              </p>
+          <FadeIn delay={450} className="w-full">
+            <div className="mx-auto mt-10 max-w-4xl">
+              <GlassPanel intensity="strong" tint="white" className="p-3 sm:p-4">
+                <PropertySearchBar variant="hero" />
+              </GlassPanel>
             </div>
-            <Link
-              href="/search"
-              className="hidden items-center gap-1 text-sm font-medium text-kaza-blue hover:underline sm:flex"
-            >
-              Voir tout
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
+          </FadeIn>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredProperties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                id={property.id}
-                title={property.title}
-                price={property.price}
-                address={property.address}
-                bedrooms={property.bedrooms}
-                bathrooms={property.bathrooms}
-                squareMeters={property.square_meters}
-                imageUrl={
-                  property.photos[0]?.photo_url ||
-                  "https://picsum.photos/seed/kaza-default/800/600"
-                }
-                propertyType={property.property_type}
-                rating={4.5 + Math.random() * 0.5}
-                isVerified
-              />
+          <FadeIn delay={600}>
+            <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/90">
+              {[
+                "12 500+ annonces vérifiées",
+                "Paiements 100% sécurisés",
+                "Contrats numériques légaux",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <CheckCircle2
+                    className="size-4 text-kaza-green"
+                    aria-hidden
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </FadeIn>
+        </div>
+
+        {/* Marquee partenaires en bas du hero */}
+        <div className="relative z-10 w-full border-t border-white/10 bg-black/30 py-6 backdrop-blur-sm">
+          <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60">
+            Propulsé par les acteurs majeurs de la fintech africaine
+          </p>
+          <Marquee speed={50} pauseOnHover>
+            {PARTNERS.map((partner) => (
+              <div
+                key={partner.name}
+                className="flex items-center gap-3 px-4"
+              >
+                <span
+                  className="flex size-10 items-center justify-center rounded-full text-xs font-bold text-white shadow-md ring-1 ring-white/20"
+                  style={{ backgroundColor: partner.brandColor }}
+                  aria-hidden
+                >
+                  {partner.logoLetters}
+                </span>
+                <span className="text-sm font-medium text-white/80">
+                  {partner.name}
+                </span>
+              </div>
+            ))}
+          </Marquee>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 2. STATS BANDEAU                                                     */}
+      {/* =================================================================== */}
+      <section className="relative border-b bg-gradient-to-r from-kaza-navy/5 via-white to-kaza-blue/5 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <div className="mb-12 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
+                KAZA en chiffres
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
+                Une plateforme à l&apos;échelle de l&apos;Afrique
+              </h2>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-2 gap-8 lg:grid-cols-4 lg:gap-12">
+            {platformStats.map((stat, idx) => (
+              <RevealOnScroll
+                key={stat.label}
+                direction="up"
+                delay={100 * idx}
+                className="text-center lg:text-left"
+              >
+                <StatCounter
+                  value={stat.value}
+                  suffix={stat.suffix}
+                  prefix={stat.prefix}
+                  label={stat.label}
+                  description={stat.description}
+                />
+              </RevealOnScroll>
             ))}
           </div>
-
-          <div className="mt-8 text-center sm:hidden">
-            <Button variant="outline" asChild>
-              <Link href="/search">
-                Voir toutes les propriétés
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
 
-      {/* Espace étudiant */}
-      <section className="bg-kaza-navy py-16 text-white">
+      {/* =================================================================== */}
+      {/* 3. FEATURES                                                          */}
+      {/* =================================================================== */}
+      <section className="bg-white py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="grid items-center gap-8 lg:grid-cols-2">
-            <div>
-              <Badge className="mb-4 bg-kaza-green/20 text-kaza-green">
-                KAZA ÉTUDIANT
-              </Badge>
-              <h2 className="font-heading text-3xl font-bold lg:text-4xl">
-                Des colocations sûres pour les étudiants
-              </h2>
-              <p className="mt-4 text-lg text-white/70">
-                Trouvez une chambre près de votre campus, partagez les frais
-                avec des colocataires vérifiés et signez votre bail en quelques
-                clics.
+          <RevealOnScroll direction="up">
+            <div className="mx-auto mb-16 max-w-3xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-green">
+                Pourquoi KAZA
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Button
-                  className="bg-kaza-green hover:bg-kaza-green/90"
-                  asChild
-                >
-                  <Link href="/student-living">Trouver une colocation</Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                  asChild
-                >
-                  <Link href="/signup">Publier une chambre</Link>
-                </Button>
-              </div>
+              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
+                Une plateforme pensée pour l&apos;Afrique moderne
+              </h2>
+              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
+                Vérification d&apos;identité, escrow sécurisé, contrats
+                numériques : on a réinventé chaque étape de la location pour le
+                marché africain.
+              </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <div className="h-40 overflow-hidden rounded-xl bg-white/10 lg:h-52">
-                  <Image
-                    src={STUDENT_IMAGES[0]}
-                    alt="Logement étudiant moderne"
-                    width={400}
-                    height={300}
-                    className="h-full w-full object-cover"
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((feature, idx) => (
+              <RevealOnScroll
+                key={feature.title}
+                direction="up"
+                delay={100 * (idx % 3)}
+              >
+                <div className="h-full rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-kaza-blue/30 hover:shadow-xl">
+                  <FeatureHighlight
+                    icon={feature.icon}
+                    title={feature.title}
+                    description={feature.description}
+                    metric={feature.metric}
                   />
                 </div>
-                <div className="h-32 overflow-hidden rounded-xl bg-white/10 lg:h-40">
-                  <Image
-                    src={STUDENT_IMAGES[1]}
-                    alt="Espace de colocation"
-                    width={400}
-                    height={300}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
-              <div className="space-y-4 pt-8">
-                <div className="h-32 overflow-hidden rounded-xl bg-white/10 lg:h-40">
-                  <Image
-                    src={STUDENT_IMAGES[2]}
-                    alt="Chambre étudiante meublée"
-                    width={400}
-                    height={300}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="h-40 overflow-hidden rounded-xl bg-white/10 lg:h-52">
-                  <Image
-                    src={STUDENT_IMAGES[3]}
-                    alt="Espace commun de colocation"
-                    width={400}
-                    height={300}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
+              </RevealOnScroll>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Comment ça marche */}
-      <section className="bg-white py-16">
+      {/* =================================================================== */}
+      {/* 4. ANNONCES À LA UNE                                                 */}
+      {/* =================================================================== */}
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <h2 className="mb-12 text-center font-heading text-3xl font-bold">
-            Comment fonctionne KAZA
-          </h2>
-
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Pour les locataires */}
-            <div className="rounded-2xl border p-8">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kaza-blue/10">
-                  <Key className="size-5 text-kaza-blue" />
-                </div>
-                <h3 className="text-xl font-semibold">Pour les locataires</h3>
+          <RevealOnScroll direction="up">
+            <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
+                  Sélection premium
+                </p>
+                <h2 className="mt-3 font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
+                  Annonces à la une
+                </h2>
+                <p className="mt-3 max-w-xl text-muted-foreground">
+                  Une sélection de biens premium soigneusement vérifiés dans les
+                  plus belles villes du Bénin.
+                </p>
               </div>
-              <div className="space-y-6">
-                {tenantSteps.map((step) => (
-                  <div key={step.step} className="flex gap-4">
-                    <span className="font-heading text-2xl font-bold text-kaza-blue/30">
-                      {step.step}
-                    </span>
-                    <div>
-                      <h4 className="font-semibold">{step.title}</h4>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {hasFeatured ? (
+                <Link
+                  href="/search"
+                  className="group inline-flex items-center gap-2 rounded-full border border-kaza-navy/20 px-5 py-2.5 text-sm font-semibold text-kaza-navy transition-all hover:border-kaza-navy hover:bg-kaza-navy hover:text-white"
+                >
+                  Voir toutes les annonces
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              ) : null}
             </div>
+          </RevealOnScroll>
 
-            {/* Pour les propriétaires */}
-            <div className="rounded-2xl border p-8">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kaza-green/10">
-                  <Building2 className="size-5 text-kaza-green" />
-                </div>
-                <h3 className="text-xl font-semibold">Pour les propriétaires</h3>
-              </div>
-              <div className="space-y-6">
-                {ownerSteps.map((step) => (
-                  <div key={step.step} className="flex gap-4">
-                    <span className="font-heading text-2xl font-bold text-kaza-green/30">
-                      {step.step}
-                    </span>
-                    <div>
-                      <h4 className="font-semibold">{step.title}</h4>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {hasFeatured ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredProperties.map((property, idx) => (
+                <RevealOnScroll
+                  key={property.id}
+                  direction="up"
+                  delay={100 * (idx % 3)}
+                >
+                  <PropertyCard
+                    id={property.id}
+                    title={property.title}
+                    price={property.price}
+                    address={property.address}
+                    bedrooms={property.bedrooms}
+                    bathrooms={property.bathrooms}
+                    squareMeters={property.sqm}
+                    imageUrl={
+                      property.primaryPhotoUrl ??
+                      "https://picsum.photos/seed/kaza-default/800/600"
+                    }
+                    propertyType={property.type}
+                    isVerified={property.owner?.isVerified ?? false}
+                  />
+                </RevealOnScroll>
+              ))}
             </div>
+          ) : (
+            <RevealOnScroll direction="up">
+              <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-kaza-blue/30 bg-white p-10 text-center shadow-sm">
+                <div className="mx-auto mb-4 inline-flex size-12 items-center justify-center rounded-full bg-kaza-blue/10 text-kaza-blue">
+                  <Sparkles className="size-6" aria-hidden />
+                </div>
+                <h3 className="font-heading text-xl font-bold text-kaza-navy">
+                  Bientôt sur KAZA
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Soyez le premier à publier votre bien et touchez une
+                  communauté grandissante de locataires vérifiés au Bénin.
+                </p>
+                <Link
+                  href="/signup?role=owner"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-kaza-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-kaza-navy/90"
+                >
+                  Publier une annonce
+                  <ArrowRight className="size-4" />
+                </Link>
+              </div>
+            </RevealOnScroll>
+          )}
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 5. VILLES CIBLÉES                                                    */}
+      {/* =================================================================== */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <div className="mx-auto mb-14 max-w-3xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-green">
+                Couverture nationale
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
+                Présent dans les villes qui comptent
+              </h2>
+              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
+                Du littoral atlantique aux montagnes de l&apos;Atacora, KAZA
+                couvre déjà les principales métropoles du Bénin et s&apos;étend
+                à toute l&apos;Afrique de l&apos;Ouest.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {CITIES.map((city, idx) => (
+              <RevealOnScroll
+                key={city.slug}
+                direction="zoom"
+                delay={80 * (idx % 3)}
+              >
+                <CityCard
+                  slug={city.slug}
+                  name={city.name}
+                  country={city.country}
+                  imageUrl={city.imageUrl}
+                  propertiesCount={city.propertiesCount}
+                  averagePrice={city.averagePrice}
+                  neighborhoods={city.neighborhoods}
+                />
+              </RevealOnScroll>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Newsletter / CTA */}
-      <section className="border-t bg-muted/30 py-16">
-        <div className="mx-auto max-w-xl px-4 text-center">
-          <h2 className="font-heading text-2xl font-bold">
-            Restez à la pointe du marché
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            Recevez les nouvelles annonces premium et nos analyses du marché
-            local directement par e-mail.
-          </p>
-          <div className="mt-6 flex gap-3">
-            <input
-              type="email"
-              placeholder="Votre adresse e-mail"
-              className="flex-1 rounded-full border bg-white px-5 py-3 text-sm outline-none focus:border-kaza-blue"
+      {/* =================================================================== */}
+      {/* 6. COMMENT ÇA MARCHE                                                 */}
+      {/* =================================================================== */}
+      <section className="relative overflow-hidden bg-gray-50 py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <div className="mx-auto mb-16 max-w-3xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
+                Comment ça marche
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
+                Trois espaces, une expérience fluide
+              </h2>
+              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
+                Que vous cherchiez un logement, mettiez en location ou viviez en
+                colocation étudiante, KAZA s&apos;adapte à votre projet.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {/* Locataires */}
+            <RevealOnScroll direction="up" delay={0}>
+              <GradientCard
+                variant="blue"
+                className="flex h-full flex-col p-8 lg:p-10"
+              >
+                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
+                  <Key className="size-7" aria-hidden />
+                </div>
+                <h3 className="font-heading text-2xl font-bold">
+                  Pour les locataires
+                </h3>
+                <p className="mt-2 text-sm text-white/80">
+                  Trouvez et louez votre prochain chez-vous en toute confiance.
+                </p>
+
+                <ul className="mt-8 flex-1 space-y-6">
+                  {tenantSteps.map((step) => (
+                    <li key={step.step} className="flex gap-4">
+                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
+                        {step.step}
+                      </span>
+                      <div>
+                        <h4 className="font-semibold">{step.title}</h4>
+                        <p className="mt-1 text-sm text-white/75">
+                          {step.description}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  className="mt-8 w-full bg-white text-kaza-blue hover:bg-white/90"
+                >
+                  <Link href="/search">
+                    Rechercher un logement
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </GradientCard>
+            </RevealOnScroll>
+
+            {/* Propriétaires */}
+            <RevealOnScroll direction="up" delay={150}>
+              <GradientCard
+                variant="navy"
+                className="flex h-full flex-col p-8 lg:p-10"
+              >
+                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
+                  <Home className="size-7" aria-hidden />
+                </div>
+                <h3 className="font-heading text-2xl font-bold">
+                  Pour les propriétaires
+                </h3>
+                <p className="mt-2 text-sm text-white/80">
+                  Mettez vos biens en valeur et augmentez vos revenus locatifs.
+                </p>
+
+                <ul className="mt-8 flex-1 space-y-6">
+                  {ownerSteps.map((step) => (
+                    <li key={step.step} className="flex gap-4">
+                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
+                        {step.step}
+                      </span>
+                      <div>
+                        <h4 className="font-semibold">{step.title}</h4>
+                        <p className="mt-1 text-sm text-white/75">
+                          {step.description}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  className="mt-8 w-full bg-kaza-green text-white hover:bg-kaza-green/90"
+                >
+                  <Link href="/signup?role=owner">
+                    Publier une annonce
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </GradientCard>
+            </RevealOnScroll>
+
+            {/* Étudiants */}
+            <RevealOnScroll direction="up" delay={300}>
+              <GradientCard
+                variant="green"
+                className="flex h-full flex-col p-8 lg:p-10"
+              >
+                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
+                  <GraduationCap className="size-7" aria-hidden />
+                </div>
+                <h3 className="font-heading text-2xl font-bold">
+                  Pour les étudiants
+                </h3>
+                <p className="mt-2 text-sm text-white/80">
+                  Colocations vérifiées, frais partagés, à deux pas du campus.
+                </p>
+
+                <ul className="mt-8 flex-1 space-y-6">
+                  {studentSteps.map((step) => (
+                    <li key={step.step} className="flex gap-4">
+                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
+                        {step.step}
+                      </span>
+                      <div>
+                        <h4 className="font-semibold">{step.title}</h4>
+                        <p className="mt-1 text-sm text-white/75">
+                          {step.description}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  className="mt-8 w-full bg-white text-kaza-green hover:bg-white/90"
+                >
+                  <Link href="/student-living">
+                    Trouver une colocation
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </GradientCard>
+            </RevealOnScroll>
+          </div>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 7. TÉMOIGNAGES                                                       */}
+      {/* =================================================================== */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <div className="mx-auto mb-14 max-w-3xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
+                Témoignages
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
+                Ils nous font confiance
+              </h2>
+              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
+                Plus de 6 200 utilisateurs ont noté la plateforme. Voici ce
+                qu&apos;ils disent.
+              </p>
+            </div>
+          </RevealOnScroll>
+        </div>
+
+        <FadeIn>
+          <Marquee speed={45} pauseOnHover>
+            {TESTIMONIALS.map((testimonial) => (
+              <div key={testimonial.id} className="w-[340px] sm:w-[400px]">
+                <TestimonialCard
+                  name={testimonial.name}
+                  role={testimonial.role}
+                  avatarSeed={testimonial.avatarSeed}
+                  rating={testimonial.rating}
+                  quote={testimonial.quote}
+                  city={testimonial.city}
+                  highlight={testimonial.highlight}
+                />
+              </div>
+            ))}
+          </Marquee>
+        </FadeIn>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 8. ESPACE ÉTUDIANT PREMIUM                                           */}
+      {/* =================================================================== */}
+      <section className="bg-gradient-to-b from-white to-gray-50 py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <GradientCard
+              variant="navy"
+              className="overflow-hidden p-8 sm:p-12 lg:p-16"
+            >
+              <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+                {/* Texte */}
+                <div>
+                  <Badge className="mb-5 border-0 bg-kaza-green/20 text-kaza-green hover:bg-kaza-green/30">
+                    <GraduationCap className="mr-1.5 size-3.5" />
+                    KAZA ÉTUDIANT
+                  </Badge>
+                  <h2 className="font-heading text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+                    Des colocations sûres pour les{" "}
+                    <span className="bg-gradient-to-r from-kaza-green to-emerald-300 bg-clip-text text-transparent">
+                      étudiants africains
+                    </span>
+                  </h2>
+                  <p className="mt-5 text-base text-white/80 sm:text-lg">
+                    Trouvez une chambre près de votre campus, partagez les frais
+                    avec des colocataires vérifiés et signez votre bail en
+                    quelques clics depuis votre téléphone.
+                  </p>
+
+                  <ul className="mt-8 space-y-3">
+                    {studentBenefits.map((benefit) => (
+                      <li
+                        key={benefit.label}
+                        className="flex items-center gap-3 text-white/90"
+                      >
+                        <benefit.icon
+                          className="size-5 shrink-0 text-kaza-green"
+                          aria-hidden
+                        />
+                        <span className="text-sm sm:text-base">
+                          {benefit.label}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-10 flex flex-wrap gap-3">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="bg-kaza-green hover:bg-kaza-green/90"
+                    >
+                      <Link href="/student-living">
+                        Trouver une colocation
+                        <ArrowRight className="ml-2 size-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="outline"
+                      className="border-white/40 bg-white/5 text-white backdrop-blur-sm hover:bg-white/15 hover:text-white"
+                    >
+                      <Link href="/signup?role=owner">
+                        Publier une chambre
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Grille images */}
+                <div className="relative">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-4">
+                      <div className="group relative h-44 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 lg:h-56">
+                        <Image
+                          src={STUDENT_IMAGES[0]}
+                          alt="Étudiants en colocation"
+                          fill
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      </div>
+                      <div className="group relative h-32 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 lg:h-40">
+                        <Image
+                          src={STUDENT_IMAGES[1]}
+                          alt="Espace de colocation moderne"
+                          fill
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-4 pt-8">
+                      <div className="group relative h-32 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 lg:h-40">
+                        <Image
+                          src={STUDENT_IMAGES[2]}
+                          alt="Chambre étudiante meublée"
+                          fill
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      </div>
+                      <div className="group relative h-44 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 lg:h-56">
+                        <Image
+                          src={STUDENT_IMAGES[3]}
+                          alt="Salon commun lumineux"
+                          fill
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badge prix glass */}
+                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 lg:-bottom-6 lg:left-auto lg:right-2 lg:translate-x-0">
+                    <GlassPanel
+                      intensity="strong"
+                      tint="white"
+                      className="px-5 py-3 text-center"
+                    >
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-kaza-navy/70">
+                        À partir de
+                      </p>
+                      <p className="font-heading text-xl font-bold text-kaza-navy">
+                        25 000 FCFA
+                        <span className="text-xs font-medium text-kaza-navy/60">
+                          {" "}
+                          /mois
+                        </span>
+                      </p>
+                    </GlassPanel>
+                  </div>
+                </div>
+              </div>
+            </GradientCard>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 9. BLOG PREVIEW                                                      */}
+      {/* =================================================================== */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <div className="mb-14 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-green">
+                  Le journal KAZA
+                </p>
+                <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
+                  Tout ce qu&apos;il faut savoir sur l&apos;immobilier en
+                  Afrique
+                </h2>
+              </div>
+              <Link
+                href="/blog"
+                className="group inline-flex items-center gap-2 text-sm font-semibold text-kaza-blue hover:underline"
+              >
+                Lire tous les articles
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {BLOG_PREVIEWS.map((post, idx) => (
+              <RevealOnScroll
+                key={post.slug}
+                direction="up"
+                delay={100 * (idx % 4)}
+              >
+                <BlogPreviewCard
+                  slug={post.slug}
+                  title={post.title}
+                  excerpt={post.excerpt}
+                  category={post.category}
+                  readingTime={post.readingTime}
+                  publishedAt={post.publishedAt}
+                  imageUrl={post.imageUrl}
+                />
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 10. PRESSE                                                           */}
+      {/* =================================================================== */}
+      <section className="border-y bg-gray-50 py-12 lg:py-16">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <PressStrip items={PRESS} />
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 11. PARTNER BAR DETAILED                                             */}
+      {/* =================================================================== */}
+      <section className="bg-white py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <RevealOnScroll direction="up">
+            <PartnerBar
+              partners={PARTNERS}
+              title="Notre écosystème de partenaires"
             />
-            <Button className="rounded-full bg-kaza-navy px-6">
-              Rejoindre KAZA
-            </Button>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 12. CTA FINAL                                                        */}
+      {/* =================================================================== */}
+      <section className="relative isolate overflow-hidden bg-kaza-navy py-24 lg:py-32">
+        {/* Décor */}
+        <div
+          className="absolute -top-32 left-1/2 -z-10 size-[40rem] -translate-x-1/2 rounded-full bg-kaza-blue/20 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="absolute -bottom-32 right-0 -z-10 size-[30rem] rounded-full bg-kaza-green/20 blur-3xl"
+          aria-hidden
+        />
+
+        <div className="mx-auto max-w-4xl px-4 text-center lg:px-8">
+          <RevealOnScroll direction="up">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md">
+              <Users className="size-4 text-kaza-green" aria-hidden />
+              Rejoignez la communauté KAZA
+            </div>
+            <h2 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Prêt à trouver votre prochain{" "}
+              <span className="bg-gradient-to-r from-kaza-green to-emerald-300 bg-clip-text text-transparent">
+                chez-vous ?
+              </span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-base text-white/80 sm:text-lg">
+              Inscrivez-vous gratuitement et accédez à des milliers
+              d&apos;annonces vérifiées. Sans engagement, sans carte bancaire.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button
+                asChild
+                size="lg"
+                className="bg-kaza-green text-white shadow-2xl shadow-kaza-green/30 hover:bg-kaza-green/90"
+              >
+                <Link href="/search">
+                  Rechercher un logement
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-white bg-transparent text-white hover:bg-white hover:text-kaza-navy"
+              >
+                <Link href="/signup?role=owner">Publier une annonce</Link>
+              </Button>
+            </div>
+
+            <p className="mt-6 text-xs text-white/60">
+              Inscription gratuite · Pas de carte bancaire requise · Désabonnement
+              en 1 clic
+            </p>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 13. NEWSLETTER                                                       */}
+      {/* =================================================================== */}
+      <section className="border-t bg-gradient-to-r from-gray-50 via-white to-gray-50 py-16">
+        <div className="mx-auto max-w-4xl px-4 lg:px-8">
+          <div className="flex flex-col items-center gap-6 rounded-3xl border bg-white p-8 shadow-sm sm:p-10 lg:flex-row lg:gap-12">
+            <div className="flex-1 text-center lg:text-left">
+              <h3 className="font-heading text-2xl font-bold tracking-tight text-kaza-navy sm:text-3xl">
+                Restez à la pointe du marché
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                Recevez les nouvelles annonces premium et nos analyses du marché
+                local directement par e-mail.
+              </p>
+            </div>
+            <form
+              className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto lg:min-w-[420px]"
+              aria-label="Inscription à la newsletter KAZA"
+            >
+              <input
+                type="email"
+                required
+                placeholder="Votre adresse e-mail"
+                aria-label="Adresse e-mail"
+                className="flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 text-sm outline-none transition-colors focus:border-kaza-blue focus:ring-2 focus:ring-kaza-blue/20"
+              />
+              <Button
+                type="submit"
+                className="rounded-full bg-kaza-navy px-6 hover:bg-kaza-navy/90"
+              >
+                Rejoindre KAZA
+              </Button>
+            </form>
           </div>
         </div>
       </section>

@@ -1,0 +1,76 @@
+next.config.ts(11,3): error TS2353: Object literal may only specify known properties, and 'eslint' does not exist in type 'NextConfig'.
+src/actions/contracts.ts(179,38): error TS2339: Property 'rental' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(184,27): error TS2339: Property 'rental' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(203,18): error TS2339: Property 'tenant_signature_hash' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(210,18): error TS2339: Property 'owner_signature_hash' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(220,49): error TS2339: Property 'tenant_signature_hash' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(222,48): error TS2339: Property 'owner_signature_hash' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(247,60): error TS2339: Property 'status' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(292,25): error TS2339: Property 'pdf_url' does not exist on type 'SelectQueryError<"column 'pdf_url' does not exist on 'contracts'.">'.
+src/actions/contracts.ts(292,45): error TS2339: Property 'contract_pdf_url' does not exist on type 'SelectQueryError<"column 'pdf_url' does not exist on 'contracts'.">'.
+src/actions/visits.ts(215,45): error TS2345: Argument of type '"CANCELLED"' is not assignable to parameter of type 'VisitRequestStatus | undefined'.
+src/actions/visits.ts(232,45): error TS2345: Argument of type '"CANCELLED"' is not assignable to parameter of type 'VisitRequestStatus | undefined'.
+src/app/(dashboard)/messages/messages-view.tsx(110,32): error TS2322: Type 'null' is not assignable to type 'string | Blob | undefined'.
+src/app/(dashboard)/messages/messages-view.tsx(164,19): error TS2322: Type 'null' is not assignable to type 'string | Blob | undefined'.
+src/app/(dashboard)/points/page.tsx(19,24): error TS2322: Type '{ userFirstName: string; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'userFirstName' does not exist on type 'IntrinsicAttributes'.
+src/app/(dashboard)/tenant/payments/checkout/checkout-form.tsx(59,11): error TS2322: Type '"KAZA Pay" | "KAZA Wallet"' is not assignable to type 'PaymentProvider | undefined'.
+  Type '"KAZA Pay"' is not assignable to type 'PaymentProvider | undefined'.
+src/app/(dashboard)/tenant/saved/page.tsx(38,16): error TS2352: Conversion of type '{ property: SelectQueryError<"could not find the relation between saved_properties and properties">; }[]' to type '{ property: PropertyWithPhotos | null; }[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ property: SelectQueryError<"could not find the relation between saved_properties and properties">; }' is not comparable to type '{ property: PropertyWithPhotos | null; }'.
+    Types of property 'property' are incompatible.
+      Type 'SelectQueryError<"could not find the relation between saved_properties and properties">' is not comparable to type 'PropertyWithPhotos | null'.
+src/app/(main)/properties/[id]/page.tsx(148,24): error TS18047: 'property.bedrooms' is possibly 'null'.
+src/app/(main)/properties/[id]/page.tsx(148,44): error TS18047: 'property.bathrooms' is possibly 'null'.
+src/app/(main)/properties/[id]/page.tsx(334,17): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/app/(main)/properties/[id]/page.tsx(335,17): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/app/(main)/properties/[id]/page.tsx(336,17): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/app/(main)/properties/page.tsx(31,13): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/app/(main)/properties/page.tsx(32,13): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/app/(main)/properties/page.tsx(33,13): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/components/layout/sidebar.tsx(46,67): error TS2304: Cannot find name 'TrendingUp'.
+src/components/layout/sidebar.tsx(70,58): error TS2304: Cannot find name 'GraduationCap'.
+src/lib/auth/demo-session.ts(46,9): error TS2578: Unused '@ts-expect-error' directive.
+src/lib/auth/demo-session.ts(57,9): error TS2578: Unused '@ts-expect-error' directive.
+src/lib/auth/demo-session.ts(82,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+      Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+        Types of property 'buffer' are incompatible.
+          Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+            Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+src/lib/auth/demo-session.ts(92,53): error TS2345: Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+    Types of property 'buffer' are incompatible.
+      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+        Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+src/lib/auth/demo-session.ts(103,7): error TS2345: Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+    Types of property 'buffer' are incompatible.
+      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+        Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+src/lib/auth/demo-session.ts(156,54): error TS2345: Argument of type 'Uint8Array<ArrayBufferLike>' is not assignable to parameter of type 'BufferSource'.
+  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+    Types of property 'buffer' are incompatible.
+      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+        Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+src/lib/notifications/dispatch.ts(226,15): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(relation: "users" | "properties" | "property_photos" | "roommate_listings" | "roommate_groups" | "roommate_members" | "rentals" | "messages" | "payments" | "escrow_payments" | "ratings" | "contracts" | "visit_requests" | "saved_properties" | "notifications"): PostgrestQueryBuilder<...>', gave the following error.
+    Argument of type '"user_push_tokens"' is not assignable to parameter of type '"users" | "properties" | "property_photos" | "roommate_listings" | "roommate_groups" | "roommate_members" | "rentals" | "messages" | "payments" | "escrow_payments" | "ratings" | "contracts" | "visit_requests" | "saved_properties" | "notifications"'.
+  Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: "12"; }, { Tables: { users: { Row: { id: string; email: string; phone: string | null; password_hash: string | null; first_name: string; last_name: string; ... 10 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 13 more ...; notifications: { ...; }; }; Views: {}; Functions: {}; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.
+    Argument of type '"user_push_tokens"' is not assignable to parameter of type 'never'.
+src/lib/notifications/dispatch.ts(227,9): error TS2578: Unused '@ts-expect-error' directive.
+src/lib/notifications/dispatch.ts(232,14): error TS2345: Argument of type '(r: { token?: string; }) => string | undefined' is not assignable to parameter of type '(value: SelectQueryError<"column 'token' does not exist on 'users'."> | SelectQueryError<"column 'token' does not exist on 'properties'."> | ... 12 more ... | SelectQueryError<...>, index: number, array: (SelectQueryError<...> | ... 13 more ... | SelectQueryError<...>)[]) => string | undefined'.
+  Types of parameters 'r' and 'value' are incompatible.
+    Type 'SelectQueryError<"column 'token' does not exist on 'users'."> | SelectQueryError<"column 'token' does not exist on 'properties'."> | ... 12 more ... | SelectQueryError<...>' is not assignable to type '{ token?: string | undefined; }'.
+      Type 'SelectQueryError<"column 'token' does not exist on 'users'.">' has no properties in common with type '{ token?: string | undefined; }'.
+src/lib/notifications/dispatch.ts(246,9): error TS2578: Unused '@ts-expect-error' directive.
+src/lib/notifications/dispatch.ts(248,11): error TS2769: No overload matches this call.
+  Overload 2 of 2, '(values: { id?: string | undefined; user_id: string; type: "visit_request" | "visit_accepted" | "visit_rejected" | "message_received" | "payment_received" | "payment_failed" | "payment_due" | ... 8 more ... | "system"; ... 5 more ...; created_at?: string | undefined; }[], options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'user_id' does not exist in type '{ id?: string | undefined; user_id: string; type: "visit_request" | "visit_accepted" | "visit_rejected" | "message_received" | "payment_received" | "payment_failed" | "payment_due" | ... 8 more ... | "system"; ... 5 more ...; created_at?: string | undefined; }[]'.

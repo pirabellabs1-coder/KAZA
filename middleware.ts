@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { updateSession } from "@/lib/supabase/middleware";
 import type { Database } from "@/types/supabase";
 
-type Role = "OWNER" | "TENANT" | "STUDENT" | "ADMIN";
+type Role = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "ADMIN";
 
 /**
  * Routes nécessitant uniquement une authentification (toutes rôles confondus).
@@ -14,6 +14,7 @@ const protectedPrefixes = [
   "/owner",
   "/tenant",
   "/student",
+  "/agency",
   "/admin",
   "/dashboard",
   "/profile",
@@ -26,9 +27,12 @@ const protectedPrefixes = [
  * la valeur est la liste des rôles autorisés à l'atteindre.
  */
 const ROLE_RULES: Record<string, Role[]> = {
-  "/owner": ["OWNER", "ADMIN"],
+  // Une agence gère un portefeuille de biens : elle a les mêmes droits qu'un
+  // propriétaire sur la gestion des annonces, visites, locataires, paiements.
+  "/owner": ["OWNER", "AGENCY", "ADMIN"],
   "/tenant": ["TENANT", "ADMIN"],
   "/student": ["STUDENT", "ADMIN"],
+  "/agency": ["AGENCY", "ADMIN"],
   "/admin": ["ADMIN"],
 };
 
@@ -59,6 +63,7 @@ function isRole(value: unknown): value is Role {
     value === "OWNER" ||
     value === "TENANT" ||
     value === "STUDENT" ||
+    value === "AGENCY" ||
     value === "ADMIN"
   );
 }
@@ -98,10 +103,14 @@ async function resolveUserRole(
 }
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // ---------------------------------------------------------------------------
+  // FLUX SUPABASE LIVE
+  // ---------------------------------------------------------------------------
   // 1. Rafraîchit la session (gère la rotation des cookies Supabase)
   const response = await updateSession(request);
 
-  const { pathname } = request.nextUrl;
   if (!isProtectedRoute(pathname)) {
     return response;
   }

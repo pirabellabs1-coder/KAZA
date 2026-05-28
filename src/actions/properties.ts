@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { track } from "@/lib/analytics/track";
 import type { Property } from "@/types/properties";
 import {
   createPropertySchema,
@@ -120,6 +121,10 @@ export async function createProperty(
     return { success: false, error: "Vous devez etre connecte." };
   }
 
+  // Publication directe en AVAILABLE pour MVP — la modération admin viendra
+  // changer le statut en PENDING_REVIEW / UNAVAILABLE si nécessaire.
+  const initialStatus = "AVAILABLE";
+
   const payload = {
     owner_id: user.id,
     title: parsed.data.title,
@@ -135,7 +140,7 @@ export async function createProperty(
       parsed.data.locationLatitude,
       parsed.data.locationLongitude
     ),
-    status: "DRAFT",
+    status: initialStatus,
   };
 
   const { data, error } = await supabase
@@ -150,6 +155,12 @@ export async function createProperty(
       error: error?.message ?? "Impossible de creer l'annonce.",
     };
   }
+
+  // Tracking analytics — best-effort, ne bloque pas la création.
+  await track({
+    eventType: "PROPERTY_PUBLISHED",
+    metadata: { property_id: data.id },
+  });
 
   revalidatePath("/owner/properties");
   // TODO: type manquant - `Property` (src/types/properties.ts) n'inclut pas
@@ -296,5 +307,162 @@ export async function unpublishProperty(id: string): Promise<ActionResult<Proper
 
   revalidatePath("/owner/properties");
   revalidatePath("/properties");
+  return { success: true, data: data as unknown as Property };
+}
+
+// ---------------------------------------------------------------------------
+// Edition complète depuis le dashboard owner (page /owner/properties/[id]/edit)
+// ---------------------------------------------------------------------------
+
+/** Statuts utilisables par l'owner depuis son dashboard. */
+export type OwnerPropertyStatus =
+  | "DRAFT"
+  | "AVAILABLE"
+  | "RENTED"
+  | "UNAVAILABLE"
+  | "ARCHIVED";
+
+const OWNER_STATUSES: readonly OwnerPropertyStatus[] = [
+  "DRAFT",
+  "AVAILABLE",
+  "RENTED",
+  "UNAVAILABLE",
+  "ARCHIVED",
+] as const;
+
+export interface UpdatePropertyFullInput {
+  id: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  squareMeters?: number;
+  address?: string;
+  amenities?: string[];
+  status?: OwnerPropertyStatus;
+}
+
+/**
+ * Met à jour tous les champs éditables d'une annonce depuis le formulaire
+ * d'édition owner. Variante "loose" du `updateProperty` legacy : pas de
+ * validation Zod stricte (les bornes sont validées côté UI), accepte le
+ * changement de statut et applique uniquement les champs définis.
+ */
+export async function updatePropertyFull(
+  input: UpdatePropertyFullInput,
+): Promise<ActionResult<Property>> {
+  if (!input.id) {
+    return { success: false, error: "Identifiant manquant." };
+  }
+
+  // Garde-fous légers — l'UI valide déjà, mais on protège la DB.
+  if (input.title !== undefined && input.title.trim().length < 5) {
+    return { success: false, error: "Le titre doit contenir au moins 5 caractères." };
+  }
+  if (
+    input.description !== undefined &&
+    input.description.trim().length < 20
+  ) {
+    return {
+      success: false,
+      error: "La description doit contenir au moins 20 caractères.",
+    };
+  }
+  if (input.price !== undefined && input.price <= 0) {
+    return { success: false, error: "Le loyer doit être supérieur à 0." };
+  }
+  if (
+    input.status !== undefined &&
+    !OWNER_STATUSES.includes(input.status)
+  ) {
+    return { success: false, error: "Statut invalide." };
+  }
+
+  const check = await assertOwnership(input.id);
+  if (!check.ok) return check.result;
+
+  const { supabase } = check;
+
+  const update: Record<string, unknown> = {};
+  if (input.title !== undefined) update.title = input.title.trim();
+  if (input.description !== undefined)
+    update.description = input.description.trim();
+  if (input.price !== undefined) update.price = input.price;
+  if (input.bedrooms !== undefined) update.bedrooms = input.bedrooms;
+  if (input.bathrooms !== undefined) update.bathrooms = input.bathrooms;
+  if (input.squareMeters !== undefined)
+    update.square_meters = input.squareMeters;
+  if (input.address !== undefined) update.address = input.address.trim();
+  if (input.amenities !== undefined) update.amenities = input.amenities;
+  if (input.status !== undefined) update.status = input.status;
+
+  if (Object.keys(update).length === 0) {
+    return { success: false, error: "Aucune modification à enregistrer." };
+  }
+
+  const { data, error } = await supabase
+    .from("properties")
+    .update(update)
+    .eq("id", input.id)
+    .eq("owner_id", check.user.id) // double-check côté requête
+    .select()
+    .single();
+
+  if (error || !data) {
+    return {
+      success: false,
+      error: error?.message ?? "Impossible de mettre à jour l'annonce.",
+    };
+  }
+
+  revalidatePath("/owner/properties");
+  revalidatePath(`/owner/properties/${input.id}`);
+  revalidatePath(`/owner/properties/${input.id}/edit`);
+  revalidatePath(`/properties/${input.id}`);
+  revalidatePath("/properties");
+
+  return { success: true, data: data as unknown as Property };
+}
+
+/**
+ * Bascule rapide du statut d'une annonce — utilisée par le menu contextuel
+ * "..." de la liste des biens (mettre hors marché / republier / archiver).
+ */
+export async function setPropertyStatus(
+  propertyId: string,
+  status: OwnerPropertyStatus,
+): Promise<ActionResult<Property>> {
+  if (!propertyId) {
+    return { success: false, error: "Identifiant manquant." };
+  }
+  if (!OWNER_STATUSES.includes(status)) {
+    return { success: false, error: "Statut invalide." };
+  }
+
+  const check = await assertOwnership(propertyId);
+  if (!check.ok) return check.result;
+
+  const { supabase } = check;
+  const { data, error } = await supabase
+    .from("properties")
+    .update({ status })
+    .eq("id", propertyId)
+    .eq("owner_id", check.user.id)
+    .select()
+    .single();
+
+  if (error || !data) {
+    return {
+      success: false,
+      error: error?.message ?? "Impossible de changer le statut.",
+    };
+  }
+
+  revalidatePath("/owner/properties");
+  revalidatePath(`/owner/properties/${propertyId}`);
+  revalidatePath(`/properties/${propertyId}`);
+  revalidatePath("/properties");
+
   return { success: true, data: data as unknown as Property };
 }

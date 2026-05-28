@@ -58,7 +58,7 @@ export default async function PaymentCancelPage({
         <div className="text-sm">
           <p className="font-semibold text-foreground">Besoin d&apos;aide ?</p>
           <p className="mt-1 text-muted-foreground">
-            Vérifiez votre solde Mobile Money, votre connexion internet, puis
+            Vérifiez votre solde paiement intégré, votre connexion internet, puis
             réessayez. Notre équipe support reste disponible 7j/7.
           </p>
         </div>

@@ -34,16 +34,16 @@ const UPCOMING_RENT_30D = 150_000;
 
 const PAYMENT_METHODS = [
   {
-    id: "pm-mtn",
+    id: "pm-KAZA Pay",
     type: "mobile",
-    label: "MTN Mobile Money",
+    label: "KAZA Pay",
     masked: "+229 97 ** ** 41",
     isDefault: true,
   },
   {
-    id: "pm-moov",
+    id: "pm-KAZA Wallet",
     type: "mobile",
-    label: "Moov Money",
+    label: "KAZA Wallet",
     masked: "+229 96 ** ** 12",
     isDefault: false,
   },
@@ -60,7 +60,7 @@ const TRANSACTIONS: WalletTransaction[] = [
   {
     id: "tx-001",
     date: "2026-05-22T09:14:00.000Z",
-    description: "Recharge MTN Mobile Money",
+    description: "Recharge KAZA Pay",
     method: "MTN_MOMO",
     amount: 100_000,
     direction: "in",
@@ -87,7 +87,7 @@ const TRANSACTIONS: WalletTransaction[] = [
   {
     id: "tx-004",
     date: "2026-05-15T08:00:00.000Z",
-    description: "Recharge Moov Money",
+    description: "Recharge KAZA Wallet",
     method: "MOOV_MONEY",
     amount: 75_000,
     direction: "in",
@@ -123,7 +123,7 @@ const TRANSACTIONS: WalletTransaction[] = [
   {
     id: "tx-008",
     date: "2026-04-22T10:00:00.000Z",
-    description: "Retrait vers MTN Mobile Money",
+    description: "Retrait vers KAZA Pay",
     method: "MTN_MOMO",
     amount: 50_000,
     direction: "out",
@@ -132,7 +132,7 @@ const TRANSACTIONS: WalletTransaction[] = [
   {
     id: "tx-009",
     date: "2026-04-15T13:25:00.000Z",
-    description: "Recharge MTN Mobile Money",
+    description: "Recharge KAZA Pay",
     method: "MTN_MOMO",
     amount: 50_000,
     direction: "in",
@@ -190,7 +190,7 @@ export default function TenantWalletPage() {
                 <Wallet className="size-4" />
                 Solde disponible
               </div>
-              <p className="mt-3 font-heading text-4xl font-bold tracking-tight sm:text-5xl">
+              <p className="mt-3 font-heading text-2xl font-bold tracking-tight sm:text-3xl">
                 {formatPrice(BALANCE)}
               </p>
               <p className="mt-1 text-sm text-white/70">

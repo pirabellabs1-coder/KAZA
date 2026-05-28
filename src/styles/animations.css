@@ -1,0 +1,117 @@
+/* ============================================
+   KAZA - Animations Layer (Wave 6 Premium)
+   Animations réutilisables - GPU accelerated
+   ============================================ */
+
+/* === Marquee (bande défilante infinie) === */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marquee-left {
+  animation: marquee-left var(--marquee-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-right {
+  animation: marquee-right var(--marquee-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-pause:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* === Blob (background animé) === */
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(40px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 40px) scale(0.95);
+  }
+}
+
+.animate-blob {
+  animation: blob 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* === Shimmer (skeleton, badges premium) === */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* === Typing dots (messagerie) === */
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing-bounce 1.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.typing-dot-2 {
+  animation-delay: 0.15s;
+}
+
+.typing-dot-3 {
+  animation-delay: 0.3s;
+}
+
+/* === Respect des préférences utilisateur === */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-left,
+  .marquee-right,
+  .animate-blob,
+  .animate-shimmer,
+  .typing-dot {
+    animation: none !important;
+  }
+}

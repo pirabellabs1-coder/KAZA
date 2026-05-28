@@ -40,7 +40,7 @@ export function StatsCard({
       </div>
       <div className="mt-4">
         <p className="text-sm text-muted-foreground">{title}</p>
-        <p className="mt-1 text-2xl font-bold text-foreground">{value}</p>
+        <p className="mt-1 text-xl font-bold text-foreground">{value}</p>
         {subtitle && (
           <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
         )}

@@ -55,7 +55,7 @@ const MOCK_EXPENSES: MockExpense[] = [
   },
   {
     id: "exp-002",
-    title: "Abonnement Moov Internet",
+    title: "Abonnement KAZA Wallet Internet",
     category: "Internet",
     amount: 20000,
     payerId: "kofi",

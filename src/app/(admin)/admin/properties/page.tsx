@@ -1,11 +1,28 @@
-"use client";
-
-import { useState } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
-import { Check, X, Eye } from "lucide-react";
+import Link from "next/link";
+import {
+  AlertTriangle,
+  Ban,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  Flag,
+  ShieldAlert,
+  Sparkles,
+  Trash2,
+  TrendingUp,
+  Clock,
+  ListChecks,
+  MapPin,
+  ShieldCheck,
+  Building2,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -13,453 +30,800 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DataTable,
-  type DataTableColumn,
-} from "@/components/admin/data-table";
-import {
-  StatusBadge,
-  type StatusType,
-} from "@/components/admin/status-badge";
-import { formatPrice } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
-type PropertyStatus = Extract<
-  StatusType,
-  "pending" | "published" | "rejected" | "suspended"
->;
+import {
+  formatFcfa,
+  formatNumber,
+} from "@/lib/mock/admin-platform-data";
+import { COUNTRIES } from "@/lib/geo/locations";
+import {
+  listAllProperties,
+  listPropertiesToReview,
+  getAdminStats,
+  type AdminPropertyRow,
+} from "@/lib/queries/admin";
 
-interface PropertyRow {
+import { PropertyReviewModal } from "./property-review-modal";
+
+export const metadata: Metadata = {
+  title: "Modération des annonces — KAZA Admin",
+  description: "Modération, signalements et mise en avant des annonces.",
+};
+
+// Force dynamic — toujours afficher l'état réel de la base.
+export const dynamic = "force-dynamic";
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+const PROPERTY_TYPES = [
+  "VILLA",
+  "APARTMENT",
+  "HOUSE",
+  "STUDIO",
+  "ROOM",
+  "SHARED_ROOM",
+  "COMMERCIAL",
+  "LAND",
+] as const;
+
+const TYPE_LABELS: Record<string, string> = {
+  VILLA: "Villa",
+  APARTMENT: "Appartement",
+  HOUSE: "Maison",
+  STUDIO: "Studio",
+  ROOM: "Chambre",
+  SHARED_ROOM: "Colocation",
+  COMMERCIAL: "Commercial",
+  LAND: "Terrain",
+};
+
+const STATUS_BADGE: Record<
+  string,
+  { label: string; classes: string }
+> = {
+  AVAILABLE: {
+    label: "Publiée",
+    classes: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  },
+  RENTED: {
+    label: "Louée",
+    classes: "bg-blue-100 text-blue-700 border-blue-200",
+  },
+  PENDING_REVIEW: {
+    label: "À modérer",
+    classes: "bg-amber-100 text-amber-700 border-amber-200",
+  },
+  DRAFT: {
+    label: "Brouillon",
+    classes: "bg-slate-100 text-slate-600 border-slate-200",
+  },
+  UNAVAILABLE: {
+    label: "Hors marché",
+    classes: "bg-slate-100 text-slate-600 border-slate-200",
+  },
+  ARCHIVED: {
+    label: "Archivée",
+    classes: "bg-slate-100 text-slate-500 border-slate-200",
+  },
+};
+
+interface ListingRow {
   id: string;
   title: string;
-  photo: string;
-  owner: string;
-  city: string;
   type: string;
-  price: number;
-  status: PropertyStatus;
-  submittedAt: string;
-  [key: string]: unknown;
+  city: string;
+  country: string;
+  priceFcfa: number;
+  ownerName: string;
+  ownerId: string;
+  status: keyof typeof STATUS_BADGE;
+  views: number;
+  contacts: number;
+  photo: string;
+  premium?: boolean;
 }
 
-const allProperties: PropertyRow[] = [
+// Adapter Supabase → shape locale ListingRow.
+function toListingRow(p: AdminPropertyRow): ListingRow {
+  return {
+    id: p.id,
+    title: p.title,
+    type: p.propertyType,
+    city: p.address ?? "—",
+    country: "BJ",
+    priceFcfa: p.price,
+    ownerName: p.owner
+      ? `${p.owner.firstName} ${p.owner.lastName}`.trim() || "—"
+      : "Propriétaire inconnu",
+    ownerId: p.owner?.id ?? "",
+    status: p.status as keyof typeof STATUS_BADGE,
+    views: p.viewsCount,
+    contacts: 0,
+    photo: p.primaryPhotoUrl,
+  };
+}
+
+// Affichage relatif "il y a Xh / Xj"
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const h = Math.floor(diff / 3_600_000);
+  if (h < 1) return "il y a < 1h";
+  if (h < 24) return `il y a ${h}h`;
+  const d = Math.floor(h / 24);
+  return `il y a ${d}j`;
+}
+
+// Signalements
+interface ReportedListing {
+  id: string;
+  title: string;
+  city: string;
+  ownerName: string;
+  photo: string;
+  priceFcfa: number;
+  reason: string;
+  reportsCount: number;
+}
+
+const reportedListings: ReportedListing[] = [
   {
-    id: "A-1547",
-    title: "Studio meublé - Fidjrossè",
-    photo: "https://picsum.photos/seed/admin-p1/200/200",
-    owner: "Pierre Hounsou",
+    id: "rpt-001",
+    title: "Studio neuf - Akpakpa",
     city: "Cotonou",
-    type: "Studio",
-    price: 95000,
-    status: "pending",
-    submittedAt: "2026-05-24",
+    ownerName: "Karim Lawal",
+    photo: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80",
+    priceFcfa: 85_000,
+    reason: "Photo trompeuse",
+    reportsCount: 8,
   },
   {
-    id: "A-1546",
-    title: "Villa familiale 4 chambres",
-    photo: "https://picsum.photos/seed/admin-p2/200/200",
-    owner: "Mariam Bio",
-    city: "Porto-Novo",
-    type: "Villa",
-    price: 320000,
-    status: "pending",
-    submittedAt: "2026-05-24",
+    id: "rpt-002",
+    title: "Villa 6ch piscine Calavi",
+    city: "Calavi",
+    ownerName: "Antoine Zinsou",
+    photo: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80",
+    priceFcfa: 1_850_000,
+    reason: "Prix abusif",
+    reportsCount: 5,
   },
   {
-    id: "A-1545",
-    title: "Appartement F3 Cadjèhoun",
-    photo: "https://picsum.photos/seed/admin-p3/200/200",
-    owner: "Jean Sossa",
+    id: "rpt-003",
+    title: "T3 Cadjèhoun moderne",
     city: "Cotonou",
-    type: "Appartement",
-    price: 180000,
-    status: "published",
-    submittedAt: "2026-05-23",
+    ownerName: "Pascal Agbo",
+    photo: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=80",
+    priceFcfa: 320_000,
+    reason: "Doublon (annonce identique)",
+    reportsCount: 4,
   },
   {
-    id: "A-1544",
-    title: "Chambre étudiante Abomey-Calavi",
-    photo: "https://picsum.photos/seed/admin-p4/200/200",
-    owner: "Fatima Adjovi",
-    city: "Abomey-Calavi",
-    type: "Chambre",
-    price: 45000,
-    status: "pending",
-    submittedAt: "2026-05-22",
-  },
-  {
-    id: "A-1543",
-    title: "Maison plain-pied avec jardin",
-    photo: "https://picsum.photos/seed/admin-p5/200/200",
-    owner: "Eric Tchégoun",
-    city: "Parakou",
-    type: "Maison",
-    price: 150000,
-    status: "published",
-    submittedAt: "2026-05-22",
-  },
-  {
-    id: "A-1542",
-    title: "Duplex moderne Akpakpa",
-    photo: "https://picsum.photos/seed/admin-p6/200/200",
-    owner: "Lucie Houessou",
-    city: "Cotonou",
-    type: "Duplex",
-    price: 410000,
-    status: "rejected",
-    submittedAt: "2026-05-21",
-  },
-  {
-    id: "A-1541",
-    title: "Bureau partagé Ganhi",
-    photo: "https://picsum.photos/seed/admin-p7/200/200",
-    owner: "Société KAZA Pro",
-    city: "Cotonou",
-    type: "Bureau",
-    price: 250000,
-    status: "suspended",
-    submittedAt: "2026-05-20",
-  },
-  {
-    id: "A-1540",
-    title: "Villa moderne avec piscine",
-    photo: "https://picsum.photos/seed/admin-p8/200/200",
-    owner: "Pascal Agbo",
-    city: "Cotonou",
-    type: "Villa",
-    price: 850000,
-    status: "published",
-    submittedAt: "2026-05-19",
-  },
-  {
-    id: "A-1539",
-    title: "Studio neuf - Centre-ville",
-    photo: "https://picsum.photos/seed/admin-p9/200/200",
-    owner: "Rose Akpovi",
-    city: "Porto-Novo",
-    type: "Studio",
-    price: 75000,
-    status: "pending",
-    submittedAt: "2026-05-19",
-  },
-  {
-    id: "A-1538",
-    title: "Appartement F2 Mènontin",
-    photo: "https://picsum.photos/seed/admin-p10/200/200",
-    owner: "Karim Lawal",
-    city: "Cotonou",
-    type: "Appartement",
-    price: 130000,
-    status: "rejected",
-    submittedAt: "2026-05-18",
-  },
-  {
-    id: "A-1537",
-    title: "Chambre + salle d'eau",
-    photo: "https://picsum.photos/seed/admin-p11/200/200",
-    owner: "Yvonne Dossou",
+    id: "rpt-004",
+    title: "Maison familiale Bohicon",
     city: "Bohicon",
-    type: "Chambre",
-    price: 35000,
-    status: "published",
-    submittedAt: "2026-05-17",
+    ownerName: "Yvonne Dossou",
+    photo: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=400&q=80",
+    priceFcfa: 120_000,
+    reason: "Logement vétuste / insalubre",
+    reportsCount: 7,
   },
   {
-    id: "A-1536",
-    title: "Maison familiale 5 pièces",
-    photo: "https://picsum.photos/seed/admin-p12/200/200",
-    owner: "Antoine Zinsou",
-    city: "Parakou",
-    type: "Maison",
-    price: 200000,
-    status: "pending",
-    submittedAt: "2026-05-17",
+    id: "rpt-005",
+    title: "Studio Ganhi",
+    city: "Cotonou",
+    ownerName: "Pierre Hounsou",
+    photo: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&q=80",
+    priceFcfa: 95_000,
+    reason: "Annonce expirée (déjà loué)",
+    reportsCount: 3,
   },
 ];
 
-const cities = ["Cotonou", "Porto-Novo", "Abomey-Calavi", "Parakou", "Bohicon"];
-const types = ["Studio", "Appartement", "Villa", "Maison", "Chambre", "Duplex", "Bureau"];
+// Premium / boosts
+interface PremiumBoost {
+  id: string;
+  title: string;
+  ownerName: string;
+  city: string;
+  daysLeft: number;
+  pricePaidFcfa: number;
+  views: number;
+  contacts: number;
+}
 
-export default function AdminPropertiesPage() {
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [cityFilter, setCityFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [dialog, setDialog] = useState<{
-    type: "approve" | "reject";
-    property: PropertyRow;
-  } | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
+const premiumBoosts: PremiumBoost[] = [
+  { id: "b-1", title: "Villa 5ch Haie Vive", ownerName: "Aïcha Toko", city: "Cotonou", daysLeft: 12, pricePaidFcfa: 45_000, views: 4_215, contacts: 87 },
+  { id: "b-2", title: "T4 Cadjèhoun", ownerName: "Komi Agbeko", city: "Cotonou", daysLeft: 9, pricePaidFcfa: 30_000, views: 2_840, contacts: 62 },
+  { id: "b-3", title: "Maison Calavi", ownerName: "Sandra Mensah", city: "Calavi", daysLeft: 22, pricePaidFcfa: 45_000, views: 1_956, contacts: 48 },
+  { id: "b-4", title: "Studio Ganhi", ownerName: "Yacine Sow", city: "Cotonou", daysLeft: 4, pricePaidFcfa: 20_000, views: 3_120, contacts: 71 },
+  { id: "b-5", title: "Villa Fidjrossè 5ch", ownerName: "Mariam Bio", city: "Cotonou", daysLeft: 18, pricePaidFcfa: 45_000, views: 5_410, contacts: 102 },
+  { id: "b-6", title: "T3 Cocotiers", ownerName: "Léa Tossou", city: "Cotonou", daysLeft: 7, pricePaidFcfa: 30_000, views: 1_820, contacts: 41 },
+  { id: "b-7", title: "Duplex Akpakpa", ownerName: "Olivier Adjovi", city: "Cotonou", daysLeft: 15, pricePaidFcfa: 45_000, views: 2_310, contacts: 55 },
+  { id: "b-8", title: "Bureau Ganhi", ownerName: "Jules Codjia", city: "Cotonou", daysLeft: 2, pricePaidFcfa: 20_000, views: 980, contacts: 18 },
+];
 
-  const rows = allProperties.filter((p) => {
-    if (statusFilter !== "all" && p.status !== statusFilter) return false;
-    if (cityFilter !== "all" && p.city !== cityFilter) return false;
-    if (typeFilter !== "all" && p.type !== typeFilter) return false;
-    return true;
-  });
+function StatusPill({ status }: { status: keyof typeof STATUS_BADGE }) {
+  const cfg = STATUS_BADGE[status]!;
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${cfg.classes}`}
+    >
+      {cfg.label}
+    </span>
+  );
+}
 
-  const columns: DataTableColumn<PropertyRow>[] = [
-    {
-      key: "photo",
-      label: "Photo",
-      render: (row) => (
-        <div className="relative size-10 overflow-hidden rounded-md bg-muted">
-          <Image
-            src={row.photo}
-            alt={row.title}
-            fill
-            sizes="40px"
-            className="object-cover"
-            unoptimized
-          />
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  hint?: string;
+  accent?: "amber" | "red" | "green" | "blue" | "slate";
+}) {
+  const colorMap: Record<string, string> = {
+    amber: "bg-amber-50 text-amber-600",
+    red: "bg-red-50 text-red-600",
+    green: "bg-emerald-50 text-emerald-600",
+    blue: "bg-blue-50 text-blue-600",
+    slate: "bg-slate-100 text-slate-600",
+  };
+  return (
+    <Card className="rounded-2xl shadow-sm">
+      <CardContent className="flex items-start gap-4">
+        <div
+          className={`flex size-10 items-center justify-center rounded-xl ${
+            accent ? colorMap[accent] : "bg-kaza-navy/10 text-kaza-navy"
+          }`}
+        >
+          <Icon className="size-5" />
         </div>
-      ),
-    },
-    {
-      key: "title",
-      label: "Titre",
-      sortValue: (row) => row.title,
-      render: (row) => (
-        <div className="flex flex-col">
-          <span className="font-medium text-foreground">{row.title}</span>
-          <span className="text-xs text-muted-foreground">#{row.id}</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-muted-foreground">{label}</p>
+          <p className="font-heading text-lg font-bold text-kaza-navy">
+            {value}
+          </p>
+          {hint && (
+            <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
+          )}
         </div>
-      ),
-    },
-    {
-      key: "owner",
-      label: "Propriétaire",
-      sortValue: (row) => row.owner,
-      render: (row) => <span className="text-sm">{row.owner}</span>,
-    },
-    {
-      key: "city",
-      label: "Ville",
-      sortValue: (row) => row.city,
-      render: (row) => <span className="text-sm">{row.city}</span>,
-    },
-    {
-      key: "price",
-      label: "Prix",
-      sortValue: (row) => row.price,
-      align: "right",
-      render: (row) => (
-        <span className="font-medium text-foreground">
-          {formatPrice(row.price)}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      label: "Statut",
-      sortValue: (row) => row.status,
-      render: (row) => <StatusBadge status={row.status} />,
-    },
-    {
-      key: "submittedAt",
-      label: "Soumise le",
-      sortValue: (row) => row.submittedAt,
-      render: (row) => (
-        <span className="text-xs text-muted-foreground">
-          {new Date(row.submittedAt).toLocaleDateString("fr-FR")}
-        </span>
-      ),
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      align: "right",
-      render: (row) => (
-        <div className="flex items-center justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8"
-            title="Voir"
-            onClick={() => console.log("view", row.id)}
-          >
-            <Eye className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-kaza-green hover:bg-green-50 hover:text-kaza-green"
-            title="Approuver"
-            onClick={() => setDialog({ type: "approve", property: row })}
-          >
-            <Check className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-kaza-error hover:bg-red-50 hover:text-kaza-error"
-            title="Rejeter"
-            onClick={() => {
-              setRejectReason("");
-              setDialog({ type: "reject", property: row });
-            }}
-          >
-            <X className="size-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
+      </CardContent>
+    </Card>
+  );
+}
 
-  const handleConfirm = () => {
-    if (!dialog) return;
-    if (dialog.type === "reject" && rejectReason.trim().length < 3) {
-      return;
-    }
-    console.log(
-      `[admin] ${dialog.type === "approve" ? "Approuvée" : "Rejetée"}: ${dialog.property.id}`,
-      dialog.type === "reject" ? { reason: rejectReason } : {}
-    );
-    setDialog(null);
-    setRejectReason("");
+export default async function AdminPropertiesPage() {
+  // ----- Données Supabase réelles -----
+  const [adminStats, reviewProps, allPropsRaw] = await Promise.all([
+    getAdminStats(),
+    listPropertiesToReview(12),
+    listAllProperties({ limit: 200 }),
+  ]);
+
+  const pendingReview = reviewProps.map(toListingRow);
+  const extendedListings = allPropsRaw.map(toListingRow);
+
+  const stats = {
+    total: adminStats.totalProperties,
+    published: adminStats.propertiesByStatus.AVAILABLE,
+    pending:
+      adminStats.propertiesByStatus.PENDING_REVIEW +
+      adminStats.propertiesByStatus.DRAFT,
+    rented: adminStats.propertiesByStatus.RENTED,
+    hidden:
+      adminStats.propertiesByStatus.UNAVAILABLE +
+      adminStats.propertiesByStatus.ARCHIVED,
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
         <h1 className="font-heading text-2xl font-bold text-kaza-navy lg:text-3xl">
           Modération des annonces
         </h1>
         <p className="text-sm text-muted-foreground">
-          Approuvez, rejetez ou suspendez les annonces soumises par les
-          propriétaires.
+          {formatNumber(stats.total)} annonces ·{" "}
+          {stats.pending} en attente de modération
         </p>
       </div>
 
-      <DataTable
-        columns={columns}
-        rows={rows}
-        searchAccessor={(row) => `${row.title} ${row.owner} ${row.city}`}
-        searchPlaceholder="Rechercher par titre, propriétaire, ville..."
-        filters={
-          <>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Statut" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="published">Publiée</SelectItem>
-                <SelectItem value="rejected">Rejetée</SelectItem>
-                <SelectItem value="suspended">Suspendue</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={cityFilter} onValueChange={setCityFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Ville" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les villes</SelectItem>
-                {cities.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[140px]">
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <StatCard
+          icon={ListChecks}
+          label="Total annonces"
+          value={formatNumber(stats.total)}
+          hint="Toute la plateforme"
+          accent="blue"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Publiées"
+          value={formatNumber(stats.published)}
+          hint="Visibles publiquement"
+          accent="green"
+        />
+        <StatCard
+          icon={Clock}
+          label="À modérer"
+          value={String(stats.pending)}
+          hint="Brouillons + en attente"
+          accent="amber"
+        />
+        <StatCard
+          icon={Building2}
+          label="Louées"
+          value={formatNumber(stats.rented)}
+          hint="Sous contrat actif"
+          accent="blue"
+        />
+        <StatCard
+          icon={EyeOff}
+          label="Hors marché"
+          value={String(stats.hidden)}
+          hint="Indisponibles / archivées"
+          accent="slate"
+        />
+      </div>
+
+      {/* Priority pending review */}
+      <Card className="rounded-2xl border-amber-200 bg-amber-50/60 shadow-sm">
+        <CardHeader className="flex flex-row items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+            <ShieldAlert className="size-5" />
+          </div>
+          <div>
+            <CardTitle className="font-heading text-lg text-kaza-navy">
+              À modérer en priorité
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Annonces soumises ces dernières heures · trier par ancienneté
+            </p>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {pendingReview.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-amber-300 bg-white/60 p-8 text-center">
+              <CheckCircle2 className="mx-auto size-8 text-emerald-500" />
+              <p className="mt-3 text-sm font-semibold text-kaza-navy">
+                File de modération vide
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Aucune annonce en attente de validation. Tout est à jour.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {pendingReview.map((l, idx) => {
+                const sourceRow = reviewProps[idx];
+                return (
+                  <div
+                    key={l.id}
+                    className="flex flex-col gap-3 rounded-xl border border-amber-200/60 bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="relative size-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+                        <Image
+                          src={l.photo}
+                          alt={l.title}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-kaza-navy">
+                          {l.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          par <span className="font-medium">{l.ownerName}</span>
+                        </p>
+                        <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                          <MapPin className="size-3" /> {l.city}
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-kaza-blue">
+                          {formatFcfa(l.priceFcfa)}/mois
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="inline-flex items-center gap-1 text-amber-700">
+                        <Clock className="size-3" />{" "}
+                        {sourceRow ? timeAgo(sourceRow.createdAt) : "—"}
+                      </span>
+                      <PropertyReviewModal
+                        listing={{
+                          id: l.id,
+                          title: l.title,
+                          ownerName: l.ownerName,
+                          city: l.city,
+                          priceFcfa: l.priceFcfa,
+                        }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <form action="/admin/properties?action=approve">
+                        <Button
+                          type="submit"
+                          className="w-full bg-kaza-green text-white hover:bg-kaza-green/90"
+                        >
+                          <CheckCircle2 className="mr-1 size-4" />
+                          Approuver
+                        </Button>
+                      </form>
+                      <form action="/admin/properties?action=reject">
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        >
+                          <Ban className="mr-1 size-4" />
+                          Rejeter
+                        </Button>
+                      </form>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Filtres + table principale */}
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader>
+          <CardTitle className="font-heading text-lg text-kaza-navy">
+            Toutes les annonces
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
+            <Input placeholder="Rechercher titre, ville, propriétaire..." className="lg:col-span-2" />
+            <Select defaultValue="all">
+              <SelectTrigger>
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les types</SelectItem>
-                {types.map((t) => (
+                {PROPERTY_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {t}
+                    {TYPE_LABELS[t]}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </>
-        }
-        emptyTitle="Aucune annonce"
-        emptyDescription="Aucune annonce ne correspond à ces filtres."
-      />
+            <Select defaultValue="all">
+              <SelectTrigger>
+                <SelectValue placeholder="Statut" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les statuts</SelectItem>
+                {Object.entries(STATUS_BADGE).map(([key, cfg]) => (
+                  <SelectItem key={key} value={key}>
+                    {cfg.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select defaultValue="all">
+              <SelectTrigger>
+                <SelectValue placeholder="Pays" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les pays</SelectItem>
+                {COUNTRIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Confirmation modal */}
-      <Dialog
-        open={!!dialog}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDialog(null);
-            setRejectReason("");
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {dialog?.type === "approve"
-                ? "Approuver cette annonce ?"
-                : "Rejeter cette annonce ?"}
-            </DialogTitle>
-            <DialogDescription>
-              {dialog?.property.title} — #{dialog?.property.id}
-            </DialogDescription>
-          </DialogHeader>
-
-          {dialog?.type === "reject" && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="reject-reason">
-                Motif du rejet <span className="text-kaza-error">*</span>
-              </Label>
-              <Textarea
-                id="reject-reason"
-                placeholder="Expliquez au propriétaire les raisons du rejet..."
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                rows={4}
-              />
-              {rejectReason.trim().length > 0 &&
-                rejectReason.trim().length < 3 && (
-                  <p className="text-xs text-kaza-error">
-                    Le motif doit contenir au moins 3 caractères.
-                  </p>
+          <div className="overflow-x-auto rounded-xl border">
+            <table className="min-w-[1000px] w-full text-sm">
+              <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-3 text-left">Photo</th>
+                  <th className="px-3 py-3 text-left">Titre</th>
+                  <th className="px-3 py-3 text-left">Type</th>
+                  <th className="px-3 py-3 text-left">Ville</th>
+                  <th className="px-3 py-3 text-right">Prix</th>
+                  <th className="px-3 py-3 text-left">Propriétaire</th>
+                  <th className="px-3 py-3 text-left">Statut</th>
+                  <th className="px-3 py-3 text-right">Vues</th>
+                  <th className="px-3 py-3 text-right">Contacts</th>
+                  <th className="px-3 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {extendedListings.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={10}
+                      className="px-3 py-12 text-center text-sm text-muted-foreground"
+                    >
+                      Aucune annonce dans la base. Dès qu'un propriétaire
+                      publie, elle s'affichera ici.
+                    </td>
+                  </tr>
                 )}
-            </div>
-          )}
+                {extendedListings.map((l) => (
+                  <tr key={l.id} className="hover:bg-muted/30">
+                    <td className="px-3 py-3">
+                      <div className="relative size-10 overflow-hidden rounded-lg bg-muted">
+                        <Image
+                          src={l.photo}
+                          alt={l.title}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-kaza-navy">
+                          {l.title}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          #{l.id}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <Badge variant="secondary">
+                        {TYPE_LABELS[l.type] ?? l.type}
+                      </Badge>
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">
+                      {l.city}
+                    </td>
+                    <td className="px-3 py-3 text-right font-medium text-kaza-navy">
+                      {formatFcfa(l.priceFcfa)}
+                    </td>
+                    <td className="px-3 py-3">
+                      <Link
+                        href={`/admin/users/${l.ownerId}`}
+                        className="text-sm text-kaza-blue hover:underline"
+                      >
+                        {l.ownerName}
+                      </Link>
+                    </td>
+                    <td className="px-3 py-3">
+                      <StatusPill status={l.status} />
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {formatNumber(l.views)}
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {l.contacts}
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon"
+                          className="size-8"
+                          title="Voir"
+                        >
+                          <Link href={`/admin/properties/${l.id}`}>
+                            <Eye className="size-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-amber-600 hover:bg-amber-50"
+                          title="Mettre en avant"
+                        >
+                          <Sparkles className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-slate-600 hover:bg-slate-100"
+                          title="Masquer"
+                        >
+                          <EyeOff className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-red-600 hover:bg-red-50"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-          {dialog?.type === "approve" && (
-            <p className="text-sm text-muted-foreground">
-              L&apos;annonce sera publiée et visible sur la plateforme. Le
-              propriétaire recevra une notification.
+      {/* Signalements */}
+      <Card className="rounded-2xl border-red-100 shadow-sm">
+        <CardHeader className="flex flex-row items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-red-600">
+            <Flag className="size-5" />
+          </div>
+          <div>
+            <CardTitle className="font-heading text-lg text-kaza-navy">
+              Annonces signalées
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              {reportedListings.length} cas remontés par la communauté
             </p>
-          )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {reportedListings.map((r) => (
+              <div
+                key={r.id}
+                className="flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted">
+                    <Image
+                      src={r.photo}
+                      alt={r.title}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-kaza-navy">
+                      {r.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {r.city} · {r.ownerName}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-kaza-blue">
+                      {formatFcfa(r.priceFcfa)}
+                    </p>
+                  </div>
+                </div>
+                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs">
+                  <p className="font-medium text-red-700">
+                    <AlertTriangle className="mr-1 inline size-3" />
+                    Motif : {r.reason}
+                  </p>
+                  <p className="mt-0.5 text-red-600">
+                    {r.reportsCount} signalements
+                  </p>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <Button size="sm" variant="outline" className="text-xs">
+                    Vérifier
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-red-200 text-xs text-red-600 hover:bg-red-50"
+                  >
+                    Bannir
+                  </Button>
+                  <Button size="sm" variant="ghost" className="text-xs">
+                    Conserver
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setDialog(null);
-                setRejectReason("");
-              }}
-            >
-              Annuler
-            </Button>
-            <Button
-              variant={dialog?.type === "reject" ? "destructive" : "default"}
-              onClick={handleConfirm}
-              disabled={
-                dialog?.type === "reject" && rejectReason.trim().length < 3
-              }
-            >
-              {dialog?.type === "approve" ? "Approuver" : "Rejeter"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Premium / boosts */}
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader className="flex flex-row items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+            <Sparkles className="size-5" />
+          </div>
+          <div>
+            <CardTitle className="font-heading text-lg text-kaza-navy">
+              Annonces premium en cours
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              {premiumBoosts.length} boosts actifs sur la plateforme
+            </p>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto rounded-xl border">
+            <table className="min-w-[800px] w-full text-sm">
+              <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-3 text-left">Annonce</th>
+                  <th className="px-3 py-3 text-left">Propriétaire</th>
+                  <th className="px-3 py-3 text-left">Ville</th>
+                  <th className="px-3 py-3 text-right">Durée restante</th>
+                  <th className="px-3 py-3 text-right">Prix payé</th>
+                  <th className="px-3 py-3 text-right">Vues</th>
+                  <th className="px-3 py-3 text-right">Contacts</th>
+                  <th className="px-3 py-3 text-left">Performance</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {premiumBoosts.map((b) => {
+                  const ctr = Math.round((b.contacts / b.views) * 1000) / 10;
+                  return (
+                    <tr key={b.id} className="hover:bg-muted/30">
+                      <td className="px-3 py-3 font-medium text-kaza-navy">
+                        {b.title}
+                      </td>
+                      <td className="px-3 py-3 text-muted-foreground">
+                        {b.ownerName}
+                      </td>
+                      <td className="px-3 py-3 text-muted-foreground">
+                        {b.city}
+                      </td>
+                      <td className="px-3 py-3 text-right">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                            b.daysLeft <= 5
+                              ? "bg-red-50 text-red-600"
+                              : "bg-emerald-50 text-emerald-700"
+                          }`}
+                        >
+                          <Clock className="size-3" /> {b.daysLeft} j
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-right tabular-nums">
+                        {formatFcfa(b.pricePaidFcfa)}
+                      </td>
+                      <td className="px-3 py-3 text-right tabular-nums">
+                        {formatNumber(b.views)}
+                      </td>
+                      <td className="px-3 py-3 text-right tabular-nums">
+                        {b.contacts}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="inline-flex items-center gap-1 text-xs text-emerald-700">
+                          <TrendingUp className="size-3" /> CTR {ctr}%
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>
+              <ShieldCheck className="mr-1 inline size-3 text-kaza-green" />
+              Boosts conformes à la grille tarifaire publique
+            </span>
+            <span>
+              Revenu boosts cumulés :{" "}
+              <strong className="text-kaza-navy">
+                {formatFcfa(
+                  premiumBoosts.reduce((sum, b) => sum + b.pricePaidFcfa, 0),
+                )}
+              </strong>
+            </span>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

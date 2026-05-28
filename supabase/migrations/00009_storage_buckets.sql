@@ -87,10 +87,12 @@ CREATE POLICY "contracts_parties_select"
     bucket_id = 'contracts'
     AND EXISTS (
       SELECT 1 FROM public.contracts c
+      JOIN public.rentals r ON r.id = c.rental_id
+      JOIN public.properties p ON p.id = r.property_id
       WHERE c.id::text = regexp_replace(storage.objects.name, '\.pdf$', '')
         AND (
-          auth.uid() = c.owner_id
-          OR auth.uid() = c.tenant_id
+          auth.uid() = p.owner_id
+          OR auth.uid() = r.tenant_id
           OR EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'ADMIN')
         )
     )

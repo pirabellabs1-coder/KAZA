@@ -10,6 +10,20 @@ import {
   AlertOctagon,
   Settings,
   LogOut,
+  CreditCard,
+  TrendingUp,
+  Receipt,
+  ShieldAlert,
+  Mail,
+  ToggleRight,
+  FileText,
+  FolderArchive,
+  Activity,
+  Wallet,
+  ScrollText,
+  Megaphone,
+  Briefcase,
+  Gavel,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,19 +36,87 @@ interface NavItem {
   badge?: number;
 }
 
-const adminNav: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/properties", label: "Annonces", icon: Building2, badge: 12 },
-  { href: "/admin/users", label: "Utilisateurs", icon: Users },
+interface NavSection {
+  label?: string;
+  items: NavItem[];
+}
+
+const adminNavSections: NavSection[] = [
   {
-    href: "/admin/verifications",
-    label: "Vérifications",
-    icon: ShieldCheck,
-    badge: 8,
+    items: [
+      { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
+      { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+      { href: "/admin/monitoring", label: "Monitoring", icon: Activity },
+    ],
   },
-  { href: "/admin/disputes", label: "Litiges", icon: AlertOctagon, badge: 3 },
-  { href: "/admin/settings", label: "Paramètres", icon: Settings },
+  {
+    label: "Utilisateurs",
+    items: [
+      { href: "/admin/users", label: "Utilisateurs", icon: Users },
+      { href: "/admin/agencies", label: "Agences", icon: Briefcase },
+      { href: "/admin/staff", label: "Staff KAZA", icon: Users },
+      {
+        href: "/admin/verifications",
+        label: "Vérifications KYC",
+        icon: ShieldCheck,
+        badge: 47,
+      },
+    ],
+  },
+  {
+    label: "Contenu plateforme",
+    items: [
+      {
+        href: "/admin/properties",
+        label: "Annonces",
+        icon: Building2,
+        badge: 12,
+      },
+      { href: "/admin/contracts", label: "Contrats", icon: FileText },
+      { href: "/admin/documents", label: "Documents", icon: FolderArchive },
+      { href: "/admin/content", label: "Modération", icon: ShieldAlert },
+      {
+        href: "/admin/disputes",
+        label: "Litiges",
+        icon: Gavel,
+        badge: 3,
+      },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { href: "/admin/finance", label: "Finance plateforme", icon: Wallet },
+      { href: "/admin/payments", label: "Paiements", icon: CreditCard },
+      { href: "/admin/payouts", label: "Demandes retrait", icon: Wallet },
+      { href: "/admin/refunds", label: "Remboursements", icon: Receipt },
+    ],
+  },
+  {
+    label: "Communication",
+    items: [
+      { href: "/admin/notifications", label: "Campagnes", icon: Megaphone },
+      { href: "/admin/email-templates", label: "Templates Email", icon: Mail },
+    ],
+  },
+  {
+    label: "Conformité",
+    items: [
+      { href: "/admin/compliance", label: "Conformité RGPD/OHADA", icon: ShieldCheck },
+      { href: "/admin/audit-log", label: "Journal d'audit", icon: ScrollText },
+    ],
+  },
+  {
+    label: "Système",
+    items: [
+      { href: "/admin/feature-flags", label: "Feature Flags", icon: ToggleRight },
+      { href: "/admin/settings", label: "Paramètres", icon: Settings },
+    ],
+  },
 ];
+
+// Suppress unused warnings — icons retained for future entries
+void AlertOctagon;
 
 interface AdminSidebarProps {
   className?: string;
@@ -80,43 +162,52 @@ export function AdminSidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {adminNav.map((item) => {
-          const isActive =
-            item.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              className={cn(
-                "flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-kaza-navy text-white"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <span className="flex items-center gap-3">
-                <item.icon className="size-5" />
-                {item.label}
-              </span>
-              {item.badge !== undefined && item.badge > 0 && (
-                <span
+      <nav className="flex-1 space-y-4 overflow-y-auto p-3">
+        {adminNavSections.map((section, sectionIdx) => (
+          <div key={sectionIdx} className="space-y-1">
+            {section.label && (
+              <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                {section.label}
+              </p>
+            )}
+            {section.items.map((item) => {
+              const isActive =
+                item.href === "/admin"
+                  ? pathname === "/admin"
+                  : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onNavigate}
                   className={cn(
-                    "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
+                    "flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-kaza-blue/10 text-kaza-blue"
+                      ? "bg-kaza-navy text-white"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+                  <span className="flex items-center gap-3">
+                    <item.icon className="size-5" />
+                    {item.label}
+                  </span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span
+                      className={cn(
+                        "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-kaza-blue/10 text-kaza-blue"
+                      )}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* User badge */}

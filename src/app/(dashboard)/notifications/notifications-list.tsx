@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -14,6 +14,11 @@ import {
   TriangleAlert,
   type LucideIcon,
 } from "lucide-react";
+
+import {
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "@/actions/notifications";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -23,9 +28,40 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/shared/empty-state";
+import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
 
-type NotificationType =
+// Aligne sur l'ENUM notification_type (migration 00004).
+type DbNotificationType =
+  | "visit_request"
+  | "visit_accepted"
+  | "visit_rejected"
+  | "message_received"
+  | "payment_received"
+  | "payment_failed"
+  | "payment_due"
+  | "property_approved"
+  | "property_rejected"
+  | "property_suspended"
+  | "contract_ready"
+  | "contract_signed"
+  | "review_received"
+  | "identity_approved"
+  | "identity_rejected"
+  | "system";
+
+interface Notification {
+  id: string;
+  type: DbNotificationType;
+  title: string;
+  body: string | null;
+  link: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
+// Mapping ENUM Postgres -> presentation visuelle
+type VisualCategory =
   | "payment"
   | "visit"
   | "message"
@@ -34,17 +70,17 @@ type NotificationType =
   | "review"
   | "system";
 
-interface Notification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  description: string;
-  createdAt: string; // ISO
-  read: boolean;
-  href?: string;
+function toVisual(type: DbNotificationType): VisualCategory {
+  if (type.startsWith("payment_")) return "payment";
+  if (type.startsWith("visit_")) return "visit";
+  if (type === "message_received") return "message";
+  if (type.startsWith("property_")) return "listing";
+  if (type.startsWith("contract_")) return "contract";
+  if (type === "review_received") return "review";
+  return "system";
 }
 
-const ICONS: Record<NotificationType, LucideIcon> = {
+const ICONS: Record<VisualCategory, LucideIcon> = {
   payment: CreditCard,
   visit: CalendarCheck,
   message: MessageSquare,
@@ -54,7 +90,7 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   system: TriangleAlert,
 };
 
-const ICON_COLORS: Record<NotificationType, string> = {
+const ICON_COLORS: Record<VisualCategory, string> = {
   payment: "bg-kaza-green/10 text-kaza-green",
   visit: "bg-kaza-blue/10 text-kaza-blue",
   message: "bg-kaza-navy/10 text-kaza-navy",
@@ -79,178 +115,61 @@ function timeAgo(iso: string): string {
   return `il y a ${mo} mois`;
 }
 
-const now = Date.now();
-const ago = (ms: number) => new Date(now - ms).toISOString();
-
-const INITIAL_NOTIFICATIONS: Notification[] = [
-  {
-    id: "n-001",
-    type: "payment",
-    title: "Paiement reçu",
-    description:
-      "Thomas Adjovi a payé 150 000 FCFA pour Appartement Fidjrosse — Juin 2026.",
-    createdAt: ago(1000 * 60 * 12),
-    read: false,
-    href: "/owner/payments",
-  },
-  {
-    id: "n-002",
-    type: "visit",
-    title: "Nouvelle demande de visite",
-    description:
-      "Aïcha souhaite visiter votre Villa Calavi le 28 mai à 16h00.",
-    createdAt: ago(1000 * 60 * 45),
-    read: false,
-    href: "/owner/visits",
-  },
-  {
-    id: "n-003",
-    type: "message",
-    title: "Nouveau message de Marie",
-    description:
-      "« Bonjour, est-ce que l'appartement est encore disponible pour juillet ? »",
-    createdAt: ago(1000 * 60 * 60 * 2),
-    read: false,
-    href: "/messages/conv-001",
-  },
-  {
-    id: "n-004",
-    type: "listing",
-    title: "Annonce approuvée",
-    description:
-      "Votre annonce Studio meublé Akpakpa a été validée et est désormais visible.",
-    createdAt: ago(1000 * 60 * 60 * 5),
-    read: false,
-    href: "/owner/properties",
-  },
-  {
-    id: "n-005",
-    type: "contract",
-    title: "Contrat signé",
-    description:
-      "Le contrat de location avec Fatou Diallo est désormais signé électroniquement.",
-    createdAt: ago(1000 * 60 * 60 * 8),
-    read: true,
-    href: "/owner/rentals",
-  },
-  {
-    id: "n-006",
-    type: "review",
-    title: "Nouvelle évaluation 5★",
-    description:
-      "Kossi a laissé un avis 5 étoiles sur votre Maison de Cocotomey.",
-    createdAt: ago(1000 * 60 * 60 * 24),
-    read: true,
-    href: "/owner/reviews",
-  },
-  {
-    id: "n-007",
-    type: "payment",
-    title: "Paiement en attente",
-    description:
-      "Le paiement de 200 000 FCFA pour Villa Calavi est en cours de vérification.",
-    createdAt: ago(1000 * 60 * 60 * 26),
-    read: true,
-    href: "/owner/payments",
-  },
-  {
-    id: "n-008",
-    type: "visit",
-    title: "Visite confirmée",
-    description:
-      "Votre visite de l'Appartement Ganhi est confirmée pour demain à 10h.",
-    createdAt: ago(1000 * 60 * 60 * 30),
-    read: false,
-    href: "/tenant/rentals",
-  },
-  {
-    id: "n-009",
-    type: "message",
-    title: "Réponse de Jean Dupont",
-    description:
-      "« Oui le studio est libre, je peux vous le faire visiter samedi. »",
-    createdAt: ago(1000 * 60 * 60 * 36),
-    read: true,
-    href: "/messages/conv-002",
-  },
-  {
-    id: "n-010",
-    type: "system",
-    title: "Vérification d'identité requise",
-    description:
-      "Téléchargez votre CNI pour finaliser la vérification de votre compte.",
-    createdAt: ago(1000 * 60 * 60 * 48),
-    read: false,
-    href: "/profile",
-  },
-  {
-    id: "n-011",
-    type: "payment",
-    title: "Reçu disponible",
-    description:
-      "Votre reçu de paiement pour Mai 2026 est prêt à être téléchargé.",
-    createdAt: ago(1000 * 60 * 60 * 72),
-    read: true,
-    href: "/tenant/payments",
-  },
-  {
-    id: "n-012",
-    type: "listing",
-    title: "Annonce expirée",
-    description:
-      "Votre annonce Chambre étudiante UAC est expirée. Renouvelez-la pour rester visible.",
-    createdAt: ago(1000 * 60 * 60 * 96),
-    read: true,
-    href: "/owner/properties",
-  },
-  {
-    id: "n-013",
-    type: "visit",
-    title: "Rappel : visite demain",
-    description:
-      "Rappel — votre visite Villa Akpakpa avec Mamadou est prévue demain à 15h.",
-    createdAt: ago(1000 * 60 * 60 * 100),
-    read: false,
-    href: "/owner/visits",
-  },
-  {
-    id: "n-014",
-    type: "contract",
-    title: "Action requise sur un contrat",
-    description:
-      "Veuillez signer le contrat de location pour le studio Cadjèhoun.",
-    createdAt: ago(1000 * 60 * 60 * 120),
-    read: false,
-    href: "/tenant/rentals",
-  },
-];
-
 type TabKey = "all" | "unread" | "payments" | "visits" | "messages";
 
 const TAB_FILTERS: Record<TabKey, (n: Notification) => boolean> = {
   all: () => true,
-  unread: (n) => !n.read,
-  payments: (n) => n.type === "payment",
-  visits: (n) => n.type === "visit",
-  messages: (n) => n.type === "message",
+  unread: (n) => !n.isRead,
+  payments: (n) => toVisual(n.type) === "payment",
+  visits: (n) => toVisual(n.type) === "visit",
+  messages: (n) => toVisual(n.type) === "message",
 };
 
-export function NotificationsList() {
-  const [items, setItems] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
+interface NotificationsListProps {
+  initialNotifications: Notification[];
+}
+
+export function NotificationsList({
+  initialNotifications,
+}: NotificationsListProps) {
+  const [items, setItems] = useState<Notification[]>(initialNotifications);
+  const [isPending, startTransition] = useTransition();
 
   const unreadCount = useMemo(
-    () => items.filter((n) => !n.read).length,
-    [items]
+    () => items.filter((n) => !n.isRead).length,
+    [items],
   );
 
   function markAllAsRead() {
-    setItems((curr) => curr.map((n) => ({ ...n, read: true })));
+    if (unreadCount === 0) return;
+    // Optimistic update
+    const previous = items;
+    setItems((curr) => curr.map((n) => ({ ...n, isRead: true })));
+    startTransition(async () => {
+      const result = await markAllNotificationsRead();
+      if (!result.success) {
+        setItems(previous);
+        toast.error(result.error || "Echec de la mise a jour");
+        return;
+      }
+      toast.success("Toutes les notifications sont marquées comme lues");
+    });
   }
 
   function markOneAsRead(id: string) {
+    const target = items.find((n) => n.id === id);
+    if (!target || target.isRead) return;
+    // Optimistic update
+    const previous = items;
     setItems((curr) =>
-      curr.map((n) => (n.id === id ? { ...n, read: true } : n))
+      curr.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
     );
+    void markNotificationRead(id).then((result) => {
+      if (!result.success) {
+        setItems(previous);
+        toast.error(result.error || "Echec de la mise a jour");
+      }
+    });
   }
 
   return (
@@ -258,10 +177,7 @@ export function NotificationsList() {
       {/* Header */}
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">
-            Notifications
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {unreadCount > 0
               ? `${unreadCount} notification${unreadCount > 1 ? "s" : ""} non lue${
                   unreadCount > 1 ? "s" : ""
@@ -272,7 +188,7 @@ export function NotificationsList() {
         <Button
           variant="outline"
           onClick={markAllAsRead}
-          disabled={unreadCount === 0}
+          disabled={unreadCount === 0 || isPending}
         >
           <CheckCheck className="size-4" />
           Tout marquer comme lu
@@ -304,8 +220,8 @@ export function NotificationsList() {
                   <CardContent className="py-2">
                     <EmptyState
                       icon={Bell}
-                      title="Pas de notifications"
-                      description="Vous serez notifié(e) ici dès qu'une activité concernera votre compte."
+                      title="Pas encore de notifications"
+                      description="Vous serez prévenu pour chaque visite, message ou paiement."
                     />
                   </CardContent>
                 </Card>
@@ -335,19 +251,20 @@ function NotificationRow({
   notification: Notification;
   onRead: () => void;
 }) {
-  const Icon = ICONS[notification.type];
+  const visual = toVisual(notification.type);
+  const Icon = ICONS[visual];
 
   const content = (
     <div
       className={cn(
         "flex items-start gap-4 rounded-xl border bg-card p-4 transition-colors hover:bg-muted/50",
-        !notification.read && "border-kaza-blue/30 bg-kaza-blue/[0.03]"
+        !notification.isRead && "border-kaza-blue/30 bg-kaza-blue/[0.03]",
       )}
     >
       <div
         className={cn(
           "flex size-10 shrink-0 items-center justify-center rounded-full",
-          ICON_COLORS[notification.type]
+          ICON_COLORS[visual],
         )}
       >
         <Icon className="size-5" />
@@ -357,13 +274,15 @@ function NotificationRow({
           <p className="text-sm font-semibold text-foreground">
             {notification.title}
           </p>
-          {!notification.read && (
+          {!notification.isRead && (
             <span className="inline-flex h-2 w-2 rounded-full bg-kaza-blue" />
           )}
         </div>
-        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-          {notification.description}
-        </p>
+        {notification.body ? (
+          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+            {notification.body}
+          </p>
+        ) : null}
         <p className="mt-2 text-xs text-muted-foreground">
           {timeAgo(notification.createdAt)}
         </p>
@@ -373,9 +292,9 @@ function NotificationRow({
 
   return (
     <li>
-      {notification.href ? (
+      {notification.link ? (
         <Link
-          href={notification.href}
+          href={notification.link}
           onClick={onRead}
           className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
         >

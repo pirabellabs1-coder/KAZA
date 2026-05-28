@@ -189,3 +189,27 @@ export async function startConversation(
     propertyId: parsed.data.propertyId,
   });
 }
+
+// ---------------------------------------------------------------------------
+// sendMessageTo (alias semantique : recipientId au lieu de conversationId)
+// ---------------------------------------------------------------------------
+
+interface SendMessageToInput {
+  recipientId: string;
+  content: string;
+  propertyId?: string;
+}
+
+/**
+ * Variante a la signature plus naturelle pour les composants client
+ * (`{ recipientId, content, propertyId? }`). Delegue a `sendMessage`.
+ */
+export async function sendMessageTo(
+  input: SendMessageToInput,
+): Promise<ActionResult<Message>> {
+  return sendMessage({
+    conversationId: input.recipientId,
+    content: input.content,
+    propertyId: input.propertyId,
+  });
+}

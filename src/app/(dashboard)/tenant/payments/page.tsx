@@ -109,7 +109,7 @@ function getPaymentStatusBadge(status: string) {
 function getPaymentMethodLabel(method: string): string {
   switch (method) {
     case "MOBILE_MONEY":
-      return "Mobile Money";
+      return "paiement intégré";
     case "BANK_TRANSFER":
       return "Virement bancaire";
     case "CARD":

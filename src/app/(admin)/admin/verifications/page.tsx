@@ -1,398 +1,206 @@
-"use client";
-
-import { useState } from "react";
-import { Check, X, ImageIcon, IdCard, Camera } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import type { Metadata } from "next";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { EmptyState } from "@/components/shared/empty-state";
-import { StatusBadge } from "@/components/admin/status-badge";
-import { cn, getInitials } from "@/lib/utils";
+  IdCard,
+  Clock,
+  CheckCircle2,
+  TimerReset,
+  XCircle,
+  ShieldCheck,
+} from "lucide-react";
 
-type VerificationStatus = "pending" | "approved" | "rejected";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { listAllIdentityVerifications } from "@/lib/queries/admin";
 
-interface VerificationRequest {
-  id: string;
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  documentType: "CNI" | "Passeport" | "Permis";
-  submittedAt: string;
-  status: VerificationStatus;
-}
+import { VerificationsClient } from "./verifications-client";
 
-const allVerifications: VerificationRequest[] = [
-  {
-    id: "v-001",
-    user: {
-      id: "u-003",
-      firstName: "Moussa",
-      lastName: "Adékambi",
-      email: "moussa.a@gmail.com",
-    },
-    documentType: "CNI",
-    submittedAt: "2026-05-24",
-    status: "pending",
-  },
-  {
-    id: "v-002",
-    user: {
-      id: "u-011",
-      firstName: "Lucie",
-      lastName: "Houessou",
-      email: "lucie.h@gmail.com",
-    },
-    documentType: "Passeport",
-    submittedAt: "2026-05-23",
-    status: "pending",
-  },
-  {
-    id: "v-003",
-    user: {
-      id: "u-006",
-      firstName: "Karim",
-      lastName: "Lawal",
-      email: "karim.lawal@gmail.com",
-    },
-    documentType: "CNI",
-    submittedAt: "2026-05-22",
-    status: "pending",
-  },
-  {
-    id: "v-004",
-    user: {
-      id: "u-013",
-      firstName: "Béatrice",
-      lastName: "Codjia",
-      email: "b.codjia@yahoo.fr",
-    },
-    documentType: "Permis",
-    submittedAt: "2026-05-22",
-    status: "pending",
-  },
-  {
-    id: "v-005",
-    user: {
-      id: "u-001",
-      firstName: "Aminata",
-      lastName: "Sow",
-      email: "aminata.sow@gmail.com",
-    },
-    documentType: "CNI",
-    submittedAt: "2026-05-20",
-    status: "approved",
-  },
-  {
-    id: "v-006",
-    user: {
-      id: "u-004",
-      firstName: "Fatima",
-      lastName: "Adjovi",
-      email: "fatima.adjovi@etu.uac.bj",
-    },
-    documentType: "Passeport",
-    submittedAt: "2026-05-19",
-    status: "approved",
-  },
-  {
-    id: "v-007",
-    user: {
-      id: "u-014",
-      firstName: "Sébastien",
-      lastName: "Aho",
-      email: "s.aho@hotmail.com",
-    },
-    documentType: "CNI",
-    submittedAt: "2026-05-18",
-    status: "rejected",
-  },
-];
+export const metadata: Metadata = {
+  title: "Vérifications d'identité — Admin KAZA",
+  description:
+    "Modération des dossiers KYC : pièces d'identité, justificatifs et selfies.",
+};
 
-function VerificationCard({
-  request,
-  onApprove,
-  onReject,
-}: {
-  request: VerificationRequest;
-  onApprove: () => void;
-  onReject: () => void;
-}) {
-  return (
-    <article className="overflow-hidden rounded-xl border border-border bg-card">
-      {/* User header */}
-      <div className="flex items-center justify-between border-b border-border bg-muted/30 px-5 py-3">
-        <div className="flex items-center gap-3">
-          <Avatar className="size-10">
-            <AvatarFallback className="bg-kaza-navy/10 text-sm text-kaza-navy">
-              {getInitials(request.user.firstName, request.user.lastName)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-semibold text-foreground">
-              {request.user.firstName} {request.user.lastName}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {request.user.email}
-            </span>
-          </div>
-        </div>
-        <StatusBadge status={request.status} />
-      </div>
-
-      {/* Metadata */}
-      <div className="grid grid-cols-2 gap-3 border-b border-border px-5 py-3 text-xs">
-        <div className="flex flex-col">
-          <span className="font-medium uppercase tracking-wide text-muted-foreground">
-            Type de pièce
-          </span>
-          <span className="mt-0.5 inline-flex items-center gap-1 text-sm font-medium text-foreground">
-            <IdCard className="size-3.5 text-kaza-blue" />
-            {request.documentType}
-          </span>
-        </div>
-        <div className="flex flex-col">
-          <span className="font-medium uppercase tracking-wide text-muted-foreground">
-            Soumis le
-          </span>
-          <span className="mt-0.5 text-sm font-medium text-foreground">
-            {new Date(request.submittedAt).toLocaleDateString("fr-FR")}
-          </span>
-        </div>
-      </div>
-
-      {/* Document placeholders */}
-      <div className="grid grid-cols-3 gap-2 p-3">
-        <DocumentPlaceholder label="Recto" icon={IdCard} />
-        <DocumentPlaceholder label="Verso" icon={IdCard} />
-        <DocumentPlaceholder label="Selfie" icon={Camera} />
-      </div>
-
-      {/* Actions */}
-      {request.status === "pending" && (
-        <div className="flex gap-2 border-t border-border bg-muted/20 p-3">
-          <Button
-            variant="outline"
-            className="flex-1 border-red-200 text-kaza-error hover:bg-red-50"
-            onClick={onReject}
-          >
-            <X className="size-4" />
-            Rejeter
-          </Button>
-          <Button
-            className="flex-1 bg-kaza-green hover:bg-kaza-green/90"
-            onClick={onApprove}
-          >
-            <Check className="size-4" />
-            Approuver
-          </Button>
-        </div>
-      )}
-    </article>
-  );
-}
-
-function DocumentPlaceholder({
-  label,
+function StatCard({
   icon: Icon,
+  label,
+  value,
+  hint,
+  accent,
 }: {
+  icon: typeof Clock;
   label: string;
-  icon: typeof ImageIcon;
+  value: string;
+  hint?: string;
+  accent: string;
 }) {
   return (
-    <div className="flex aspect-[4/3] flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border bg-muted/40">
-      <Icon className="size-6 text-muted-foreground" />
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
+    <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {label}
+          </p>
+          <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-kaza-navy">
+            {value}
+          </p>
+          {hint && <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>}
+        </div>
+        <span
+          className={cn(
+            "inline-flex size-9 items-center justify-center rounded-xl",
+            accent,
+          )}
+        >
+          <Icon className="size-4" />
+        </span>
+      </div>
     </div>
   );
 }
 
-export default function AdminVerificationsPage() {
-  const [tab, setTab] = useState<VerificationStatus>("pending");
-  const [dialog, setDialog] = useState<{
-    type: "approve" | "reject";
-    request: VerificationRequest;
-  } | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
+function relativeFromIso(iso: string | null): string {
+  if (!iso) return "—";
+  const diff = Date.now() - new Date(iso).getTime();
+  const hours = Math.floor(diff / 3_600_000);
+  if (hours < 1) return "à l'instant";
+  if (hours < 24) return `il y a ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `il y a ${days} j`;
+  return `il y a ${Math.floor(days / 30)} mois`;
+}
 
-  const filtered = allVerifications.filter((v) => v.status === tab);
+function averageReviewHours(rows: Array<{ submittedAt: string; reviewedAt: string | null }>): number | null {
+  const reviewed = rows.filter((r) => r.reviewedAt);
+  if (reviewed.length === 0) return null;
+  const sum = reviewed.reduce((acc, r) => {
+    const delta = new Date(r.reviewedAt!).getTime() - new Date(r.submittedAt).getTime();
+    return acc + delta;
+  }, 0);
+  return Math.round(sum / reviewed.length / 3_600_000);
+}
 
-  const counts = {
-    pending: allVerifications.filter((v) => v.status === "pending").length,
-    approved: allVerifications.filter((v) => v.status === "approved").length,
-    rejected: allVerifications.filter((v) => v.status === "rejected").length,
-  };
+export default async function AdminVerificationsPage() {
+  const allVerifications = await listAllIdentityVerifications();
 
-  const handleConfirm = () => {
-    if (!dialog) return;
-    if (dialog.type === "reject" && rejectReason.trim().length < 3) return;
-    console.log(
-      `[admin] KYC ${dialog.type === "approve" ? "approuvée" : "rejetée"}: ${dialog.request.id}`,
-      dialog.type === "reject" ? { reason: rejectReason } : {}
-    );
-    setDialog(null);
-    setRejectReason("");
-  };
+  const pending = allVerifications.filter((v) => v.status === "PENDING");
+  const approved = allVerifications.filter((v) => v.status === "APPROVED");
+  const rejected = allVerifications.filter((v) => v.status === "REJECTED");
+
+  const avgHours = averageReviewHours(allVerifications);
+  const reviewedTotal = approved.length + rejected.length;
+  const approvalRate =
+    reviewedTotal > 0 ? Math.round((approved.length / reviewedTotal) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
+    <div className="space-y-8">
+      {/* Header */}
+      <header className="flex flex-col gap-1">
         <h1 className="font-heading text-2xl font-bold text-kaza-navy lg:text-3xl">
           Vérifications d&apos;identité
         </h1>
         <p className="text-sm text-muted-foreground">
-          Validez ou rejetez les justificatifs d&apos;identité soumis par les
-          utilisateurs (KYC).
+          {pending.length} dossier{pending.length > 1 ? "s" : ""} en attente · validez ou
+          rejetez les pièces soumises par les utilisateurs
         </p>
-      </div>
+      </header>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as VerificationStatus)}>
-        <TabsList className="bg-muted/60">
-          <TabsTrigger value="pending" className="gap-2">
-            En attente
-            <span
-              className={cn(
-                "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
-                tab === "pending"
-                  ? "bg-orange-100 text-orange-700"
-                  : "bg-muted-foreground/15 text-muted-foreground"
-              )}
-            >
-              {counts.pending}
-            </span>
-          </TabsTrigger>
-          <TabsTrigger value="approved" className="gap-2">
-            Approuvées
-            <span className="text-[10px] font-bold text-muted-foreground">
-              {counts.approved}
-            </span>
-          </TabsTrigger>
-          <TabsTrigger value="rejected" className="gap-2">
-            Rejetées
-            <span className="text-[10px] font-bold text-muted-foreground">
-              {counts.rejected}
-            </span>
-          </TabsTrigger>
-        </TabsList>
-
-        {(["pending", "approved", "rejected"] as VerificationStatus[]).map(
-          (statusKey) => (
-            <TabsContent key={statusKey} value={statusKey} className="mt-4">
-              {filtered.length === 0 ? (
-                <div className="rounded-xl border border-border bg-card">
-                  <EmptyState
-                    title="Aucune demande"
-                    description="Aucune demande dans cet état pour le moment."
-                  />
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {filtered.map((request) => (
-                    <VerificationCard
-                      key={request.id}
-                      request={request}
-                      onApprove={() =>
-                        setDialog({ type: "approve", request })
-                      }
-                      onReject={() => {
-                        setRejectReason("");
-                        setDialog({ type: "reject", request });
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          )
-        )}
-      </Tabs>
-
-      {/* Dialog */}
-      <Dialog
-        open={!!dialog}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDialog(null);
-            setRejectReason("");
+      {/* Stats */}
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard
+          icon={Clock}
+          label="En attente"
+          value={String(pending.length)}
+          hint="dossiers à traiter"
+          accent="bg-amber-100 text-amber-700"
+        />
+        <StatCard
+          icon={TimerReset}
+          label="Délai moyen"
+          value={avgHours !== null ? `${avgHours} h` : "—"}
+          hint="temps de traitement"
+          accent="bg-blue-100 text-blue-700"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Taux d'approbation"
+          value={reviewedTotal > 0 ? `${approvalRate} %` : "—"}
+          hint={
+            reviewedTotal > 0
+              ? `${approved.length} / ${reviewedTotal} approuvés`
+              : "aucun dossier traité"
           }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {dialog?.type === "approve"
-                ? "Approuver cette vérification ?"
-                : "Rejeter cette vérification ?"}
-            </DialogTitle>
-            <DialogDescription>
-              {dialog?.request.user.firstName} {dialog?.request.user.lastName} —{" "}
-              {dialog?.request.documentType}
-            </DialogDescription>
-          </DialogHeader>
+          accent="bg-emerald-100 text-emerald-700"
+        />
+        <StatCard
+          icon={ShieldCheck}
+          label="Total soumis"
+          value={String(allVerifications.length)}
+          hint="depuis le lancement"
+          accent="bg-kaza-navy/10 text-kaza-navy"
+        />
+      </section>
 
-          {dialog?.type === "reject" && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="kyc-reason">
-                Motif du rejet <span className="text-kaza-error">*</span>
-              </Label>
-              <Textarea
-                id="kyc-reason"
-                placeholder="Ex: document illisible, selfie ne correspond pas..."
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                rows={4}
-              />
-            </div>
-          )}
+      {/* Interactive tabs + queue */}
+      <VerificationsClient
+        pending={pending.map(serialize)}
+        approved={approved.map(serialize)}
+        rejected={rejected.map(serialize)}
+      />
 
-          {dialog?.type === "approve" && (
-            <p className="text-sm text-muted-foreground">
-              L&apos;utilisateur sera marqué comme vérifié et recevra son badge
-              de confiance.
-            </p>
-          )}
+      {/* Empty state — affiché si tout est vide */}
+      {allVerifications.length === 0 && (
+        <section className="rounded-2xl border border-dashed border-border bg-white px-6 py-16 text-center">
+          <IdCard className="mx-auto size-10 text-muted-foreground/50" />
+          <h2 className="mt-4 font-heading text-lg font-semibold text-kaza-navy">
+            Aucune vérification soumise
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Les demandes apparaîtront ici dès qu&apos;un utilisateur soumettra ses
+            pièces.
+          </p>
+        </section>
+      )}
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setDialog(null);
-                setRejectReason("");
-              }}
-            >
-              Annuler
-            </Button>
-            <Button
-              variant={dialog?.type === "reject" ? "destructive" : "default"}
-              onClick={handleConfirm}
-              disabled={
-                dialog?.type === "reject" && rejectReason.trim().length < 3
-              }
-            >
-              {dialog?.type === "approve" ? "Approuver" : "Rejeter"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <Badge className="border-amber-200 bg-amber-100 text-amber-700">
+          PENDING
+        </Badge>
+        <Badge className="border-emerald-200 bg-emerald-100 text-emerald-700">
+          APPROVED
+        </Badge>
+        <Badge className="border-red-200 bg-red-100 text-red-700">
+          REJECTED
+        </Badge>
+        <span className="ml-2 flex items-center gap-1">
+          <XCircle className="size-3.5" /> Les URLs des pièces expirent après 10 min
+          (bucket privé).
+        </span>
+      </div>
     </div>
   );
 }
+
+// Sérialisation pour le passage server → client (ajoute une date pré-formatée).
+function serialize(v: Awaited<ReturnType<typeof listAllIdentityVerifications>>[number]) {
+  return {
+    id: v.id,
+    userId: v.userId,
+    userName: v.userName,
+    userEmail: v.userEmail,
+    documentType: v.documentType,
+    documentNumber: v.documentNumber,
+    phoneNumber: v.phoneNumber,
+    status: v.status,
+    submittedAt: v.submittedAt,
+    submittedRelative: relativeFromIso(v.submittedAt),
+    reviewedAt: v.reviewedAt,
+    reviewedRelative: relativeFromIso(v.reviewedAt),
+    reviewerNotes: v.reviewerNotes,
+    documentFrontUrl: v.documentFrontUrl,
+    documentBackUrl: v.documentBackUrl,
+    selfieUrl: v.selfieUrl,
+  };
+}
+
+export type AdminVerificationItem = ReturnType<typeof serialize>;

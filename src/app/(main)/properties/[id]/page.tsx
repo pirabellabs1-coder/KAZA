@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
 import {
   MapPin,
   Users,
@@ -8,38 +6,27 @@ import {
   Bath,
   Maximize,
   Wifi,
-  Share2,
-  Heart,
   Star,
-  CheckCircle,
-  Calendar,
+  MessageSquare,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { PropertyGallery } from "@/components/property/property-gallery";
+import { RatingStars } from "@/components/shared/rating-stars";
 import { PropertyCard } from "@/components/property/property-card";
 import { VirtualTour } from "@/components/property/virtual-tour";
-import { RatingStars } from "@/components/shared/rating-stars";
+import { PanoramaSection } from "@/components/property/panorama-section";
+import { PropertyActions } from "@/components/property/property-actions";
+import { VisitRequestButton } from "@/components/property/visit-request-button";
 import { VerificationBadge } from "@/components/shared/verification-badge";
-import {
-  getPropertyById as mockGetPropertyById,
-  getFeaturedProperties,
-  mockRatings,
-  mockUsers,
-} from "@/lib/mock-data";
+import { PropertyViewTracker } from "@/components/analytics/page-tracker";
 import { formatPrice, formatDate, getInitials } from "@/lib/utils";
 import { notFound } from "next/navigation";
-import { fetchWithFallback } from "@/lib/data-fetcher";
-import { getPropertyById as supabaseGetPropertyById } from "@/lib/supabase/queries/properties";
-
-async function fetchProperty(id: string) {
-  return fetchWithFallback(
-    () => supabaseGetPropertyById(id),
-    () => mockGetPropertyById(id) ?? null,
-  );
-}
+import {
+  getPropertyById,
+  listPublicProperties,
+} from "@/lib/queries/properties";
+import { getPropertyReviews } from "@/lib/queries/reviews";
+import { createClient } from "@/lib/supabase/server";
 
 export async function generateMetadata({
   params,
@@ -47,7 +34,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const property = await fetchProperty(id);
+  const property = await getPropertyById(id);
   if (!property) return { title: "Propriété introuvable" };
 
   return {
@@ -56,9 +43,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${property.title} - ${formatPrice(property.price)}/mois`,
       description: property.description?.slice(0, 160),
-      images: property.photos[0]?.photo_url
-        ? [property.photos[0].photo_url]
-        : [],
+      images: property.primaryPhotoUrl ? [property.primaryPhotoUrl] : [],
     },
   };
 }
@@ -69,22 +54,34 @@ export default async function PropertyDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const property = await fetchProperty(id);
+  const property = await getPropertyById(id);
 
   if (!property) {
     notFound();
   }
 
-  const owner = mockUsers.find((u) => u.id === property.owner_id);
-  const similarProperties = getFeaturedProperties().filter(
-    (p) => p.id !== property.id
-  );
-  const propertyRatings = mockRatings.slice(0, 4);
+  const owner = property.owner;
 
-  const galleryImages = property.photos.map((p) => ({
-    url: p.photo_url,
-    alt: property.title,
-  }));
+  // Auth resolue cote serveur pour eviter le flash bouton "Demander une visite"
+  // -> redirect login si non connecte.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isAuthenticated = Boolean(user);
+  const isOwnProperty = user?.id === owner?.id;
+
+  const ownerFullName = owner
+    ? `${owner.firstName} ${owner.lastName}`
+    : "Le proprietaire";
+
+  // Propriétés similaires : on prend les dernières publiées hors la propriété actuelle.
+  const similarRaw = await listPublicProperties({ limit: 6 });
+  const similarProperties = similarRaw.filter((p) => p.id !== property.id);
+
+  // Avis publiés sur cette propriété (note moyenne réelle + liste)
+  const { reviews, averageRating, totalCount: reviewsCount } =
+    await getPropertyReviews(property.id);
 
   const amenityIcons: Record<string, string> = {
     WiFi: "📶",
@@ -101,16 +98,24 @@ export default async function PropertyDetailPage({
     "Eau chaude": "🚿",
   };
 
+  // Statut de vérification dérivé du booléen (le badge attend une string enum).
+  const ownerVerificationStatus = owner?.isVerified ? "APPROVED" : "PENDING";
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Tracking PROPERTY_VIEW (client, best-effort) */}
+      <PropertyViewTracker propertyId={property.id} />
       {/* Gallery + Virtual Tour */}
       <div className="mx-auto max-w-7xl px-4 pt-6 lg:px-8">
         <VirtualTour
-          images={galleryImages.map((g) => g.url)}
+          images={property.photos}
           videoUrl={undefined}
           embedUrl={undefined}
         />
       </div>
+
+      {/* Vue 360° immersive */}
+      <PanoramaSection propertyTitle={property.title} />
 
       {/* Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
@@ -128,14 +133,14 @@ export default async function PropertyDetailPage({
                   <span>{property.address}</span>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="icon">
-                  <Share2 className="size-4" />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Heart className="size-4" />
-                </Button>
-              </div>
+              <PropertyActions
+                propertyId={property.id}
+                propertyTitle={property.title}
+                propertyAddress={property.address}
+                ownerName={ownerFullName}
+                isAuthenticated={isAuthenticated}
+                isOwnProperty={isOwnProperty}
+              />
             </div>
 
             {/* Specs */}
@@ -154,7 +159,7 @@ export default async function PropertyDetailPage({
               </div>
               <div className="flex items-center gap-1.5">
                 <Maximize className="size-4 text-muted-foreground" />
-                <span>{property.square_meters} m²</span>
+                <span>{property.sqm} m²</span>
               </div>
               {property.amenities.includes("WiFi") && (
                 <div className="flex items-center gap-1.5">
@@ -172,18 +177,19 @@ export default async function PropertyDetailPage({
                 <div className="flex items-center gap-4">
                   <Avatar className="size-12">
                     <AvatarFallback className="bg-kaza-navy text-white">
-                      {getInitials(owner.first_name, owner.last_name)}
+                      {getInitials(owner.firstName, owner.lastName)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">
-                        Géré par {owner.first_name} {owner.last_name}
+                        Géré par {owner.firstName} {owner.lastName}
                       </span>
-                      <VerificationBadge status={owner.verification_status} />
+                      <VerificationBadge status={ownerVerificationStatus} />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Membre depuis {formatDate(owner.created_at)}
+                      Membre KAZA · annonce publiée le{" "}
+                      {formatDate(property.createdAt)}
                     </p>
                   </div>
                 </div>
@@ -204,24 +210,25 @@ export default async function PropertyDetailPage({
             <Separator className="my-6" />
 
             {/* Amenities */}
-            <div>
-              <h2 className="mb-4 text-lg font-semibold">
-                Équipements
-              </h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {property.amenities.map((amenity) => (
-                  <div
-                    key={amenity}
-                    className="flex items-center gap-2 text-sm"
-                  >
-                    <span>{amenityIcons[amenity] || "✓"}</span>
-                    <span>{amenity}</span>
+            {property.amenities.length > 0 && (
+              <>
+                <div>
+                  <h2 className="mb-4 text-lg font-semibold">Équipements</h2>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {property.amenities.map((amenity) => (
+                      <div
+                        key={amenity}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <span>{amenityIcons[amenity] || "✓"}</span>
+                        <span>{amenity}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator className="my-6" />
+                </div>
+                <Separator className="my-6" />
+              </>
+            )}
 
             {/* Location placeholder */}
             <div>
@@ -232,7 +239,9 @@ export default async function PropertyDetailPage({
                 <div className="text-center text-muted-foreground">
                   <MapPin className="mx-auto mb-2 size-8" />
                   <p>{property.address}</p>
-                  <p className="mt-1 text-xs">Carte interactive (Mapbox) - à venir</p>
+                  <p className="mt-1 text-xs">
+                    Carte interactive (Mapbox) - à venir
+                  </p>
                 </div>
               </div>
             </div>
@@ -250,10 +259,21 @@ export default async function PropertyDetailPage({
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Star className="size-4 fill-kaza-warning text-kaza-warning" />
-                  <span className="font-medium">4.92</span>
-                  <span className="text-muted-foreground">
-                    · {propertyRatings.length} avis
-                  </span>
+                  {reviewsCount > 0 ? (
+                    <>
+                      <span className="font-medium">
+                        {averageRating.toFixed(1)}
+                      </span>
+                      <span className="text-muted-foreground">
+                        · {reviewsCount} avis
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-medium">—</span>
+                      <span className="text-muted-foreground">· nouveau</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -274,10 +294,22 @@ export default async function PropertyDetailPage({
                 </div>
               </div>
 
-              <Button className="mb-3 w-full bg-kaza-blue text-base hover:bg-kaza-blue/90">
-                <Calendar className="mr-2 size-4" />
-                Demander une visite
-              </Button>
+              {isOwnProperty ? (
+                <div className="mb-3 rounded-md border border-dashed border-muted-foreground/40 bg-muted/40 p-3 text-center text-xs text-muted-foreground">
+                  Vous êtes le propriétaire de ce bien.
+                </div>
+              ) : (
+                <div className="mb-3">
+                  <VisitRequestButton
+                    propertyId={property.id}
+                    propertyTitle={property.title}
+                    propertyAddress={property.address}
+                    ownerName={ownerFullName}
+                    isAuthenticated={isAuthenticated}
+                    variant="large"
+                  />
+                </div>
+              )}
 
               <p className="mb-4 text-center text-xs text-muted-foreground">
                 Aucun frais ne sera prélevé
@@ -314,75 +346,108 @@ export default async function PropertyDetailPage({
           </div>
         </div>
 
-        {/* Similar Properties */}
-        <Separator className="my-12" />
-        <section>
-          <h2 className="mb-6 font-heading text-2xl font-bold">
-            Propriétés similaires
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {similarProperties.slice(0, 3).map((p) => (
-              <PropertyCard
-                key={p.id}
-                id={p.id}
-                title={p.title}
-                price={p.price}
-                address={p.address}
-                bedrooms={p.bedrooms}
-                bathrooms={p.bathrooms}
-                squareMeters={p.square_meters}
-                imageUrl={
-                  p.photos[0]?.photo_url || "https://picsum.photos/seed/kaza-placeholder/800/600"
-                }
-                propertyType={p.property_type}
-                isVerified
-              />
-            ))}
-          </div>
-        </section>
-
         {/* Reviews */}
         <Separator className="my-12" />
         <section>
-          <div className="mb-6 flex items-center gap-2">
-            <Star className="size-6 fill-kaza-warning text-kaza-warning" />
+          <div className="mb-6 flex items-center justify-between gap-3">
             <h2 className="font-heading text-2xl font-bold">
-              4.92 · {propertyRatings.length} avis
+              Avis ({reviewsCount})
             </h2>
+            {reviewsCount > 0 && (
+              <div className="flex items-center gap-2">
+                <Star className="size-5 fill-kaza-warning text-kaza-warning" />
+                <span className="text-lg font-semibold">
+                  {averageRating.toFixed(1)}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  / 5
+                </span>
+              </div>
+            )}
           </div>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {propertyRatings.map((rating) => {
-              const rater = mockUsers.find((u) => u.id === rating.rater_id);
-              return (
-                <div key={rating.id} className="rounded-lg border p-4">
-                  <div className="mb-3 flex items-center gap-3">
-                    <Avatar>
-                      <AvatarFallback className="bg-kaza-navy text-white text-xs">
-                        {rater
-                          ? getInitials(rater.first_name, rater.last_name)
-                          : "??"}
+
+          {reviews.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                <MessageSquare className="size-5 text-muted-foreground" />
+              </div>
+              <p className="text-sm font-medium text-foreground">
+                Aucun avis pour le moment
+              </p>
+              <p className="mt-1 max-w-sm text-xs text-muted-foreground">
+                Soyez le premier à partager votre expérience après une
+                location.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="rounded-xl border bg-card p-4 shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar className="size-10">
+                      <AvatarFallback className="bg-kaza-navy text-sm text-white">
+                        {review.reviewerInitials}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className="font-medium">
-                        {rater
-                          ? `${rater.first_name} ${rater.last_name}`
-                          : "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(rating.created_at)}
-                      </p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="truncate text-sm font-semibold">
+                          {review.reviewerName}
+                        </p>
+                        <span className="shrink-0 text-[11px] text-muted-foreground">
+                          {formatDate(review.createdAt)}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        <RatingStars rating={review.rating} size="sm" />
+                      </div>
                     </div>
                   </div>
-                  <RatingStars rating={rating.rating} size="sm" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {rating.comment}
-                  </p>
+                  {review.comment && (
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {review.comment}
+                    </p>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
+
+        {/* Similar Properties */}
+        {similarProperties.length > 0 && (
+          <>
+            <Separator className="my-12" />
+            <section>
+              <h2 className="mb-6 font-heading text-2xl font-bold">
+                Propriétés similaires
+              </h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {similarProperties.slice(0, 3).map((p) => (
+                  <PropertyCard
+                    key={p.id}
+                    id={p.id}
+                    title={p.title}
+                    price={p.price}
+                    address={p.address}
+                    bedrooms={p.bedrooms}
+                    bathrooms={p.bathrooms}
+                    squareMeters={p.sqm}
+                    imageUrl={
+                      p.primaryPhotoUrl ||
+                      "https://picsum.photos/seed/kaza-placeholder/800/600"
+                    }
+                    propertyType={p.type}
+                    isVerified={p.owner?.isVerified ?? false}
+                  />
+                ))}
+              </div>
+            </section>
+          </>
+        )}
       </div>
 
       {/* JSON-LD for SEO */}
@@ -405,7 +470,7 @@ export default async function PropertyDetailPage({
             numberOfBathroomsTotal: property.bathrooms,
             floorSize: {
               "@type": "QuantitativeValue",
-              value: property.square_meters,
+              value: property.sqm,
               unitCode: "MTK",
             },
           }),

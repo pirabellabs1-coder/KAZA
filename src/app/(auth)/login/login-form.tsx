@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -13,6 +14,7 @@ import { loginSchema, type LoginFormData } from "@/validators/auth";
 import { login } from "@/actions/auth";
 
 export function LoginForm() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -31,9 +33,22 @@ export function LoginForm() {
   function onSubmit(data: LoginFormData) {
     setError(null);
     startTransition(async () => {
-      const result = await login(data);
-      if (result?.error) {
-        setError(result.error);
+      try {
+        const result = await login(data);
+        if (result?.error) {
+          setError(result.error);
+          return;
+        }
+        if (result?.success) {
+          router.push(result.redirectTo ?? "/dashboard");
+          router.refresh();
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error && err.message
+            ? `Impossible de joindre le serveur : ${err.message}`
+            : "Impossible de joindre le serveur. Réessayez dans un instant.",
+        );
       }
     });
   }
@@ -98,17 +113,6 @@ export function LoginForm() {
           "Se connecter"
         )}
       </Button>
-
-      {/* Sign Up Link */}
-      <p className="text-center text-sm text-muted-foreground">
-        Pas encore de compte ?{" "}
-        <Link
-          href="/signup"
-          className="font-medium text-kaza-blue transition-colors hover:underline"
-        >
-          Creer un compte
-        </Link>
-      </p>
     </form>
   );
 }

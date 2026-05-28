@@ -50,9 +50,26 @@ export const signupSchema = z
     confirmPassword: z
       .string()
       .min(1, "Veuillez confirmer votre mot de passe"),
-    role: z.enum(["OWNER", "TENANT", "STUDENT"], {
+    role: z.enum(["OWNER", "TENANT", "STUDENT", "AGENCY"], {
       message: "Veuillez selectionner un role valide",
     }),
+    // Champ optionnel : nom de l'agence (uniquement si role === 'AGENCY')
+    agencyName: z
+      .string()
+      .max(100, "Le nom de l'agence ne peut pas depasser 100 caracteres")
+      .optional(),
+    // Champ optionnel : code de parrainage saisi a l'inscription
+    referralCode: z
+      .string()
+      .trim()
+      .min(4, "Le code de parrainage est trop court")
+      .max(16, "Le code de parrainage est trop long")
+      .regex(
+        /^[A-Za-z0-9]+$/,
+        "Le code de parrainage ne contient que des lettres et chiffres",
+      )
+      .optional()
+      .or(z.literal("")),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
