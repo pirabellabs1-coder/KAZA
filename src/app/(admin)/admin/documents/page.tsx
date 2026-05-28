@@ -32,7 +32,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { GDPR_REQUESTS, formatNumber } from "@/lib/mock/admin-platform-data";
+import { formatNumber } from "@/lib/utils";
+
+// Fallback vide — à brancher quand la table `gdpr_requests` sera en place.
+const GDPR_REQUESTS: Array<{
+  id: string;
+  type: string;
+  user: string;
+  email: string;
+  requestedAt: string;
+  status: string;
+  daysLeft: number;
+}> = [];
 import {
   listAllIdentityVerifications,
   type AdminDocumentRow,

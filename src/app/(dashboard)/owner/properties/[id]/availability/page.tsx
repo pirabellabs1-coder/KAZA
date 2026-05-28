@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, CalendarRange } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { getPropertyById } from "@/lib/mock-data";
+import { getPropertyById } from "@/lib/queries/properties";
 import { AvailabilityCalendar } from "./availability-calendar";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default async function AvailabilityPage({
   params,
 }: AvailabilityPageProps) {
   const { id } = await params;
-  const property = getPropertyById(id);
+  const property = await getPropertyById(id);
 
   if (!property) {
     notFound();

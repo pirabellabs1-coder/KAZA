@@ -18,12 +18,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { StatCounter } from "@/components/marketing/stat-counter";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
-import { FeatureHighlight } from "@/components/marketing/feature-highlight";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
-import { TESTIMONIALS, FEATURES } from "@/lib/marketing-data";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import {
   getActiveSubscription,
@@ -178,10 +175,6 @@ const pricingFaq = [
 ];
 
 export default async function PricingPage() {
-  const ownerTestimonials = TESTIMONIALS.filter((t) =>
-    t.role.toLowerCase().includes("propriétaire"),
-  ).slice(0, 4);
-
   const user = await getCurrentDisplayUser();
   const subscription = user ? await getActiveSubscription(user.id) : null;
   const isAuthenticated = Boolean(user);
@@ -675,73 +668,8 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      {/* ===== TÉMOIGNAGES PROPRIÉTAIRES ============================= */}
-      <section className="bg-gray-50 py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-16 text-center">
-              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
-                Ils nous font confiance
-              </p>
-              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                Des propriétaires qui ont fait le bon choix
-              </h2>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ownerTestimonials.map((t, i) => (
-              <RevealOnScroll key={t.id} delay={i * 100}>
-                <TestimonialCard
-                  name={t.name}
-                  role={t.role}
-                  avatarSeed={t.avatarSeed}
-                  rating={t.rating}
-                  quote={t.quote}
-                  city={t.city}
-                  highlight={t.highlight}
-                  className="h-full"
-                />
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== POURQUOI KAZA ========================================= */}
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-16 text-center">
-              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
-                Pourquoi KAZA
-              </p>
-              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                La plateforme pensée pour le marché africain
-              </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                Six raisons concrètes qui font de KAZA le partenaire
-                immobilier le plus complet du Bénin.
-              </p>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f, i) => (
-              <RevealOnScroll key={f.title} delay={i * 80}>
-                <div className="h-full rounded-3xl border border-gray-100 bg-white p-2 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
-                  <FeatureHighlight
-                    icon={f.icon}
-                    title={f.title}
-                    description={f.description}
-                    metric={f.metric}
-                  />
-                </div>
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Sections "Témoignages propriétaires" et "Pourquoi KAZA" retirées —
+          réactivées quand le contenu marketing réel sera prêt. */}
 
       {/* ===== FAQ TARIFICATION ====================================== */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-24">

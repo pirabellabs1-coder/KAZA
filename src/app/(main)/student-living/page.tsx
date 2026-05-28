@@ -36,16 +36,11 @@ import {
 import { StatCounter } from "@/components/marketing/stat-counter";
 import { GradientCard } from "@/components/marketing/gradient-card";
 import { FeatureHighlight } from "@/components/marketing/feature-highlight";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
-import { RoommateCard } from "@/components/student/roommate-card";
 
 import { FadeIn } from "@/components/shared/fade-in";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { GlassPanel } from "@/components/shared/glass-panel";
-import { Marquee } from "@/components/shared/marquee";
 
-import { TESTIMONIALS } from "@/lib/marketing-data";
-import { getOpenRoommateListings } from "@/lib/mock-data";
 import { formatPrice } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -206,11 +201,6 @@ const FAQ_ITEMS = [
 // -----------------------------------------------------------------------------
 
 export default function StudentLivingPage() {
-  const listings = getOpenRoommateListings();
-  const studentTestimonials = TESTIMONIALS.filter((t) =>
-    t.role.toLowerCase().includes("étudiant")
-  );
-
   return (
     <div className="bg-white">
       {/* ============================================================== */}
@@ -396,56 +386,8 @@ export default function StudentLivingPage() {
         </div>
       </section>
 
-      {/* ============================================================== */}
-      {/* 4. COLOCATIONS À LA UNE                                         */}
-      {/* ============================================================== */}
-      <section className="bg-gradient-to-br from-kaza-navy/[0.03] via-white to-kaza-green/[0.03] py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-kaza-blue">
-                  Colocations à la une
-                </p>
-                <h2 className="mt-3 font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
-                  Sélection éditoriale de la semaine
-                </h2>
-              </div>
-              <Link
-                href="/search?type=colocation"
-                className="group inline-flex items-center gap-2 text-sm font-semibold text-kaza-blue hover:text-kaza-navy"
-              >
-                Voir toutes les colocations
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </RevealOnScroll>
-
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {listings.map((listing, i) => (
-              <RevealOnScroll key={listing.id} delay={i * 100} direction="up">
-                <RoommateCard
-                  id={listing.id}
-                  title={listing.title}
-                  price={listing.price}
-                  address={listing.address}
-                  imageUrl={`https://images.unsplash.com/photo-${
-                    i === 0
-                      ? "1554995207-c18c203602cb"
-                      : i === 1
-                        ? "1522708323590-d24dbb6b0267"
-                        : "1556909114-f6e7ad7d3136"
-                  }?auto=format&fit=crop&w=800&q=80`}
-                  peopleLookingFor={listing.people_looking_for ?? 1}
-                  currentRoommates={(listing.bedrooms_available ?? 1) + 1}
-                  amenities={["WiFi", "Climatisation", "Cuisine équipée", "Sécurité"]}
-                  isVerified
-                />
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Section "Colocations à la une" retirée — sera réactivée quand des
+          annonces de colocation réelles seront publiées via Supabase. */}
 
       {/* ============================================================== */}
       {/* 5. COMMENT ÇA MARCHE                                            */}
@@ -554,39 +496,8 @@ export default function StudentLivingPage() {
         </div>
       </section>
 
-      {/* ============================================================== */}
-      {/* 7. TÉMOIGNAGES ÉTUDIANTS                                        */}
-      {/* ============================================================== */}
-      <section className="overflow-hidden py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-kaza-blue">
-              Témoignages étudiants
-            </p>
-            <h2 className="mt-3 text-center font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
-              Ils ont trouvé leur coloc avec KAZA
-            </h2>
-          </RevealOnScroll>
-        </div>
-
-        <div className="mt-14">
-          <Marquee speed={45} pauseOnHover contentWidth={2200}>
-            {studentTestimonials.map((t) => (
-              <div key={t.id} className="w-[360px]">
-                <TestimonialCard
-                  name={t.name}
-                  role={t.role}
-                  avatarSeed={t.avatarSeed}
-                  rating={t.rating}
-                  quote={t.quote}
-                  city={t.city}
-                  highlight={t.highlight}
-                />
-              </div>
-            ))}
-          </Marquee>
-        </div>
-      </section>
+      {/* Section "Témoignages étudiants" retirée — réactivée quand de vrais
+          avis seront publiés (cf. queries/reviews). */}
 
       {/* ============================================================== */}
       {/* 8. SÉCURITÉ ÉTUDIANTE                                           */}

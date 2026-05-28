@@ -28,13 +28,36 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  STUDENT_MONTHLY_EXPENSES,
-  STUDENT_ROOMMATE_COMPATIBILITY,
-  STUDENT_BUDGET_TRACKING,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/admin-data";
+import { formatFcfa, formatFcfaShort } from "@/lib/utils";
+
+// =============================================================================
+// Fallbacks vides — à brancher quand les agrégations Supabase (dépenses
+// mensuelles, profils colocataires, suivi de budget étudiant) seront prêtes.
+// =============================================================================
+
+const STUDENT_MONTHLY_EXPENSES: Array<{
+  month: string;
+  rent: number;
+  food: number;
+  transport: number;
+  other: number;
+}> = [];
+
+const STUDENT_ROOMMATE_COMPATIBILITY: Array<{
+  name: string;
+  age: number;
+  university: string;
+  compatibility: number;
+}> = [];
+
+const STUDENT_BUDGET_TRACKING = {
+  monthlyBudget: 0,
+  spent: 0,
+  remaining: 0,
+  averageDaily: 0,
+  daysLeft: 0,
+  projectedEnd: "—",
+};
 
 export const metadata: Metadata = {
   title: "Mes analyses · KAZA",
@@ -47,9 +70,17 @@ export const metadata: Metadata = {
 // =============================================================================
 
 const budgetPct =
-  (STUDENT_BUDGET_TRACKING.spent / STUDENT_BUDGET_TRACKING.monthlyBudget) *
-  100;
-const lastMonth = STUDENT_MONTHLY_EXPENSES[STUDENT_MONTHLY_EXPENSES.length - 1];
+  STUDENT_BUDGET_TRACKING.monthlyBudget === 0
+    ? 0
+    : (STUDENT_BUDGET_TRACKING.spent / STUDENT_BUDGET_TRACKING.monthlyBudget) *
+      100;
+const lastMonth = STUDENT_MONTHLY_EXPENSES[STUDENT_MONTHLY_EXPENSES.length - 1] ?? {
+  month: "—",
+  rent: 0,
+  food: 0,
+  transport: 0,
+  other: 0,
+};
 const lastMonthCategories = [
   { category: "Loyer", amount: lastMonth.rent, color: "#1A3A52" },
   { category: "Alimentation", amount: lastMonth.food, color: "#1976D2" },
@@ -60,10 +91,15 @@ const lastMonthTotal = lastMonthCategories.reduce(
   (sum, c) => sum + c.amount,
   0
 );
-const avgCompatibility = Math.round(
-  STUDENT_ROOMMATE_COMPATIBILITY.reduce((s, r) => s + r.compatibility, 0) /
-    STUDENT_ROOMMATE_COMPATIBILITY.length
-);
+const avgCompatibility =
+  STUDENT_ROOMMATE_COMPATIBILITY.length === 0
+    ? 0
+    : Math.round(
+        STUDENT_ROOMMATE_COMPATIBILITY.reduce(
+          (s, r) => s + r.compatibility,
+          0,
+        ) / STUDENT_ROOMMATE_COMPATIBILITY.length,
+      );
 
 const BUDGET_TIPS = [
   {
@@ -178,6 +214,14 @@ function StackedBarChart() {
   const chartHeight = 240;
   const padding = 20;
   const drawableHeight = chartHeight - padding * 2;
+
+  if (STUDENT_MONTHLY_EXPENSES.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+        Aucune donnée de dépenses agrégée pour le moment.
+      </div>
+    );
+  }
 
   const max = Math.max(
     ...STUDENT_MONTHLY_EXPENSES.map(

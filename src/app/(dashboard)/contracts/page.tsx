@@ -29,8 +29,27 @@ import {
   type ContractStatus,
 } from "@/components/contracts/contract-status-badge";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
-import { DEMO_CONTRACTS } from "@/lib/demo-data";
 import { formatPrice } from "@/lib/utils";
+
+// Type redéfini localement — à brancher sur la table contracts Supabase
+interface DemoContract {
+  id: string;
+  status: "DRAFT" | "PENDING_TENANT" | "PENDING_OWNER" | "SIGNED" | "CANCELLED";
+  propertyTitle: string;
+  propertyAddress: string;
+  ownerName: string;
+  tenantName: string;
+  monthlyRent: number;
+  deposit: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  signedAt?: string;
+  pdfUrl?: string;
+}
+
+// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
+const DEMO_CONTRACTS: DemoContract[] = [];
 
 export const metadata: Metadata = {
   title: "Mes Contrats",

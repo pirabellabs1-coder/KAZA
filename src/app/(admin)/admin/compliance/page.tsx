@@ -22,11 +22,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  COMPLIANCE_SCORE,
-  GDPR_REQUESTS,
-  PENDING_COMPLIANCE_TASKS,
-} from "@/lib/mock/admin-platform-data";
+// Fallbacks vides — à brancher quand tables compliance/gdpr seront en place.
+const COMPLIANCE_SCORE = {
+  global: 0,
+  byArea: [] as Array<{ area: string; score: number; status: string }>,
+};
+const GDPR_REQUESTS: Array<{
+  id: string;
+  type: string;
+  user: string;
+  email: string;
+  requestedAt: string;
+  status: string;
+  daysLeft: number;
+}> = [];
+const PENDING_COMPLIANCE_TASKS: Array<{
+  id: string;
+  title: string;
+  dueDate: string;
+  priority: string;
+}> = [];
 
 export const metadata: Metadata = {
   title: "Conformité réglementaire — KAZA Admin",

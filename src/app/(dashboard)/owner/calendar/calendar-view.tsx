@@ -14,13 +14,40 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  getOwnerCalendarVisits,
-  formatVisitTimeSlot,
-  type DemoVisit,
-  type DemoVisitStatus,
-} from "@/lib/demo-visits";
 import { cn } from "@/lib/utils";
+
+// Types redéfinis localement — à brancher sur la table visits Supabase
+type DemoVisitStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "REJECTED"
+  | "COMPLETED"
+  | "CANCELLED";
+
+interface DemoVisit {
+  id: string;
+  propertyId: string;
+  propertyTitle: string;
+  propertyAddress: string;
+  ownerName: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+  message?: string;
+  status: DemoVisitStatus;
+  createdAt: string;
+}
+
+// Fallback vide — à brancher quand la table visits Supabase sera connectée.
+function getOwnerCalendarVisits(): DemoVisit[] {
+  return [];
+}
+
+function formatVisitTimeSlot(time: string): string {
+  const [h] = time.split(":");
+  const start = parseInt(h ?? "0", 10);
+  const end = start + 2;
+  return `${String(start).padStart(2, "0")}h-${String(end).padStart(2, "0")}h`;
+}
 
 const MONTH_LABELS = [
   "Janvier",

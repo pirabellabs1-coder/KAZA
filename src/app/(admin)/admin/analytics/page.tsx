@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getPlatformAnalytics30d } from "@/lib/queries/analytics";
-import { formatNumber } from "@/lib/mock/admin-data";
+import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Analytics — KAZA Admin",

@@ -32,10 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
-import {
-  formatFcfa,
-  formatNumber,
-} from "@/lib/mock/admin-platform-data";
+import { formatFcfa, formatNumber } from "@/lib/utils";
 import { COUNTRIES } from "@/lib/geo/locations";
 import {
   listAllProperties,

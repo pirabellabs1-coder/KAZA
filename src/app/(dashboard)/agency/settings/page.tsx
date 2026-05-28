@@ -51,12 +51,49 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
-import {
-  AGENCY_PROFILE,
-  AGENCY_TEAM,
-  type AgentRole,
-} from "@/lib/mock/agency-data";
 import { SettingsProfileForm } from "./settings-profile-form";
+
+// ---------------------------------------------------------------------------
+// Types & fallbacks locaux — à brancher quand la table agency_profiles /
+// team_members sera en place.
+// ---------------------------------------------------------------------------
+
+type AgentRole =
+  | "Directrice"
+  | "Manager"
+  | "Agent senior"
+  | "Agent"
+  | "Stagiaire"
+  | "Comptable"
+  | "Gestionnaire";
+
+interface AgentMember {
+  id: string;
+  name: string;
+  role: AgentRole;
+  email: string;
+  initials: string;
+  color: string;
+  permissions: string[];
+}
+
+// Fallback vide — à brancher quand la table agency_profiles sera en place.
+const AGENCY_PROFILE = {
+  name: "",
+  legalName: "",
+  oapi: "",
+  city: "",
+  address: "",
+  email: "",
+  phone: "",
+  website: "",
+  description: "",
+  rccm: "",
+  ifu: "",
+};
+
+// Fallback vide — à brancher quand la table team_members sera en place.
+const AGENCY_TEAM: AgentMember[] = [];
 
 export const metadata: Metadata = {
   title: "Paramètres agence — KAZA Pro",

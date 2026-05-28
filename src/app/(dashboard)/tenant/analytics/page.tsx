@@ -29,13 +29,24 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  TENANT_PAYMENT_HISTORY,
-  TENANT_EXPENSES_BREAKDOWN,
-  TENANT_SAVINGS,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/admin-data";
+import { formatFcfa, formatFcfaShort } from "@/lib/utils";
+
+// =============================================================================
+// Fallbacks vides — à brancher quand les agrégations Supabase locataire
+// (historique paiements, dépenses, économies) seront prêtes.
+// =============================================================================
+
+const TENANT_PAYMENT_HISTORY: Array<{ month: string; paid: number }> = [];
+
+const TENANT_EXPENSES_BREAKDOWN: Array<{
+  category: string;
+  amount: number;
+  color: string;
+}> = [];
+
+const TENANT_SAVINGS: Array<{ label: string; value: number }> = [
+  { label: "Économies", value: 0 },
+];
 
 export const metadata: Metadata = {
   title: "Mes analyses · KAZA",
@@ -51,9 +62,11 @@ const totalPaid12Months = TENANT_PAYMENT_HISTORY.reduce(
   (sum, m) => sum + m.paid,
   0
 );
-const currentRent = TENANT_PAYMENT_HISTORY[TENANT_PAYMENT_HISTORY.length - 1].paid;
-const previousRent = TENANT_PAYMENT_HISTORY[0].paid;
-const rentEvolution = ((currentRent - previousRent) / previousRent) * 100;
+const currentRent =
+  TENANT_PAYMENT_HISTORY[TENANT_PAYMENT_HISTORY.length - 1]?.paid ?? 0;
+const previousRent = TENANT_PAYMENT_HISTORY[0]?.paid ?? 0;
+const rentEvolution =
+  previousRent === 0 ? 0 : ((currentRent - previousRent) / previousRent) * 100;
 const totalExpenses = TENANT_EXPENSES_BREAKDOWN.reduce(
   (sum, e) => sum + e.amount,
   0
@@ -157,6 +170,13 @@ const RECOMMENDED_PROPERTIES = [
 // =============================================================================
 
 function PaymentBarChart() {
+  if (TENANT_PAYMENT_HISTORY.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+        Aucun historique de paiement pour le moment.
+      </div>
+    );
+  }
   const max = Math.max(...TENANT_PAYMENT_HISTORY.map((d) => d.paid));
   const chartHeight = 220;
   const chartWidth = 720;

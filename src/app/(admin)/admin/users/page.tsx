@@ -8,18 +8,12 @@ import {
   Activity,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import {
-  AUDIT_LOGS,
-  formatNumber,
-  type AdminUser,
-  type UserStatus,
-  type UserRole,
-  type VerificationStatus,
-} from "@/lib/mock/admin-platform-data";
+import { cn, formatNumber } from "@/lib/utils";
 import { listAllUsers, type AdminUserRow } from "@/lib/queries/admin";
+import { listAuditLogs } from "@/lib/queries/audit-logs";
 
 import { UsersManager } from "./users-manager";
+import type { AdminUser, UserStatus, UserRole, VerificationStatus } from "./types";
 
 // Mappings utilisés pour les sections "Comptes signalés" et "VIPs" — vides
 // pour l'instant car ces concepts (reports, flags VIP/Press) n'existent pas
@@ -141,9 +135,11 @@ export default async function AdminUsersPage() {
   const suspended = 0;
   const banned = 0;
 
-  const userAuditFeed = AUDIT_LOGS.filter((l) =>
-    l.action.startsWith("USER_"),
-  ).slice(0, 8);
+  // Audit log réel : actions admin sur des comptes utilisateurs.
+  const allLogs = await listAuditLogs({ limit: 50 });
+  const userAuditFeed = allLogs
+    .filter((l) => l.action.startsWith("USER_"))
+    .slice(0, 8);
 
   return (
     <div className="space-y-8">
@@ -239,36 +235,45 @@ export default async function AdminUsersPage() {
                 Activité admin temps réel
               </h2>
             </header>
-            <ol className="space-y-3">
-              {userAuditFeed.map((log) => (
-                <li key={log.id} className="flex gap-3 border-b border-border/60 pb-3 last:border-0 last:pb-0">
-                  <span className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-kaza-navy/10 text-kaza-navy">
-                    <Activity className="size-3.5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-foreground">
-                      <span className="font-semibold text-kaza-navy">
-                        {log.adminName}
-                      </span>{" "}
-                      <span className="text-muted-foreground">
-                        {ACTION_LABEL[log.action] ?? log.action}
-                      </span>{" "}
-                      <span className="font-medium text-kaza-navy">
-                        {log.targetLabel}
-                      </span>
-                    </p>
-                    {log.reason && (
-                      <p className="mt-1 line-clamp-2 text-[11px] italic text-muted-foreground">
-                        « {log.reason} »
+            {userAuditFeed.length === 0 ? (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                Aucune action admin sur les comptes pour le moment.
+              </p>
+            ) : (
+              <ol className="space-y-3">
+                {userAuditFeed.map((log) => (
+                  <li key={log.id} className="flex gap-3 border-b border-border/60 pb-3 last:border-0 last:pb-0">
+                    <span className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-kaza-navy/10 text-kaza-navy">
+                      <Activity className="size-3.5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-foreground">
+                        <span className="font-semibold text-kaza-navy">
+                          {log.adminName}
+                        </span>{" "}
+                        <span className="text-muted-foreground">
+                          {ACTION_LABEL[log.action] ?? log.action}
+                        </span>{" "}
+                        {log.targetLabel && (
+                          <span className="font-medium text-kaza-navy">
+                            {log.targetLabel}
+                          </span>
+                        )}
                       </p>
-                    )}
-                    <p className="mt-1 text-[10px] text-muted-foreground">
-                      {timeAgo(log.timestamp)} · IP {log.ipAddress}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+                      {log.reason && (
+                        <p className="mt-1 line-clamp-2 text-[11px] italic text-muted-foreground">
+                          « {log.reason} »
+                        </p>
+                      )}
+                      <p className="mt-1 text-[10px] text-muted-foreground">
+                        {timeAgo(log.createdAt)}
+                        {log.ipAddress ? ` · IP ${log.ipAddress}` : ""}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
         </aside>
       </div>

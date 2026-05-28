@@ -4,7 +4,20 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatPoints, getPointsBalance } from "@/lib/demo-points";
+
+// =============================================================================
+// Fallbacks locaux : la source réelle des KAZA Points (Supabase via
+// `@/lib/queries/kaza-points`) n'est pas encore branchée côté client.
+// On affiche un solde neutre tant que le branchement n'est pas effectué.
+// =============================================================================
+function formatPoints(value: number): string {
+  return new Intl.NumberFormat("fr-FR").format(value);
+}
+
+function getPointsBalance(): number {
+  // TODO: brancher sur Supabase (kaza_points_ledger) via une route client-safe
+  return 0;
+}
 
 interface PointsBadgeProps {
   /**
@@ -28,11 +41,12 @@ export function PointsBadge({
   className,
   asLink = true,
 }: PointsBadgeProps) {
-  const [balance, setBalance] = useState<number | null>(null);
+  // Solde lu paresseusement au mount : la source réelle (Supabase) sera
+  // branchée plus tard. On garde le pattern d'abonnement aux events custom
+  // afin qu'un futur listener (refresh sur mutation) reste compatible.
+  const [balance, setBalance] = useState<number | null>(() => getPointsBalance());
 
   useEffect(() => {
-    setBalance(getPointsBalance());
-
     const handler = () => setBalance(getPointsBalance());
     window.addEventListener("storage", handler);
     window.addEventListener("kaza-points-updated", handler);

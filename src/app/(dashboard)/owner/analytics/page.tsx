@@ -21,7 +21,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getOwnerPropertyViews30d } from "@/lib/queries/analytics";
-import { OWNER_MONTHLY_REVENUE, formatFcfaShort, formatNumber } from "@/lib/mock/admin-data";
+import { formatFcfaShort, formatNumber } from "@/lib/utils";
+
+// Fallback vide — à brancher quand l'agrégation mensuelle des revenus
+// propriétaire sera connectée à Supabase (table payments).
+const OWNER_MONTHLY_REVENUE: Array<{
+  month: string;
+  revenue: number;
+  occupancy: number;
+}> = [];
 
 export const metadata: Metadata = {
   title: "Analytics propriétaire",
@@ -48,8 +56,8 @@ export default async function OwnerAnalyticsPage() {
   // TODO: les courbes 12 mois restent sur les mocks le temps de brancher
   //       l'agrégation mensuelle des revenus / occupation côté DB.
   const data = OWNER_MONTHLY_REVENUE;
-  const sparkRev = data.slice(-8).map((d) => d.revenue);
-  const sparkOcc = data.slice(-8).map((d) => d.occupancy);
+  const sparkRev = data.length > 0 ? data.slice(-8).map((d) => d.revenue) : [0];
+  const sparkOcc = data.length > 0 ? data.slice(-8).map((d) => d.occupancy) : [0];
 
   return (
     <div className="space-y-8">
@@ -209,6 +217,12 @@ export default async function OwnerAnalyticsPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {data.length === 0 ? (
+            <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+              Projection indisponible — aucune donnée mensuelle agrégée pour le
+              moment.
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <svg viewBox="0 0 760 220" className="min-w-[600px] w-full">
               <defs>
@@ -268,6 +282,7 @@ export default async function OwnerAnalyticsPage() {
               })()}
             </svg>
           </div>
+          )}
         </CardContent>
       </Card>
 

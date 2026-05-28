@@ -35,12 +35,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast-helper";
-import {
-  addStoredVisit,
-  VISIT_TIME_SLOTS,
-  type DemoVisit,
-} from "@/lib/demo-visits";
 import { requestVisit } from "@/actions/visits";
+
+// =============================================================================
+// Créneaux de visite proposés au locataire. La persistance réelle est gérée
+// côté serveur par `requestVisit()` (Supabase). Pas de mirror localStorage.
+// =============================================================================
+const VISIT_TIME_SLOTS: Array<{ value: string; label: string }> = [
+  { value: "08:00", label: "08h00 - 09h00" },
+  { value: "09:00", label: "09h00 - 10h00" },
+  { value: "10:00", label: "10h00 - 11h00" },
+  { value: "11:00", label: "11h00 - 12h00" },
+  { value: "14:00", label: "14h00 - 15h00" },
+  { value: "15:00", label: "15h00 - 16h00" },
+  { value: "16:00", label: "16h00 - 17h00" },
+  { value: "17:00", label: "17h00 - 18h00" },
+];
 
 interface VisitRequestDialogProps {
   open: boolean;
@@ -75,7 +85,7 @@ export function VisitRequestDialog({
   propertyId,
   propertyTitle,
   propertyAddress,
-  ownerName,
+  ownerName: _ownerName,
 }: VisitRequestDialogProps) {
   const router = useRouter();
   const [date, setDate] = useState<string>("");
@@ -122,23 +132,6 @@ export function VisitRequestDialog({
         setFormError(result.error);
         toast.error(result.error);
         return;
-      }
-
-      // Mirror localStorage pour la page /tenant/visits (mode demo + UX immediate).
-      try {
-        const visit: Omit<DemoVisit, "id" | "createdAt"> = {
-          propertyId,
-          propertyTitle,
-          propertyAddress,
-          ownerName,
-          date,
-          time,
-          message: message.trim() || undefined,
-          status: "PENDING",
-        };
-        addStoredVisit(visit);
-      } catch {
-        // ignore — la persistance principale a deja reussi cote serveur.
       }
 
       toast.success(

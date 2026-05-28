@@ -39,8 +39,29 @@ import {
   type ContractSection,
   type ContractTemplate,
 } from "@/lib/contracts/templates";
-import { getDemoContractById, type DemoContract } from "@/lib/demo-data";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
+
+// Type redéfini localement — à brancher sur la table contracts Supabase
+interface DemoContract {
+  id: string;
+  status: "DRAFT" | "PENDING_TENANT" | "PENDING_OWNER" | "SIGNED" | "CANCELLED";
+  propertyTitle: string;
+  propertyAddress: string;
+  ownerName: string;
+  tenantName: string;
+  monthlyRent: number;
+  deposit: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  signedAt?: string;
+  pdfUrl?: string;
+}
+
+// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
+function getDemoContractById(_id: string): DemoContract | undefined {
+  return undefined;
+}
 import { ContractEditorClient } from "./contract-editor-client";
 
 export const metadata: Metadata = {
@@ -73,22 +94,21 @@ export default async function ContractEditorPage({
   const user = await getCurrentDisplayUser();
   if (!user) redirect(`/login?redirect=/contracts/${id}/edit`);
 
-  // Récupération du contrat (mock) et fallback démo
-  const contract =
-    getDemoContractById(id) ??
-    ({
+  // Fallback brouillon vierge — à brancher sur la query contracts Supabase.
+  const contract: DemoContract =
+    getDemoContractById(id) ?? {
       id,
       status: "DRAFT",
-      propertyTitle: "Villa Fidjrossè avec piscine",
-      propertyAddress: "Quartier Fidjrossè, Cotonou",
-      ownerName: user.firstName + " " + user.lastName || "Jean Dupont",
-      tenantName: "Aïcha Bello",
-      monthlyRent: 350000,
-      deposit: 700000,
-      startDate: "2026-07-01",
-      endDate: "2027-06-30",
+      propertyTitle: "",
+      propertyAddress: "",
+      ownerName: `${user.firstName} ${user.lastName}`.trim(),
+      tenantName: "",
+      monthlyRent: 0,
+      deposit: 0,
+      startDate: "",
+      endDate: "",
       createdAt: new Date().toISOString(),
-    } satisfies DemoContract);
+    };
 
   // Sélection du template (via query, sinon premier par défaut)
   const template: ContractTemplate =
@@ -279,8 +299,14 @@ export default async function ContractEditorPage({
               />
               <Separator />
               <Row label="Durée" value={`${template.defaultDurationMonths} mois`} />
-              <Row label="Début" value={formatDate(contract.startDate)} />
-              <Row label="Fin" value={formatDate(contract.endDate)} />
+              <Row
+                label="Début"
+                value={contract.startDate ? formatDate(contract.startDate) : "—"}
+              />
+              <Row
+                label="Fin"
+                value={contract.endDate ? formatDate(contract.endDate) : "—"}
+              />
             </CardContent>
           </Card>
 

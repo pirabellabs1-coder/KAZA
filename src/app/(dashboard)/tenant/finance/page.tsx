@@ -17,12 +17,20 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  TENANT_PAYMENT_HISTORY,
-  TENANT_EXPENSES_BREAKDOWN,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/admin-data";
+import { formatFcfa, formatFcfaShort } from "@/lib/utils";
+
+// =============================================================================
+// Fallbacks vides — à brancher quand les agrégations Supabase locataire
+// (historique paiements, dépenses mensuelles) seront prêtes.
+// =============================================================================
+
+const TENANT_PAYMENT_HISTORY: Array<{ month: string; paid: number }> = [];
+
+const TENANT_EXPENSES_BREAKDOWN: Array<{
+  category: string;
+  amount: number;
+  color: string;
+}> = [];
 
 export const metadata: Metadata = {
   title: "Mes finances — Locataire",
@@ -94,7 +102,10 @@ const GOOD_TO_KNOW = [
   },
 ];
 
-const maxPayment = Math.max(...TENANT_PAYMENT_HISTORY.map((m) => m.paid));
+const maxPayment =
+  TENANT_PAYMENT_HISTORY.length === 0
+    ? 0
+    : Math.max(...TENANT_PAYMENT_HISTORY.map((m) => m.paid));
 const totalExpenses = TENANT_EXPENSES_BREAKDOWN.reduce(
   (s, c) => s + c.amount,
   0,

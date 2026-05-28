@@ -34,18 +34,81 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import { cn, formatFcfaShort } from "@/lib/utils";
 
-import {
-  AGENCY_PROFILE,
-  AGENCY_TEAM,
-  MONTHLY_REVENUE,
-  CONVERSION_FUNNEL,
-  OCCUPANCY_BY_TYPE,
-  LEAD_SOURCES,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/agency-data";
+// ---------------------------------------------------------------------------
+// Types & fallbacks locaux — à brancher quand les tables analytics seront
+// en place (revenus mensuels, funnel CRM, occupation portfolio, sources de
+// leads, team_members).
+// ---------------------------------------------------------------------------
+
+type AgentRole =
+  | "Directrice"
+  | "Manager"
+  | "Agent senior"
+  | "Agent"
+  | "Stagiaire"
+  | "Comptable"
+  | "Gestionnaire";
+
+interface AgentMember {
+  id: string;
+  name: string;
+  role: AgentRole;
+  email: string;
+  initials: string;
+  color: string;
+  visitsThisMonth: number;
+  signaturesYTD: number;
+  caGeneratedFcfa: number;
+  rating: number;
+}
+
+interface MonthlyRevenuePoint {
+  month: string;
+  value: number;
+  signatures: number;
+  visits: number;
+}
+
+interface FunnelStep {
+  label: string;
+  value: number;
+  color: string;
+}
+
+interface OccupancyBucket {
+  type: string;
+  total: number;
+  rented: number;
+  color: string;
+}
+
+interface LeadSource {
+  source: string;
+  count: number;
+  percentage: number;
+}
+
+// Fallback vide — à brancher quand la table agency_profiles sera en place.
+const AGENCY_PROFILE = {
+  name: "—",
+};
+
+// Fallback vide — à brancher quand la table team_members sera en place.
+const AGENCY_TEAM: AgentMember[] = [];
+
+// Fallback vide — à brancher quand la vue analytics_monthly_revenue sera en place.
+const MONTHLY_REVENUE: MonthlyRevenuePoint[] = [];
+
+// Fallback vide — à brancher quand la vue analytics_funnel sera en place.
+const CONVERSION_FUNNEL: FunnelStep[] = [];
+
+// Fallback vide — à brancher quand la vue analytics_occupancy sera en place.
+const OCCUPANCY_BY_TYPE: OccupancyBucket[] = [];
+
+// Fallback vide — à brancher quand la vue analytics_lead_sources sera en place.
+const LEAD_SOURCES: LeadSource[] = [];
 
 export const metadata: Metadata = {
   title: "Analytics — KAZA Pro Agence",
@@ -155,16 +218,18 @@ export default function AgencyAnalyticsPage() {
     chartHeight,
   );
   const revAverage =
-    revenueValues.reduce((acc, v) => acc + v, 0) / revenueValues.length;
-  const revMax = Math.max(...revenueValues);
-  const revMin = Math.min(...revenueValues);
+    revenueValues.length > 0
+      ? revenueValues.reduce((acc, v) => acc + v, 0) / revenueValues.length
+      : 0;
+  const revMax = revenueValues.length > 0 ? Math.max(...revenueValues) : 0;
+  const revMin = revenueValues.length > 0 ? Math.min(...revenueValues) : 0;
   const revRange = revMax - revMin || 1;
   const padding = 8;
   const avgY =
     chartHeight - padding - ((revAverage - revMin) / revRange) * (chartHeight - padding * 2);
 
   // ---- Graphique 2 : Funnel conversion ----
-  const funnelMax = CONVERSION_FUNNEL[0].value;
+  const funnelMax = CONVERSION_FUNNEL[0]?.value ?? 0;
 
   // ---- Graphique 4 : Donut leads ----
   const donutSize = 220;

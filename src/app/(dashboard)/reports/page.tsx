@@ -36,15 +36,127 @@ import {
 } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
-import {
-  REASON_META,
-  STATUS_META,
-  TARGET_TYPE_LABELS,
-  formatReportDate,
-  getMyReports,
-  type ReportStatus,
-  type UserReport,
-} from "@/lib/demo-reports";
+
+// =============================================================================
+// Types & fallbacks locaux — à brancher sur la table user_reports Supabase
+// À brancher quand la table user_reports sera connectée à Supabase.
+// =============================================================================
+
+type ReportTargetType = "property" | "user" | "message" | "review";
+
+type ReportReason =
+  | "inappropriate"
+  | "spam"
+  | "scam"
+  | "fake"
+  | "harassment"
+  | "illegal"
+  | "other";
+
+type ReportStatus = "pending" | "reviewed" | "resolved" | "dismissed";
+
+interface UserReport {
+  id: string;
+  targetType: ReportTargetType;
+  targetId: string;
+  targetLabel: string;
+  reason: ReportReason;
+  description: string;
+  reporterId: string;
+  reportedAt: string;
+  status: ReportStatus;
+  adminNote?: string;
+}
+
+// Fallback vide — à brancher quand la table user_reports sera connectée.
+function getMyReports(): UserReport[] {
+  return [];
+}
+
+const REASON_META: Record<
+  ReportReason,
+  { label: string; description: string; iconName: string }
+> = {
+  inappropriate: {
+    label: "Contenu inapproprié",
+    description: "Images, textes ou commentaires choquants ou offensants.",
+    iconName: "AlertTriangle",
+  },
+  spam: {
+    label: "Spam",
+    description: "Sollicitations commerciales ou contenu répétitif.",
+    iconName: "Megaphone",
+  },
+  scam: {
+    label: "Arnaque",
+    description: "Tentative de fraude, prix suspects, faux loyer.",
+    iconName: "ShieldAlert",
+  },
+  fake: {
+    label: "Faux profil / fausse annonce",
+    description: "Information mensongère, photos volées, identité usurpée.",
+    iconName: "UserX",
+  },
+  harassment: {
+    label: "Harcèlement",
+    description: "Messages insistants, menaces ou intimidations.",
+    iconName: "AlertCircle",
+  },
+  illegal: {
+    label: "Activité illégale",
+    description: "Violation de la loi, contenu interdit, trafic.",
+    iconName: "Gavel",
+  },
+  other: {
+    label: "Autre motif",
+    description: "Précisez le contexte dans la description.",
+    iconName: "HelpCircle",
+  },
+};
+
+const STATUS_META: Record<
+  ReportStatus,
+  { label: string; classes: string; iconName: string }
+> = {
+  pending: {
+    label: "En attente",
+    classes: "bg-kaza-warning/15 text-kaza-warning border-kaza-warning/30",
+    iconName: "Clock",
+  },
+  reviewed: {
+    label: "Examiné",
+    classes: "bg-kaza-blue/15 text-kaza-blue border-kaza-blue/30",
+    iconName: "Eye",
+  },
+  resolved: {
+    label: "Résolu",
+    classes: "bg-kaza-green/15 text-kaza-green border-kaza-green/30",
+    iconName: "CheckCircle2",
+  },
+  dismissed: {
+    label: "Rejeté",
+    classes: "bg-muted text-muted-foreground border-border",
+    iconName: "XCircle",
+  },
+};
+
+const TARGET_TYPE_LABELS: Record<ReportTargetType, string> = {
+  property: "Annonce",
+  user: "Utilisateur",
+  message: "Message",
+  review: "Avis",
+};
+
+function formatReportDate(iso: string): string {
+  const date = new Date(iso);
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
 
 const REASON_ICON: Record<string, LucideIcon> = {
   AlertTriangle,

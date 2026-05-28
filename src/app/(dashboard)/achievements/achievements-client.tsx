@@ -34,16 +34,48 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import {
-  ALL_ACHIEVEMENTS,
-  getMyAchievements,
-  type Achievement,
-  type AchievementCategory,
-  type AchievementRarity,
-} from "@/lib/demo-achievements";
+
+// Types redéfinis localement — alignés sur le shape Supabase (queries/achievements).
+type AchievementCategory =
+  | "getting_started"
+  | "social"
+  | "transactions"
+  | "reviews"
+  | "special";
+
+type AchievementRarity = "common" | "rare" | "epic" | "legendary";
+
+interface Achievement {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  icon: string | null;
+  category: AchievementCategory | string | null;
+  pointsReward: number;
+  rarity: AchievementRarity;
+  unlockedAt?: string | null;
+  progress?: { current: number; target: number };
+}
+
+// Shape exact reçu depuis la page serveur (UserAchievementWithDefinition).
+interface IncomingAchievement {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  icon: string | null;
+  category: string | null;
+  pointsReward: number;
+  rarity: AchievementRarity;
+  progress: number;
+  target: number;
+  unlockedAt: string | null;
+}
 
 interface AchievementsClientProps {
   userFirstName: string;
+  achievements: IncomingAchievement[];
 }
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -117,17 +149,37 @@ const CATEGORY_ORDER: Array<AchievementCategory | "all"> = [
   "special",
 ];
 
-export function AchievementsClient({ userFirstName }: AchievementsClientProps) {
-  // SSR-safe : on initialise avec le seed statique puis on hydrate cote client
+function mapIncoming(a: IncomingAchievement): Achievement {
+  return {
+    id: a.id,
+    code: a.code,
+    title: a.title,
+    description: a.description,
+    icon: a.icon,
+    category: a.category,
+    pointsReward: a.pointsReward,
+    rarity: a.rarity,
+    unlockedAt: a.unlockedAt ?? undefined,
+    progress:
+      a.target > 0
+        ? { current: a.progress, target: a.target }
+        : undefined,
+  };
+}
+
+export function AchievementsClient({
+  userFirstName,
+  achievements: incoming,
+}: AchievementsClientProps) {
   const [achievements, setAchievements] = useState<Achievement[]>(() =>
-    ALL_ACHIEVEMENTS.map((a) => ({ ...a })),
+    incoming.map(mapIncoming),
   );
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setAchievements(getMyAchievements());
+    setAchievements(incoming.map(mapIncoming));
     setHydrated(true);
-  }, []);
+  }, [incoming]);
 
   const totalCount = achievements.length;
   const unlockedCount = useMemo(
@@ -141,7 +193,8 @@ export function AchievementsClient({ userFirstName }: AchievementsClientProps) {
         .reduce((sum, a) => sum + a.pointsReward, 0),
     [achievements],
   );
-  const progressPct = Math.round((unlockedCount / totalCount) * 100);
+  const progressPct =
+    totalCount === 0 ? 0 : Math.round((unlockedCount / totalCount) * 100);
 
   return (
     <div className="space-y-8">
@@ -236,7 +289,8 @@ export function AchievementsClient({ userFirstName }: AchievementsClientProps) {
 }
 
 function AchievementCard({ achievement }: { achievement: Achievement }) {
-  const Icon = ICON_MAP[achievement.icon] ?? Trophy;
+  const Icon: LucideIcon =
+    (achievement.icon ? ICON_MAP[achievement.icon] : undefined) ?? Trophy;
   const rarity = RARITY_STYLES[achievement.rarity];
   const unlocked = Boolean(achievement.unlockedAt);
 

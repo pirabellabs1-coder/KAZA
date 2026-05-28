@@ -22,15 +22,44 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  GEO_HEATMAP,
-  PLATFORM_FINANCE_30D,
-  RECENT_PAYOUTS,
-  REVENUE_WATERFALL,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/admin-platform-data";
+import { formatFcfa, formatFcfaShort } from "@/lib/utils";
 import { CountryFlag } from "@/components/shared/country-flag";
+
+// Fallbacks vides — vues agrégées finance à brancher (revenus 30j, payouts,
+// waterfall, heatmap géo). Les transactions réelles vivent dans `payments`,
+// `subscriptions`, `withdrawal_requests`.
+const PLATFORM_FINANCE_30D = {
+  grossRevenueFcfa: 0,
+  commissionsFcfa: 0,
+  subscriptionsFcfa: 0,
+  boostsFcfa: 0,
+  refundsFcfa: 0,
+  netRevenueFcfa: 0,
+  payoutsFcfa: 0,
+  taxesFcfa: 0,
+  ebitda: 0,
+  ebitdaMargin: 0,
+};
+const REVENUE_WATERFALL: Array<{ label: string; value: number; type: string }> = [];
+interface Payout {
+  id: string;
+  beneficiary: string;
+  type: "OWNER" | "AGENCY";
+  amountFcfa: number;
+  status: "SCHEDULED" | "PROCESSING" | "PAID" | "FAILED";
+  scheduledAt: string;
+  paidAt?: string;
+  method: string;
+}
+const RECENT_PAYOUTS: Payout[] = [];
+const GEO_HEATMAP: Array<{
+  country: string;
+  code: string;
+  users: number;
+  listings: number;
+  revenueFcfa: number;
+  intensity: number;
+}> = [];
 
 export const metadata: Metadata = {
   title: "Finance plateforme — KAZA Admin",

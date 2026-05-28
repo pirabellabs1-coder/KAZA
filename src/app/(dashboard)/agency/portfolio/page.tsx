@@ -35,8 +35,15 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
-import { AGENCY_PLAN } from "@/lib/mock/agency-data";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+
+// Fallback vide — à brancher quand la table subscriptions/plans sera en place.
+const AGENCY_PLAN = {
+  name: "—",
+  quota: {
+    activeListings: { used: 0, max: 0 },
+  },
+};
 import {
   getOwnerPortfolioStats,
   listPropertiesByOwner,
@@ -112,10 +119,10 @@ export default async function AgencyPortfolioPage() {
   const rented = stats.rented;
   const draft = stats.draft;
 
-  // Quota plan Pro (mock — vraies données viendront de la table subscriptions)
+  // Quota plan Pro (vraies données viendront de la table subscriptions)
   const quota = AGENCY_PLAN.quota.activeListings;
   const quotaUsed = available + rented; // annonces "actives"
-  const quotaPct = Math.round((quotaUsed / quota.max) * 100);
+  const quotaPct = quota.max > 0 ? Math.round((quotaUsed / quota.max) * 100) : 0;
   const quotaWarn = quotaPct >= 90;
 
   const isEmpty = total === 0;

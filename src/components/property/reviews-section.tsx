@@ -1,52 +1,61 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import { ChevronDown, Quote, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn, formatDate } from "@/lib/utils";
-import {
-  getReviewsForProperty,
-  getAverageRating,
-  getRatingDistribution,
-  type DemoReview,
-  type ReviewRating,
-} from "@/lib/demo-reviews";
+import type { PropertyReview } from "@/lib/queries/reviews";
+
+// =============================================================================
+// KAZA — ReviewsSection (client)
+// Affiche les avis Supabase déjà chargés côté serveur par le parent.
+// Les données viennent de `getPropertyReviews()` (cf. `@/lib/queries/reviews`)
+// et sont transmises via la prop `reviews`. Aucune donnée fictive.
+// =============================================================================
 
 interface ReviewsSectionProps {
-  propertyId: string;
-  /** Note moyenne facultative pour synchro avec la fiche (sinon calculée). */
+  /** Avis déjà résolus côté serveur. Peut être vide. */
+  reviews: PropertyReview[];
+  /** Note moyenne facultative (sinon recalculée). */
   rating?: number;
-  /** Nombre d'avis facultatif (sinon calculé). */
+  /** Nombre total d'avis facultatif (sinon = reviews.length). */
   reviewsCount?: number;
   className?: string;
 }
 
-const ROLE_BADGE: Record<DemoReview["authorRole"], string> = {
-  Locataire: "bg-kaza-blue/10 text-kaza-blue",
-  Étudiant: "bg-kaza-green/10 text-kaza-green",
-  Propriétaire: "bg-kaza-navy/10 text-kaza-navy",
-};
+type ReviewRating = 1 | 2 | 3 | 4 | 5;
+
+function getRatingDistribution(
+  reviews: PropertyReview[],
+): Record<ReviewRating, number> {
+  const dist: Record<ReviewRating, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  for (const r of reviews) {
+    const k = Math.max(1, Math.min(5, Math.round(r.rating))) as ReviewRating;
+    dist[k] += 1;
+  }
+  return dist;
+}
+
+function getAverageRating(reviews: PropertyReview[]): number {
+  if (reviews.length === 0) return 0;
+  const sum = reviews.reduce((s, r) => s + r.rating, 0);
+  return Math.round((sum / reviews.length) * 10) / 10;
+}
 
 export function ReviewsSection({
-  propertyId,
+  reviews,
   rating,
   reviewsCount,
   className,
 }: ReviewsSectionProps) {
-  const reviews = useMemo(
-    () => getReviewsForProperty(propertyId),
-    [propertyId]
-  );
-
   const average = rating ?? getAverageRating(reviews);
   const total = reviewsCount ?? reviews.length;
   const distribution = useMemo(() => getRatingDistribution(reviews), [reviews]);
 
   const [showAll, setShowAll] = useState(false);
   const [activeFilter, setActiveFilter] = useState<"all" | "5" | "4" | "low">(
-    "all"
+    "all",
   );
 
   const filtered = useMemo(() => {
@@ -63,6 +72,22 @@ export function ReviewsSection({
   }, [reviews, activeFilter]);
 
   const visible = showAll ? filtered : filtered.slice(0, 6);
+
+  // Empty state global : aucune review publiée
+  if (reviews.length === 0) {
+    return (
+      <section
+        className={cn(
+          "w-full rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center text-sm text-muted-foreground",
+          className,
+        )}
+        aria-label="Avis des utilisateurs"
+      >
+        Aucun avis publié pour le moment. Soyez le premier à partager votre
+        expérience après votre séjour.
+      </section>
+    );
+  }
 
   return (
     <section className={cn("w-full", className)} aria-label="Avis des utilisateurs">
@@ -84,7 +109,7 @@ export function ReviewsSection({
                   "size-5",
                   i < Math.round(average)
                     ? "fill-amber-400 text-amber-400"
-                    : "fill-transparent text-muted-foreground/30"
+                    : "fill-transparent text-muted-foreground/30",
                 )}
               />
             ))}
@@ -100,9 +125,10 @@ export function ReviewsSection({
         <div className="flex flex-col justify-center gap-2.5">
           {([5, 4, 3, 2, 1] as ReviewRating[]).map((star) => {
             const count = distribution[star];
-            const pct = reviews.length > 0
-              ? Math.round((count / reviews.length) * 100)
-              : 0;
+            const pct =
+              reviews.length > 0
+                ? Math.round((count / reviews.length) * 100)
+                : 0;
             return (
               <div key={star} className="flex items-center gap-3">
                 <span className="flex w-10 items-center justify-end gap-1 text-sm font-medium text-kaza-navy">
@@ -117,7 +143,7 @@ export function ReviewsSection({
                         ? "bg-gradient-to-r from-kaza-green to-emerald-400"
                         : star === 3
                           ? "bg-amber-400"
-                          : "bg-red-400"
+                          : "bg-red-400",
                     )}
                     style={{ width: `${pct}%` }}
                   />
@@ -192,11 +218,7 @@ export function ReviewsSection({
 // ReviewCard
 // =============================================================================
 
-function ReviewCard({ review }: { review: DemoReview }) {
-  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    review.avatarSeed
-  )}&background=1A3A52&color=fff&bold=true&size=128`;
-
+function ReviewCard({ review }: { review: PropertyReview }) {
   return (
     <article className="group relative flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
       <Quote
@@ -206,37 +228,22 @@ function ReviewCard({ review }: { review: DemoReview }) {
 
       {/* Header auteur */}
       <header className="flex items-center gap-3">
-        <div className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-kaza-blue/10">
-          <Image
-            src={avatarUrl}
-            alt={`Avatar de ${review.authorName}`}
-            fill
-            sizes="44px"
-            className="object-cover"
-            unoptimized
-          />
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-kaza-navy text-sm font-semibold text-white ring-2 ring-kaza-blue/10">
+          {review.reviewerInitials}
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-kaza-navy">
-            {review.authorName}
+            {review.reviewerName}
           </p>
-          <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span
-              className={cn(
-                "rounded-full px-2 py-0.5 font-medium",
-                ROLE_BADGE[review.authorRole]
-              )}
-            >
-              {review.authorRole}
-            </span>
-            {review.city && <span>· {review.city}</span>}
-          </div>
         </div>
       </header>
 
       {/* Note + date */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-0.5" aria-label={`Note ${review.rating} sur 5`}>
+        <div
+          className="flex items-center gap-0.5"
+          aria-label={`Note ${review.rating} sur 5`}
+        >
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
@@ -245,30 +252,22 @@ function ReviewCard({ review }: { review: DemoReview }) {
                 "size-3.5",
                 i < review.rating
                   ? "fill-amber-400 text-amber-400"
-                  : "fill-transparent text-muted-foreground/30"
+                  : "fill-transparent text-muted-foreground/30",
               )}
             />
           ))}
         </div>
-        <time
-          dateTime={review.date}
-          className="text-xs text-muted-foreground"
-        >
-          {formatDate(review.date)}
+        <time dateTime={review.createdAt} className="text-xs text-muted-foreground">
+          {formatDate(review.createdAt)}
         </time>
       </div>
 
-      {/* Titre */}
-      {review.title && (
-        <h4 className="font-heading text-sm font-semibold leading-snug text-foreground">
-          {review.title}
-        </h4>
-      )}
-
       {/* Commentaire */}
-      <p className="text-sm leading-relaxed text-muted-foreground">
-        {review.comment}
-      </p>
+      {review.comment && (
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {review.comment}
+        </p>
+      )}
     </article>
   );
 }

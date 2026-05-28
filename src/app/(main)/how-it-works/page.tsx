@@ -12,13 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { FeatureHighlight } from "@/components/marketing/feature-highlight";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
 import { AnimatedGradientBg } from "@/components/shared/animated-gradient-bg";
 import { GlassPanel } from "@/components/shared/glass-panel";
-import { Marquee } from "@/components/shared/marquee";
-import { TESTIMONIALS } from "@/lib/marketing-data";
 import { HowItWorksTabs } from "./how-it-works-tabs";
 
 export const metadata: Metadata = {
@@ -70,8 +67,6 @@ const KAZA_CITIES = [
 ];
 
 export default function HowItWorksPage() {
-  const highlightedTestimonials = TESTIMONIALS.slice(0, 6);
-
   return (
     <div className="overflow-hidden">
       {/* ===== HERO ANIMATED GRADIENT ================================ */}
@@ -327,39 +322,8 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ===== TÉMOIGNAGES MARQUEE =================================== */}
-      <section className="bg-gray-50 py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-16 text-center">
-              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
-                Ce qu&apos;ils en disent
-              </p>
-              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                Des histoires vraies, des résultats concrets
-              </h2>
-            </div>
-          </RevealOnScroll>
-        </div>
-
-        <RevealOnScroll>
-          <Marquee speed={40} pauseOnHover contentWidth={2400}>
-            {highlightedTestimonials.map((t) => (
-              <div key={t.id} className="w-[360px]">
-                <TestimonialCard
-                  name={t.name}
-                  role={t.role}
-                  avatarSeed={t.avatarSeed}
-                  rating={t.rating}
-                  quote={t.quote}
-                  city={t.city}
-                  highlight={t.highlight}
-                />
-              </div>
-            ))}
-          </Marquee>
-        </RevealOnScroll>
-      </section>
+      {/* Section "Témoignages" retirée — réactivée quand de vrais avis seront
+          publiés. */}
 
       {/* ===== CTA FINAL ============================================== */}
       <CtaBanner

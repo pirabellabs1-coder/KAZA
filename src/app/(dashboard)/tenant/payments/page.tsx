@@ -16,12 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { StatsCard } from "@/components/dashboard/stats-card";
-import {
-  getPaymentsByUserId,
-  mockRentals,
-  getPropertyById,
-} from "@/lib/mock-data";
-import { fetchWithFallback } from "@/lib/data-fetcher";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/queries";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -31,51 +25,32 @@ export const metadata: Metadata = {
   title: "Historique Paiements",
 };
 
-const MOCK_TENANT_ID = "u-004-tenant-thomas";
-
 interface PaymentRow extends Payment {
   property_title: string | null;
 }
 
 async function loadTenantPayments(): Promise<PaymentRow[]> {
-  return fetchWithFallback<PaymentRow[]>(
-    async () => {
-      const supabase = await createClient();
-      const user = await getCurrentUser();
-      if (!user) return [];
+  const supabase = await createClient();
+  const user = await getCurrentUser();
+  if (!user) return [];
 
-      const { data, error } = await supabase
-        .from("payments")
-        .select(
-          "*, rental:rentals!inner(*, property:properties(id, title))"
-        )
-        .eq("rental.tenant_id", user.id)
-        .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("payments")
+    .select("*, rental:rentals!inner(*, property:properties(id, title))")
+    .eq("rental.tenant_id", user.id)
+    .order("created_at", { ascending: false });
 
-      if (error || !data) return [];
+  if (error || !data) return [];
 
-      return data.map((row: unknown) => {
-        const r = row as Payment & {
-          rental?: { property?: { title?: string | null } | null } | null;
-        };
-        return {
-          ...r,
-          property_title: r.rental?.property?.title ?? null,
-        };
-      });
-    },
-    () => {
-      // Fallback mock
-      return getPaymentsByUserId(MOCK_TENANT_ID).map<PaymentRow>((p) => {
-        const rental = mockRentals.find((r) => r.id === p.rental_id);
-        const property = rental ? getPropertyById(rental.property_id) : undefined;
-        return {
-          ...p,
-          property_title: property?.title ?? null,
-        };
-      });
-    }
-  );
+  return data.map((row: unknown) => {
+    const r = row as Payment & {
+      rental?: { property?: { title?: string | null } | null } | null;
+    };
+    return {
+      ...r,
+      property_title: r.rental?.property?.title ?? null,
+    };
+  });
 }
 
 function getPaymentStatusBadge(status: string) {

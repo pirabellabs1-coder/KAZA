@@ -46,9 +46,16 @@ import {
   listUserInvoices,
   PLAN_DETAILS,
 } from "@/lib/queries/subscriptions";
-import { AGENCY_PROFILE, formatFcfa } from "@/lib/mock/agency-data";
+import { formatFcfa } from "@/lib/utils";
 import { SubscribeButton } from "@/components/subscriptions/subscribe-button";
 import { CancelSubscriptionButton } from "@/components/subscriptions/cancel-subscription-button";
+
+// Fallback vide — à brancher quand la table agency_profiles sera en place.
+const AGENCY_PROFILE = {
+  legalName: "",
+  rccm: "",
+  ifu: "",
+};
 
 export const metadata: Metadata = {
   title: "Facturation — KAZA Agence",

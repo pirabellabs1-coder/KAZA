@@ -29,16 +29,53 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
-import {
-  SEED_SURVEYS,
-  getCompletedSurveys,
-  getPendingSurveys,
-  submitSurvey,
-  type PendingSurvey,
-  type SurveyAnswer,
-  type SurveyQuestion,
-  type SurveyTrigger,
-} from "@/lib/demo-surveys";
+
+// =============================================================================
+// Types & fallbacks locaux — à brancher sur queries Supabase surveys / survey_answers
+// À brancher quand les tables surveys / survey_answers seront connectées
+// via @/lib/queries/surveys.
+// =============================================================================
+
+type SurveyTrigger =
+  | "after_visit"
+  | "after_first_month"
+  | "after_contract_sign"
+  | "after_payment"
+  | "monthly_nps";
+
+type SurveyQuestionType = "rating" | "choice" | "text";
+
+interface SurveyQuestion {
+  id: string;
+  type: SurveyQuestionType;
+  question: string;
+  options?: string[];
+  required: boolean;
+  scale?: number;
+}
+
+interface PendingSurvey {
+  id: string;
+  trigger: SurveyTrigger;
+  title: string;
+  contextLabel: string;
+  triggeredAt: string;
+  questions: SurveyQuestion[];
+}
+
+interface SurveyAnswer {
+  surveyId: string;
+  answers: Record<string, string | number>;
+  completedAt: string;
+}
+
+// Fallbacks vides — à brancher sur les queries Supabase surveys.
+const SEED_SURVEYS: PendingSurvey[] = [];
+const getPendingSurveys = (): PendingSurvey[] => [];
+const getCompletedSurveys = (): SurveyAnswer[] => [];
+const submitSurvey = (_answer: SurveyAnswer): void => {
+  // no-op tant que la mutation n'est pas branchée côté Supabase
+};
 
 interface SurveysClientProps {
   userFirstName: string;

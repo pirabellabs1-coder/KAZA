@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { formatFcfa, formatNumber } from "@/lib/mock/admin-platform-data";
+import { formatFcfa, formatNumber } from "@/lib/utils";
 import {
   listAllContracts,
   type AdminContractRow,

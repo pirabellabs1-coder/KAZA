@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { formatFcfa } from "@/lib/mock/admin-platform-data";
+import { formatFcfa } from "@/lib/utils";
 
 interface PropertyReviewModalProps {
   listing: {

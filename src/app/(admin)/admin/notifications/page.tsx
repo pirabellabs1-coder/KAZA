@@ -26,11 +26,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  CAMPAIGNS,
-  type Campaign,
-  formatNumber,
-} from "@/lib/mock/admin-platform-data";
+import { formatNumber } from "@/lib/utils";
+
+// Fallbacks vides — à brancher quand la table `campaigns` sera en place.
+interface Campaign {
+  id: string;
+  name: string;
+  channel: "EMAIL" | "PUSH" | "SMS";
+  status: "DRAFT" | "SCHEDULED" | "SENDING" | "SENT" | "CANCELLED";
+  audience: string;
+  audienceSize: number;
+  sentAt?: string;
+  scheduledAt?: string;
+  openRate?: number;
+  clickRate?: number;
+}
+const CAMPAIGNS: Campaign[] = [];
 
 export const metadata: Metadata = {
   title: "Notifications & campagnes — KAZA Admin",

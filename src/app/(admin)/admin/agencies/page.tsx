@@ -31,8 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { cn } from "@/lib/utils";
-import { formatFcfa, formatFcfaShort, formatNumber } from "@/lib/mock/admin-platform-data";
+import { cn, formatFcfa, formatFcfaShort, formatNumber } from "@/lib/utils";
 import { listAllAgencies, type AdminAgencyRow } from "@/lib/queries/admin";
 
 import { AgencyRowMenu } from "./agency-actions";

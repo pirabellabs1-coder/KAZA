@@ -37,7 +37,10 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-import { AGENCY_PROFILE } from "@/lib/mock/agency-data";
+// Fallback vide — à brancher quand la table agency_profiles sera en place.
+const AGENCY_PROFILE = {
+  email: "",
+};
 
 export const metadata: Metadata = {
   title: "Rapports — KAZA Pro Agence",
@@ -619,10 +622,10 @@ export default function AgencyReportsPage() {
               publics. Conservation 10 ans conformément au Code Général des Impôts.
               Pour exercer vos droits RGPD, contactez{" "}
               <a
-                href={`mailto:dpo@${AGENCY_PROFILE.email.split("@")[1]}`}
+                href={`mailto:dpo@${AGENCY_PROFILE.email.split("@")[1] ?? "kaza.africa"}`}
                 className="font-medium text-kaza-blue underline-offset-2 hover:underline"
               >
-                dpo@{AGENCY_PROFILE.email.split("@")[1]}
+                dpo@{AGENCY_PROFILE.email.split("@")[1] ?? "kaza.africa"}
               </a>
               .
             </p>

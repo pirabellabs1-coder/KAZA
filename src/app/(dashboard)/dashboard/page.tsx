@@ -28,20 +28,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import {
-  getOpenRoommateListings,
-  getSavedPropertyIds,
-  mockPayments,
-} from "@/lib/mock-data";
-import {
-  OWNER_MONTHLY_REVENUE,
-  OWNER_REVIEWS_BREAKDOWN,
-  OWNER_TOP_PROPERTIES,
-  OWNER_VISITS_FUNNEL,
   formatFcfa,
   formatFcfaShort,
   formatNumber,
-} from "@/lib/mock/admin-data";
-import { formatPrice } from "@/lib/utils";
+  formatPrice,
+} from "@/lib/utils";
+
+// Fallback vide — à brancher quand l'agrégation mensuelle des revenus
+// propriétaire sera connectée à Supabase (table payments).
+const OWNER_MONTHLY_REVENUE: Array<{
+  month: string;
+  revenue: number;
+  occupancy: number;
+}> = [];
+
+// Fallback vide — à brancher quand la table reviews sera connectée.
+const OWNER_REVIEWS_BREAKDOWN: Array<{ rating: number; count: number }> = [];
+
+// Fallback vide — à brancher sur l'agrégation top propriétés.
+const OWNER_TOP_PROPERTIES: Array<{
+  title: string;
+  views: number;
+  contacts: number;
+  visits: number;
+  revenue: number;
+}> = [];
+
+// Fallback vide — à brancher sur les events analytics du funnel visites.
+const OWNER_VISITS_FUNNEL: Array<{
+  stage: string;
+  value: number;
+  color: string;
+}> = [];
+
+// Fallbacks vides — à brancher sur queries Supabase (payments, roommate listings, saved properties)
+type DemoPayment = { id: string; status: string; amount: number };
+const mockPayments: DemoPayment[] = [];
+const getOpenRoommateListings = (): unknown[] => [];
+const getSavedPropertyIds = (_userId: string): string[] => [];
 
 export const metadata: Metadata = {
   title: "Tableau de bord",
@@ -79,27 +103,33 @@ function OwnerOverview({ firstName }: { firstName: string }) {
   });
 
   const data = OWNER_MONTHLY_REVENUE;
-  const maxRev = Math.max(...data.map((d) => d.revenue));
-  const currentRev = data[data.length - 1].revenue;
-  const prevRev = data[data.length - 2].revenue;
-  const revGrowth = (((currentRev - prevRev) / prevRev) * 100).toFixed(1);
-  const currentOcc = data[data.length - 1].occupancy;
-  const prevOcc = data[data.length - 2].occupancy;
+  const maxRev = data.length > 0 ? Math.max(...data.map((d) => d.revenue)) : 0;
+  const currentRev = data.length > 0 ? data[data.length - 1].revenue : 0;
+  const prevRev = data.length > 1 ? data[data.length - 2].revenue : 0;
+  const revGrowth =
+    prevRev > 0 ? (((currentRev - prevRev) / prevRev) * 100).toFixed(1) : "0.0";
+  const currentOcc = data.length > 0 ? data[data.length - 1].occupancy : 0;
+  const prevOcc = data.length > 1 ? data[data.length - 2].occupancy : 0;
   const occGrowth = currentOcc - prevOcc;
 
-  // KPI sparklines : 8 derniers mois
-  const sparkRev = data.slice(-8).map((d) => d.revenue);
-  const sparkOcc = data.slice(-8).map((d) => d.occupancy);
+  // KPI sparklines : 8 derniers mois (fallback vide → [0])
+  const sparkRev = data.length > 0 ? data.slice(-8).map((d) => d.revenue) : [0];
+  const sparkOcc = data.length > 0 ? data.slice(-8).map((d) => d.occupancy) : [0];
 
   const totalReviews = OWNER_REVIEWS_BREAKDOWN.reduce((s, r) => s + r.count, 0);
-  const avgRating = (
-    OWNER_REVIEWS_BREAKDOWN.reduce((s, r) => s + r.rating * r.count, 0) /
-    totalReviews
-  ).toFixed(1);
+  const avgRating =
+    totalReviews > 0
+      ? (
+          OWNER_REVIEWS_BREAKDOWN.reduce(
+            (s, r) => s + r.rating * r.count,
+            0,
+          ) / totalReviews
+        ).toFixed(1)
+      : "0.0";
 
   // Funnel : conversion entre étapes
   const funnel = OWNER_VISITS_FUNNEL;
-  const maxFunnel = Math.max(...funnel.map((f) => f.value));
+  const maxFunnel = funnel.length > 0 ? Math.max(...funnel.map((f) => f.value)) : 0;
 
   // Donut avis
   const reviews = OWNER_REVIEWS_BREAKDOWN;
@@ -108,8 +138,8 @@ function OwnerOverview({ firstName }: { firstName: string }) {
   const donutSegments = reviews.map((r) => {
     const start = donutCumul;
     donutCumul += r.count;
-    const startAngle = (start / donutTotal) * 360;
-    const endAngle = (donutCumul / donutTotal) * 360;
+    const startAngle = donutTotal > 0 ? (start / donutTotal) * 360 : 0;
+    const endAngle = donutTotal > 0 ? (donutCumul / donutTotal) * 360 : 0;
     return { ...r, startAngle, endAngle };
   });
 

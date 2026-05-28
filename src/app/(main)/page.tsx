@@ -17,26 +17,11 @@ import {
   getPlatformStats,
   listPublicProperties,
 } from "@/lib/queries/properties";
-import {
-  TESTIMONIALS,
-  CITIES,
-  PARTNERS,
-  FEATURES,
-  BLOG_PREVIEWS,
-  PRESS,
-} from "@/lib/marketing-data";
 import { StatCounter } from "@/components/marketing/stat-counter";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
-import { CityCard } from "@/components/marketing/city-card";
-import { PartnerBar } from "@/components/marketing/partner-bar";
 import { GradientCard } from "@/components/marketing/gradient-card";
-import { FeatureHighlight } from "@/components/marketing/feature-highlight";
-import { PressStrip } from "@/components/marketing/press-strip";
-import { BlogPreviewCard } from "@/components/marketing/blog-preview-card";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
 import { CountryFlag } from "@/components/shared/country-flag";
-import { Marquee } from "@/components/shared/marquee";
 import { GlassPanel } from "@/components/shared/glass-panel";
 import { PageTracker } from "@/components/analytics/page-tracker";
 
@@ -244,31 +229,7 @@ export default async function HomePage() {
           </FadeIn>
         </div>
 
-        {/* Marquee partenaires en bas du hero */}
-        <div className="relative z-10 w-full border-t border-white/10 bg-black/30 py-6 backdrop-blur-sm">
-          <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60">
-            Propulsé par les acteurs majeurs de la fintech africaine
-          </p>
-          <Marquee speed={50} pauseOnHover>
-            {PARTNERS.map((partner) => (
-              <div
-                key={partner.name}
-                className="flex items-center gap-3 px-4"
-              >
-                <span
-                  className="flex size-10 items-center justify-center rounded-full text-xs font-bold text-white shadow-md ring-1 ring-white/20"
-                  style={{ backgroundColor: partner.brandColor }}
-                  aria-hidden
-                >
-                  {partner.logoLetters}
-                </span>
-                <span className="text-sm font-medium text-white/80">
-                  {partner.name}
-                </span>
-              </div>
-            ))}
-          </Marquee>
-        </div>
+        {/* Marquee partenaires masqué tant qu'aucun partenaire réel n'est confirmé. */}
       </section>
 
       {/* =================================================================== */}
@@ -308,47 +269,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* =================================================================== */}
-      {/* 3. FEATURES                                                          */}
-      {/* =================================================================== */}
-      <section className="bg-white py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll direction="up">
-            <div className="mx-auto mb-16 max-w-3xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-green">
-                Pourquoi KAZA
-              </p>
-              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
-                Une plateforme pensée pour l&apos;Afrique moderne
-              </h2>
-              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-                Vérification d&apos;identité, escrow sécurisé, contrats
-                numériques : on a réinventé chaque étape de la location pour le
-                marché africain.
-              </p>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((feature, idx) => (
-              <RevealOnScroll
-                key={feature.title}
-                direction="up"
-                delay={100 * (idx % 3)}
-              >
-                <div className="h-full rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-kaza-blue/30 hover:shadow-xl">
-                  <FeatureHighlight
-                    icon={feature.icon}
-                    title={feature.title}
-                    description={feature.description}
-                    metric={feature.metric}
-                  />
-                </div>
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Section "Features marketing" retirée — sera réactivée quand le
+          contenu réel sera validé par l'équipe produit. */}
 
       {/* =================================================================== */}
       {/* 4. ANNONCES À LA UNE                                                 */}
@@ -433,48 +355,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* =================================================================== */}
-      {/* 5. VILLES CIBLÉES                                                    */}
-      {/* =================================================================== */}
-      <section className="bg-white py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll direction="up">
-            <div className="mx-auto mb-14 max-w-3xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-green">
-                Couverture nationale
-              </p>
-              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
-                Présent dans les villes qui comptent
-              </h2>
-              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-                Du littoral atlantique aux montagnes de l&apos;Atacora, KAZA
-                couvre déjà les principales métropoles du Bénin et s&apos;étend
-                à toute l&apos;Afrique de l&apos;Ouest.
-              </p>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {CITIES.map((city, idx) => (
-              <RevealOnScroll
-                key={city.slug}
-                direction="zoom"
-                delay={80 * (idx % 3)}
-              >
-                <CityCard
-                  slug={city.slug}
-                  name={city.name}
-                  country={city.country}
-                  imageUrl={city.imageUrl}
-                  propertiesCount={city.propertiesCount}
-                  averagePrice={city.averagePrice}
-                  neighborhoods={city.neighborhoods}
-                />
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Section "Villes ciblées" retirée — sera réactivée quand un référentiel
+          de villes alimenté par Supabase remplacera les anciennes données. */}
 
       {/* =================================================================== */}
       {/* 6. COMMENT ÇA MARCHE                                                 */}
@@ -632,45 +514,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* =================================================================== */}
-      {/* 7. TÉMOIGNAGES                                                       */}
-      {/* =================================================================== */}
-      <section className="bg-white py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll direction="up">
-            <div className="mx-auto mb-14 max-w-3xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
-                Témoignages
-              </p>
-              <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
-                Ils nous font confiance
-              </h2>
-              <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-                Plus de 6 200 utilisateurs ont noté la plateforme. Voici ce
-                qu&apos;ils disent.
-              </p>
-            </div>
-          </RevealOnScroll>
-        </div>
-
-        <FadeIn>
-          <Marquee speed={45} pauseOnHover>
-            {TESTIMONIALS.map((testimonial) => (
-              <div key={testimonial.id} className="w-[340px] sm:w-[400px]">
-                <TestimonialCard
-                  name={testimonial.name}
-                  role={testimonial.role}
-                  avatarSeed={testimonial.avatarSeed}
-                  rating={testimonial.rating}
-                  quote={testimonial.quote}
-                  city={testimonial.city}
-                  highlight={testimonial.highlight}
-                />
-              </div>
-            ))}
-          </Marquee>
-        </FadeIn>
-      </section>
+      {/* Section "Témoignages" retirée — réactivée quand de vrais avis seront
+          publiés sur la plateforme (cf. queries/reviews). */}
 
       {/* =================================================================== */}
       {/* 8. ESPACE ÉTUDIANT PREMIUM                                           */}
@@ -813,78 +658,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* =================================================================== */}
-      {/* 9. BLOG PREVIEW                                                      */}
-      {/* =================================================================== */}
-      <section className="bg-white py-20 lg:py-28">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll direction="up">
-            <div className="mb-14 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-              <div className="max-w-2xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-green">
-                  Le journal KAZA
-                </p>
-                <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
-                  Tout ce qu&apos;il faut savoir sur l&apos;immobilier en
-                  Afrique
-                </h2>
-              </div>
-              <Link
-                href="/blog"
-                className="group inline-flex items-center gap-2 text-sm font-semibold text-kaza-blue hover:underline"
-              >
-                Lire tous les articles
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {BLOG_PREVIEWS.map((post, idx) => (
-              <RevealOnScroll
-                key={post.slug}
-                direction="up"
-                delay={100 * (idx % 4)}
-              >
-                <BlogPreviewCard
-                  slug={post.slug}
-                  title={post.title}
-                  excerpt={post.excerpt}
-                  category={post.category}
-                  readingTime={post.readingTime}
-                  publishedAt={post.publishedAt}
-                  imageUrl={post.imageUrl}
-                />
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =================================================================== */}
-      {/* 10. PRESSE                                                           */}
-      {/* =================================================================== */}
-      <section className="border-y bg-gray-50 py-12 lg:py-16">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll direction="up">
-            <PressStrip items={PRESS} />
-          </RevealOnScroll>
-        </div>
-      </section>
-
-      {/* =================================================================== */}
-      {/* 11. PARTNER BAR DETAILED                                             */}
-      {/* =================================================================== */}
-      <section className="bg-white py-16 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll direction="up">
-            <PartnerBar
-              partners={PARTNERS}
-              title="Notre écosystème de partenaires"
-            />
-          </RevealOnScroll>
-        </div>
-      </section>
+      {/* Sections "Blog preview", "Presse" et "Partenaires" retirées tant que
+          les contenus réels ne sont pas validés (cf. roadmap CMS / partenariats). */}
 
       {/* =================================================================== */}
       {/* 12. CTA FINAL                                                        */}

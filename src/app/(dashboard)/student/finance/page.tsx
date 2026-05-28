@@ -14,12 +14,29 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  STUDENT_MONTHLY_EXPENSES,
-  STUDENT_BUDGET_TRACKING,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/admin-data";
+import { formatFcfa, formatFcfaShort } from "@/lib/utils";
+
+// =============================================================================
+// Fallbacks vides — à brancher quand les agrégations Supabase (dépenses
+// étudiantes, suivi de budget) seront prêtes.
+// =============================================================================
+
+const STUDENT_MONTHLY_EXPENSES: Array<{
+  month: string;
+  rent: number;
+  food: number;
+  transport: number;
+  other: number;
+}> = [];
+
+const STUDENT_BUDGET_TRACKING = {
+  monthlyBudget: 0,
+  spent: 0,
+  remaining: 0,
+  averageDaily: 0,
+  daysLeft: 0,
+  projectedEnd: "—",
+};
 
 export const metadata: Metadata = {
   title: "Mes finances — Étudiant",
@@ -52,7 +69,13 @@ const TIPS = [
   { title: "Netflix split coloc", saving: "-66% abonnements", icon: "📺" },
 ];
 
-const last = STUDENT_MONTHLY_EXPENSES[STUDENT_MONTHLY_EXPENSES.length - 1]!;
+const last = STUDENT_MONTHLY_EXPENSES[STUDENT_MONTHLY_EXPENSES.length - 1] ?? {
+  month: "—",
+  rent: 0,
+  food: 0,
+  transport: 0,
+  other: 0,
+};
 const lastMonthTotal = last.food + last.rent + last.transport + last.other;
 const lastBreakdown = [
   { cat: "Loyer", value: last.rent, color: "#1A3A52" },
@@ -62,16 +85,25 @@ const lastBreakdown = [
 ];
 
 // Budget circle
-const budgetPct = Math.round(
-  (STUDENT_BUDGET_TRACKING.spent / STUDENT_BUDGET_TRACKING.monthlyBudget) * 100,
-);
+const budgetPct =
+  STUDENT_BUDGET_TRACKING.monthlyBudget === 0
+    ? 0
+    : Math.round(
+        (STUDENT_BUDGET_TRACKING.spent / STUDENT_BUDGET_TRACKING.monthlyBudget) *
+          100,
+      );
 const budgetColor =
   budgetPct < 80 ? "#10B981" : budgetPct < 95 ? "#F59E0B" : "#EF4444";
 
 // Stacked bar
-const maxStacked = Math.max(
-  ...STUDENT_MONTHLY_EXPENSES.map((m) => m.food + m.rent + m.transport + m.other),
-);
+const maxStacked =
+  STUDENT_MONTHLY_EXPENSES.length === 0
+    ? 0
+    : Math.max(
+        ...STUDENT_MONTHLY_EXPENSES.map(
+          (m) => m.food + m.rent + m.transport + m.other,
+        ),
+      );
 
 export default function StudentFinancePage() {
   return (

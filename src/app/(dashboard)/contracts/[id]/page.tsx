@@ -10,8 +10,28 @@ import {
   type ContractStatus,
 } from "@/components/contracts/contract-status-badge";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
-import { getDemoContractById } from "@/lib/demo-data";
 import { formatPrice, formatDate } from "@/lib/utils";
+
+// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
+// Tant que la query n'existe pas, on renvoie undefined → notFound().
+function getDemoContractById(_id: string) {
+  return undefined as
+    | {
+        id: string;
+        status: string;
+        propertyTitle: string;
+        propertyAddress: string;
+        ownerName: string;
+        tenantName: string;
+        monthlyRent: number;
+        deposit: number;
+        startDate: string;
+        endDate: string;
+        createdAt: string;
+        signedAt?: string;
+      }
+    | undefined;
+}
 
 import { SignaturePad } from "./signature-pad";
 

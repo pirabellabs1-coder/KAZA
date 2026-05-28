@@ -20,8 +20,28 @@ import {
   type ContractSection,
   type ContractTemplate,
 } from "@/lib/contracts/templates";
-import { getDemoContractById, type DemoContract } from "@/lib/demo-data";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
+
+// Type redéfini localement — à brancher sur la table contracts Supabase
+interface DemoContract {
+  id: string;
+  status: "DRAFT" | "PENDING_TENANT" | "PENDING_OWNER" | "SIGNED" | "CANCELLED";
+  propertyTitle: string;
+  propertyAddress: string;
+  ownerName: string;
+  tenantName: string;
+  monthlyRent: number;
+  deposit: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  signedAt?: string;
+}
+
+// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
+function getDemoContractById(_id: string): DemoContract | undefined {
+  return undefined;
+}
 
 export const metadata: Metadata = {
   title: "Aperçu du contrat",
@@ -55,8 +75,8 @@ function renderPlaceholders(
     charges: formatPrice(charges),
     depositAmount: formatPrice(contract.deposit),
     depositMonths: String(template.defaultDepositMonths),
-    startDate: formatDate(contract.startDate),
-    endDate: formatDate(contract.endDate),
+    startDate: contract.startDate ? formatDate(contract.startDate) : "—",
+    endDate: contract.endDate ? formatDate(contract.endDate) : "—",
     durationMonths: String(template.defaultDurationMonths),
     place: "Cotonou, République du Bénin",
     signDate: formatDate(new Date().toISOString()),
@@ -213,21 +233,20 @@ export default async function ContractPreviewPage({
   const user = await getCurrentDisplayUser();
   if (!user) redirect(`/login?redirect=/contracts/${id}/preview`);
 
-  const contract =
-    getDemoContractById(id) ??
-    ({
-      id,
-      status: "DRAFT",
-      propertyTitle: "Villa Fidjrossè avec piscine",
-      propertyAddress: "Quartier Fidjrossè, Cotonou",
-      ownerName: "Jean Dupont",
-      tenantName: "Aïcha Bello",
-      monthlyRent: 350000,
-      deposit: 700000,
-      startDate: "2026-07-01",
-      endDate: "2027-06-30",
-      createdAt: new Date().toISOString(),
-    } satisfies DemoContract);
+  // Fallback brouillon vierge — à brancher sur la query contracts Supabase.
+  const contract: DemoContract = getDemoContractById(id) ?? {
+    id,
+    status: "DRAFT",
+    propertyTitle: "",
+    propertyAddress: "",
+    ownerName: "",
+    tenantName: "",
+    monthlyRent: 0,
+    deposit: 0,
+    startDate: "",
+    endDate: "",
+    createdAt: new Date().toISOString(),
+  };
 
   const template: ContractTemplate =
     (templateParam && getTemplateById(templateParam)) ||

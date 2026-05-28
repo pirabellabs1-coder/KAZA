@@ -3,9 +3,7 @@ import "server-only";
 import type { MetadataRoute } from "next";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { fetchWithFallback } from "@/lib/data-fetcher";
 import { createClient } from "@/lib/supabase/server";
-import { getAvailableProperties } from "@/lib/mock-data";
 import { JOBS } from "@/app/(main)/carrieres/page";
 
 // =============================================================================
@@ -59,26 +57,22 @@ interface PropertySitemapRow {
 }
 
 async function loadActiveProperties(): Promise<PropertySitemapRow[]> {
-  return fetchWithFallback<PropertySitemapRow[]>(
-    async () => {
-      const supabase = (await createClient()) as unknown as SupabaseClient;
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, updated_at")
-        .eq("status", "AVAILABLE");
+  try {
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data, error } = await supabase
+      .from("properties")
+      .select("id, updated_at")
+      .eq("status", "AVAILABLE");
 
-      if (error) {
-        console.warn("[sitemap] supabase error", error.message);
-        return [];
-      }
-      return (data ?? []) as PropertySitemapRow[];
-    },
-    () =>
-      getAvailableProperties().map((p) => ({
-        id: p.id,
-        updated_at: p.updated_at,
-      }))
-  );
+    if (error) {
+      console.warn("[sitemap] supabase error", error.message);
+      return [];
+    }
+    return (data ?? []) as PropertySitemapRow[];
+  } catch (err) {
+    console.warn("[sitemap] failed to fetch properties", err);
+    return [];
+  }
 }
 
 // ---------------------------------------------------------------------------

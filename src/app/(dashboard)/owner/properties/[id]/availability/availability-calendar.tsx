@@ -27,17 +27,76 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/toast-helper";
-import {
-  type AvailabilityBlock,
-  type AvailabilityReason,
-  REASON_LABELS,
-  addBlock,
-  formatBlockDate,
-  getBlocksForProperty,
-  isDateBlocked,
-  removeBlock,
-} from "@/lib/demo-availability";
-import { getOwnerCalendarVisits } from "@/lib/demo-visits";
+
+// =============================================================================
+// Types & fallbacks locaux — à brancher sur availability_blocks + visits Supabase
+// À brancher quand les tables availability_blocks et visits seront connectées.
+// =============================================================================
+
+type AvailabilityReason = "maintenance" | "personal_use" | "reserved" | "other";
+
+interface AvailabilityBlock {
+  id: string;
+  propertyId: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;
+  reason: AvailabilityReason;
+  note?: string;
+}
+
+const REASON_LABELS: Record<AvailabilityReason, string> = {
+  maintenance: "Maintenance",
+  personal_use: "Usage personnel",
+  reserved: "Réservé",
+  other: "Autre",
+};
+
+function formatBlockDate(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(y!, (m ?? 1) - 1, d ?? 1);
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+// Fallback vide — pas de persistance tant que la table availability_blocks
+// n'est pas connectée. Les méthodes restent fonctionnelles côté UI pour
+// permettre une saisie locale temporaire.
+function getBlocksForProperty(_propertyId: string): AvailabilityBlock[] {
+  return [];
+}
+
+function addBlock(block: Omit<AvailabilityBlock, "id">): AvailabilityBlock {
+  return {
+    ...block,
+    id: `blk-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+  };
+}
+
+function removeBlock(_id: string): void {
+  // no-op tant que la persistance n'est pas branchée
+}
+
+function isDateBlocked(
+  _propertyId: string,
+  _date: string,
+): AvailabilityBlock | null {
+  return null;
+}
+
+interface DemoVisit {
+  id: string;
+  propertyId: string;
+  date: string;
+  time: string;
+  status: string;
+}
+
+function getOwnerCalendarVisits(): DemoVisit[] {
+  return [];
+}
 
 interface AvailabilityCalendarProps {
   propertyId: string;

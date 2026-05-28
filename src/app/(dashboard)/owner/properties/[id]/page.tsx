@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getPropertyById } from "@/lib/mock-data";
+import { getPropertyById } from "@/lib/queries/properties";
 import { formatPrice, formatDate, getInitials } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { AnalyticsTab } from "./analytics-tab";
@@ -38,52 +38,6 @@ export const metadata: Metadata = {
 interface PropertyDetailPageProps {
   params: Promise<{ id: string }>;
 }
-
-// Avis mockes
-const MOCK_REVIEWS = [
-  {
-    id: "r-1",
-    author: "Thomas Leroy",
-    rating: 5,
-    date: "Il y a 2 semaines",
-    text: "Excellent appartement, tres bien situe et proprietaire reactif. Je recommande sans hesiter !",
-  },
-  {
-    id: "r-2",
-    author: "Fatou Diallo",
-    rating: 5,
-    date: "Il y a 1 mois",
-    text: "Le bien correspond parfaitement aux photos. Quartier calme et securise.",
-  },
-  {
-    id: "r-3",
-    author: "Amadou Sow",
-    rating: 4,
-    date: "Il y a 2 mois",
-    text: "Tres bonne experience. Petit bemol sur la pression de l'eau, sinon tout est parfait.",
-  },
-  {
-    id: "r-4",
-    author: "Marie Ahoussou",
-    rating: 5,
-    date: "Il y a 3 mois",
-    text: "Proprietaire serieux, biens conformes a la description. A recommander.",
-  },
-  {
-    id: "r-5",
-    author: "Kwame Asante",
-    rating: 4,
-    date: "Il y a 4 mois",
-    text: "Logement propre et fonctionnel. Le voisinage est sympa.",
-  },
-  {
-    id: "r-6",
-    author: "Aisha Coulibaly",
-    rating: 5,
-    date: "Il y a 5 mois",
-    text: "Tout etait impeccable a notre arrivee. Merci pour cet accueil !",
-  },
-];
 
 function RatingStars({ value, size = 4 }: { value: number; size?: number }) {
   return (
@@ -106,11 +60,20 @@ export default async function PropertyDetailPage({
   params,
 }: PropertyDetailPageProps) {
   const { id } = await params;
-  const property = getPropertyById(id);
+  const property = await getPropertyById(id);
 
   if (!property) {
     notFound();
   }
+
+  // Fallback vide — à brancher quand la table reviews sera connectée.
+  const MOCK_REVIEWS: Array<{
+    id: string;
+    author: string;
+    rating: number;
+    date: string;
+    text: string;
+  }> = [];
 
   const statusLabel = property.status === "RENTED" ? "Loué" : "Vacant";
   const statusColor =
@@ -119,7 +82,9 @@ export default async function PropertyDetailPage({
       : "border-kaza-warning bg-kaza-warning/10 text-kaza-warning";
 
   const averageRating =
-    MOCK_REVIEWS.reduce((acc, r) => acc + r.rating, 0) / MOCK_REVIEWS.length;
+    MOCK_REVIEWS.length === 0
+      ? 0
+      : MOCK_REVIEWS.reduce((acc, r) => acc + r.rating, 0) / MOCK_REVIEWS.length;
 
   return (
     <div className="space-y-6">
@@ -178,7 +143,7 @@ export default async function PropertyDetailPage({
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Vues</p>
-              <p className="text-lg font-bold">{property.views_count}</p>
+              <p className="text-lg font-bold">{property.viewsCount}</p>
             </div>
           </CardContent>
         </Card>
@@ -191,7 +156,7 @@ export default async function PropertyDetailPage({
             <div>
               <p className="text-xs text-muted-foreground">Publié le</p>
               <p className="text-sm font-semibold">
-                {formatDate(property.created_at)}
+                {formatDate(property.createdAt)}
               </p>
             </div>
           </CardContent>
@@ -223,13 +188,13 @@ export default async function PropertyDetailPage({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {property.photos.map((photo) => (
+                  {property.photos.map((photoUrl, idx) => (
                     <div
-                      key={photo.id}
+                      key={`${photoUrl}-${idx}`}
                       className="relative aspect-video overflow-hidden rounded-lg bg-muted"
                     >
                       <Image
-                        src={photo.photo_url}
+                        src={photoUrl}
                         alt={property.title}
                         fill
                         className="object-cover"
@@ -264,7 +229,7 @@ export default async function PropertyDetailPage({
                 <div className="flex items-center gap-3">
                   <Maximize className="size-5 text-muted-foreground" />
                   <p className="text-sm font-medium">
-                    {property.square_meters ?? 0} m²
+                    {property.sqm ?? 0} m²
                   </p>
                 </div>
 
@@ -302,7 +267,7 @@ export default async function PropertyDetailPage({
         <TabsContent value="analytics">
           <AnalyticsTab
             propertyId={property.id}
-            totalViews={property.views_count ?? 0}
+            totalViews={property.viewsCount ?? 0}
           />
         </TabsContent>
 

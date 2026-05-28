@@ -20,76 +20,56 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  OWNER_MONTHLY_REVENUE,
-  formatFcfa,
-  formatFcfaShort,
-} from "@/lib/mock/admin-data";
+import { formatFcfa, formatFcfaShort } from "@/lib/utils";
+
+// Fallback vide — à brancher quand l'agrégation mensuelle des revenus
+// propriétaire sera connectée à Supabase (table payments).
+const OWNER_MONTHLY_REVENUE: Array<{
+  month: string;
+  revenue: number;
+  occupancy: number;
+}> = [];
 
 export const metadata: Metadata = {
   title: "Finances propriétaire",
 };
 
 // =============================================================================
-// MOCK LOCAL — données spécifiques à la page finance owner
+// Fallbacks vides — à brancher quand les tables payments / payouts seront
+// agrégées côté Supabase et exposées via @/lib/queries.
 // =============================================================================
 
-const RENT_DUE_THIS_MONTH = [
-  {
-    id: "rd-1",
-    tenant: "Mariam Adjovi",
-    property: "T4 Cadjèhoun",
-    expected: 425_000,
-    status: "RECEIVED" as const,
-    dueDate: "2026-05-01",
-  },
-  {
-    id: "rd-2",
-    tenant: "Sébastien Mahougnon",
-    property: "Studio meublé Ganhi",
-    expected: 165_000,
-    status: "PENDING" as const,
-    dueDate: "2026-05-05",
-  },
-  {
-    id: "rd-3",
-    tenant: "Awa Diop",
-    property: "Villa 5ch. Haie Vive",
-    expected: 1_250_000,
-    status: "RECEIVED" as const,
-    dueDate: "2026-05-01",
-  },
-  {
-    id: "rd-4",
-    tenant: "Pierre Houngbo",
-    property: "T3 Cocotiers",
-    expected: 520_000,
-    status: "LATE" as const,
-    dueDate: "2026-04-28",
-  },
-];
+const RENT_DUE_THIS_MONTH: Array<{
+  id: string;
+  tenant: string;
+  property: string;
+  expected: number;
+  status: "RECEIVED" | "PENDING" | "LATE";
+  dueDate: string;
+}> = [];
 
-const OWNER_PAYOUTS = [
-  { id: "po-101", date: "2026-05-26", amount: 1_450_000, method: "KAZA Wallet", status: "PAID" as const },
-  { id: "po-102", date: "2026-04-26", amount: 1_380_000, method: "Virement bancaire", status: "PAID" as const },
-  { id: "po-103", date: "2026-03-26", amount: 1_280_000, method: "KAZA Wallet", status: "PAID" as const },
-  { id: "po-104", date: "2026-02-26", amount: 1_310_000, method: "Virement bancaire", status: "PAID" as const },
-  { id: "po-105", date: "2026-05-28", amount: 425_000, method: "KAZA Wallet", status: "PROCESSING" as const },
-  { id: "po-106", date: "2026-06-01", amount: 1_450_000, method: "Virement bancaire", status: "SCHEDULED" as const },
-];
+const OWNER_PAYOUTS: Array<{
+  id: string;
+  date: string;
+  amount: number;
+  method: string;
+  status: "PAID" | "PROCESSING" | "SCHEDULED";
+}> = [];
 
-const DONUT_BREAKDOWN = [
-  { label: "Loyer perçu", percentage: 90, color: "#1976D2", amount: 1_305_000 },
-  { label: "Charges récupérables", percentage: 8, color: "#4CAF50", amount: 116_000 },
-  { label: "Compensation dégâts", percentage: 2, color: "#F59E0B", amount: 29_000 },
-];
+const DONUT_BREAKDOWN: Array<{
+  label: string;
+  percentage: number;
+  color: string;
+  amount: number;
+}> = [];
 
-const JUSTIFICATIFS = [
-  { id: "j-1", title: "Quittances de loyer", icon: Receipt, count: 36, description: "12 mois · 3 locataires" },
-  { id: "j-2", title: "Reçus de paiement", icon: ScrollText, count: 14, description: "14 versements 12 mois" },
-  { id: "j-3", title: "Attestation fiscale", icon: FileText, count: 1, description: "DGI Bénin 2025" },
-  { id: "j-4", title: "Relevé d'imposition", icon: Landmark, count: 1, description: "Année fiscale 2025" },
-];
+const JUSTIFICATIFS: Array<{
+  id: string;
+  title: string;
+  icon: typeof Receipt;
+  count: number;
+  description: string;
+}> = [];
 
 // =============================================================================
 // PAGE
@@ -98,10 +78,10 @@ const JUSTIFICATIFS = [
 export default function OwnerFinancePage() {
   const data = OWNER_MONTHLY_REVENUE;
   const totalRev = data.reduce((s, d) => s + d.revenue, 0);
-  const maxRev = Math.max(...data.map((d) => d.revenue));
+  const maxRev = data.length > 0 ? Math.max(...data.map((d) => d.revenue)) : 0;
 
-  const grossRevenue = totalRev; // 15 080 000 attendu
-  const deductibles = 1_200_000;
+  const grossRevenue = totalRev;
+  const deductibles = 0;
   const taxableIncome = grossRevenue - deductibles;
 
   return (
@@ -129,31 +109,29 @@ export default function OwnerFinancePage() {
         </div>
       </div>
 
-      {/* KPI ROW */}
+      {/* KPI ROW — Fallbacks à zéro tant que l'agrégation Supabase n'est pas branchée */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <KpiCard
           label="Revenus 12 mois"
           value={`${formatFcfaShort(grossRevenue)} FCFA`}
-          subtitle="+12% vs N-1"
-          subtitleType="positive"
+          subtitle="Aucune donnée agrégée"
           icon={Wallet}
         />
         <KpiCard
           label="Loyers à percevoir ce mois"
-          value={formatFcfa(1_450_000)}
-          subtitle="3 locataires actifs"
+          value={formatFcfa(0)}
+          subtitle="Aucun loyer enregistré"
           icon={CalendarClock}
         />
         <KpiCard
           label="Payouts reçus"
-          value={`${formatFcfaShort(14_200_000)} FCFA`}
-          subtitle="11 versements 12 mois"
+          value={`${formatFcfaShort(0)} FCFA`}
+          subtitle="Aucun versement"
           icon={CheckCircle2}
-          subtitleType="positive"
         />
         <KpiCard
           label="Taxes estimées"
-          value={formatFcfa(1_508_000)}
+          value={formatFcfa(0)}
           subtitle="À provisionner"
           icon={Landmark}
           subtitleType="warning"
@@ -176,6 +154,11 @@ export default function OwnerFinancePage() {
           </div>
         </CardHeader>
         <CardContent>
+          {data.length === 0 ? (
+            <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+              Aucun revenu agrégé pour le moment.
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <svg viewBox="0 0 760 280" className="min-w-[600px] w-full">
               <defs>
@@ -272,6 +255,7 @@ export default function OwnerFinancePage() {
               })}
             </svg>
           </div>
+          )}
         </CardContent>
       </Card>
 
@@ -288,7 +272,13 @@ export default function OwnerFinancePage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center gap-4">
-              <Donut data={DONUT_BREAKDOWN} totalLabel="Total" totalValue={formatFcfaShort(1_450_000)} />
+              <Donut
+                data={DONUT_BREAKDOWN}
+                totalLabel="Total"
+                totalValue={formatFcfaShort(
+                  DONUT_BREAKDOWN.reduce((s, x) => s + x.amount, 0),
+                )}
+              />
               <div className="w-full space-y-2">
                 {DONUT_BREAKDOWN.map((s) => (
                   <div key={s.label} className="flex items-center justify-between text-xs">
@@ -323,6 +313,11 @@ export default function OwnerFinancePage() {
             </p>
           </CardHeader>
           <CardContent>
+            {RENT_DUE_THIS_MONTH.length === 0 ? (
+              <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+                Aucun loyer enregistré ce mois-ci.
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[600px] text-sm">
                 <thead>
@@ -359,6 +354,7 @@ export default function OwnerFinancePage() {
                 </tbody>
               </table>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -374,11 +370,22 @@ export default function OwnerFinancePage() {
               </p>
             </div>
             <Badge variant="outline" className="border-kaza-green text-kaza-green">
-              {formatFcfa(14_200_000)} reçus 12 mois
+              {formatFcfa(
+                OWNER_PAYOUTS.filter((p) => p.status === "PAID").reduce(
+                  (s, p) => s + p.amount,
+                  0,
+                ),
+              )}{" "}
+              reçus 12 mois
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
+          {OWNER_PAYOUTS.length === 0 ? (
+            <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+              Aucun payout enregistré pour le moment.
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[600px] text-sm">
               <thead>
@@ -414,10 +421,11 @@ export default function OwnerFinancePage() {
               </tbody>
             </table>
           </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Section "Fiscalité Bénin" */}
+      {/* Section "Fiscalité Bénin" — valeurs à 0 tant que la DB n'est pas branchée */}
       <div>
         <h2 className="mb-3 font-heading text-base font-semibold text-foreground">
           Fiscalité Bénin

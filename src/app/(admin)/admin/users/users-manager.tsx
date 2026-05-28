@@ -58,15 +58,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { cn } from "@/lib/utils";
+import { cn, formatFcfa } from "@/lib/utils";
 import {
   STATUS_COLORS_USER,
   STATUS_LABELS_USER,
   ROLE_LABELS,
-  formatFcfa,
   type AdminUser,
   type UserRole,
-} from "@/lib/mock/admin-platform-data";
+} from "./types";
 import { suspendUsers, banUsers } from "./actions";
 import { CountryFlag } from "@/components/shared/country-flag";
 

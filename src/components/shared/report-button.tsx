@@ -18,12 +18,64 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
-import {
-  REASON_META,
-  addReport,
-  type ReportReason,
-  type ReportTargetType,
-} from "@/lib/demo-reports";
+// =============================================================================
+// Fallbacks locaux : la persistance réelle des signalements n'est pas encore
+// branchée. On garde les libellés et le typage afin de préserver l'UI ;
+// `addReport` est un no-op tant qu'aucune table `reports` n'est exposée via
+// une server action publique.
+// =============================================================================
+type ReportReason =
+  | "inappropriate"
+  | "spam"
+  | "scam"
+  | "fake"
+  | "harassment"
+  | "illegal"
+  | "other";
+
+type ReportTargetType = "property" | "user" | "review" | "message" | "listing";
+
+const REASON_META: Record<ReportReason, { label: string; description: string }> = {
+  inappropriate: {
+    label: "Contenu inapproprié",
+    description: "Propos ou images non conformes aux règles KAZA.",
+  },
+  spam: {
+    label: "Spam",
+    description: "Contenu publicitaire répétitif ou non sollicité.",
+  },
+  scam: {
+    label: "Arnaque",
+    description: "Tentative de fraude, demande de paiement suspecte.",
+  },
+  fake: {
+    label: "Fausse annonce",
+    description: "Bien inexistant, photos volées ou prix mensonger.",
+  },
+  harassment: {
+    label: "Harcèlement",
+    description: "Comportement abusif, menaces ou propos haineux.",
+  },
+  illegal: {
+    label: "Activité illégale",
+    description: "Contenu contraire à la loi en vigueur.",
+  },
+  other: {
+    label: "Autre",
+    description: "Précisez la raison dans la description ci-dessous.",
+  },
+};
+
+function addReport(_payload: {
+  targetType: ReportTargetType;
+  targetId: string;
+  targetLabel: string;
+  reason: ReportReason;
+  description: string;
+  reporterId: string;
+}): void {
+  // TODO: brancher sur une server action `reportContent()` (Supabase `reports`).
+}
 
 interface ReportButtonProps {
   targetType: ReportTargetType;

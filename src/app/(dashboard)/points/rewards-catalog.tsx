@@ -17,7 +17,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/toast-helper";
-import { formatPoints, spendPoints } from "@/lib/demo-points";
+
+// Helpers locaux — à brancher sur la table kaza_points / wallet_transactions Supabase
+// À brancher sur la table kaza_points / wallet_transactions Supabase.
+function formatPoints(value: number): string {
+  return new Intl.NumberFormat("fr-FR").format(value);
+}
+
+// Fallback no-op — l'échange de points doit être branché sur la mutation
+// Supabase (spend_kaza_points). Retourne `false` pour indiquer l'absence
+// de mécanisme de dépense en attendant.
+function spendPoints(_amount: number, _reason: string): boolean {
+  return false;
+}
 
 export interface Reward {
   id: string;

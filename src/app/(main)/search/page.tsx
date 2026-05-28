@@ -46,7 +46,7 @@ import {
   type City,
   type Neighborhood,
 } from "@/lib/geo/locations";
-import { formatFcfa } from "@/lib/mock/agency-data";
+import { formatFcfa } from "@/lib/utils";
 import {
   listPublicProperties,
   type PublicProperty,
