@@ -52,6 +52,8 @@ const publicSchema = z.object({
     .max(60)
     .regex(/^[a-z0-9-]*$/i, "Lettres, chiffres et tirets uniquement."),
   accentColor: z.enum(["navy", "blue", "green", "amber", "rose", "purple"]),
+  /** URL publique de la bannière de couverture (bucket `avatars`). */
+  bannerUrl: z.string().trim().max(1024),
   about: z.string().trim().max(2000),
   youtube: urlOrEmpty,
   social: z.object({
@@ -85,6 +87,11 @@ const emailOrEmpty = z
 const profileSchema = z.object({
   commercialName: z.string().trim().max(120),
   legalName: z.string().trim().max(160),
+  // Identifiants légaux béninois — éditables par l'agence (stockés dans le
+  // JSONB agency_settings.profile). RCCM = registre du commerce, IFU = numéro
+  // fiscal. Champs libres facultatifs (chiffres/lettres/tirets/slashes).
+  rccm: z.string().trim().max(60),
+  ifu: z.string().trim().max(60),
   oapi: z.string().trim().max(60),
   city: z.string().trim().max(80),
   address: z.string().trim().max(255),
@@ -252,6 +259,79 @@ export async function uploadAgencyLogo(
 
   const { data: pub } = admin.storage.from("avatars").getPublicUrl(path);
   // Cache-buster : le path est stable entre deux uploads (upsert).
+  const url = `${pub.publicUrl}?t=${Date.now()}`;
+
+  return { success: true, url };
+}
+
+// ---------------------------------------------------------------------------
+// uploadAgencyBanner — upload réel de la bannière de couverture
+// ---------------------------------------------------------------------------
+
+const ALLOWED_BANNER_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_BANNER_BYTES = 5 * 1024 * 1024; // 5 Mo
+
+export interface UploadAgencyBannerResult {
+  success: boolean;
+  url?: string;
+  error?: string;
+}
+
+/**
+ * Upload de la bannière de couverture de l'agence vers le bucket public
+ * `avatars`. Même stratégie que `uploadAgencyLogo` (client admin, path stable
+ * en upsert). L'URL retournée doit ensuite être persistée dans
+ * `agency_settings.public.bannerUrl` via `updateAgencySettings` côté formulaire.
+ *
+ * Path : `agency-banners/{userId}/banner.{ext}`.
+ */
+export async function uploadAgencyBanner(
+  formData: FormData,
+): Promise<UploadAgencyBannerResult> {
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return { success: false, error: "Aucun fichier reçu." };
+  }
+
+  const user = await getCurrentDisplayUser();
+  if (!user) {
+    return { success: false, error: "Vous devez être connecté." };
+  }
+  if (user.role !== "AGENCY") {
+    return { success: false, error: "Action réservée aux agences." };
+  }
+
+  const type = file.type || "image/jpeg";
+  if (!ALLOWED_BANNER_TYPES.includes(type)) {
+    return {
+      success: false,
+      error: "Format non supporté (JPEG, PNG ou WEBP).",
+    };
+  }
+  if (file.size > MAX_BANNER_BYTES) {
+    return { success: false, error: "Fichier trop volumineux (max 5 Mo)." };
+  }
+
+  const ext = type === "image/png" ? "png" : type === "image/webp" ? "webp" : "jpg";
+  const path = `agency-banners/${user.id}/banner.${ext}`;
+
+  const admin = createAdminClient();
+  const bytes = new Uint8Array(await file.arrayBuffer());
+
+  const { error } = await admin.storage
+    .from("avatars")
+    .upload(path, bytes, {
+      contentType: type,
+      upsert: true,
+      cacheControl: "3600",
+    });
+
+  if (error) {
+    console.error("[agency-banner] upload serveur:", error.message);
+    return { success: false, error: error.message };
+  }
+
+  const { data: pub } = admin.storage.from("avatars").getPublicUrl(path);
   const url = `${pub.publicUrl}?t=${Date.now()}`;
 
   return { success: true, url };

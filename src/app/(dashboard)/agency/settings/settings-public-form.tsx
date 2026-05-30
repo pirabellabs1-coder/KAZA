@@ -9,7 +9,8 @@
 // donne l'illusion de sauvegarder sans le faire.
 // =============================================================================
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
+import Image from "next/image";
 import {
   Check,
   ExternalLink,
@@ -18,7 +19,9 @@ import {
   Image as ImageIcon,
   Instagram,
   Linkedin,
+  Loader2,
   Save,
+  Trash2,
   Twitter,
 } from "lucide-react";
 
@@ -38,8 +41,11 @@ import { toast } from "@/components/ui/toast-helper";
 
 import {
   updateAgencySettings,
+  uploadAgencyBanner,
   type AgencySettings,
 } from "@/actions/agency-settings";
+
+const MAX_BANNER_BYTES = 5 * 1024 * 1024; // 5 Mo
 
 const ACCENT_COLORS = [
   { key: "navy", label: "Navy", className: "bg-kaza-navy" },
@@ -65,11 +71,74 @@ export function SettingsPublicForm({
 }: SettingsPublicFormProps) {
   const [values, setValues] = useState<AgencySettings["public"]>(initialPublic);
   const [isPending, startTransition] = useTransition();
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const bannerInputRef = useRef<HTMLInputElement | null>(null);
 
   const update = <K extends keyof AgencySettings["public"]>(
     key: K,
     value: AgencySettings["public"][K],
   ) => setValues((prev) => ({ ...prev, [key]: value }));
+
+  // Persiste un sous-état public (utilisé pour que la bannière survive à un
+  // rechargement immédiatement après l'upload, sans attendre « Enregistrer »).
+  const persistPublic = (nextPublic: AgencySettings["public"], msg: string) => {
+    startTransition(async () => {
+      const res = await updateAgencySettings({
+        profile,
+        public: nextPublic,
+        notifications,
+      });
+      if (res.success) {
+        toast.success(msg);
+      } else {
+        toast.error(res.error ?? "Échec de l'enregistrement");
+      }
+    });
+  };
+
+  const handleSelectBanner = () => bannerInputRef.current?.click();
+
+  const handleBannerChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = ""; // permet de re-sélectionner le même fichier
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Veuillez choisir une image (JPG, PNG ou WEBP).");
+      return;
+    }
+    if (file.size > MAX_BANNER_BYTES) {
+      toast.error("La bannière ne doit pas dépasser 5 Mo.");
+      return;
+    }
+
+    setIsUploadingBanner(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadAgencyBanner(formData);
+      if (!res.success || !res.url) {
+        toast.error(res.error ?? "Échec de l'upload de la bannière.");
+        return;
+      }
+      const next = { ...values, bannerUrl: res.url };
+      setValues(next);
+      persistPublic(next, "Bannière mise à jour");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erreur inattendue.";
+      toast.error(`Upload impossible : ${message}`);
+    } finally {
+      setIsUploadingBanner(false);
+    }
+  };
+
+  const handleRemoveBanner = () => {
+    const next = { ...values, bannerUrl: "" };
+    setValues(next);
+    persistPublic(next, "Bannière supprimée");
+  };
 
   const updateSocial = (
     key: keyof AgencySettings["public"]["social"],
@@ -181,20 +250,80 @@ export function SettingsPublicForm({
 
           <div className="space-y-3">
             <Label>Bannière de couverture</Label>
-            <div className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30">
-              <div className="text-center">
-                <ImageIcon
-                  className="mx-auto mb-2 size-8 text-muted-foreground"
-                  aria-hidden="true"
+            {values.bannerUrl ? (
+              <div className="relative h-40 overflow-hidden rounded-xl border border-border">
+                <Image
+                  src={values.bannerUrl}
+                  alt="Bannière de couverture de l'agence"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  className="object-cover"
+                  unoptimized
                 />
-                <p className="text-sm font-medium text-foreground">
-                  Upload de bannière — bientôt disponible
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Stockage des médias agence en cours de mise en place.
-                </p>
+                {isUploadingBanner && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <Loader2 className="size-6 animate-spin text-white" />
+                  </div>
+                )}
+                <div className="absolute bottom-3 right-3 flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="gap-1.5"
+                    onClick={handleSelectBanner}
+                    disabled={isUploadingBanner || isPending}
+                  >
+                    <ImageIcon className="size-4" aria-hidden="true" />
+                    Remplacer
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="destructive"
+                    className="gap-1.5"
+                    onClick={handleRemoveBanner}
+                    disabled={isUploadingBanner || isPending}
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                    Retirer
+                  </Button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSelectBanner}
+                disabled={isUploadingBanner || isPending}
+                className="flex h-40 w-full items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 text-center transition hover:border-kaza-blue/50 hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <div>
+                  {isUploadingBanner ? (
+                    <Loader2 className="mx-auto mb-2 size-8 animate-spin text-muted-foreground" />
+                  ) : (
+                    <ImageIcon
+                      className="mx-auto mb-2 size-8 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <p className="text-sm font-medium text-foreground">
+                    {isUploadingBanner
+                      ? "Envoi en cours…"
+                      : "Cliquez pour ajouter une bannière"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    JPG, PNG ou WEBP — 5 Mo max. Format paysage recommandé (1500×400).
+                  </p>
+                </div>
+              </button>
+            )}
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleBannerChange}
+            />
           </div>
         </CardContent>
       </Card>

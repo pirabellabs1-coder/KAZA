@@ -57,8 +57,6 @@ interface SettingsProfileFormProps {
   publicSettings: AgencySettings["public"];
   /** Sous-objet notifications inchangé, renvoyé tel quel lors du save. */
   notifications: AgencySettings["notifications"];
-  rccm: string;
-  ifu: string;
 }
 
 const AUTOSAVE_KEY = "kaza:agency-settings-profile";
@@ -83,8 +81,6 @@ export function SettingsProfileForm({
   initialProfile,
   publicSettings,
   notifications,
-  rccm,
-  ifu,
 }: SettingsProfileFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -258,18 +254,28 @@ export function SettingsProfileForm({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="rccm">
-              RCCM{" "}
-              <span className="text-xs text-muted-foreground">(verrouillé)</span>
-            </Label>
-            <Input id="rccm" defaultValue={rccm} readOnly className="bg-muted/40" />
+            <Label htmlFor="rccm">RCCM</Label>
+            <Input
+              id="rccm"
+              placeholder="RB/COT/24 B 12345"
+              value={values.rccm}
+              onChange={(e) => update("rccm", e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Registre du Commerce et du Crédit Mobilier.
+            </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="ifu">
-              IFU{" "}
-              <span className="text-xs text-muted-foreground">(verrouillé)</span>
-            </Label>
-            <Input id="ifu" defaultValue={ifu} readOnly className="bg-muted/40" />
+            <Label htmlFor="ifu">IFU</Label>
+            <Input
+              id="ifu"
+              placeholder="Numéro d'Identification Fiscale Unique"
+              value={values.ifu}
+              onChange={(e) => update("ifu", e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Identifiant Fiscal Unique de l&apos;entreprise.
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="oapi">Référence OAPI</Label>

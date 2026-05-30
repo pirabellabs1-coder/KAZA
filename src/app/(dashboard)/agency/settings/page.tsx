@@ -122,6 +122,8 @@ const DEFAULT_AGENCY_SETTINGS: AgencySettings = {
   profile: {
     commercialName: AGENCY_PROFILE.name,
     legalName: AGENCY_PROFILE.legalName,
+    rccm: AGENCY_PROFILE.rccm,
+    ifu: AGENCY_PROFILE.ifu,
     oapi: AGENCY_PROFILE.oapi,
     city: AGENCY_PROFILE.city,
     address: AGENCY_PROFILE.address,
@@ -134,6 +136,7 @@ const DEFAULT_AGENCY_SETTINGS: AgencySettings = {
   public: {
     slug: "",
     accentColor: "navy",
+    bannerUrl: "",
     about: AGENCY_PROFILE.description,
     youtube: "",
     social: { facebook: "", instagram: "", linkedin: "", twitter: "" },
@@ -179,6 +182,8 @@ async function loadAgencySettings(): Promise<AgencySettings> {
           DEFAULT_AGENCY_SETTINGS.profile.commercialName ||
           accountName,
         legalName: savedProfile.legalName ?? "",
+        rccm: savedProfile.rccm ?? "",
+        ifu: savedProfile.ifu ?? "",
         oapi: savedProfile.oapi ?? "",
         city: savedProfile.city ?? "",
         address: savedProfile.address ?? "",
@@ -253,8 +258,6 @@ export default async function AgencySettingsPage() {
         {/* ────────────────────────────────────────────────────────────────── */}
         <TabsContent value="profil" className="space-y-6">
           <SettingsProfileForm
-            rccm={AGENCY_PROFILE.rccm}
-            ifu={AGENCY_PROFILE.ifu}
             initialProfile={settings.profile}
             publicSettings={settings.public}
             notifications={settings.notifications}
