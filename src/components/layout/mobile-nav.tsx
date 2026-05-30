@@ -23,8 +23,8 @@ export function MobileNav({ role = "OWNER" }: MobileNavProps) {
           <span className="sr-only">Menu navigation</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] p-0">
-        <div className="flex h-16 items-center border-b px-4">
+      <SheetContent side="left" className="w-[280px] gap-0 p-0">
+        <div className="flex h-16 shrink-0 items-center border-b px-4">
           <Link
             href="/"
             className="flex items-center gap-2"
@@ -38,7 +38,12 @@ export function MobileNav({ role = "OWNER" }: MobileNavProps) {
             </span>
           </Link>
         </div>
-        <Sidebar role={role} className="w-full border-r-0" />
+        {/* min-h-0 + flex-1 + overflow-y-auto : la liste défile sur mobile
+            quand elle dépasse la hauteur de l'écran (sinon elle reste figée). */}
+        <Sidebar
+          role={role}
+          className="w-full min-h-0 flex-1 overflow-y-auto border-r-0"
+        />
       </SheetContent>
     </Sheet>
   );
