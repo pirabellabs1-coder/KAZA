@@ -76,7 +76,7 @@ function layout(bodyHtml: string, preheader?: string): string {
             <td style="background-color:#f9fafb; padding:20px 32px; border-top:1px solid #e5e7eb;">
               <p style="margin:0 0 8px; color:#6b7280; font-size:12px; line-height:1.5;">
                 Cet email vous a été envoyé par l'équipe de modération KAZA.
-                <br />Pour toute question : <a href="mailto:support@kaza.africa" style="color:${BRAND_BLUE}; text-decoration:none;">support@kaza.africa</a>
+                <br />Pour toute question : <a href="mailto:immobilierkaza@gmail.com" style="color:${BRAND_BLUE}; text-decoration:none;">immobilierkaza@gmail.com</a>
               </p>
               <p style="margin:0; color:#9ca3af; font-size:11px;">
                 © ${new Date().getFullYear()} KAZA · Cotonou, Bénin

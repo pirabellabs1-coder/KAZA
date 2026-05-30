@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast-helper";
+import { submitProDemoRequest } from "@/actions/pro";
 
 type AgencySize = "1-5" | "6-15" | "16-50" | "50+";
 
@@ -37,13 +38,26 @@ export function ProDemoForm() {
       return;
     }
     setSubmitting(true);
-    // Mock : simulation envoi
-    await new Promise((r) => setTimeout(r, 700));
-    toast.success(
-      `Merci ${form.contactName} ! Notre équipe Pro vous recontacte sous 24h.`
-    );
-    setForm(initialState);
-    setSubmitting(false);
+    try {
+      const res = await submitProDemoRequest({
+        agencyName: form.agencyName,
+        contactName: form.contactName,
+        email: form.email,
+        phone: form.phone || undefined,
+        size: form.size || undefined,
+        message: form.message || undefined,
+      });
+      if (!res.success) {
+        toast.error(res.error ?? "Erreur");
+        return;
+      }
+      toast.success(
+        `Merci ${form.contactName} ! Notre équipe Pro vous recontacte sous 24h.`
+      );
+      setForm(initialState);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

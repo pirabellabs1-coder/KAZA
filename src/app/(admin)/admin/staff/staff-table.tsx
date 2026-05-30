@@ -311,7 +311,7 @@ export function StaffTable({ rows }: StaffTableProps) {
               <Input
                 id="invite-email"
                 type="email"
-                placeholder="prenom.nom@kaza.africa"
+                placeholder="immobilierkaza@gmail.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
               />

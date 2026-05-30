@@ -64,10 +64,10 @@ export default function CguPage() {
             </strong>{" "}
             Édité par PIRABEL LABS SARL. Contact juridique :{" "}
             <a
-              href="mailto:legal@kaza.africa"
+              href="mailto:immobilierkaza@gmail.com"
               className="font-medium text-kaza-blue hover:underline"
             >
-              legal@kaza.africa
+              immobilierkaza@gmail.com
             </a>
             .
           </p>

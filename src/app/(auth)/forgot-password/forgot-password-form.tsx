@@ -64,7 +64,7 @@ export function ForgotPasswordForm() {
             href="/login"
             className="font-medium text-kaza-blue transition-colors hover:underline"
           >
-            Retour a la connexion
+            Retour à la connexion
           </Link>
         </p>
       </div>
@@ -114,7 +114,7 @@ export function ForgotPasswordForm() {
           href="/login"
           className="font-medium text-kaza-blue transition-colors hover:underline"
         >
-          Retour a la connexion
+          Retour à la connexion
         </Link>
       </p>
     </form>

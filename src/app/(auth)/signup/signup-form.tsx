@@ -150,7 +150,7 @@ export function SignupForm() {
       {/* First Name & Last Name */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="firstName">Prenom</Label>
+          <Label htmlFor="firstName">Prénom</Label>
           <Input
             id="firstName"
             type="text"
@@ -201,7 +201,7 @@ export function SignupForm() {
 
       {/* Phone */}
       <div className="space-y-2">
-        <Label htmlFor="phone">Telephone</Label>
+        <Label htmlFor="phone">Téléphone</Label>
         <Input
           id="phone"
           type="tel"
@@ -221,7 +221,7 @@ export function SignupForm() {
         <Input
           id="password"
           type="password"
-          placeholder="Min. 8 caracteres"
+          placeholder="Min. 8 caractères"
           autoComplete="new-password"
           aria-invalid={!!errors.password}
           {...register("password")}

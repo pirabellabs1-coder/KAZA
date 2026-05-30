@@ -167,11 +167,11 @@ export default async function StudentFinancePage() {
           <ArrowRight className="size-4 text-gray-300 group-hover:text-kaza-blue" />
         </Link>
         <Link
-          href="/tenant/wallet"
+          href="/student/budget"
           className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-kaza-blue/30"
         >
           <span className="flex items-center gap-2 text-sm font-medium text-kaza-navy">
-            <Wallet className="size-4 text-kaza-blue" /> Recharger mon solde
+            <Wallet className="size-4 text-kaza-blue" /> Mon budget colocation
           </span>
           <ArrowRight className="size-4 text-gray-300 group-hover:text-kaza-blue" />
         </Link>

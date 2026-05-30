@@ -242,7 +242,7 @@ export default async function CarrierePostePage({
   const mailBody = encodeURIComponent(
     `Bonjour l'équipe KAZA,\n\nJe souhaite postuler au poste de ${job.title} (${job.location}).\n\nVous trouverez ci-joint mon CV. Quelques lignes sur ma motivation :\n\n— ...\n\nMerci pour votre retour.`,
   );
-  const mailtoHref = `mailto:contact@pirabellabs.com?subject=${mailSubject}&body=${mailBody}`;
+  const mailtoHref = `mailto:immobilierkaza@gmail.com?subject=${mailSubject}&body=${mailBody}`;
 
   return (
     <div className="bg-white">
@@ -359,7 +359,7 @@ export default async function CarrierePostePage({
                     </a>
                   </Button>
                   <p className="mt-3 text-center text-xs text-muted-foreground">
-                    contact@pirabellabs.com
+                    immobilierkaza@gmail.com
                   </p>
 
                   <ul className="mt-6 space-y-2 border-t border-gray-100 pt-5 text-sm">

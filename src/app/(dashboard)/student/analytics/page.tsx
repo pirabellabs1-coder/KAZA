@@ -188,11 +188,11 @@ export default async function StudentAnalyticsPage() {
               <ArrowRight className="size-4 text-gray-300 group-hover:text-kaza-blue" />
             </Link>
             <Link
-              href="/tenant/saved"
+              href="/student/colocations"
               className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-kaza-blue/30"
             >
               <span className="flex items-center gap-2 text-sm font-medium text-kaza-navy">
-                <Heart className="size-4 text-rose-500" /> Mes favoris
+                <Heart className="size-4 text-rose-500" /> Mes colocations
               </span>
               <ArrowRight className="size-4 text-gray-300 group-hover:text-kaza-blue" />
             </Link>

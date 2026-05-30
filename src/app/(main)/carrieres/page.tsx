@@ -381,10 +381,10 @@ export default async function CarrieresPage() {
                 Nous embauchons en continu. Envoyez votre candidature spontanée
                 à{" "}
                 <a
-                  href="mailto:contact@pirabellabs.com"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="font-semibold text-kaza-blue hover:underline"
                 >
-                  contact@pirabellabs.com
+                  immobilierkaza@gmail.com
                 </a>
                 .
               </p>
@@ -528,9 +528,9 @@ export default async function CarrieresPage() {
               size="lg"
               className="h-12 rounded-full bg-kaza-green px-8 text-base font-semibold hover:bg-kaza-green/90"
             >
-              <a href="mailto:contact@pirabellabs.com?subject=Candidature%20spontan%C3%A9e">
+              <a href="mailto:immobilierkaza@gmail.com?subject=Candidature%20spontan%C3%A9e">
                 <Mail className="mr-2 size-4" />
-                contact@pirabellabs.com
+                immobilierkaza@gmail.com
               </a>
             </Button>
             <Button

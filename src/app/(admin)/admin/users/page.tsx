@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Users,
   CheckCircle2,
@@ -6,21 +7,25 @@ import {
   Ban,
   ShieldOff,
   Activity,
+  Flag,
+  ArrowRight,
 } from "lucide-react";
 
 import { cn, formatNumber } from "@/lib/utils";
 import { listAllUsers, type AdminUserRow } from "@/lib/queries/admin";
 import { listAuditLogs } from "@/lib/queries/audit-logs";
+import { countPendingReports } from "@/lib/queries/reports-admin";
 
 import { UsersManager } from "./users-manager";
 import type { AdminUser, UserStatus, UserRole, VerificationStatus } from "./types";
 
-// Mappings utilisés pour les sections "Comptes signalés" et "VIPs" — vides
-// pour l'instant car ces concepts (reports, flags VIP/Press) n'existent pas
-// encore dans la table public.users. À brancher quand on aura une table
-// `user_flags` ou similaire.
+// La carte "Comptes signalés" est branchée sur la table `reports` (migration
+// 00030) : nombre réel de signalements en attente, avec lien vers
+// /admin/reports. Il n'existe volontairement PAS de section "VIPs & Press" :
+// aucune table `user_flags` n'est provisionnée, on ne fabrique donc aucune
+// donnée fictive ici.
 
-// Map verification_status DB → libellé UI mock.
+// Map verification_status DB → libellé UI.
 const VERIF_MAP: Record<AdminUserRow["verificationStatus"], VerificationStatus> = {
   APPROVED: "VERIFIED",
   PENDING: "PENDING",
@@ -141,6 +146,10 @@ export default async function AdminUsersPage() {
     .filter((l) => l.action.startsWith("USER_"))
     .slice(0, 8);
 
+  // Signalements en attente : compte réel issu de la table `reports`
+  // (migration 00030). 0 si la table est vide ou inaccessible.
+  const pendingReports = await countPendingReports();
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -198,8 +207,36 @@ export default async function AdminUsersPage() {
       {/* Layout 2-col on xl */}
       <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
         <div className="space-y-6">
-          {/* TODO: brancher "Comptes signalés" et "VIPs & Press" quand
-              les tables `reports` et `user_flags` seront en place. */}
+          {/* Comptes signalés — donnée réelle (table `reports`, migration
+              00030). Lien direct vers le back-office de modération.
+              Pas de section "VIPs & Press" : aucune table `user_flags`
+              n'existe, on ne fabrique aucune donnée fictive. */}
+          <Link
+            href="/admin/reports"
+            className="group flex items-center justify-between gap-3 rounded-2xl border border-border bg-white p-4 shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
+          >
+            <div className="flex items-center gap-3">
+              <span className="inline-flex size-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                <Flag className="size-5" />
+              </span>
+              <div>
+                <p className="font-heading text-sm font-bold text-kaza-navy">
+                  Comptes signalés
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {pendingReports > 0
+                    ? `${formatNumber(pendingReports)} signalement${
+                        pendingReports > 1 ? "s" : ""
+                      } en attente de traitement`
+                    : "Aucun signalement en attente"}
+                </p>
+              </div>
+            </div>
+            <span className="flex items-center gap-1 text-xs font-semibold text-amber-700">
+              Modérer
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </Link>
 
           {/* Empty state si la base est vide (premier déploiement). */}
           {total === 0 && (

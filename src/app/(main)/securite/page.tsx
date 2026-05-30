@@ -149,7 +149,7 @@ const incidentSteps = [
     icon: AlertTriangle,
     title: "Signalez l'incident",
     description:
-      "Utilisez le bouton « Signaler » dans l'app ou écrivez à security@kaza.africa. Décrivez précisément les faits avec captures d'écran.",
+      "Utilisez le bouton « Signaler » dans l'app ou écrivez à immobilierkaza@gmail.com. Décrivez précisément les faits avec captures d'écran.",
   },
   {
     number: "02",
@@ -450,7 +450,7 @@ export default function SecuritePage() {
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <Button asChild size="lg" className="bg-kaza-green hover:bg-kaza-green/90">
-                  <Link href="mailto:security@kaza.africa">
+                  <Link href="mailto:immobilierkaza@gmail.com">
                     <Mail className="mr-2 size-4" />
                     Signaler un incident
                     <ArrowRight className="ml-2 size-4" />
@@ -468,10 +468,10 @@ export default function SecuritePage() {
               <p className="mt-6 text-sm text-white/70">
                 Email direct :{" "}
                 <a
-                  href="mailto:security@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="font-semibold text-kaza-green underline-offset-4 hover:underline"
                 >
-                  security@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
               </p>
             </div>

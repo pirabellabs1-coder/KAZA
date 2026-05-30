@@ -155,7 +155,7 @@ export function AdminSidebar({
   user = {
     firstName: "Admin",
     lastName: "KAZA",
-    email: "admin@kaza.africa",
+    email: "immobilierkaza@gmail.com",
   },
   badges = {},
   onNavigate,

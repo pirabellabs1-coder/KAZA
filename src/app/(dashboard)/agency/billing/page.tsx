@@ -773,10 +773,10 @@ export default async function AgencyBillingPage() {
           <HelpCircle className="size-4" />
           Une question facturation ?{" "}
           <a
-            href="mailto:contact@kaza.africa"
+            href="mailto:immobilierkaza@gmail.com"
             className="font-medium text-kaza-blue hover:underline"
           >
-            contact@kaza.africa
+            immobilierkaza@gmail.com
           </a>
         </p>
         <Link

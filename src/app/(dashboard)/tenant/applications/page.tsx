@@ -49,8 +49,10 @@ interface Application {
   message: string;
 }
 
-// Tant que la requête Supabase `listTenantApplications` n'est pas branchée
-// côté serveur, on initialise la liste à vide. L'UI affiche un empty state.
+// Aucune table de candidatures locatives n'existe encore dans le schéma
+// Supabase (seules `visit_requests` et `partner_applications` existent — ni
+// l'une ni l'autre ne modélise une candidature à une annonce). On affiche donc
+// un empty state honnête plutôt que de fabriquer de fausses candidatures.
 const INITIAL_APPLICATIONS: Application[] = [];
 
 const STATUS_META: Record<
@@ -142,8 +144,8 @@ export default function TenantApplicationsPage() {
           {filtered.length === 0 ? (
             <EmptyState
               icon={ClipboardList}
-              title="Aucune candidature"
-              description="Vous n'avez aucune candidature dans cette catégorie. Parcourez nos annonces pour postuler à un nouveau bien."
+              title="Vous n'avez pas encore postulé à une annonce"
+              description="Vos candidatures de location apparaîtront ici dès que vous aurez postulé. Parcourez nos annonces pour trouver votre prochain logement."
               actionLabel="Découvrir des biens"
             />
           ) : (

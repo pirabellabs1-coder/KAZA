@@ -606,10 +606,10 @@ export default async function PlusPage() {
               <p className="text-muted-foreground">
                 Besoin d&apos;aide pour choisir ?{" "}
                 <Link
-                  href="mailto:plus@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="font-semibold text-amber-600 underline-offset-4 hover:underline"
                 >
-                  Écrivez à plus@kaza.africa
+                  Écrivez à immobilierkaza@gmail.com
                 </Link>
               </p>
             </div>

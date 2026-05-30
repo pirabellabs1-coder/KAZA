@@ -85,15 +85,15 @@ const quickFaq = [
   },
   {
     q: "Comment signaler un problème urgent ?",
-    a: "Pour toute urgence (litige, fraude, accès bloqué), écrivez à contact@pirabellabs.com ou utilisez le chat en direct.",
+    a: "Pour toute urgence (litige, fraude, accès bloqué), écrivez à immobilierkaza@gmail.com ou utilisez le chat en direct.",
   },
   {
     q: "Puis-je devenir partenaire de KAZA ?",
-    a: "Oui. Choisissez le sujet « Partenariat » dans le formulaire ou écrivez à contact@pirabellabs.com. Notre équipe revient vers vous sous 48h.",
+    a: "Oui. Choisissez le sujet « Partenariat » dans le formulaire ou écrivez à immobilierkaza@gmail.com. Notre équipe revient vers vous sous 48h.",
   },
   {
     q: "Comment contacter le service presse ?",
-    a: "Pour toute demande presse, écrivez à contact@pirabellabs.com. Nous fournissons kit média, interviews et données sur demande.",
+    a: "Pour toute demande presse, écrivez à immobilierkaza@gmail.com. Nous fournissons kit média, interviews et données sur demande.",
   },
 ];
 
@@ -225,7 +225,7 @@ export default function ContactPage() {
               <RevealOnScroll>
                 <div className="mt-6 space-y-4">
                   <a
-                    href="mailto:contact@pirabellabs.com"
+                    href="mailto:immobilierkaza@gmail.com"
                     className="group flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-kaza-green hover:shadow-lg"
                   >
                     <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-green/10 text-kaza-green transition-transform group-hover:scale-110">
@@ -236,7 +236,7 @@ export default function ContactPage() {
                         Email
                       </p>
                       <p className="font-heading text-base font-semibold text-kaza-navy group-hover:text-kaza-green">
-                        contact@pirabellabs.com
+                        immobilierkaza@gmail.com
                       </p>
                     </div>
                   </a>
@@ -361,10 +361,10 @@ export default function ContactPage() {
                   Pour toute demande presse, interview ou kit média, écrivez-nous
                   à{" "}
                   <a
-                    href="mailto:contact@pirabellabs.com"
+                    href="mailto:immobilierkaza@gmail.com"
                     className="font-semibold text-kaza-green underline-offset-4 hover:underline"
                   >
-                    contact@pirabellabs.com
+                    immobilierkaza@gmail.com
                   </a>
                   .
                 </p>
@@ -374,7 +374,7 @@ export default function ContactPage() {
                 size="lg"
                 className="rounded-full bg-kaza-green text-white hover:bg-kaza-green/90"
               >
-                <a href="mailto:contact@pirabellabs.com">
+                <a href="mailto:immobilierkaza@gmail.com">
                   Contact presse
                   <ArrowRight className="ml-2 size-4" />
                 </a>

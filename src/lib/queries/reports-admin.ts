@@ -77,3 +77,25 @@ export async function listReports(): Promise<ReportSummary[]> {
 
   return ((data ?? []) as ReportRow[]).map(mapRow);
 }
+
+/**
+ * Compte les signalements en attente de traitement (status = 'PENDING').
+ * Utilise une requête `head: true` (aucune donnée transférée, juste le count).
+ * Les policies RLS garantissent que seuls les ADMIN obtiennent le total réel.
+ * Renvoie 0 en cas d'erreur (table absente, droits insuffisants).
+ */
+export async function countPendingReports(): Promise<number> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { count, error } = await (supabase as any)
+    .from("reports")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "PENDING");
+
+  if (error) {
+    console.warn("[reports-admin] countPendingReports:", error.message);
+    return 0;
+  }
+
+  return count ?? 0;
+}

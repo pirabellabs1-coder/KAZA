@@ -148,7 +148,7 @@ const paymentFaq: FaqItem[] = [
   },
   {
     q: "Que faire en cas de problème de paiement ?",
-    a: "Contactez notre support via le chat ou par email à support@kaza.africa. Nous traitons les incidents en priorité, généralement sous 2 heures ouvrées.",
+    a: "Contactez notre support via le chat ou par email à immobilierkaza@gmail.com. Nous traitons les incidents en priorité, généralement sous 2 heures ouvrées.",
   },
   {
     q: "Y a-t-il des frais sur les paiements ?",
@@ -362,8 +362,8 @@ const CONTACT_OPTIONS = [
     icon: Mail,
     title: "Support par email",
     description: "Réponse garantie sous 4 heures ouvrées.",
-    cta: "contact@pirabellabs.com",
-    href: "mailto:contact@pirabellabs.com",
+    cta: "immobilierkaza@gmail.com",
+    href: "mailto:immobilierkaza@gmail.com",
     accent: "bg-kaza-green/10 text-kaza-green",
   },
   {

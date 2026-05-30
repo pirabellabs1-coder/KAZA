@@ -95,7 +95,7 @@ function buildConfirmationHtml(input: PartnerApplicationInput): string {
         <p><strong>Catégorie :</strong> ${escapeHtml(typeLabel)}</p>
         <p>Notre équipe partenariats examine votre dossier et reviendra vers vous sous <strong>5 jours ouvrés</strong>.</p>
         <hr style="border:0;border-top:1px solid #e5e7eb;margin:24px 0;" />
-        <p style="font-size:12px;color:#9ca3af;">L'équipe Partenariats KAZA — partnerships@kaza.africa</p>
+        <p style="font-size:12px;color:#9ca3af;">L'équipe Partenariats KAZA — immobilierkaza@gmail.com</p>
       </div>
     </div>
   `;
@@ -149,7 +149,7 @@ export async function submitPartnerApplication(
   }
 
   const recipient =
-    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "contact@pirabellabs.com";
+    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "immobilierkaza@gmail.com";
   try {
     await sendEmail(
       recipient,

@@ -57,10 +57,10 @@ export default function MentionsLegalesPage() {
             droit béninois et aux actes uniformes de l&apos;OHADA. Contact
             juridique :{" "}
             <a
-              href="mailto:legal@kaza.africa"
+              href="mailto:immobilierkaza@gmail.com"
               className="font-medium text-kaza-blue hover:underline"
             >
-              legal@kaza.africa
+              immobilierkaza@gmail.com
             </a>
           </p>
         </aside>
@@ -112,10 +112,10 @@ export default function MentionsLegalesPage() {
               <dt className="font-medium text-foreground">Courriel</dt>
               <dd className="text-muted-foreground">
                 <a
-                  href="mailto:contact@pirabellabs.com"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  contact@pirabellabs.com
+                  immobilierkaza@gmail.com
                 </a>
               </dd>
               <dt className="font-medium text-foreground">Marque exploitée</dt>
@@ -160,10 +160,10 @@ export default function MentionsLegalesPage() {
               Le directeur de la publication est <strong>Le Gérant</strong> de
               PIRABEL LABS SARL, joignable à l&apos;adresse{" "}
               <a
-                href="mailto:publication@kaza.africa"
+                href="mailto:immobilierkaza@gmail.com"
                 className="font-medium text-kaza-blue hover:underline"
               >
-                publication@kaza.africa
+                immobilierkaza@gmail.com
               </a>
               .
             </p>
@@ -302,20 +302,20 @@ export default function MentionsLegalesPage() {
                 <Building2 className="mr-2 inline size-4 text-kaza-blue" />
                 <strong className="text-foreground">Support général :</strong>{" "}
                 <a
-                  href="mailto:contact@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  contact@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
               </li>
               <li>
                 <Building2 className="mr-2 inline size-4 text-kaza-blue" />
                 <strong className="text-foreground">Aide utilisateur :</strong>{" "}
                 <a
-                  href="mailto:support@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  support@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
               </li>
               <li>
@@ -324,20 +324,20 @@ export default function MentionsLegalesPage() {
                   Données personnelles (DPO) :
                 </strong>{" "}
                 <a
-                  href="mailto:dpo@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  dpo@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
               </li>
               <li>
                 <Building2 className="mr-2 inline size-4 text-kaza-blue" />
                 <strong className="text-foreground">Juridique :</strong>{" "}
                 <a
-                  href="mailto:legal@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  legal@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
               </li>
             </ul>

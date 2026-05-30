@@ -14,7 +14,7 @@ export default function StudentMatchesPage() {
           Mes matchs colocataires
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          8 profils compatibles trouvés grâce à votre profil colocataire.
+          Profils de colocataires compatibles selon votre profil colocation.
         </p>
       </div>
 

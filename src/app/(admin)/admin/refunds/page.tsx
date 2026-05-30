@@ -14,7 +14,7 @@ const statusMap: Record<string, RefundRequest["status"]> = {
 
 export default async function AdminRefundsPage() {
   const admin = await getCurrentDisplayUser();
-  const adminEmail = admin?.email ?? "admin@kaza.africa";
+  const adminEmail = admin?.email ?? "immobilierkaza@gmail.com";
 
   const rows = await listRefundRequests();
   const requests: RefundRequest[] = rows.map((r) => ({

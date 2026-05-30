@@ -62,10 +62,10 @@ export default function ConfidentialitePage() {
             droit béninois (Loi n° 2017-20 du 20 avril 2018 portant Code du
             numérique) et aux standards RGPD UE. Contact DPO :{" "}
             <a
-              href="mailto:dpo@kaza.africa"
+              href="mailto:immobilierkaza@gmail.com"
               className="font-medium text-kaza-blue hover:underline"
             >
-              dpo@kaza.africa
+              immobilierkaza@gmail.com
             </a>
             .
           </p>
@@ -118,10 +118,10 @@ export default function ConfidentialitePage() {
               </dt>
               <dd className="text-muted-foreground">
                 <a
-                  href="mailto:dpo@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  dpo@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
               </dd>
             </dl>
@@ -363,10 +363,10 @@ export default function ConfidentialitePage() {
             <p className="mt-3 text-muted-foreground">
               Pour exercer ces droits, contactez notre DPO à{" "}
               <a
-                href="mailto:dpo@kaza.africa"
+                href="mailto:immobilierkaza@gmail.com"
                 className="font-medium text-kaza-blue hover:underline"
               >
-                dpo@kaza.africa
+                immobilierkaza@gmail.com
               </a>
               . Une réponse vous sera apportée dans un délai d&apos;un mois.
             </p>
@@ -491,10 +491,10 @@ export default function ConfidentialitePage() {
               <p className="mt-1 text-muted-foreground">
                 Courriel :{" "}
                 <a
-                  href="mailto:dpo@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="text-kaza-blue hover:underline"
                 >
-                  dpo@kaza.africa
+                  immobilierkaza@gmail.com
                 </a>
                 <br />
                 Adresse : Quartier Cadjèhoun, Cotonou, République du Bénin

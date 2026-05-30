@@ -5,37 +5,35 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { listTenantEscrowPayments } from "@/lib/queries/tenant-escrow";
 
 // =============================================================================
 // KAZA - Page Fonds en séquestre (escrow)
 //
-// La liste des paiements en séquestre est aujourd'hui vide tant que la query
-// Supabase `listTenantEscrowPayments` n'est pas branchée (table escrow_payments
-// ou agrégation depuis payments + rentals). On affiche un empty state honnête
-// plutôt que des montants de démonstration.
+// Lecture réelle des paiements en séquestre du locataire via
+// `listTenantEscrowPayments` (table escrow_payments, filtre tenant_id).
+// Les KPIs sont calculés depuis les vraies lignes ; empty state honnête si
+// aucune ligne.
 // =============================================================================
 
 export const metadata: Metadata = {
   title: "Fonds en séquestre",
 };
 
-interface EscrowPaymentRow {
-  id: string;
-  amount: number;
-  status: "held" | "released" | "disputed";
-}
+export default async function EscrowPage() {
+  const user = await getCurrentDisplayUser();
+  const escrowPayments = user
+    ? await listTenantEscrowPayments(user.id)
+    : [];
 
-const ESCROW_PAYMENTS: EscrowPaymentRow[] = [];
-
-export default function EscrowPage() {
-  const totalHeld = ESCROW_PAYMENTS.filter((p) => p.status === "held").reduce(
-    (sum, p) => sum + p.amount,
-    0,
-  );
-  const totalReleased = ESCROW_PAYMENTS.filter(
-    (p) => p.status === "released",
-  ).reduce((sum, p) => sum + p.amount, 0);
-  const disputedCount = ESCROW_PAYMENTS.filter(
+  const totalHeld = escrowPayments
+    .filter((p) => p.status === "held")
+    .reduce((sum, p) => sum + p.amount, 0);
+  const totalReleased = escrowPayments
+    .filter((p) => p.status === "released")
+    .reduce((sum, p) => sum + p.amount, 0);
+  const disputedCount = escrowPayments.filter(
     (p) => p.status === "disputed",
   ).length;
 

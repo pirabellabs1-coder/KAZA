@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 const DEFAULTS: PlatformSettingsInitial = {
   general: {
     platformName: "KAZA",
-    contactEmail: "contact@kaza.africa",
+    contactEmail: "immobilierkaza@gmail.com",
     languages: { fr: true, en: false, fon: false },
     currency: "XOF",
   },

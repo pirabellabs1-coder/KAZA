@@ -61,7 +61,7 @@ export function AttachmentButton({
       return;
     }
     const label = file?.name ? ` : ${file.name}` : '';
-    toast.success(`Piece jointe ajoutee (mock) — ${KIND_LABEL[kind]}${label}`);
+    toast.success(`Pièce jointe sélectionnée — ${KIND_LABEL[kind]}${label}`);
   };
 
   const handleFile =

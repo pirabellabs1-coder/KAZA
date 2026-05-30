@@ -53,10 +53,10 @@ export default async function MaintenancePage() {
       <p className="mt-8 text-xs text-white/50">
         Une question ? Écrivez-nous à{" "}
         <a
-          href="mailto:contact@kaza.africa"
+          href="mailto:immobilierkaza@gmail.com"
           className="underline underline-offset-2 hover:text-white"
         >
-          contact@kaza.africa
+          immobilierkaza@gmail.com
         </a>
       </p>
     </main>

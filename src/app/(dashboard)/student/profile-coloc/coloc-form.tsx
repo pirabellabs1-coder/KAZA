@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Camera,
   Heart,
+  Loader2,
   Save,
   Sparkles,
   User,
   Users2,
   Utensils,
 } from "lucide-react";
+
+import { uploadColocPhoto } from "@/actions/coloc-photos";
 
 import {
   Accordion,
@@ -102,8 +105,10 @@ type ColocProfile = {
   hobbies: string[];
   foodHabits: string[];
 
-  hasAvatar: boolean;
-  lifestylePhotos: number;
+  /** URL publique de la photo de profil (vide si non uploadée). */
+  avatarUrl: string;
+  /** URLs publiques des photos lifestyle (max 2). */
+  lifestyleUrls: string[];
 };
 
 const INITIAL: ColocProfile = {
@@ -126,8 +131,8 @@ const INITIAL: ColocProfile = {
   bio: "",
   hobbies: [],
   foodHabits: [],
-  hasAvatar: false,
-  lifestylePhotos: 0,
+  avatarUrl: "",
+  lifestyleUrls: [],
 };
 
 function computeCompleteness(p: ColocProfile): number {
@@ -141,8 +146,8 @@ function computeCompleteness(p: ColocProfile): number {
     p.bio.length >= 30,
     p.hobbies.length >= 3,
     p.foodHabits.length >= 1,
-    p.hasAvatar,
-    p.lifestylePhotos >= 2,
+    p.avatarUrl.length > 0,
+    p.lifestyleUrls.length >= 2,
   ];
   const done = checks.filter(Boolean).length;
   return Math.round((done / checks.length) * 100);
@@ -196,12 +201,35 @@ export function ColocForm() {
     });
   };
 
-  const handleAvatarMock = () => {
-    update("hasAvatar", !profile.hasAvatar);
-  };
+  // Slot en cours d'upload : "avatar" | "lifestyle-0" | "lifestyle-1" | null.
+  const [uploadingSlot, setUploadingSlot] = useState<string | null>(null);
 
-  const handleLifestyleMock = () => {
-    update("lifestylePhotos", Math.min(2, profile.lifestylePhotos + 1));
+  const handleUploadPhoto = async (slot: string, file: File) => {
+    setUploadingSlot(slot);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadColocPhoto(formData);
+      if (!res.success) {
+        toast.error(res.error);
+        return;
+      }
+      if (slot === "avatar") {
+        setProfile((prev) => ({ ...prev, avatarUrl: res.url }));
+      } else {
+        const index = Number(slot.split("-")[1]);
+        setProfile((prev) => {
+          const next = [...prev.lifestyleUrls];
+          next[index] = res.url;
+          return { ...prev, lifestyleUrls: next.filter(Boolean) };
+        });
+      }
+      toast.success("Photo ajoutée ✓");
+    } catch {
+      toast.error("Échec de l'upload. Réessayez.");
+    } finally {
+      setUploadingSlot(null);
+    }
   };
 
   const handleSave = () => {
@@ -568,20 +596,24 @@ export function ColocForm() {
                 <div className="grid gap-4 sm:grid-cols-3">
                   <PhotoSlot
                     label="Photo de profil"
-                    filled={profile.hasAvatar}
-                    onToggle={handleAvatarMock}
+                    url={profile.avatarUrl}
+                    uploading={uploadingSlot === "avatar"}
+                    onSelect={(file) => handleUploadPhoto("avatar", file)}
                   />
                   {[0, 1].map((i) => (
                     <PhotoSlot
                       key={i}
                       label={`Lifestyle ${i + 1}`}
-                      filled={profile.lifestylePhotos > i}
-                      onToggle={handleLifestyleMock}
+                      url={profile.lifestyleUrls[i] ?? ""}
+                      uploading={uploadingSlot === `lifestyle-${i}`}
+                      onSelect={(file) => handleUploadPhoto(`lifestyle-${i}`, file)}
                     />
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Upload mock pour le MVP — le stockage Supabase sera branché en V1.
+                  Formats acceptés : JPEG, PNG ou WEBP (max 2 Mo). Vos photos
+                  sont stockées de façon sécurisée et ne sont visibles que par
+                  vos correspondances.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -682,27 +714,69 @@ function SliderRow({
 
 function PhotoSlot({
   label,
-  filled,
-  onToggle,
+  url,
+  uploading,
+  onSelect,
 }: {
   label: string;
-  filled: boolean;
-  onToggle: () => void;
+  url: string;
+  uploading: boolean;
+  onSelect: (file: File) => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const filled = url.length > 0;
+
   return (
     <button
       type="button"
-      onClick={onToggle}
+      disabled={uploading}
+      onClick={() => inputRef.current?.click()}
       className={cn(
-        "flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed text-sm transition-colors",
+        "relative flex aspect-square flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed text-sm transition-colors disabled:cursor-wait",
         filled
           ? "border-kaza-green bg-kaza-green/5 text-kaza-green"
           : "border-border bg-muted/20 text-muted-foreground hover:border-kaza-blue hover:text-kaza-blue"
       )}
     >
-      <Camera className="size-6" />
-      <span className="font-medium">{label}</span>
-      <span className="text-xs">{filled ? "Ajoutée ✓" : "Cliquer pour ajouter"}</span>
+      {filled && !uploading && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={url}
+          alt={label}
+          className="absolute inset-0 size-full object-cover"
+        />
+      )}
+      <span
+        className={cn(
+          "relative z-10 flex flex-col items-center justify-center gap-2",
+          filled && !uploading && "rounded-lg bg-white/85 px-3 py-2",
+        )}
+      >
+        {uploading ? (
+          <Loader2 className="size-6 animate-spin text-kaza-blue" />
+        ) : (
+          <Camera className="size-6" />
+        )}
+        <span className="font-medium">{label}</span>
+        <span className="text-xs">
+          {uploading
+            ? "Envoi en cours…"
+            : filled
+              ? "Ajoutée ✓ — remplacer"
+              : "Cliquer pour ajouter"}
+        </span>
+      </span>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onSelect(file);
+          e.target.value = "";
+        }}
+      />
     </button>
   );
 }

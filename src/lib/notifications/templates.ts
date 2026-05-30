@@ -77,7 +77,7 @@ function layout(bodyHtml: string, preheader?: string): string {
                 <a href="${APP_URL}/parametres/notifications?unsubscribe=1" style="color:${BRAND_BLUE}; text-decoration:none;">Se désabonner</a>
               </p>
               <p style="margin:0; color:#9ca3af; font-size:11px;">
-                © ${new Date().getFullYear()} KAZA · Cotonou, Bénin · contact@kaza.africa
+                © ${new Date().getFullYear()} KAZA · Cotonou, Bénin · immobilierkaza@gmail.com
               </p>
             </td>
           </tr>

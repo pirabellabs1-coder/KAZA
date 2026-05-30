@@ -91,7 +91,7 @@ export async function subscribeNewsletter(
 
     // Notification interne ----------------------------------------------------
     const adminEmail =
-      process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "contact@kaza.africa";
+      process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "immobilierkaza@gmail.com";
     await sendEmail(
       adminEmail,
       `[KAZA] ${alreadySubscribed ? "Tentative ré-inscription" : "Nouvel abonné"} newsletter (source: ${finalSource})`,

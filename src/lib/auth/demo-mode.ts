@@ -7,6 +7,10 @@
 // =============================================================================
 
 export function isDemoMode(): boolean {
+  // Sécurité : JAMAIS de mode démo en production. Si la config Supabase venait
+  // à manquer en prod, on ne doit pas retourner de faux succès silencieux —
+  // mieux vaut une vraie erreur qu'une visite/contrat fantôme non persisté.
+  if (process.env.NODE_ENV === "production") return false;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   return !url || url.includes("placeholder") || url.includes("example");
 }

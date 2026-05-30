@@ -135,10 +135,10 @@ export default function CookiesPage() {
             <strong>Édité par PIRABEL LABS SARL</strong> — Document conforme au
             droit béninois. Contact DPO :{" "}
             <a
-              href="mailto:dpo@kaza.africa"
+              href="mailto:immobilierkaza@gmail.com"
               className="font-medium text-kaza-blue hover:underline"
             >
-              dpo@kaza.africa
+              immobilierkaza@gmail.com
             </a>
             .
           </p>
@@ -281,10 +281,10 @@ export default function CookiesPage() {
                 <p className="font-semibold text-foreground">DPO PIRABEL LABS</p>
                 <p className="mt-1 text-muted-foreground">
                   <a
-                    href="mailto:dpo@kaza.africa"
+                    href="mailto:immobilierkaza@gmail.com"
                     className="text-kaza-blue hover:underline"
                   >
-                    dpo@kaza.africa
+                    immobilierkaza@gmail.com
                   </a>
                 </p>
               </div>

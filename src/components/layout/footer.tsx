@@ -204,18 +204,18 @@ export function Footer() {
             </ul>
             <div className="mt-6 space-y-2 text-xs text-white/60">
               <a
-                href="mailto:contact@kaza.africa"
+                href="mailto:immobilierkaza@gmail.com"
                 className="flex items-center gap-2 transition-colors hover:text-kaza-green"
               >
                 <Mail className="size-3.5" />
-                contact@kaza.africa
+                immobilierkaza@gmail.com
               </a>
               <a
-                href="mailto:dpo@kaza.africa"
+                href="mailto:immobilierkaza@gmail.com"
                 className="flex items-center gap-2 transition-colors hover:text-kaza-green"
               >
                 <Mail className="size-3.5" />
-                dpo@kaza.africa
+                immobilierkaza@gmail.com
               </a>
               <p className="flex items-center gap-2">
                 <MapPin className="size-3.5" />

@@ -99,7 +99,7 @@ function buildAdminHtml(args: {
         <div style="color: #374151; line-height: 1.6;">${messageHtml}</div>
         <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
         <p style="font-size: 12px; color: #9ca3af; margin: 0;">
-          Reçu via le formulaire de contact de kaza.africa.
+          Reçu via le formulaire de contact KAZA.
           Répondez directement à cet email pour contacter ${escapeHtml(args.name)}.
         </p>
       </div>
@@ -197,7 +197,7 @@ export async function sendContactMessage(
 
   // 2. Email équipe (best-effort) --------------------------------------------
   const recipient =
-    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "contact@kaza.africa";
+    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "immobilierkaza@gmail.com";
   try {
     await sendEmail(
       recipient,
@@ -262,7 +262,7 @@ export async function submitContactMessage(
 
   // 2 & 3 — Emails best-effort ------------------------------------------------
   const recipient =
-    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "contact@kaza.africa";
+    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "immobilierkaza@gmail.com";
   try {
     await sendEmail(
       recipient,

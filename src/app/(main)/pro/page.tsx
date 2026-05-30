@@ -692,7 +692,7 @@ export default function ProPage() {
 
                 <div className="mt-10 flex items-center gap-3 text-sm text-white/70">
                   <Globe className="size-5" />
-                  <span>contact@pirabellabs.com</span>
+                  <span>immobilierkaza@gmail.com</span>
                 </div>
               </div>
 
@@ -738,10 +738,10 @@ export default function ProPage() {
               <p className="text-muted-foreground">
                 Une autre question ?{" "}
                 <Link
-                  href="mailto:pro@kaza.africa"
+                  href="mailto:immobilierkaza@gmail.com"
                   className="font-semibold text-kaza-blue underline-offset-4 hover:underline"
                 >
-                  Écrivez-nous à pro@kaza.africa
+                  Écrivez-nous à immobilierkaza@gmail.com
                 </Link>
               </p>
             </div>

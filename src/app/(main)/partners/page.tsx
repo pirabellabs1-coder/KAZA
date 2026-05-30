@@ -144,12 +144,12 @@ export default function PartnersPage() {
                       variant="outline"
                       className="rounded-full border-white/30 bg-white/10 px-8 text-base text-white backdrop-blur-md hover:bg-white/20 hover:text-white"
                     >
-                      <a href="mailto:press@kaza.africa">Contact presse</a>
+                      <a href="mailto:immobilierkaza@gmail.com">Contact presse</a>
                     </Button>
                   </div>
 
                   <p className="mt-8 text-sm text-white/70">
-                    partnerships@kaza.africa · Réponse sous 5 jours ouvrés
+                    immobilierkaza@gmail.com · Réponse sous 5 jours ouvrés
                   </p>
                 </div>
               </div>

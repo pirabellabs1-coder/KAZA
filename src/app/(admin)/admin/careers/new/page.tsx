@@ -96,7 +96,7 @@ export default function NewCareerOfferPage() {
       requirements: "",
       benefits: "",
       salary_range: "",
-      apply_email: "careers@kaza.africa",
+      apply_email: "immobilierkaza@gmail.com",
     },
   });
 
@@ -268,7 +268,7 @@ export default function NewCareerOfferPage() {
               <Input
                 id="apply_email"
                 type="email"
-                placeholder="careers@kaza.africa"
+                placeholder="immobilierkaza@gmail.com"
                 {...register("apply_email")}
               />
               {errors.apply_email && (

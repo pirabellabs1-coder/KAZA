@@ -115,7 +115,7 @@ export default function AboutPage() {
                   <div>
                     <p className="text-sm font-medium">Email</p>
                     <p className="text-sm text-muted-foreground">
-                      contact@pirabellabs.com
+                      immobilierkaza@gmail.com
                     </p>
                   </div>
                 </div>
