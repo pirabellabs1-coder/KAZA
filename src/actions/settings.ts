@@ -140,6 +140,60 @@ export async function updatePrivacyPrefs(
 }
 
 // ---------------------------------------------------------------------------
+// 2b. Adresse de facturation
+// ---------------------------------------------------------------------------
+
+const billingAddressSchema = z.object({
+  name: z.string().trim().max(200),
+  line1: z.string().trim().max(300),
+  city: z.string().trim().max(120),
+  country: z.string().trim().max(120),
+});
+
+export type BillingAddress = z.infer<typeof billingAddressSchema>;
+
+/**
+ * Met à jour l'adresse de facturation de l'utilisateur courant dans
+ * `users.billing_address` (migration 00032). Remplace l'ancien comportement
+ * « toast sans persistance ».
+ */
+export async function updateBillingAddress(
+  address: BillingAddress,
+): Promise<SettingsResult> {
+  const parsed = billingAddressSchema.safeParse(address);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? "Adresse invalide.",
+    };
+  }
+
+  const user = await getCurrentDisplayUser();
+  if (!user) {
+    return { success: false, error: "Vous devez être connecté." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("users")
+    .update({
+      billing_address: parsed.data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    return {
+      success: false,
+      error: "Impossible d'enregistrer l'adresse. " + error.message,
+    };
+  }
+
+  revalidatePath("/settings/billing");
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
 // 3. Demande de suppression de compte (RGPD)
 // ---------------------------------------------------------------------------
 

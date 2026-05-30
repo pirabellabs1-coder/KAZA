@@ -22,6 +22,7 @@ import {
 
 import { formatFcfa, formatFcfaShort } from "@/lib/utils";
 import { CountryFlag } from "@/components/shared/country-flag";
+import { PrintReportButton } from "./print-report-button";
 
 // Fallbacks vides — vues agrégées finance à brancher (revenus 30j, payouts,
 // waterfall, heatmap géo). Les transactions réelles vivent dans `payments`,
@@ -730,18 +731,18 @@ export default function AdminFinancePage() {
       {/* ================================================================== */}
       {/* STICKY EXPORT                                                       */}
       {/* ================================================================== */}
-      <div className="fixed bottom-6 right-6 z-30 flex gap-3 lg:bottom-8 lg:right-8">
+      <div className="fixed bottom-6 right-6 z-30 flex gap-3 print:hidden lg:bottom-8 lg:right-8">
         <Button
+          asChild
           variant="outline"
           className="rounded-full bg-white shadow-lg backdrop-blur"
         >
-          <Download className="mr-2 h-4 w-4" />
-          Excel
+          <a href="/admin/finance/export" download>
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </a>
         </Button>
-        <Button className="rounded-full bg-kaza-navy shadow-lg hover:bg-kaza-navy/90">
-          <Download className="mr-2 h-4 w-4" />
-          Exporter rapport financier PDF
-        </Button>
+        <PrintReportButton />
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { CreditCard, Plus, Wallet, Building2, Receipt } from "lucide-react";
 
+import { updateBillingAddress } from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,14 +48,23 @@ function formatPrice(amount: number): string {
   return new Intl.NumberFormat("fr-FR").format(amount) + " FCFA";
 }
 
-export function BillingClient() {
+function readString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+export function BillingClient({
+  initialAddress = {},
+}: {
+  initialAddress?: Record<string, unknown>;
+}) {
   const [methods, setMethods] = useState<PaymentMethod[]>(DEFAULT_METHODS);
   const [address, setAddress] = useState({
-    name: "",
-    line1: "",
-    city: "",
-    country: "",
+    name: readString(initialAddress.name),
+    line1: readString(initialAddress.line1),
+    city: readString(initialAddress.city),
+    country: readString(initialAddress.country),
   });
+  const [isSaving, startSaving] = useTransition();
 
   const setDefault = (id: string) => {
     setMethods((prev) =>
@@ -75,7 +85,16 @@ export function BillingClient() {
   };
 
   const saveAddress = () => {
-    toast.success("Adresse de facturation enregistrée.");
+    startSaving(async () => {
+      const result = await updateBillingAddress(address);
+      if (result.success) {
+        toast.success("Adresse de facturation enregistrée.");
+      } else {
+        toast.error(
+          result.error ?? "Impossible d'enregistrer l'adresse de facturation.",
+        );
+      }
+    });
   };
 
   const downloadInvoice = (id: string) => {
@@ -275,8 +294,8 @@ export function BillingClient() {
             </div>
           </div>
           <Separator />
-          <Button onClick={saveAddress} className="bg-kaza-navy">
-            Enregistrer l&apos;adresse
+          <Button onClick={saveAddress} disabled={isSaving} className="bg-kaza-navy">
+            {isSaving ? "Enregistrement…" : "Enregistrer l'adresse"}
           </Button>
         </CardContent>
       </Card>

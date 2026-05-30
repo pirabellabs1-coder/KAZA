@@ -51,6 +51,7 @@ export default async function PropertiesPage() {
               rating={4.7}
               isVerified={property.owner?.isVerified ?? false}
               isFeatured={property.viewsCount > 1000}
+              isBoosted={property.isBoosted}
             />
           ))}
         </div>

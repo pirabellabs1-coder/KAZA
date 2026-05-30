@@ -11,6 +11,7 @@ import {
   Star,
   ShieldCheck,
   Sparkles,
+  Megaphone,
   ArrowRight,
 } from "lucide-react";
 import { useState } from "react";
@@ -40,6 +41,8 @@ export interface PropertyCardProps {
   reviewsCount?: number;
   isVerified?: boolean;
   isFeatured?: boolean;
+  /** Annonce sponsorisée (boost actif) — affiche un badge « Sponsorisé ». */
+  isBoosted?: boolean;
   isFavorite?: boolean;
   variant?: "default" | "featured" | "compact";
   onFavoriteToggle?: (id: string) => void;
@@ -60,6 +63,7 @@ export function PropertyCard({
   reviewsCount,
   isVerified,
   isFeatured,
+  isBoosted,
   isFavorite = false,
   variant = "default",
   onFavoriteToggle,
@@ -98,12 +102,15 @@ export function PropertyCard({
               favorite={favorite}
               onClick={handleFavorite}
             />
-            {isVerified && (
-              <Badge className="absolute left-3 top-3 gap-1 border-0 bg-kaza-green/95 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
-                <ShieldCheck className="size-3" />
-                Vérifié
-              </Badge>
-            )}
+            <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+              {isBoosted && <SponsoredBadge />}
+              {isVerified && (
+                <Badge className="gap-1 border-0 bg-kaza-green/95 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                  <ShieldCheck className="size-3" />
+                  Vérifié
+                </Badge>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-1 flex-col justify-between p-5">
@@ -167,6 +174,7 @@ export function PropertyCard({
 
           {/* Top-left badges */}
           <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {isBoosted && <SponsoredBadge />}
             {isFeaturedVariant && (
               <Badge className="gap-1 border-0 bg-kaza-green px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
                 <Sparkles className="size-3" />
@@ -241,6 +249,16 @@ export function PropertyCard({
 // =============================================================================
 // Sub-components
 // =============================================================================
+
+/** Badge discret « Sponsorisé » pour les annonces avec un boost actif. */
+function SponsoredBadge() {
+  return (
+    <Badge className="gap-1 border-0 bg-amber-500/95 px-2.5 py-1 text-[10px] font-semibold text-white shadow-md backdrop-blur-sm">
+      <Megaphone className="size-3" />
+      Sponsorisé
+    </Badge>
+  );
+}
 
 function FavoriteButton({
   favorite,

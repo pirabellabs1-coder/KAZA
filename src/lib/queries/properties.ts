@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { getActiveBoostedPropertyIds } from "@/lib/queries/boosts";
 import { getAllCities, COUNTRIES } from "@/lib/geo/locations";
 import type { Enums } from "@/types/supabase";
 
@@ -26,6 +27,8 @@ export interface PublicProperty {
   createdAt: string;
   primaryPhotoUrl: string | null;
   photos: string[];
+  /** Annonce mise en avant par un boost actif (sponsorisée). */
+  isBoosted: boolean;
   owner: {
     id: string;
     firstName: string;
@@ -75,13 +78,18 @@ export async function listPublicProperties(
   if (options.minBedrooms) q = q.gte("bedrooms", options.minBedrooms);
   if (options.city) q = q.ilike("address", `%${options.city}%`);
 
-  const { data, error } = await q;
+  // Les annonces boostées (boost actif) remontent en tête. On charge les ids
+  // boostés en parallèle de la requête principale.
+  const [{ data, error }, boostedIds] = await Promise.all([
+    q,
+    getActiveBoostedPropertyIds(),
+  ]);
   if (error) {
     console.error("[queries/properties] listPublicProperties:", error.message);
     return [];
   }
 
-  return (data ?? []).map((p): PublicProperty => {
+  const mapped = (data ?? []).map((p): PublicProperty => {
     const photos = (p.photos as unknown as Array<{ photo_url: string; display_order: number }> | null)
       ?.slice()
       ?.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
@@ -103,6 +111,7 @@ export async function listPublicProperties(
       createdAt: p.created_at as string,
       primaryPhotoUrl: photos[0] ?? DEFAULT_PHOTO,
       photos: photos.length > 0 ? photos : [DEFAULT_PHOTO],
+      isBoosted: boostedIds.has(p.id as string),
       owner: ownerRow
         ? {
             id: ownerRow.id as string,
@@ -114,6 +123,14 @@ export async function listPublicProperties(
         : null,
     };
   });
+
+  // Tri stable : annonces boostées d'abord, puis tri normal (created_at DESC
+  // déjà appliqué côté SQL, donc on conserve l'ordre relatif d'origine).
+  if (boostedIds.size > 0) {
+    mapped.sort((a, b) => Number(b.isBoosted) - Number(a.isBoosted));
+  }
+
+  return mapped;
 }
 
 /** Récupère une propriété par id, avec toutes ses photos */
@@ -143,6 +160,7 @@ export async function getPropertyById(
     ?.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
     ?.map((ph) => ph.photo_url) ?? [];
   const ownerRow = Array.isArray(data.owner) ? data.owner[0] : data.owner;
+  const boostedIds = await getActiveBoostedPropertyIds();
   return {
     id: data.id as string,
     title: data.title as string,
@@ -159,6 +177,7 @@ export async function getPropertyById(
     createdAt: data.created_at as string,
     primaryPhotoUrl: photos[0] ?? DEFAULT_PHOTO,
     photos: photos.length > 0 ? photos : [DEFAULT_PHOTO],
+    isBoosted: boostedIds.has(data.id as string),
     owner: ownerRow
       ? {
           id: ownerRow.id as string,

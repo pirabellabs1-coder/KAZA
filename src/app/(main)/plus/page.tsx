@@ -30,6 +30,7 @@ import { GlassPanel } from "@/components/shared/glass-panel";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getActiveSubscription } from "@/lib/queries/subscriptions";
+import { getAllPlans } from "@/lib/queries/plans";
 
 import { PlusPricingToggle } from "./pricing-toggle";
 
@@ -210,7 +211,12 @@ function renderPlusCell(value: boolean | string) {
 
 export default async function PlusPage() {
   const user = await getCurrentDisplayUser();
-  const subscription = user ? await getActiveSubscription(user.id) : null;
+  const [subscription, planCatalog] = await Promise.all([
+    user ? getActiveSubscription(user.id) : Promise.resolve(null),
+    getAllPlans(),
+  ]);
+  const plusMonthly = planCatalog.PLUS_MONTHLY;
+  const plusYearly = planCatalog.PLUS_YEARLY;
   const isAuthenticated = Boolean(user);
   const isPlusMember =
     subscription?.plan === "PLUS_MONTHLY" || subscription?.plan === "PLUS_YEARLY";
@@ -404,6 +410,9 @@ export default async function PlusPage() {
             isAuthenticated={isAuthenticated}
             currentPlan={subscription?.plan ?? null}
             manageHref="/profile"
+            monthlyPriceFcfa={plusMonthly?.priceMonthly}
+            yearlyPriceFcfa={plusYearly?.priceYearly}
+            yearlyMonthlyEquivalentFcfa={plusYearly?.priceMonthly}
           />
         </div>
       </section>

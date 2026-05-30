@@ -206,11 +206,17 @@ export default async function TenantPaymentsPage() {
                         </td>
                         <td className="py-3 text-right">
                           {payment.status === "COMPLETED" && (
-                            <Button variant="ghost" size="icon-sm">
-                              <Download className="size-4" />
-                              <span className="sr-only">
-                                Télécharger le reçu
-                              </span>
+                            <Button asChild variant="ghost" size="icon-sm">
+                              <a
+                                href={`/tenant/payments/${payment.id}/receipt`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Download className="size-4" />
+                                <span className="sr-only">
+                                  Télécharger le reçu
+                                </span>
+                              </a>
                             </Button>
                           )}
                         </td>
@@ -250,8 +256,17 @@ export default async function TenantPaymentsPage() {
                         </div>
                       </div>
                       {payment.status === "COMPLETED" && (
-                        <Button variant="ghost" size="icon-sm">
-                          <Download className="size-4" />
+                        <Button asChild variant="ghost" size="icon-sm">
+                          <a
+                            href={`/tenant/payments/${payment.id}/receipt`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Download className="size-4" />
+                            <span className="sr-only">
+                              Télécharger le reçu
+                            </span>
+                          </a>
                         </Button>
                       )}
                     </div>

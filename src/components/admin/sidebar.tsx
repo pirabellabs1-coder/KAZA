@@ -30,6 +30,7 @@ import {
   Inbox,
   TicketPercent,
   Flag,
+  BadgeDollarSign,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -107,6 +108,7 @@ const adminNavSections: NavSection[] = [
       { href: "/admin/payouts", label: "Demandes retrait", icon: Wallet },
       { href: "/admin/refunds", label: "Remboursements", icon: Receipt },
       { href: "/admin/promo-codes", label: "Codes promo", icon: TicketPercent },
+      { href: "/admin/plans", label: "Tarifs & plans", icon: BadgeDollarSign },
     ],
   },
   {

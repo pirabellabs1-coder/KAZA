@@ -34,19 +34,31 @@ interface PlusPricingToggleProps {
   isAuthenticated: boolean;
   currentPlan?: string | null;
   manageHref?: string;
+  /** Prix mensuel KAZA Plus (PLUS_MONTHLY) — issu de la DB. */
+  monthlyPriceFcfa?: number;
+  /** Prix annuel KAZA Plus (PLUS_YEARLY) — issu de la DB. */
+  yearlyPriceFcfa?: number;
+  /** Équivalent mensuel du plan annuel (PLUS_YEARLY.priceMonthly) — DB. */
+  yearlyMonthlyEquivalentFcfa?: number;
 }
 
 export function PlusPricingToggle({
   isAuthenticated,
   currentPlan = null,
   manageHref = "/profile",
+  monthlyPriceFcfa = 4_900,
+  yearlyPriceFcfa = 47_000,
+  yearlyMonthlyEquivalentFcfa = 3_900,
 }: PlusPricingToggleProps) {
   const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");
 
-  const monthlyPrice = formatPrice(4_900);
-  const yearlyPrice = formatPrice(47_000);
-  const yearlyEquivalent = formatPrice(3_900);
-  const yearlySavings = formatPrice(11_800);
+  const monthlyPrice = formatPrice(monthlyPriceFcfa);
+  const yearlyPrice = formatPrice(yearlyPriceFcfa);
+  const yearlyEquivalent = formatPrice(yearlyMonthlyEquivalentFcfa);
+  // Économie annuelle = 12 mois au tarif mensuel − tarif annuel (jamais négatif).
+  const yearlySavings = formatPrice(
+    Math.max(0, monthlyPriceFcfa * 12 - yearlyPriceFcfa),
+  );
 
   const isMonthlyCurrent = currentPlan === "PLUS_MONTHLY";
   const isYearlyCurrent = currentPlan === "PLUS_YEARLY";

@@ -22,10 +22,8 @@ import { CtaBanner } from "@/components/marketing/cta-banner";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
-import {
-  getActiveSubscription,
-  PLAN_DETAILS,
-} from "@/lib/queries/subscriptions";
+import { getActiveSubscription } from "@/lib/queries/subscriptions";
+import { getAllPlans } from "@/lib/queries/plans";
 import { SubscribeButton } from "@/components/subscriptions/subscribe-button";
 import { PricingToggle } from "./pricing-toggle";
 
@@ -176,7 +174,10 @@ const pricingFaq = [
 
 export default async function PricingPage() {
   const user = await getCurrentDisplayUser();
-  const subscription = user ? await getActiveSubscription(user.id) : null;
+  const [subscription, planCatalog] = await Promise.all([
+    user ? getActiveSubscription(user.id) : Promise.resolve(null),
+    getAllPlans(),
+  ]);
   const isAuthenticated = Boolean(user);
   const currentPlan = subscription?.plan ?? null;
 
@@ -397,7 +398,8 @@ export default async function PricingPage() {
           </RevealOnScroll>
           <div className="mb-16 grid gap-6 lg:grid-cols-3">
             {AGENCY_PLAN_KEYS.map((planKey) => {
-              const plan = PLAN_DETAILS[planKey];
+              const plan = planCatalog[planKey];
+              if (!plan) return null;
               const isCurrent = currentPlan === planKey;
               const isPremium = planKey === "PRO_PREMIUM";
               return (
@@ -463,7 +465,8 @@ export default async function PricingPage() {
           </RevealOnScroll>
           <div className="grid gap-6 md:grid-cols-2">
             {PLUS_PLAN_KEYS.map((planKey) => {
-              const plan = PLAN_DETAILS[planKey];
+              const plan = planCatalog[planKey];
+              if (!plan) return null;
               const isCurrent = currentPlan === planKey;
               const isYearly = planKey === "PLUS_YEARLY";
               return (

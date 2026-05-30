@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IdCard,
   FileText,
@@ -11,6 +11,7 @@ import {
   Sparkles,
   Trash2,
   Download,
+  Loader2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -28,21 +29,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { VerificationBadge } from "@/components/shared/verification-badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/components/ui/toast-helper";
+import {
+  uploadTenantDocument,
+  listTenantDocuments,
+  deleteTenantDocument,
+  type TenantDocumentView,
+  type TenantDocType,
+} from "@/actions/tenant-documents";
 
 const MOTIVATION_STORAGE_KEY = "kaza.tenant.motivation_letter";
 
-interface Payslip {
-  id: string;
-  month: string;
-  amount: string;
-  uploadedAt: string;
-}
-
-interface ExtraDoc {
-  id: string;
-  name: string;
-  uploadedAt: string;
-}
+const ACCEPT = "image/jpeg,image/png,application/pdf";
 
 interface Guarantor {
   fullName: string;
@@ -52,11 +49,17 @@ interface Guarantor {
   monthlyIncome: string;
 }
 
-// Pas de documents fictifs au chargement : le locataire téléverse ses propres
-// pièces (bulletins, justificatifs). Listes vides par défaut.
-const INITIAL_PAYSLIPS: Payslip[] = [];
-
-const INITIAL_EXTRA: ExtraDoc[] = [];
+function formatDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso.slice(0, 10);
+  }
+}
 
 export default function TenantDocumentsPage() {
   const [motivation, setMotivation] = useState("");
@@ -69,9 +72,44 @@ export default function TenantDocumentsPage() {
     phone: "",
     monthlyIncome: "",
   });
-  const [payslips, setPayslips] = useState<Payslip[]>(INITIAL_PAYSLIPS);
-  const [extraDocs, setExtraDocs] = useState<ExtraDoc[]>(INITIAL_EXTRA);
 
+  // Documents reels (DB + Storage)
+  const [documents, setDocuments] = useState<TenantDocumentView[]>([]);
+  const [docsLoading, setDocsLoading] = useState(true);
+  const [uploadingType, setUploadingType] = useState<TenantDocType | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const payslipInputRef = useRef<HTMLInputElement>(null);
+  const extraInputRef = useRef<HTMLInputElement>(null);
+
+  const payslips = useMemo(
+    () => documents.filter((d) => d.docType === "payslip"),
+    [documents],
+  );
+  const extraDocs = useMemo(
+    () => documents.filter((d) => d.docType !== "payslip"),
+    [documents],
+  );
+
+  // Chargement des vrais documents au montage.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const docs = await listTenantDocuments();
+        if (active) setDocuments(docs);
+      } catch {
+        if (active) toast.error("Impossible de charger vos documents.");
+      } finally {
+        if (active) setDocsLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Lettre de motivation : localStorage (acceptable pour le MVP).
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(MOTIVATION_STORAGE_KEY);
@@ -82,7 +120,6 @@ export default function TenantDocumentsPage() {
     setMotivationLoaded(true);
   }, []);
 
-  // Auto-save motivation letter
   useEffect(() => {
     if (!motivationLoaded) return;
     try {
@@ -94,7 +131,7 @@ export default function TenantDocumentsPage() {
 
   const completion = useMemo(() => {
     let score = 0;
-    // pièce d'identité = vérifiée
+    // piece d'identite = verifiee
     score += 25;
     // bulletins
     if (payslips.length >= 3) score += 25;
@@ -118,38 +155,79 @@ export default function TenantDocumentsPage() {
     }
   };
 
-  const handleAddPayslip = () => {
-    const next: Payslip = {
-      id: `slip-${Date.now()}`,
-      month: new Date().toLocaleDateString("fr-FR", {
+  // Upload reel d'une piece (bulletin ou document complementaire).
+  const handleUpload = async (
+    file: File,
+    docType: TenantDocType,
+    label?: string,
+  ) => {
+    setUploadingType(docType);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("docType", docType);
+      fd.append("label", label ?? file.name);
+
+      const res = await uploadTenantDocument(fd);
+      if (!res.success) {
+        toast.error(res.error);
+        return;
+      }
+      if (res.data) {
+        const newDoc = res.data.doc;
+        setDocuments((prev) => [newDoc, ...prev]);
+        toast.success(
+          docType === "payslip" ? "Bulletin téléversé" : "Document ajouté",
+        );
+      }
+    } catch {
+      toast.error("Échec de l'upload. Réessayez.");
+    } finally {
+      setUploadingType(null);
+    }
+  };
+
+  const handlePayslipInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) {
+      const label = `Bulletin du ${new Date().toLocaleDateString("fr-FR", {
         month: "long",
         year: "numeric",
-      }),
-      amount: "—",
-      uploadedAt: new Date().toISOString().slice(0, 10),
-    };
-    setPayslips((prev) => [next, ...prev].slice(0, 6));
-    toast.success("Bulletin téléversé");
+      })}`;
+      void handleUpload(file, "payslip", label);
+    }
   };
 
-  const handleDeletePayslip = (id: string) => {
-    setPayslips((prev) => prev.filter((p) => p.id !== id));
-    toast.info("Bulletin supprimé");
+  const handleExtraInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) void handleUpload(file, "other", file.name);
   };
 
-  const handleAddExtra = () => {
-    const next: ExtraDoc = {
-      id: `doc-${Date.now()}`,
-      name: `Document-${Math.floor(Math.random() * 9999)}.pdf`,
-      uploadedAt: new Date().toISOString().slice(0, 10),
-    };
-    setExtraDocs((prev) => [next, ...prev]);
-    toast.success("Document ajouté");
+  const handleDeleteDocument = async (id: string) => {
+    setDeletingId(id);
+    try {
+      const res = await deleteTenantDocument(id);
+      if (!res.success) {
+        toast.error(res.error);
+        return;
+      }
+      setDocuments((prev) => prev.filter((d) => d.id !== id));
+      toast.info("Document supprimé");
+    } catch {
+      toast.error("Impossible de supprimer le document.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
-  const handleDeleteExtra = (id: string) => {
-    setExtraDocs((prev) => prev.filter((d) => d.id !== id));
-    toast.info("Document supprimé");
+  const handleDownload = (doc: TenantDocumentView) => {
+    if (!doc.signedUrl) {
+      toast.error("Lien indisponible. Rechargez la page.");
+      return;
+    }
+    window.open(doc.signedUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleSaveGuarantor = () => {
@@ -197,10 +275,9 @@ export default function TenantDocumentsPage() {
               Astuce KAZA
             </p>
             <p className="text-sm text-muted-foreground">
-              Un dossier complet augmente vos chances d&apos;être retenu de{" "}
-              <span className="font-semibold text-kaza-navy">70 %</span>. Pensez
-              à joindre vos derniers bulletins et une lettre de motivation
-              personnalisée.
+              Un dossier complet et soigné inspire confiance aux propriétaires.
+              Pensez à joindre vos derniers bulletins et une lettre de
+              motivation personnalisée.
             </p>
           </div>
         </CardContent>
@@ -230,9 +307,11 @@ export default function TenantDocumentsPage() {
               <p className="font-medium">Carte Nationale d&apos;Identité</p>
               <p className="text-muted-foreground">Pièce d&apos;identité vérifiée</p>
             </div>
-            <Button variant="outline" size="sm" className="w-full">
-              <Upload className="mr-1.5 size-3.5" />
-              Mettre à jour la pièce
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <a href="/verify-identity">
+                <Upload className="mr-1.5 size-3.5" />
+                Mettre à jour la pièce
+              </a>
             </Button>
           </CardContent>
         </Card>
@@ -255,49 +334,87 @@ export default function TenantDocumentsPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {payslips.length === 0 ? (
+            {docsLoading ? (
+              <p className="flex items-center justify-center gap-2 rounded-md border border-dashed p-4 text-xs text-muted-foreground">
+                <Loader2 className="size-3.5 animate-spin" />
+                Chargement…
+              </p>
+            ) : payslips.length === 0 ? (
               <p className="rounded-md border border-dashed p-4 text-center text-xs text-muted-foreground">
                 Aucun bulletin téléversé.
               </p>
             ) : (
               <ul className="space-y-2">
-                {payslips.slice(0, 3).map((slip) => (
+                {payslips.slice(0, 6).map((slip) => (
                   <li
                     key={slip.id}
                     className="flex items-center justify-between rounded-md border bg-muted/30 p-2.5"
                   >
-                    <div className="flex items-center gap-2">
-                      <FileText className="size-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-xs font-medium capitalize">
-                          {slip.month}
+                    <div className="flex min-w-0 items-center gap-2">
+                      <FileText className="size-4 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-medium">
+                          {slip.label}
                         </p>
                         <p className="text-[10px] text-muted-foreground">
-                          {slip.amount}
+                          Ajouté le {formatDate(slip.uploadedAt)}
                         </p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7 text-muted-foreground hover:text-rose-600"
-                      onClick={() => handleDeletePayslip(slip.id)}
-                      aria-label="Supprimer"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7 text-muted-foreground"
+                        onClick={() => handleDownload(slip)}
+                        aria-label="Télécharger"
+                      >
+                        <Download className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7 text-muted-foreground hover:text-rose-600"
+                        onClick={() => void handleDeleteDocument(slip.id)}
+                        disabled={deletingId === slip.id}
+                        aria-label="Supprimer"
+                      >
+                        {deletingId === slip.id ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="size-3.5" />
+                        )}
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>
             )}
+            <input
+              ref={payslipInputRef}
+              type="file"
+              accept={ACCEPT}
+              className="hidden"
+              onChange={handlePayslipInput}
+            />
             <Button
               variant="outline"
               size="sm"
               className="w-full"
-              onClick={handleAddPayslip}
+              onClick={() => payslipInputRef.current?.click()}
+              disabled={uploadingType === "payslip"}
             >
-              <Upload className="mr-1.5 size-3.5" />
-              Téléverser un bulletin
+              {uploadingType === "payslip" ? (
+                <>
+                  <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                  Téléversement…
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-1.5 size-3.5" />
+                  Téléverser un bulletin
+                </>
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -514,16 +631,33 @@ export default function TenantDocumentsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
+          <input
+            ref={extraInputRef}
+            type="file"
+            accept={ACCEPT}
+            className="hidden"
+            onChange={handleExtraInput}
+          />
           <button
             type="button"
-            onClick={handleAddExtra}
-            className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-6 transition hover:border-kaza-blue/40 hover:bg-kaza-blue/5"
+            onClick={() => extraInputRef.current?.click()}
+            disabled={uploadingType === "other"}
+            className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-6 transition hover:border-kaza-blue/40 hover:bg-kaza-blue/5 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <Upload className="mb-2 size-6 text-muted-foreground" />
-            <p className="text-sm font-medium">Cliquez pour téléverser</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">
-              PDF, JPG ou PNG · 10 Mo max par fichier
-            </p>
+            {uploadingType === "other" ? (
+              <>
+                <Loader2 className="mb-2 size-6 animate-spin text-muted-foreground" />
+                <p className="text-sm font-medium">Téléversement…</p>
+              </>
+            ) : (
+              <>
+                <Upload className="mb-2 size-6 text-muted-foreground" />
+                <p className="text-sm font-medium">Cliquez pour téléverser</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  PDF, JPG ou PNG · 10 Mo max par fichier
+                </p>
+              </>
+            )}
           </button>
 
           {extraDocs.length > 0 && (
@@ -537,10 +671,10 @@ export default function TenantDocumentsPage() {
                     <FileText className="size-4 shrink-0 text-muted-foreground" />
                     <div className="min-w-0">
                       <p className="truncate text-xs font-medium">
-                        {doc.name}
+                        {doc.label}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        Ajouté le {doc.uploadedAt}
+                        Ajouté le {formatDate(doc.uploadedAt)}
                       </p>
                     </div>
                   </div>
@@ -549,6 +683,7 @@ export default function TenantDocumentsPage() {
                       variant="ghost"
                       size="icon"
                       className="size-7 text-muted-foreground"
+                      onClick={() => handleDownload(doc)}
                       aria-label="Télécharger"
                     >
                       <Download className="size-3.5" />
@@ -558,9 +693,14 @@ export default function TenantDocumentsPage() {
                       size="icon"
                       className="size-7 text-muted-foreground hover:text-rose-600"
                       aria-label="Supprimer"
-                      onClick={() => handleDeleteExtra(doc.id)}
+                      onClick={() => void handleDeleteDocument(doc.id)}
+                      disabled={deletingId === doc.id}
                     >
-                      <Trash2 className="size-3.5" />
+                      {deletingId === doc.id ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="size-3.5" />
+                      )}
                     </Button>
                   </div>
                 </li>

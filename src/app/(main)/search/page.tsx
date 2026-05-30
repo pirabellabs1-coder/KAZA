@@ -26,6 +26,7 @@ import {
   MapPin,
   Map as MapIcon,
   Maximize,
+  Megaphone,
   ScrollText,
   Search,
   ShieldCheck,
@@ -1684,6 +1685,12 @@ function PropertyGridCard({ property }: { property: PublicProperty }) {
         />
         {/* Badges top */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+          {property.isBoosted && (
+            <Badge className="border-0 bg-amber-500 text-xs font-semibold text-white shadow-md">
+              <Megaphone className="mr-1 size-3" />
+              Sponsorisé
+            </Badge>
+          )}
           {isPremium && (
             <Badge className="border-amber-200 bg-amber-100 text-xs font-semibold text-amber-800">
               <Crown className="mr-1 size-3" />
@@ -1776,12 +1783,20 @@ function PropertyListRow({ property }: { property: PublicProperty }) {
           className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
-        {isPremium && (
-          <Badge className="absolute left-3 top-3 border-amber-200 bg-amber-100 text-xs font-semibold text-amber-800">
-            <Crown className="mr-1 size-3" />
-            Premium
-          </Badge>
-        )}
+        <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+          {property.isBoosted && (
+            <Badge className="border-0 bg-amber-500 text-xs font-semibold text-white shadow-md">
+              <Megaphone className="mr-1 size-3" />
+              Sponsorisé
+            </Badge>
+          )}
+          {isPremium && (
+            <Badge className="border-amber-200 bg-amber-100 text-xs font-semibold text-amber-800">
+              <Crown className="mr-1 size-3" />
+              Premium
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col justify-between gap-4 p-5 sm:flex-row">

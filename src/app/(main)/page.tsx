@@ -322,6 +322,7 @@ export default async function HomePage() {
                     }
                     propertyType={property.type}
                     isVerified={property.owner?.isVerified ?? false}
+                    isBoosted={property.isBoosted}
                   />
                 </RevealOnScroll>
               ))}

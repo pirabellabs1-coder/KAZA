@@ -14,6 +14,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
 import { PLAN_DETAILS } from "@/lib/queries/subscriptions";
+import { getPlan } from "@/lib/queries/plans";
 
 // Les tables `subscriptions` / `invoices` ne sont pas encore typées dans
 // `src/types/supabase.ts` — fallback sur le client générique.
@@ -54,7 +55,10 @@ export async function subscribeToPlan(
 
   if (!user) return { success: false, error: "NOT_AUTHENTICATED" };
 
-  const planDetails = PLAN_DETAILS[plan];
+  // Prix recalculé depuis la DB au moment du débit (source de vérité éditable
+  // via /admin/plans). Fallback sur le catalogue statique si la table est
+  // vide / inaccessible afin de ne jamais bloquer une souscription.
+  const planDetails = (await getPlan(plan)) ?? PLAN_DETAILS[plan];
   if (!planDetails) return { success: false, error: "INTERNAL" };
 
   // 1) Refuse si l'utilisateur a déjà un abonnement TRIAL/ACTIVE

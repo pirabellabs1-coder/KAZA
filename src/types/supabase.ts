@@ -43,6 +43,7 @@ export type Database = {
           rating_average: number | null
           notification_prefs: Json
           privacy_prefs: Json
+          billing_address: Json
           deletion_requested_at: string | null
           created_at: string
           updated_at: string
@@ -65,6 +66,7 @@ export type Database = {
           rating_average?: number | null
           notification_prefs?: Json
           privacy_prefs?: Json
+          billing_address?: Json
           deletion_requested_at?: string | null
           created_at?: string
           updated_at?: string
@@ -87,6 +89,7 @@ export type Database = {
           rating_average?: number | null
           notification_prefs?: Json
           privacy_prefs?: Json
+          billing_address?: Json
           deletion_requested_at?: string | null
           created_at?: string
           updated_at?: string
