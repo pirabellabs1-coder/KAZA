@@ -94,7 +94,6 @@ import { useAutoSave } from "@/hooks/use-autosave";
 import {
   getCityBySlug,
   getCountryByCode,
-  getLiveCountries,
   COUNTRIES,
 } from "@/lib/geo/locations";
 import { cn } from "@/lib/utils";
@@ -239,17 +238,6 @@ const TARGET_LABELS: Record<(typeof TARGET_AUDIENCES)[number], { label: string; 
   LONG_TERM: { label: "Long terme", icon: CalendarClock },
 };
 
-// Photos de démo proposées (lib unsplash). Pour la démo MVP avant upload réel.
-const DEMO_PHOTOS = [
-  "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200",
-  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200",
-  "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=1200",
-  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200",
-  "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200",
-  "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200",
-];
-
-const DEMO_PANORAMA = "https://pannellum.org/images/cerro-toco-0.jpg";
 
 // ---------------------------------------------------------------------------
 // Defaults
@@ -920,9 +908,9 @@ function Step2Location() {
   const lat = watch("lat");
   const lng = watch("lng");
 
-  const countries = useMemo(() => getLiveCountries(), []);
-  const soonCountries = useMemo(
-    () => COUNTRIES.filter((c) => c.status === "soon"),
+  // Tous les pays africains sont sélectionnables (pas de restriction "bientôt").
+  const countries = useMemo(
+    () => [...COUNTRIES].sort((a, b) => a.name.localeCompare(b.name, "fr")),
     [],
   );
 
@@ -997,23 +985,6 @@ function Step2Location() {
               >
                 <CountryFlag code={c.code} className="h-4 w-6" />
                 <span className="font-medium text-foreground">{c.name}</span>
-              </button>
-            ))}
-            {soonCountries.map((c) => (
-              <button
-                key={c.code}
-                type="button"
-                disabled
-                className="flex items-center gap-2 rounded-xl border-2 border-dashed border-border/60 p-3 text-sm opacity-60"
-                title="Bientôt disponible"
-              >
-                <CountryFlag code={c.code} className="h-4 w-6 grayscale" />
-                <span className="font-medium text-muted-foreground">
-                  {c.name}
-                </span>
-                <Badge variant="outline" className="ml-auto text-[9px]">
-                  Bientôt
-                </Badge>
               </button>
             ))}
           </div>
@@ -1427,19 +1398,6 @@ function Step5Media({ userId }: { userId: string }) {
   const videoUrl = watch("videoUrl");
   const floorPlanUrl = watch("floorPlanUrl");
 
-  const addDemoBatch = () => {
-    const remaining = DEMO_PHOTOS.filter((u) => !photos.includes(u)).slice(
-      0,
-      30 - photos.length,
-    );
-    if (!remaining.length) return;
-    setValue("photos", [...photos, ...remaining], {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    toast.success(`${remaining.length} photos de démo ajoutées`);
-  };
-
   return (
     <div>
       <StepHeader
@@ -1457,16 +1415,6 @@ function Step5Media({ userId }: { userId: string }) {
               ({photos.length} / 30 — min 3)
             </span>
           </h4>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={addDemoBatch}
-            className="gap-1.5"
-          >
-            <Sparkles className="size-3.5" />
-            Ajouter 6 photos démo
-          </Button>
         </div>
 
         <PhotoUploader
@@ -1520,23 +1468,10 @@ function Step5Media({ userId }: { userId: string }) {
           placeholder="URL d'une image équirectangulaire (ratio 2:1)"
           {...register("panorama360Url")}
         />
-        <div className="mt-2 flex items-center justify-between gap-2">
-          <p className="text-xs text-muted-foreground">
-            Exemple :{" "}
-            <button
-              type="button"
-              onClick={() =>
-                setValue("panorama360Url", DEMO_PANORAMA, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
-              className="text-kaza-blue underline-offset-2 hover:underline"
-            >
-              Utiliser un panorama d&apos;exemple
-            </button>
-          </p>
-        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Importez l&apos;URL d&apos;une image panoramique équirectangulaire
+          (ratio 2:1) de votre bien.
+        </p>
         {panoramaUrl && (
           <div className="mt-4">
             <Panorama360Viewer src={panoramaUrl} height={300} />

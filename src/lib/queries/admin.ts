@@ -755,6 +755,10 @@ export interface AdminDocumentRow {
   reviewedAt: string | null;
   /** Motif de rejet (rejection_reason côté DB). */
   reviewerNotes: string | null;
+  /** Email confirmé au moment de la soumission (email_verified côté DB). */
+  emailVerified: boolean;
+  /** Documents administratifs additionnels avec signed URLs (10 min). */
+  extraDocuments: Array<{ kind: string; label: string; url: string | null }>;
   /** Signed URLs (10 min) pour visualisation des pièces — bucket privé. */
   documentFrontUrl: string | null;
   documentBackUrl: string | null;
@@ -785,7 +789,7 @@ export async function listAllIdentityVerifications(): Promise<
     .select(
       `
       id, user_id, document_type, document_number, phone_number, status,
-      submitted_at, reviewed_at, rejection_reason,
+      submitted_at, reviewed_at, rejection_reason, email_verified, extra_documents,
       document_front_url, document_back_url, selfie_url,
       user:users!user_id(first_name, last_name, email)
     `,
@@ -835,11 +839,23 @@ export async function listAllIdentityVerifications(): Promise<
         (user?.last_name as string) ?? ""
       }`.trim();
 
-      const [frontUrl, backUrl, selfieUrl] = await Promise.all([
+      // Documents administratifs additionnels (JSONB : [{ kind, label, url }]).
+      const rawExtras = Array.isArray(d.extra_documents)
+        ? (d.extra_documents as Array<Record<string, unknown>>)
+        : [];
+
+      const [frontUrl, backUrl, selfieUrl, ...extraSigned] = await Promise.all([
         sign(d.document_front_url),
         sign(d.document_back_url),
         sign(d.selfie_url),
+        ...rawExtras.map((ex) => sign(ex.url)),
       ]);
+
+      const extraDocuments = rawExtras.map((ex, i) => ({
+        kind: typeof ex.kind === "string" ? ex.kind : "other",
+        label: typeof ex.label === "string" ? ex.label : "Document",
+        url: extraSigned[i] ?? null,
+      }));
 
       return {
         id: d.id as string,
@@ -853,6 +869,8 @@ export async function listAllIdentityVerifications(): Promise<
         submittedAt: d.submitted_at as string,
         reviewedAt: (d.reviewed_at as string | null) ?? null,
         reviewerNotes: (d.rejection_reason as string | null) ?? null,
+        emailVerified: Boolean(d.email_verified),
+        extraDocuments,
         documentFrontUrl: frontUrl,
         documentBackUrl: backUrl,
         selfieUrl,

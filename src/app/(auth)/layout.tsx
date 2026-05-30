@@ -5,9 +5,9 @@ const AUTH_BG_IMAGE =
   "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80";
 
 const AUTH_QUOTE = {
-  text: "Avec KAZA, j'ai trouvé mon appartement à Cotonou en 3 jours. Une expérience fluide et rassurante de bout en bout.",
-  author: "Aïcha Diakité",
-  role: "Locataire, Cotonou",
+  text: "La plus grande plateforme d'immobilier en Afrique. Annonces vérifiées, paiements sécurisés et contrats numériques — partout sur le continent.",
+  author: "KAZA",
+  role: "Louez, en toute confiance",
 };
 
 export default function AuthLayout({

@@ -106,7 +106,7 @@ export function InviteMemberDialog({ trigger }: InviteMemberDialogProps) {
               id="invite-fullname"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Ex : Aïcha Toko"
+              placeholder="Prénom Nom"
               required
               minLength={2}
             />
@@ -119,7 +119,7 @@ export function InviteMemberDialog({ trigger }: InviteMemberDialogProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="aicha@agence.bj"
+              placeholder="prenom@agence.bj"
               required
             />
           </div>

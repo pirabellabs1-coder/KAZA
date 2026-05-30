@@ -18,16 +18,6 @@ export const metadata: Metadata = {
   title: "Mon université & emploi du temps",
 };
 
-const UNIVERSITES = [
-  "UAC (Abomey-Calavi)",
-  "IRGIB Africa",
-  "EPAC",
-  "ESGIS Bénin",
-  "Bénin Excellence",
-  "ENEAM",
-  "Autre",
-];
-
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"] as const;
 const SLOTS = [
   "08h-10h",
@@ -47,57 +37,19 @@ type CourseEntry = {
   color: string;
 };
 
-const COURSE_GRID: Partial<Record<DayKey, Partial<Record<SlotKey, CourseEntry>>>> = {
-  Lun: {
-    "08h-10h": { title: "Algorithmique", prof: "Dr. Adékambi", color: "bg-kaza-blue/15 text-kaza-blue ring-kaza-blue/30" },
-    "10h-12h": { title: "Anglais technique", prof: "Mme Diop", color: "bg-violet-100 text-violet-700 ring-violet-300" },
-    "14h-16h": { title: "Base de données", prof: "M. Houessou", color: "bg-amber-100 text-amber-800 ring-amber-300" },
-  },
-  Mar: {
-    "08h-10h": { title: "Mathématiques", prof: "Dr. Kpodar", color: "bg-rose-100 text-rose-700 ring-rose-300" },
-    "10h-12h": { title: "Algorithmique TD", prof: "Tuteur L2", color: "bg-kaza-blue/15 text-kaza-blue ring-kaza-blue/30" },
-    "16h-18h": { title: "Réseaux", prof: "M. Tossou", color: "bg-emerald-100 text-emerald-700 ring-emerald-300" },
-  },
-  Mer: {
-    "10h-12h": { title: "Système Linux", prof: "M. Adjovi", color: "bg-sky-100 text-sky-700 ring-sky-300" },
-    "14h-16h": { title: "Projet équipe", color: "bg-kaza-green/15 text-kaza-green ring-kaza-green/30" },
-  },
-  Jeu: {
-    "08h-10h": { title: "Base de données TP", prof: "M. Houessou", color: "bg-amber-100 text-amber-800 ring-amber-300" },
-    "14h-16h": { title: "Réseaux TP", prof: "M. Tossou", color: "bg-emerald-100 text-emerald-700 ring-emerald-300" },
-  },
-  Ven: {
-    "10h-12h": { title: "Anglais oral", prof: "Mme Diop", color: "bg-violet-100 text-violet-700 ring-violet-300" },
-    "14h-16h": { title: "Génie logiciel", prof: "Dr. Allagbé", color: "bg-fuchsia-100 text-fuchsia-700 ring-fuchsia-300" },
-  },
-  Sam: {
-    "08h-10h": { title: "Stat. & probas", prof: "Dr. Kpodar", color: "bg-rose-100 text-rose-700 ring-rose-300" },
-  },
-};
+// Emploi du temps personnel — vide par défaut (l'étudiant le remplit lui-même).
+// Pas de cours pré-remplis fictifs.
+const COURSE_GRID: Partial<Record<DayKey, Partial<Record<SlotKey, CourseEntry>>>> = {};
 
-const DISTANCES = [
-  {
-    name: "UAC Calavi",
-    distance: "5 min en voiture",
-    badge: "Très proche",
-    badgeClass: "bg-kaza-green/10 text-kaza-green",
-    icon: Bike,
-  },
-  {
-    name: "IRGIB Akpakpa",
-    distance: "12 min en taxi",
-    badge: "Proche",
-    badgeClass: "bg-kaza-blue/10 text-kaza-blue",
-    icon: Bus,
-  },
-  {
-    name: "EPAC Calavi",
-    distance: "8 min en zem",
-    badge: "Très proche",
-    badgeClass: "bg-kaza-green/10 text-kaza-green",
-    icon: Bike,
-  },
-];
+// Distances campus — à calculer depuis l'adresse réelle de l'étudiant et de son
+// université. Vide tant que la géolocalisation n'est pas branchée.
+const DISTANCES: Array<{
+  name: string;
+  distance: string;
+  badge: string;
+  badgeClass: string;
+  icon: typeof Bike;
+}> = [];
 
 export default function StudentCoursesPage() {
   return (
@@ -122,29 +74,18 @@ export default function StudentCoursesPage() {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
-              <Label>Université</Label>
-              <Select defaultValue="UAC (Abomey-Calavi)">
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {UNIVERSITES.map((u) => (
-                    <SelectItem key={u} value={u}>
-                      {u}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="university">Université</Label>
+              <Input id="university" placeholder="Nom de votre université" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="faculty">Faculté / Département</Label>
-              <Input id="faculty" defaultValue="FAST — Informatique" />
+              <Input id="faculty" placeholder="Ex. Faculté des sciences" />
             </div>
             <div className="space-y-2">
               <Label>Année</Label>
-              <Select defaultValue="L2">
+              <Select>
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="Sélectionner" />
                 </SelectTrigger>
                 <SelectContent>
                   {["L1", "L2", "L3", "M1", "M2", "Doctorat"].map((a) => (
@@ -157,7 +98,7 @@ export default function StudentCoursesPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="program">Programme</Label>
-              <Input id="program" defaultValue="Licence Informatique" />
+              <Input id="program" placeholder="Ex. Licence Informatique" />
             </div>
           </div>
         </CardContent>
@@ -230,8 +171,8 @@ export default function StudentCoursesPage() {
             </table>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            12 cours pré-remplis. Cliquez sur un créneau (bientôt) pour modifier
-            ou ajouter un cours.
+            Votre emploi du temps est vide. Renseignez vos cours pour
+            l&apos;organiser ici (édition à venir).
           </p>
         </CardContent>
       </Card>
@@ -245,28 +186,35 @@ export default function StudentCoursesPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            {DISTANCES.map((d) => {
-              const Icon = d.icon;
-              return (
-                <div
-                  key={d.name}
-                  className="rounded-xl border bg-card p-4 transition-shadow hover:shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-kaza-blue/10 text-kaza-blue">
-                      <Icon className="size-5" />
+          {DISTANCES.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Sélectionnez votre université et votre logement pour estimer les
+              temps de trajet. Bientôt disponible.
+            </p>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {DISTANCES.map((d) => {
+                const Icon = d.icon;
+                return (
+                  <div
+                    key={d.name}
+                    className="rounded-xl border bg-card p-4 transition-shadow hover:shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex size-10 items-center justify-center rounded-lg bg-kaza-blue/10 text-kaza-blue">
+                        <Icon className="size-5" />
+                      </div>
+                      <Badge className={cn("text-[10px]", d.badgeClass)}>
+                        {d.badge}
+                      </Badge>
                     </div>
-                    <Badge className={cn("text-[10px]", d.badgeClass)}>
-                      {d.badge}
-                    </Badge>
+                    <p className="mt-3 font-semibold">{d.name}</p>
+                    <p className="text-xs text-muted-foreground">{d.distance}</p>
                   </div>
-                  <p className="mt-3 font-semibold">{d.name}</p>
-                  <p className="text-xs text-muted-foreground">{d.distance}</p>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

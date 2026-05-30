@@ -13,6 +13,8 @@
 // - Couleurs officielles
 // =============================================================================
 
+import type { JSX } from "react";
+
 import { cn } from "@/lib/utils";
 
 interface CountryFlagProps {

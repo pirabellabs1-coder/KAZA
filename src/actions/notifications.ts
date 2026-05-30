@@ -177,6 +177,56 @@ export async function markAllNotificationsRead(): Promise<ActionResult> {
   return { success: true };
 }
 
+export interface BellNotification {
+  id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
+/**
+ * Récupère les notifications récentes + le compte non-lues pour la cloche.
+ * Appelable depuis un composant client (dropdown header).
+ */
+export async function getMyNotificationsForBell(
+  limit = 8,
+): Promise<{ notifications: BellNotification[]; unreadCount: number }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { notifications: [], unreadCount: 0 };
+
+  const [listRes, countRes] = await Promise.all([
+    supabase
+      .from("notifications")
+      .select("id, type, title, body, link, read_at, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("read_at", null),
+  ]);
+
+  const notifications: BellNotification[] = (listRes.data ?? []).map((n) => ({
+    id: n.id as string,
+    type: n.type as string,
+    title: n.title as string,
+    body: (n.body as string | null) ?? null,
+    link: (n.link as string | null) ?? null,
+    isRead: (n.read_at as string | null) !== null,
+    createdAt: n.created_at as string,
+  }));
+
+  return { notifications, unreadCount: countRes.count ?? 0 };
+}
+
 /** Supprime une notification appartenant a l'utilisateur courant. */
 export async function deleteNotification(id: string): Promise<ActionResult> {
   const supabase = await createClient();

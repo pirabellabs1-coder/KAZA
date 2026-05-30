@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
   Cookie,
   Download,
+  Eye,
   ExternalLink,
   FileText,
   Megaphone,
@@ -15,6 +16,11 @@ import {
   Trash2,
 } from "lucide-react";
 
+import {
+  requestAccountDeletion,
+  updatePrivacyPrefs,
+  type PrivacyPrefs,
+} from "@/actions/settings";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,11 +40,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/toast-helper";
 
-const AD_PREFS_KEY = "kaza-ad-prefs";
 const RELEVANT_LOCAL_KEYS = [
   "kaza-profile-data",
   "kaza-notif-prefs",
@@ -51,44 +63,66 @@ const RELEVANT_LOCAL_KEYS = [
   "kaza-demo-session",
 ] as const;
 
-interface AdPrefs {
-  personalizedAds: boolean;
-  shareAnonymizedData: boolean;
-}
+type Visibility = "public" | "tenants" | "private";
 
-const defaultAdPrefs: AdPrefs = {
+const defaultPrefs: PrivacyPrefs = {
+  profileVisibility: "public",
   personalizedAds: false,
   shareAnonymizedData: true,
+  showActivity: true,
 };
 
-export function PrivacyClient() {
-  const [adPrefs, setAdPrefs] = useState<AdPrefs>(defaultAdPrefs);
+function mergePrefs(initial: Record<string, unknown>): PrivacyPrefs {
+  const next: PrivacyPrefs = { ...defaultPrefs };
+  if (
+    initial.profileVisibility === "public" ||
+    initial.profileVisibility === "tenants" ||
+    initial.profileVisibility === "private"
+  ) {
+    next.profileVisibility = initial.profileVisibility;
+  }
+  if (typeof initial.personalizedAds === "boolean") {
+    next.personalizedAds = initial.personalizedAds;
+  }
+  if (typeof initial.shareAnonymizedData === "boolean") {
+    next.shareAnonymizedData = initial.shareAnonymizedData;
+  }
+  if (typeof initial.showActivity === "boolean") {
+    next.showActivity = initial.showActivity;
+  }
+  return next;
+}
+
+export function PrivacyClient({
+  initialPrefs = {},
+  deletionRequested = false,
+}: {
+  initialPrefs?: Record<string, unknown>;
+  deletionRequested?: boolean;
+}) {
+  const [prefs, setPrefs] = useState<PrivacyPrefs>(() =>
+    mergePrefs(initialPrefs),
+  );
+  const [deleted, setDeleted] = useState(deletionRequested);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteStep, setDeleteStep] = useState<1 | 2>(1);
   const [acknowledged, setAcknowledged] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const [isDeleting, startDeleting] = useTransition();
 
-  // Charger les préférences publicitaires
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(AD_PREFS_KEY);
-      if (raw) {
-        setAdPrefs({ ...defaultAdPrefs, ...JSON.parse(raw) });
+  const persistPrefs = (next: PrivacyPrefs) => {
+    const previous = prefs;
+    setPrefs(next);
+    startTransition(async () => {
+      const result = await updatePrivacyPrefs(next);
+      if (result.success) {
+        toast.success("Préférences mises à jour.");
+      } else {
+        setPrefs(previous);
+        toast.error(result.error ?? "Impossible d'enregistrer vos préférences.");
       }
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  const updateAdPrefs = (next: AdPrefs) => {
-    setAdPrefs(next);
-    try {
-      window.localStorage.setItem(AD_PREFS_KEY, JSON.stringify(next));
-      toast.success("Préférences mises à jour.");
-    } catch {
-      toast.error("Impossible d'enregistrer vos préférences.");
-    }
+    });
   };
 
   const handleDownload = () => {
@@ -144,14 +178,19 @@ export function PrivacyClient() {
   };
 
   const handleConfirmDelete = () => {
-    setDeleteDialogOpen(false);
-    resetDeleteDialog();
-    // Mode démo : pas de mutation serveur
-    window.setTimeout(() => {
-      window.alert(
-        "Demande enregistrée. Votre compte sera supprimé sous 30 jours.",
-      );
-    }, 100);
+    startDeleting(async () => {
+      const result = await requestAccountDeletion();
+      if (result.success) {
+        setDeleted(true);
+        setDeleteDialogOpen(false);
+        resetDeleteDialog();
+        toast.success(
+          "Demande enregistrée. Votre compte sera supprimé sous 30 jours.",
+        );
+      } else {
+        toast.error(result.error ?? "Impossible d'enregistrer la demande.");
+      }
+    });
   };
 
   const handleResetCookies = () => {
@@ -168,6 +207,80 @@ export function PrivacyClient() {
 
   return (
     <div className="space-y-6">
+      {/* 0. Visibilité du profil */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-heading text-kaza-navy">
+            <Eye className="size-5 text-kaza-navy" />
+            Visibilité du profil
+          </CardTitle>
+          <CardDescription>
+            Contrôlez qui peut voir votre profil et votre activité sur KAZA.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="profile-visibility"
+                className="text-sm font-medium text-foreground"
+              >
+                Qui peut voir mon profil ?
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Détermine la visibilité de votre nom et photo de profil.
+              </p>
+            </div>
+            <Select
+              value={prefs.profileVisibility}
+              disabled={isPending}
+              onValueChange={(value) =>
+                persistPrefs({
+                  ...prefs,
+                  profileVisibility: value as Visibility,
+                })
+              }
+            >
+              <SelectTrigger
+                id="profile-visibility"
+                className="w-full sm:w-[220px]"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">Tout le monde</SelectItem>
+                <SelectItem value="tenants">
+                  Mes interlocuteurs uniquement
+                </SelectItem>
+                <SelectItem value="private">Personne (privé)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Separator />
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="show-activity"
+                className="text-sm font-medium text-foreground"
+              >
+                Afficher mon activité
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Laisse apparaître votre dernière connexion et votre statut.
+              </p>
+            </div>
+            <Switch
+              id="show-activity"
+              checked={prefs.showActivity}
+              disabled={isPending}
+              onCheckedChange={(checked) =>
+                persistPrefs({ ...prefs, showActivity: checked })
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* 1. Vos données chez KAZA */}
       <Card>
         <CardHeader>
@@ -227,22 +340,35 @@ export function PrivacyClient() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Alert variant="warning">
-            <AlertTriangle />
-            <AlertTitle>Action définitive et irréversible</AlertTitle>
-            <AlertDescription>
-              Toutes vos annonces, messages, paiements et historique seront
-              supprimés sans possibilité de récupération.
-            </AlertDescription>
-          </Alert>
-          <Button
-            variant="outline"
-            className="border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
-            onClick={() => setDeleteDialogOpen(true)}
-          >
-            <Trash2 className="mr-1.5 size-4" />
-            Demander l&apos;effacement
-          </Button>
+          {deleted ? (
+            <Alert variant="warning">
+              <AlertTriangle />
+              <AlertTitle>Demande de suppression enregistrée</AlertTitle>
+              <AlertDescription>
+                Votre demande a bien été reçue. Votre compte sera supprimé sous
+                30 jours. Contactez le support pour l&apos;annuler.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              <Alert variant="warning">
+                <AlertTriangle />
+                <AlertTitle>Action définitive et irréversible</AlertTitle>
+                <AlertDescription>
+                  Toutes vos annonces, messages, paiements et historique seront
+                  supprimés sans possibilité de récupération.
+                </AlertDescription>
+              </Alert>
+              <Button
+                variant="outline"
+                className="border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                onClick={() => setDeleteDialogOpen(true)}
+              >
+                <Trash2 className="mr-1.5 size-4" />
+                Demander l&apos;effacement
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -273,9 +399,10 @@ export function PrivacyClient() {
             </div>
             <Switch
               id="personalized-ads"
-              checked={adPrefs.personalizedAds}
+              checked={prefs.personalizedAds}
+              disabled={isPending}
               onCheckedChange={(checked) =>
-                updateAdPrefs({ ...adPrefs, personalizedAds: checked })
+                persistPrefs({ ...prefs, personalizedAds: checked })
               }
             />
           </div>
@@ -295,9 +422,10 @@ export function PrivacyClient() {
             </div>
             <Switch
               id="anonymized-data"
-              checked={adPrefs.shareAnonymizedData}
+              checked={prefs.shareAnonymizedData}
+              disabled={isPending}
               onCheckedChange={(checked) =>
-                updateAdPrefs({ ...adPrefs, shareAnonymizedData: checked })
+                persistPrefs({ ...prefs, shareAnonymizedData: checked })
               }
             />
           </div>
@@ -436,11 +564,11 @@ export function PrivacyClient() {
                 <Button
                   type="button"
                   className="bg-orange-600 hover:bg-orange-700"
-                  disabled={confirmText !== "SUPPRIMER"}
+                  disabled={confirmText !== "SUPPRIMER" || isDeleting}
                   onClick={handleConfirmDelete}
                 >
                   <Trash2 className="mr-1.5 size-4" />
-                  Supprimer mon compte
+                  {isDeleting ? "Envoi…" : "Supprimer mon compte"}
                 </Button>
               </DialogFooter>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2, Lock } from "lucide-react";
+import { CheckCircle2, Loader2, Lock, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import {
   type PaymentMethod,
 } from "@/components/payments/payment-method-selector";
 import { initiateRentPayment } from "@/actions/payments";
+import { applyPromoToReservation } from "@/actions/promo";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "@/components/ui/toast-helper";
 
@@ -22,6 +23,12 @@ interface CheckoutFormProps {
   amountTotal: number;
 }
 
+interface AppliedPromo {
+  code: string;
+  discount: number;
+  total: number;
+}
+
 export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
   const [method, setMethod] = useState<PaymentMethod>("KAZA Pay");
   const [phone, setPhone] = useState("");
@@ -29,11 +36,53 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Code promo
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
+  const [isApplyingPromo, startPromoTransition] = useTransition();
+
+  // Montant réellement dû après remise éventuelle.
+  const payableAmount = appliedPromo ? appliedPromo.total : amountTotal;
+
   const isMobileMoney = method === "KAZA Pay" || method === "KAZA Wallet";
   const phoneValid =
     !isMobileMoney ||
     /^(\+229)?\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, ""));
   const canSubmit = acceptCgu && phoneValid && !isPending;
+
+  function handleApplyPromo() {
+    const code = promoInput.trim();
+    setPromoError(null);
+    if (!code) {
+      setPromoError("Veuillez saisir un code promo.");
+      return;
+    }
+    startPromoTransition(async () => {
+      const result = await applyPromoToReservation(code, amountTotal);
+      if (result.success && result.discount != null && result.total != null) {
+        setAppliedPromo({
+          code: result.code ?? code.toUpperCase(),
+          discount: result.discount,
+          total: result.total,
+        });
+        toast.success(
+          `Code appliqué : -${formatPrice(result.discount)} de réduction.`,
+        );
+      } else {
+        setAppliedPromo(null);
+        const msg = result.error ?? "Code promo invalide.";
+        setPromoError(msg);
+        toast.error(msg);
+      }
+    });
+  }
+
+  function handleRemovePromo() {
+    setAppliedPromo(null);
+    setPromoInput("");
+    setPromoError(null);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -56,7 +105,8 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
       try {
         const result = await initiateRentPayment({
           rentalId,
-          provider: method === "visa" ? "KAZA Wallet" : "KAZA Pay",
+          provider: method === "visa" ? "kkiapay" : "fedapay",
+          promoCode: appliedPromo?.code,
         });
 
         if (!result.success || !result.checkoutUrl) {
@@ -132,7 +182,107 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
         </section>
       )}
 
-      {/* Étape 3 : CGU */}
+      {/* Étape 3 : code promo */}
+      <section className="space-y-3">
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-foreground">
+            {isMobileMoney ? "3" : "2"}. Code promo (optionnel)
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Vous avez un code de réduction ? Saisissez-le ci-dessous.
+          </p>
+        </div>
+
+        {appliedPromo ? (
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-kaza-green/30 bg-kaza-green/5 p-3">
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle2 className="size-4 shrink-0 text-kaza-green" />
+              <span className="text-foreground">
+                Code{" "}
+                <span className="font-mono font-semibold">
+                  {appliedPromo.code}
+                </span>{" "}
+                appliqué — vous économisez{" "}
+                <span className="font-semibold text-kaza-green">
+                  {formatPrice(appliedPromo.discount)}
+                </span>
+                .
+              </span>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleRemovePromo}
+              disabled={isPending}
+              className="shrink-0 text-muted-foreground hover:text-destructive"
+            >
+              <X className="size-4" />
+              <span className="sr-only">Retirer le code</span>
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="flex items-stretch gap-2">
+              <div className="relative flex-1">
+                <Tag className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="promo"
+                  value={promoInput}
+                  onChange={(e) => {
+                    setPromoInput(e.target.value.toUpperCase());
+                    setPromoError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleApplyPromo();
+                    }
+                  }}
+                  placeholder="BIENVENUE10"
+                  className="pl-9 font-mono uppercase"
+                  autoComplete="off"
+                  disabled={isApplyingPromo || isPending}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleApplyPromo}
+                disabled={isApplyingPromo || isPending || !promoInput.trim()}
+              >
+                {isApplyingPromo ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Appliquer"
+                )}
+              </Button>
+            </div>
+            {promoError && (
+              <p className="text-xs text-destructive">{promoError}</p>
+            )}
+          </div>
+        )}
+
+        {appliedPromo && (
+          <div className="space-y-1 rounded-lg border bg-muted/30 p-3 text-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>Sous-total</span>
+              <span>{formatPrice(amountTotal)}</span>
+            </div>
+            <div className="flex items-center justify-between text-kaza-green">
+              <span>Réduction ({appliedPromo.code})</span>
+              <span>-{formatPrice(appliedPromo.discount)}</span>
+            </div>
+            <div className="flex items-center justify-between border-t pt-1 font-semibold text-foreground">
+              <span>Total à payer</span>
+              <span>{formatPrice(appliedPromo.total)}</span>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Étape 4 : CGU */}
       <section className="space-y-3">
         <div className="flex items-start gap-3 rounded-lg border bg-muted/30 p-3">
           <input
@@ -157,7 +307,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
             </a>{" "}
             et la{" "}
             <a
-              href="/legal/privacy"
+              href="/legal/confidentialite"
               target="_blank"
               rel="noreferrer"
               className="font-medium text-kaza-blue underline-offset-2 hover:underline"
@@ -189,7 +339,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
         ) : (
           <>
             <Lock className="size-4" />
-            Payer {formatPrice(amountTotal)}
+            Payer {formatPrice(payableAmount)}
           </>
         )}
       </Button>

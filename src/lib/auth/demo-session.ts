@@ -43,26 +43,24 @@ function bytesToBase64Url(bytes: Uint8Array): string {
   const b64 =
     typeof btoa !== "undefined"
       ? btoa(binary)
-      : // @ts-expect-error fallback Node
-        Buffer.from(binary, "binary").toString("base64");
+      : Buffer.from(binary, "binary").toString("base64");
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-function base64UrlToBytes(str: string): Uint8Array {
+function base64UrlToBytes(str: string): Uint8Array<ArrayBuffer> {
   const pad = str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
   const b64 = (str + pad).replace(/-/g, "+").replace(/_/g, "/");
   const binary =
     typeof atob !== "undefined"
       ? atob(b64)
-      : // @ts-expect-error fallback Node
-        Buffer.from(b64, "base64").toString("binary");
+      : Buffer.from(b64, "base64").toString("binary");
   const out = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
   return out;
 }
 
-function stringToBytes(str: string): Uint8Array {
-  return new TextEncoder().encode(str);
+function stringToBytes(str: string): Uint8Array<ArrayBuffer> {
+  return new TextEncoder().encode(str) as Uint8Array<ArrayBuffer>;
 }
 
 function bytesToString(bytes: Uint8Array): string {

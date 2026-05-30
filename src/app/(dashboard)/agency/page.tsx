@@ -8,10 +8,7 @@ import {
   TrendingUp,
   ArrowRight,
   BarChart3,
-  FileSignature,
   UserPlus,
-  CalendarCheck,
-  MessageSquare,
   Activity,
   Rocket,
   HardDrive,
@@ -35,6 +32,7 @@ import {
   getOwnerPortfolioStats,
   listPropertiesByOwner,
 } from "@/lib/queries/owner-properties";
+import { getTeamStats, listTeamMembers } from "@/lib/queries/agency-team";
 
 export const metadata: Metadata = {
   title: "Dashboard Agence — KAZA Pro",
@@ -44,105 +42,26 @@ export const metadata: Metadata = {
 const formatFcfa = (value: number) =>
   `${new Intl.NumberFormat("fr-FR").format(value)} FCFA`;
 
-// ────────────────────────────────────────────────────────────────────────────
-// Mocks conservés — sections qui n'ont pas encore de table dédiée en base
-// (équipe / pipeline CRM / activité / graphe historique CA 12 mois).
-// ────────────────────────────────────────────────────────────────────────────
-
-const teamMembers = [
-  { name: "Aïcha Toko", role: "Directrice", initials: "AT", color: "bg-kaza-navy" },
-  { name: "Komi Agbeko", role: "Agent senior", initials: "KA", color: "bg-kaza-blue" },
-  { name: "Sandra Mensah", role: "Agent", initials: "SM", color: "bg-kaza-green" },
-  { name: "Olivier Houngbo", role: "Agent", initials: "OH", color: "bg-amber-500" },
-  { name: "Yacine Sow", role: "Gestionnaire", initials: "YS", color: "bg-purple-500" },
-  { name: "Mariam Tossou", role: "Agent", initials: "MT", color: "bg-rose-500" },
-  { name: "Léa Adjovi", role: "Stagiaire", initials: "LA", color: "bg-cyan-600" },
-  { name: "Pierre Kpondéhou", role: "Comptable", initials: "PK", color: "bg-emerald-600" },
+// Couleurs déterministes pour les initiales d'avatar (sans nom inventé).
+const AVATAR_PALETTE = [
+  "bg-kaza-navy",
+  "bg-kaza-blue",
+  "bg-kaza-green",
+  "bg-amber-500",
+  "bg-purple-500",
+  "bg-rose-500",
+  "bg-cyan-600",
+  "bg-emerald-600",
 ];
 
-// Données mensuelles CA (en milliers de FCFA) — placeholder graphe
-// TODO: remplacer par une vraie agrégation issue des paiements une fois la table consolidée.
-const monthlyRevenue = [
-  { month: "Juin 25", value: 8200 },
-  { month: "Juil. 25", value: 9100 },
-  { month: "Août 25", value: 10300 },
-  { month: "Sept. 25", value: 9800 },
-  { month: "Oct. 25", value: 11200 },
-  { month: "Nov. 25", value: 12500 },
-  { month: "Déc. 25", value: 11800 },
-  { month: "Janv. 26", value: 13400 },
-  { month: "Févr. 26", value: 14100 },
-  { month: "Mars 26", value: 13900 },
-  { month: "Avr. 26", value: 15200 },
-  { month: "Mai 26", value: 16800 },
-];
-
-// Activité récente — placeholder, viendra d'une table activity_logs
-const recentActivity = [
-  {
-    id: "act-1",
-    type: "signature" as const,
-    title: "Bail signé — Loft Haie Vive",
-    agent: "Komi Agbeko",
-    when: "Il y a 35 min",
-    icon: FileSignature,
-    color: "bg-emerald-100 text-emerald-700",
-  },
-  {
-    id: "act-2",
-    type: "lead" as const,
-    title: "Nouveau lead — Marc-Aurèle Sossou",
-    agent: "Attribué à Mariam Tossou",
-    when: "Il y a 2 h",
-    icon: UserPlus,
-    color: "bg-kaza-blue/15 text-kaza-blue",
-  },
-  {
-    id: "act-3",
-    type: "visit" as const,
-    title: "Visite confirmée — Villa Fidjrossè",
-    agent: "Aïcha Toko",
-    when: "Il y a 3 h",
-    icon: CalendarCheck,
-    color: "bg-amber-100 text-amber-700",
-  },
-  {
-    id: "act-4",
-    type: "message" as const,
-    title: "Message reçu — Famille Diop",
-    agent: "Inbox équipe",
-    when: "Il y a 5 h",
-    icon: MessageSquare,
-    color: "bg-purple-100 text-purple-700",
-  },
-  {
-    id: "act-5",
-    type: "lead" as const,
-    title: "Lead qualifié — Awa Bessan",
-    agent: "Mariam Tossou",
-    when: "Hier, 18 h 12",
-    icon: UserPlus,
-    color: "bg-kaza-blue/15 text-kaza-blue",
-  },
-  {
-    id: "act-6",
-    type: "signature" as const,
-    title: "Bail signé — T4 Cadjèhoun",
-    agent: "Komi Agbeko",
-    when: "Hier, 14 h 30",
-    icon: FileSignature,
-    color: "bg-emerald-100 text-emerald-700",
-  },
-];
-
-// Pipeline CRM — placeholder
-const pipelineStages = [
-  { key: "NEW", label: "Nouveaux", count: 18, color: "bg-slate-400" },
-  { key: "CONTACTED", label: "Contactés", count: 12, color: "bg-kaza-blue" },
-  { key: "QUALIFIED", label: "Qualifiés", count: 9, color: "bg-indigo-500" },
-  { key: "VISIT", label: "Visites planifiées", count: 14, color: "bg-amber-500" },
-  { key: "OFFER", label: "Offres", count: 5, color: "bg-kaza-green" },
-];
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0]?.toUpperCase())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("");
+}
 
 // Raccourcis rapides
 const quickActions = [
@@ -176,43 +95,25 @@ const quickActions = [
   },
 ];
 
-function buildSvgPath(
-  values: number[],
-  width: number,
-  height: number,
-  padding = 8,
-) {
-  if (values.length === 0) return "";
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const range = max - min || 1;
-  const stepX = (width - padding * 2) / (values.length - 1);
-  return values
-    .map((v, i) => {
-      const x = padding + i * stepX;
-      const y =
-        height - padding - ((v - min) / range) * (height - padding * 2);
-      return `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(" ");
-}
-
 export default async function AgencyDashboardPage() {
   const user = await getCurrentDisplayUser();
   if (!user) {
     redirect("/login");
   }
 
-  const [allProperties, stats] = await Promise.all([
+  const [allProperties, stats, teamMembers, teamStats] = await Promise.all([
     listPropertiesByOwner(user.id),
     getOwnerPortfolioStats(user.id),
+    listTeamMembers(user.id),
+    getTeamStats(user.id),
   ]);
 
   const topProps = allProperties.slice(0, 5);
   const hasProperties = stats.total > 0;
   const activeListings = stats.available + stats.rented;
 
-  // Quotas mock — viendront d'une table subscriptions à terme
+  // Quotas — utilisation réelle pour annonces / équipe ; les autres restent à
+  // 0 tant que les sources (boosts, stockage) ne sont pas branchées.
   const quotaStats = [
     {
       label: "Annonces",
@@ -221,26 +122,17 @@ export default async function AgencyDashboardPage() {
       unit: "",
       icon: Building2,
     },
-    { label: "Équipe", used: 8, max: 15, unit: "", icon: Users },
-    { label: "Boosts (mois)", used: 4, max: 10, unit: "", icon: Rocket },
-    { label: "Stockage", used: 12.4, max: 50, unit: " GB", icon: HardDrive },
+    { label: "Équipe", used: teamStats.total, max: 15, unit: "", icon: Users },
+    { label: "Boosts (mois)", used: 0, max: 10, unit: "", icon: Rocket },
+    { label: "Stockage", used: 0, max: 50, unit: " GB", icon: HardDrive },
   ];
 
-  const chartWidth = 720;
-  const chartHeight = 220;
-  const values = monthlyRevenue.map((m) => m.value);
-  const linePath = buildSvgPath(values, chartWidth, chartHeight);
-  const areaPath = `${linePath} L ${chartWidth - 8} ${chartHeight - 8} L 8 ${chartHeight - 8} Z`;
-  const totalCa = values.reduce((acc, v) => acc + v, 0) * 1000;
-  const maxStageCount = Math.max(...pipelineStages.map((s) => s.count));
-
-  // Affichage du nom de l'agence — fallback "Premier Immobilier" tant que
-  // la table agencies / le champ users.bio n'est pas exploité.
-  // TODO: brancher sur public.users.bio ou table agencies dédiée.
+  // Nom d'agence — basé sur le nom de l'utilisateur connecté tant que la
+  // table agency_profiles n'est pas branchée.
   const agencyName =
     user.firstName && user.lastName
       ? `Agence ${user.firstName} ${user.lastName}`
-      : "Agence Premier Immobilier";
+      : "Votre agence";
 
   return (
     <div className="space-y-8">
@@ -255,8 +147,10 @@ export default async function AgencyDashboardPage() {
               {agencyName}
             </h1>
             <p className="mt-1 text-sm text-white/75">
-              Cotonou · {teamMembers.length} collaborateurs · Membre KAZA Pro
-              depuis 2024
+              {teamStats.total > 0
+                ? `${teamStats.total} collaborateur${teamStats.total > 1 ? "s" : ""}`
+                : "Aucun collaborateur — invitez votre équipe"}
+              {" · Espace KAZA Pro"}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -293,8 +187,12 @@ export default async function AgencyDashboardPage() {
         />
         <StatsCard
           title="Équipe"
-          value={`${teamMembers.length} membres`}
-          subtitle="Données plateforme"
+          value={`${teamStats.total} membre${teamStats.total > 1 ? "s" : ""}`}
+          subtitle={
+            teamStats.invited > 0
+              ? `${teamStats.invited} invitation${teamStats.invited > 1 ? "s" : ""} en attente`
+              : "Aucune invitation en attente"
+          }
           icon={Users}
         />
         <StatsCard
@@ -325,122 +223,95 @@ export default async function AgencyDashboardPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex -space-x-3">
-              {teamMembers.slice(0, 6).map((m) => (
-                <div
-                  key={m.name}
-                  title={`${m.name} — ${m.role}`}
-                  className={`flex size-11 items-center justify-center rounded-full text-sm font-semibold text-white ring-2 ring-white ${m.color}`}
-                >
-                  {m.initials}
-                </div>
-              ))}
-              {teamMembers.length > 6 && (
-                <div className="flex size-11 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground ring-2 ring-white">
-                  +{teamMembers.length - 6}
-                </div>
-              )}
+          {teamMembers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+                <UserPlus className="size-6 text-kaza-blue" />
+              </div>
+              <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+                Aucun membre encore
+              </p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Invitez vos premiers collaborateurs pour piloter votre agence en
+                équipe.
+              </p>
+              <Button
+                asChild
+                size="sm"
+                className="mt-4 bg-kaza-navy text-white hover:bg-kaza-navy/90"
+              >
+                <Link href="/agency/team">
+                  <UserPlus className="mr-2 size-4" />
+                  Inviter un membre
+                </Link>
+              </Button>
             </div>
-            <div className="flex flex-1 flex-wrap gap-x-8 gap-y-2 text-sm">
-              <div>
-                <p className="text-xs text-muted-foreground">Total équipe</p>
-                <p className="font-semibold text-kaza-navy">
-                  {teamMembers.length} membres
-                </p>
+          ) : (
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex -space-x-3">
+                {teamMembers.slice(0, 6).map((m, idx) => (
+                  <div
+                    key={m.id}
+                    title={`${m.fullName} — ${m.role}`}
+                    className={`flex size-11 items-center justify-center rounded-full text-sm font-semibold text-white ring-2 ring-white ${AVATAR_PALETTE[idx % AVATAR_PALETTE.length]}`}
+                  >
+                    {initialsOf(m.fullName) || "?"}
+                  </div>
+                ))}
+                {teamMembers.length > 6 && (
+                  <div className="flex size-11 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground ring-2 ring-white">
+                    +{teamMembers.length - 6}
+                  </div>
+                )}
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Agents actifs</p>
-                <p className="font-semibold text-kaza-navy">5</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">
-                  Visites moyennes / agent
-                </p>
-                <p className="font-semibold text-kaza-navy">
-                  Aucune donnée encore
-                </p>
+              <div className="flex flex-1 flex-wrap gap-x-8 gap-y-2 text-sm">
+                <div>
+                  <p className="text-xs text-muted-foreground">Total équipe</p>
+                  <p className="font-semibold text-kaza-navy">
+                    {teamStats.total} membre{teamStats.total > 1 ? "s" : ""}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Agents actifs</p>
+                  <p className="font-semibold text-kaza-navy">
+                    {teamStats.active}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">
+                    Visites moyennes / agent
+                  </p>
+                  <p className="font-semibold text-kaza-navy">
+                    Aucune donnée encore
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Performance globale — graphe 12 mois (placeholder) */}
+      {/* Performance globale — empty state honnête tant que les revenus
+          mensuels ne sont pas agrégés. */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="size-5 text-kaza-green" />
-                Performance globale
-              </CardTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Revenus mensuels sur les 12 derniers mois — données de
-                démonstration
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground">Total 12 mois</p>
-              <p className="font-heading text-2xl font-bold text-kaza-navy">
-                {formatFcfa(totalCa)}
-              </p>
-            </div>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="size-5 text-kaza-green" />
+            Performance globale
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="w-full overflow-x-auto">
-            <svg
-              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-              className="h-56 w-full min-w-[600px]"
-              role="img"
-              aria-label="Graphique des revenus mensuels"
-            >
-              <defs>
-                <linearGradient id="caGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1976D2" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#1976D2" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {[0.25, 0.5, 0.75].map((p) => (
-                <line
-                  key={p}
-                  x1="8"
-                  x2={chartWidth - 8}
-                  y1={chartHeight * p}
-                  y2={chartHeight * p}
-                  stroke="#E5E7EB"
-                  strokeDasharray="4 4"
-                />
-              ))}
-              <path d={areaPath} fill="url(#caGradient)" />
-              <path
-                d={linePath}
-                fill="none"
-                stroke="#1976D2"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              {values.map((v, i) => {
-                const max = Math.max(...values);
-                const min = Math.min(...values);
-                const range = max - min || 1;
-                const stepX = (chartWidth - 16) / (values.length - 1);
-                const x = 8 + i * stepX;
-                const y =
-                  chartHeight -
-                  8 -
-                  ((v - min) / range) * (chartHeight - 16);
-                return <circle key={i} cx={x} cy={y} r="3.5" fill="#1976D2" />;
-              })}
-            </svg>
-            <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
-              {monthlyRevenue.map((m) => (
-                <span key={m.month} className="hidden sm:inline">
-                  {m.month}
-                </span>
-              ))}
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-12 text-center">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-green/10">
+              <TrendingUp className="size-6 text-kaza-green" />
             </div>
+            <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+              Données insuffisantes pour ce graphique
+            </p>
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              Les revenus mensuels apparaîtront ici dès que vos premiers loyers
+              auront été encaissés via KAZA.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -460,31 +331,18 @@ export default async function AgencyDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent>
-            <ol className="relative space-y-5 border-l-2 border-border pl-6">
-              {recentActivity.map((event) => {
-                const Icon = event.icon;
-                return (
-                  <li key={event.id} className="relative">
-                    <span
-                      className={`absolute -left-[34px] flex size-7 items-center justify-center rounded-full ring-4 ring-white ${event.color}`}
-                    >
-                      <Icon className="size-3.5" />
-                    </span>
-                    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between">
-                      <p className="text-sm font-medium text-foreground">
-                        {event.title}
-                      </p>
-                      <span className="text-xs text-muted-foreground">
-                        {event.when}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {event.agent}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+                <Activity className="size-6 text-kaza-blue" />
+              </div>
+              <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+                Aucune activité récente
+              </p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Vos évènements (signatures, leads, visites, paiements)
+                apparaîtront ici en temps réel.
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -501,36 +359,24 @@ export default async function AgencyDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {pipelineStages.map((stage) => {
-                const percentage = Math.round(
-                  (stage.count / maxStageCount) * 100,
-                );
-                return (
-                  <div key={stage.key}>
-                    <div className="mb-1.5 flex items-center justify-between">
-                      <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                        {stage.label}
-                      </span>
-                      <span className="font-heading text-sm font-bold text-kaza-navy">
-                        {stage.count}
-                      </span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className={`h-full rounded-full ${stage.color}`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-5 flex items-center justify-between border-t border-border pt-3 text-xs">
-              <span className="text-muted-foreground">Total ouverts</span>
-              <span className="font-semibold text-kaza-navy">
-                {pipelineStages.reduce((acc, s) => acc + s.count, 0)} leads
-              </span>
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+                <BarChart3 className="size-6 text-kaza-blue" />
+              </div>
+              <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+                Pipeline vide
+              </p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Les leads apparaîtront ici dès qu&apos;une demande sera reçue.
+              </p>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="mt-4"
+              >
+                <Link href="/agency/leads">Ouvrir le CRM</Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

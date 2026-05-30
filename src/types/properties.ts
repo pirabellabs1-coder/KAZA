@@ -19,7 +19,7 @@ export type PropertyType = "APARTMENT" | "HOUSE" | "ROOM" | "STUDIO";
 export type RentalStatus = "PENDING" | "ACTIVE" | "ENDED" | "CANCELLED";
 
 /** Status of a visit request */
-export type VisitRequestStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "COMPLETED";
+export type VisitRequestStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED" | "COMPLETED" | "NO_SHOW";
 
 /** Status of a roommate listing */
 export type RoommateListingStatus = "OPEN" | "FULL" | "CLOSED";

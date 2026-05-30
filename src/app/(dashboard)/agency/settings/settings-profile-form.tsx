@@ -8,9 +8,8 @@
 // =============================================================================
 
 import { useEffect, useState } from "react";
-import { Building2, ImageIcon, Mail, RotateCcw, Save } from "lucide-react";
+import { Building2, ImageIcon, Mail, RotateCcw, Save, UserCircle2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -274,8 +273,8 @@ export function SettingsProfileForm({
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-          <div className="flex size-24 items-center justify-center rounded-2xl bg-kaza-navy text-2xl font-bold text-white">
-            PI
+          <div className="flex size-24 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            <ImageIcon className="size-10" />
           </div>
           <div className="flex-1 space-y-3">
             <div className="rounded-xl border-2 border-dashed border-border bg-muted/30 p-6 text-center">
@@ -299,25 +298,27 @@ export function SettingsProfileForm({
         </CardContent>
       </Card>
 
-      {/* Dirigeant (statique) */}
+      {/* Dirigeant — empty state tant que le champ n'est pas branché */}
       <Card>
         <CardHeader>
           <CardTitle>Dirigeant</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-start gap-3 rounded-lg border border-border/70 bg-muted/30 p-4 sm:flex-row sm:items-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-kaza-navy text-sm font-semibold text-white">
-              AT
+          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <UserCircle2 className="size-6" />
             </div>
-            <div className="flex-1">
-              <p className="font-semibold text-kaza-navy">Aïcha Toko</p>
-              <p className="text-sm text-muted-foreground">
-                Directrice — aicha@premier-immobilier.bj
-              </p>
-            </div>
-            <Badge className="bg-kaza-green/15 text-kaza-green hover:bg-kaza-green/15">
-              Vérifié
-            </Badge>
+            <p className="text-sm font-medium text-foreground">
+              Aucun dirigeant déclaré
+            </p>
+            <p className="max-w-sm text-xs text-muted-foreground">
+              Renseignez ici le représentant légal de votre agence
+              (nom, fonction, email professionnel) pour qu&apos;il apparaisse
+              sur votre page publique.
+            </p>
+            <Button type="button" variant="outline" size="sm" className="mt-2">
+              Renseigner le dirigeant
+            </Button>
           </div>
         </CardContent>
       </Card>

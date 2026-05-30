@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import {
   AlertTriangle,
   Calendar,
-  Filter,
   Shield,
   Users,
 } from "lucide-react";
@@ -21,6 +20,8 @@ import {
   listAuditLogs,
   type AuditLogEntry,
 } from "@/lib/queries/audit-logs";
+
+import { AuditFilters } from "./audit-filters";
 
 export const metadata: Metadata = {
   title: "Journal d'audit — KAZA Admin",
@@ -78,9 +79,20 @@ const RISK_ACTIONS: ReadonlySet<string> = new Set([
 // PAGE
 // =============================================================================
 
-export default async function AdminAuditLogPage() {
+export default async function AdminAuditLogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ admin?: string; action?: string; target?: string }>;
+}) {
+  const { admin = "", action = "", target = "" } = await searchParams;
+
   const [logs, stats, topAdmins] = await Promise.all([
-    listAuditLogs({ limit: 100 }),
+    listAuditLogs({
+      limit: 100,
+      adminId: admin || undefined,
+      action: action || undefined,
+      targetType: target || undefined,
+    }),
     getAuditStats(),
     getTopAdminsByActivity(3),
   ]);
@@ -159,57 +171,17 @@ export default async function AdminAuditLogPage() {
         })}
       </div>
 
-      {/* Filtres (presentational pour le MVP — branchement URL params dans un lot ultérieur) */}
-      <Card className="rounded-2xl border-gray-200/80 shadow-sm">
-        <CardContent className="p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <h3 className="text-sm font-semibold text-kaza-navy">Filtres</h3>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <select
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-kaza-navy outline-none"
-              defaultValue=""
-              aria-label="Filtrer par admin"
-              disabled
-            >
-              <option value="">Tous les admins</option>
-              {topAdmins.map((a) => (
-                <option key={a.adminId} value={a.adminId}>
-                  {a.adminName}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-kaza-navy outline-none"
-              defaultValue=""
-              aria-label="Filtrer par action"
-              disabled
-            >
-              <option value="">Toutes actions</option>
-              {Object.entries(ACTION_LABELS).map(([code, label]) => (
-                <option key={code} value={code}>
-                  {label}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-kaza-navy outline-none"
-              defaultValue=""
-              aria-label="Filtrer par type de cible"
-              disabled
-            >
-              <option value="">Toutes cibles</option>
-              <option value="USER">Utilisateurs</option>
-              <option value="PROPERTY">Annonces</option>
-              <option value="CONTRACT">Contrats</option>
-              <option value="AGENCY">Agences</option>
-              <option value="PAYMENT">Paiements</option>
-              <option value="SYSTEM">Système</option>
-            </select>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Filtres — branchés sur les searchParams (?admin=&action=&target=) */}
+      <AuditFilters
+        admins={topAdmins.map((a) => ({
+          adminId: a.adminId,
+          adminName: a.adminName,
+        }))}
+        actionLabels={ACTION_LABELS}
+        selectedAdmin={admin}
+        selectedAction={action}
+        selectedTarget={target}
+      />
 
       {/* MAIN GRID — Logs + Sidebar admins */}
       <div className="grid gap-6 xl:grid-cols-4">

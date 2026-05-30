@@ -121,9 +121,31 @@ export async function createProperty(
     return { success: false, error: "Vous devez etre connecte." };
   }
 
-  // Publication directe en AVAILABLE pour MVP — la modération admin viendra
-  // changer le statut en PENDING_REVIEW / UNAVAILABLE si nécessaire.
-  const initialStatus = "AVAILABLE";
+  // Statut initial selon le réglage de modération (platform_settings.moderation).
+  // - Si auto-approbation activée ET propriétaire vérifié → AVAILABLE direct.
+  // - Sinon → PENDING_REVIEW (passe par la modération admin).
+  let initialStatus: "AVAILABLE" | "PENDING_REVIEW" = "AVAILABLE";
+  try {
+    const [modRes, ownerRes] = await Promise.all([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase as any)
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "moderation")
+        .maybeSingle(),
+      supabase.from("users").select("is_verified").eq("id", user.id).maybeSingle(),
+    ]);
+    const autoApprove = Boolean(
+      (modRes.data?.value as { autoApprove?: boolean } | null)?.autoApprove,
+    );
+    const isVerified = Boolean(ownerRes.data?.is_verified);
+    // Auto-approbation = publication directe seulement si proprio vérifié.
+    // Si l'auto-approbation est désactivée, toute annonce passe en modération.
+    initialStatus = autoApprove && isVerified ? "AVAILABLE" : "PENDING_REVIEW";
+  } catch {
+    // En cas d'échec de lecture du réglage, on modère par défaut (prudent).
+    initialStatus = "PENDING_REVIEW";
+  }
 
   const payload = {
     owner_id: user.id,

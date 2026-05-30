@@ -52,31 +52,11 @@ interface Guarantor {
   monthlyIncome: string;
 }
 
-const INITIAL_PAYSLIPS: Payslip[] = [
-  {
-    id: "slip-mar",
-    month: "Mars 2026",
-    amount: "450 000 FCFA",
-    uploadedAt: "2026-04-02",
-  },
-  {
-    id: "slip-feb",
-    month: "Février 2026",
-    amount: "450 000 FCFA",
-    uploadedAt: "2026-03-03",
-  },
-  {
-    id: "slip-jan",
-    month: "Janvier 2026",
-    amount: "450 000 FCFA",
-    uploadedAt: "2026-02-04",
-  },
-];
+// Pas de documents fictifs au chargement : le locataire téléverse ses propres
+// pièces (bulletins, justificatifs). Listes vides par défaut.
+const INITIAL_PAYSLIPS: Payslip[] = [];
 
-const INITIAL_EXTRA: ExtraDoc[] = [
-  { id: "doc-attest-emp", name: "Attestation employeur.pdf", uploadedAt: "2026-04-10" },
-  { id: "doc-rib", name: "RIB Ecobank.pdf", uploadedAt: "2026-04-10" },
-];
+const INITIAL_EXTRA: ExtraDoc[] = [];
 
 export default function TenantDocumentsPage() {
   const [motivation, setMotivation] = useState("");
@@ -145,7 +125,7 @@ export default function TenantDocumentsPage() {
         month: "long",
         year: "numeric",
       }),
-      amount: "450 000 FCFA",
+      amount: "—",
       uploadedAt: new Date().toISOString().slice(0, 10),
     };
     setPayslips((prev) => [next, ...prev].slice(0, 6));
@@ -248,7 +228,7 @@ export default function TenantDocumentsPage() {
           <CardContent className="space-y-3">
             <div className="rounded-md border bg-muted/30 p-3 text-xs">
               <p className="font-medium">Carte Nationale d&apos;Identité</p>
-              <p className="text-muted-foreground">Vérifiée le 10 avril 2026</p>
+              <p className="text-muted-foreground">Pièce d&apos;identité vérifiée</p>
             </div>
             <Button variant="outline" size="sm" className="w-full">
               <Upload className="mr-1.5 size-3.5" />

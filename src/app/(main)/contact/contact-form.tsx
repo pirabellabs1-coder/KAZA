@@ -102,7 +102,7 @@ export function ContactForm() {
           </Label>
           <Input
             id="name"
-            placeholder="Aïcha Tchoumba"
+            placeholder="Votre nom complet"
             autoComplete="name"
             aria-invalid={!!errors.name}
             {...register("name")}
@@ -197,7 +197,7 @@ export function ContactForm() {
           >
             J&apos;accepte que mes données soient traitées par KAZA pour
             répondre à ma demande, conformément à la{" "}
-            <a href="/legal/privacy" className="text-kaza-blue hover:underline">
+            <a href="/legal/confidentialite" className="text-kaza-blue hover:underline">
               politique de confidentialité
             </a>
             .

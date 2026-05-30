@@ -234,57 +234,9 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      {/* ===== STATS CONFIANCE ====================================== */}
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-16 text-center">
-              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
-                Une plateforme de confiance
-              </p>
-              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                Des milliers de Béninois nous font déjà confiance
-              </h2>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-            <RevealOnScroll>
-              <StatCounter
-                value={1200}
-                suffix="+"
-                label="Propriétaires actifs"
-                description="Sur l'ensemble du Bénin"
-              />
-            </RevealOnScroll>
-            <RevealOnScroll delay={100}>
-              <StatCounter
-                value={8500}
-                suffix="+"
-                label="Locataires servis"
-                description="Depuis le lancement"
-              />
-            </RevealOnScroll>
-            <RevealOnScroll delay={200}>
-              <StatCounter
-                value={45000}
-                prefix=""
-                suffix=" FCFA"
-                label="Économies moyennes"
-                description="Par rapport aux agences classiques"
-              />
-            </RevealOnScroll>
-            <RevealOnScroll delay={300}>
-              <StatCounter
-                value={4.8}
-                suffix="/5"
-                label="Note moyenne"
-                description="Sur plus de 6 200 avis vérifiés"
-              />
-            </RevealOnScroll>
-          </div>
-        </div>
-      </section>
+      {/* Section "Stats confiance" retirée — réactivée quand des indicateurs
+          réels (propriétaires actifs, locataires servis, note moyenne) seront
+          calculés à partir de la base Supabase. */}
 
       {/* ===== PRICING CARDS PREMIUM ================================= */}
       <section className="relative bg-gradient-to-b from-gray-50 via-white to-gray-50 py-24">

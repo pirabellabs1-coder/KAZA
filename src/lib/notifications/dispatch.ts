@@ -17,6 +17,7 @@ import 'server-only';
 // =============================================================================
 
 import { createAdminClient } from '@/lib/supabase/admin';
+import type { Enums, Json } from '@/types/supabase';
 
 import { sendPushBatch, type PushPayload } from './fcm';
 import { sendEmail } from './resend';
@@ -73,7 +74,7 @@ const DEFAULT_CHANNELS: Record<NotificationType, NotificationChannel[]> = {
 /**
  * Mapping vers le `notification_type` ENUM Postgres (cf. migration 00004).
  */
-const IN_APP_TYPE: Record<NotificationType, string> = {
+const IN_APP_TYPE: Record<NotificationType, Enums<'notification_type'>> = {
   visit_request: 'visit_request',
   payment_received: 'payment_received',
   contract_ready: 'contract_ready',
@@ -224,7 +225,6 @@ export async function dispatchNotification(input: DispatchInput): Promise<void> 
     try {
       const { data: tokens } = await admin
         .from('user_push_tokens')
-        // @ts-expect-error — table introduite par 00007, pas encore dans les types générés
         .select('token')
         .eq('user_id', userId)
         .eq('enabled', true);
@@ -243,14 +243,13 @@ export async function dispatchNotification(input: DispatchInput): Promise<void> 
     try {
       const { error } = await admin
         .from('notifications')
-        // @ts-expect-error — types générés trop stricts (Insert sur enum literal)
         .insert({
           user_id: userId,
           type: IN_APP_TYPE[type],
           title: push.title,
           body: push.body,
           link: push.link ?? null,
-          metadata: data as Record<string, unknown>,
+          metadata: data as unknown as Json,
         });
       if (error) {
         console.error('[dispatch] in_app insert failed', error.message);

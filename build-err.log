@@ -1,0 +1,175 @@
+﻿
+> kaza@0.1.0 build
+> next build
+
+▲ Next.js 16.2.0 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.2min
+  Skipping validation of types
+  Finished TypeScript config validation in 485ms ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/109) ...
+  Generating static pages using 7 workers (27/109) 
+  Generating static pages using 7 workers (54/109) 
+  Generating static pages using 7 workers (81/109) 
+✓ Generating static pages using 7 workers (109/109) in 4.5s
+  Finalizing page optimization ...
+
+Route (app)                              Revalidate  Expire
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /about
+├ ƒ /achievements
+├ ƒ /admin
+├ ƒ /admin/agencies
+├ ƒ /admin/analytics
+├ ƒ /admin/audit-log
+├ ƒ /admin/careers
+├ ƒ /admin/careers/new
+├ ƒ /admin/compliance
+├ ƒ /admin/content
+├ ƒ /admin/contracts
+├ ƒ /admin/disputes
+├ ƒ /admin/documents
+├ ƒ /admin/email-templates
+├ ƒ /admin/feature-flags
+├ ƒ /admin/finance
+├ ƒ /admin/monitoring
+├ ƒ /admin/notifications
+├ ƒ /admin/payments
+├ ƒ /admin/payouts
+├ ƒ /admin/properties
+├ ƒ /admin/refunds
+├ ƒ /admin/settings
+├ ƒ /admin/staff
+├ ƒ /admin/users
+├ ƒ /admin/verifications
+├ ƒ /agency
+├ ƒ /agency/analytics
+├ ƒ /agency/billing
+├ ƒ /agency/calendar
+├ ƒ /agency/leads
+├ ƒ /agency/leads/[id]
+├ ƒ /agency/portfolio
+├ ƒ /agency/reports
+├ ƒ /agency/settings
+├ ƒ /agency/team
+├ ƒ /agency/wallet
+├ ƒ /api/track
+├ ƒ /api/webhooks/fedapay
+├ ƒ /api/webhooks/kkiapay
+├ ƒ /appartements
+├ ƒ /blog
+├ ƒ /blog/[slug]
+├ ƒ /carrieres
+├ ƒ /carrieres/[slug]
+├ ● /cities/[slug]
+├ ƒ /colocation
+├ ƒ /contact
+├ ƒ /contracts
+├ ƒ /contracts/[id]
+├ ƒ /contracts/[id]/edit
+├ ƒ /contracts/[id]/preview
+├ ƒ /contracts/new
+├ ƒ /contracts/templates
+├ ƒ /dashboard
+├ ƒ /faq
+├ ○ /forgot-password
+├ ƒ /guide-proprietaire
+├ ƒ /help
+├ ƒ /how-it-works
+├ ƒ /legal/cgu
+├ ƒ /legal/confidentialite
+├ ƒ /legal/cookies
+├ ƒ /legal/mentions-legales
+├ ○ /login
+├ ƒ /maintenance
+├ ƒ /maisons
+├ ƒ /membre-plus
+├ ƒ /messages
+├ ƒ /messages/[conversationId]
+├ ƒ /neighborhoods/compare
+├ ƒ /notifications
+├ ƒ /owner/analytics
+├ ƒ /owner/calendar
+├ ƒ /owner/documents
+├ ƒ /owner/finance
+├ ƒ /owner/payments
+├ ƒ /owner/promotion
+├ ƒ /owner/properties
+├ ƒ /owner/properties/[id]
+├ ƒ /owner/properties/[id]/availability
+├ ƒ /owner/properties/[id]/edit
+├ ƒ /owner/properties/new
+├ ƒ /owner/rentals
+├ ƒ /owner/reports
+├ ƒ /owner/reviews
+├ ƒ /owner/tenants
+├ ƒ /owner/visits
+├ ƒ /owner/wallet
+├ ƒ /partners
+├ ƒ /plus
+├ ƒ /points
+├ ƒ /pricing
+├ ƒ /pro
+├ ƒ /profile
+├ ƒ /properties
+├ ƒ /properties/[id]
+├ ƒ /properties/compare
+├ ƒ /referral
+├ ƒ /reports
+├ ○ /robots.txt
+├ ƒ /search
+├ ƒ /securite
+├ ƒ /settings
+├ ƒ /settings/billing
+├ ƒ /settings/notifications
+├ ƒ /settings/privacy
+├ ƒ /settings/security
+├ ○ /signup
+├ ○ /sitemap.xml                                 1h      1y
+├ ƒ /status
+├ ƒ /student-living
+├ ƒ /student-living/[id]
+├ ƒ /student-living/new
+├ ƒ /student/analytics
+├ ƒ /student/budget
+├ ƒ /student/chat
+├ ƒ /student/colocations
+├ ƒ /student/courses
+├ ƒ /student/expenses
+├ ƒ /student/expenses/new
+├ ƒ /student/finance
+├ ƒ /student/matches
+├ ƒ /student/profile-coloc
+├ ƒ /student/requests
+├ ƒ /student/roommate-matching
+├ ƒ /surveys
+├ ƒ /tenant/analytics
+├ ƒ /tenant/applications
+├ ƒ /tenant/documents
+├ ƒ /tenant/escrow
+├ ƒ /tenant/finance
+├ ƒ /tenant/messages
+├ ƒ /tenant/payments
+├ ƒ /tenant/payments/cancel
+├ ƒ /tenant/payments/checkout
+├ ƒ /tenant/payments/success
+├ ƒ /tenant/rentals
+├ ƒ /tenant/reviews
+├ ƒ /tenant/saved
+├ ƒ /tenant/visits
+├ ƒ /tenant/wallet
+└ ƒ /verify-identity
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

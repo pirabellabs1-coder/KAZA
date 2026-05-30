@@ -107,10 +107,12 @@ export default function ConfidentialitePage() {
               <dd className="text-muted-foreground">PIRABEL LABS SARL</dd>
               <dt className="font-medium text-foreground">Siège social</dt>
               <dd className="text-muted-foreground">
-                Lot XXX, Quartier Cadjèhoun, 01 BP XXXX, Cotonou, Bénin
+                Quartier Cadjèhoun, Cotonou, République du Bénin
               </dd>
               <dt className="font-medium text-foreground">RCCM</dt>
-              <dd className="text-muted-foreground">RCCM-COT-2024-B-XXXXX</dd>
+              <dd className="text-muted-foreground">
+                En cours d&apos;immatriculation
+              </dd>
               <dt className="font-medium text-foreground">
                 Délégué à la Protection des Données (DPO)
               </dt>
@@ -495,8 +497,7 @@ export default function ConfidentialitePage() {
                   dpo@kaza.africa
                 </a>
                 <br />
-                Adresse : Lot XXX, Quartier Cadjèhoun, 01 BP XXXX, Cotonou,
-                Bénin
+                Adresse : Quartier Cadjèhoun, Cotonou, République du Bénin
               </p>
             </div>
           </section>

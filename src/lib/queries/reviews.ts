@@ -297,3 +297,80 @@ export async function listTenantReviews(
     };
   });
 }
+
+// ---------------------------------------------------------------------------
+// Reviews reçues par un propriétaire (toutes ses propriétés)
+// ---------------------------------------------------------------------------
+
+export interface OwnerReceivedReview {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  propertyId: string;
+  propertyTitle: string;
+  reviewerFirstName: string;
+  reviewerLastName: string;
+}
+
+/**
+ * Avis reçus par un propriétaire sur l'ensemble de ses biens.
+ * On joint ratings → rentals → properties (filtre owner_id) + reviewer user.
+ */
+export async function listOwnerReceivedReviews(
+  ownerId: string,
+): Promise<OwnerReceivedReview[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("ratings")
+    .select(
+      `
+      id, rating, comment, created_at,
+      rental:rentals!inner(
+        property:properties!inner(id, title, owner_id)
+      ),
+      reviewer:users!rater_id(first_name, last_name)
+    `,
+    )
+    .eq("rental.property.owner_id", ownerId)
+    .order("created_at", { ascending: false });
+
+  const list = (data ?? []) as unknown as Array<{
+    id: string;
+    rating: number;
+    comment: string | null;
+    created_at: string;
+    rental:
+      | {
+          property:
+            | { id: string; title: string | null; owner_id: string }
+            | { id: string; title: string | null; owner_id: string }[]
+            | null;
+        }
+      | null;
+    reviewer:
+      | { first_name: string | null; last_name: string | null }
+      | { first_name: string | null; last_name: string | null }[]
+      | null;
+  }>;
+
+  return list.map((r) => {
+    const rental = r.rental;
+    const property = rental
+      ? Array.isArray(rental.property)
+        ? rental.property[0]
+        : rental.property
+      : null;
+    const reviewer = Array.isArray(r.reviewer) ? r.reviewer[0] : r.reviewer;
+    return {
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment ?? "",
+      createdAt: r.created_at,
+      propertyId: property?.id ?? "",
+      propertyTitle: property?.title ?? "",
+      reviewerFirstName: reviewer?.first_name ?? "",
+      reviewerLastName: reviewer?.last_name ?? "",
+    };
+  });
+}

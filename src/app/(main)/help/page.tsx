@@ -155,18 +155,18 @@ const CONTACT_OPTIONS = [
     icon: Mail,
     title: "Support par email",
     description: "Réponse garantie sous 4 heures ouvrées.",
-    cta: "support@kaza.africa",
-    href: "mailto:support@kaza.africa",
+    cta: "contact@pirabellabs.com",
+    href: "mailto:contact@pirabellabs.com",
     accent: "bg-kaza-green text-white hover:bg-kaza-green/90",
     bg: "from-kaza-green/15 to-kaza-green/5",
     iconColor: "text-kaza-green",
   },
   {
-    icon: Phone,
-    title: "Téléphone",
-    description: "Appel gratuit depuis le Bénin, lundi-samedi.",
-    cta: "+229 21 12 34 56",
-    href: "tel:+22921123456",
+    icon: MessageCircle,
+    title: "Formulaire de contact",
+    description: "Décrivez votre demande, réponse rapide garantie.",
+    cta: "Nous écrire",
+    href: "/contact",
     accent: "bg-amber-500 text-white hover:bg-amber-600",
     bg: "from-amber-100 to-amber-50",
     iconColor: "text-amber-700",
@@ -361,8 +361,8 @@ export default function HelpPage() {
                 Parlez directement à notre équipe
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                Nos conseillers sont basés à Cotonou et parlent français, fon et
-                yoruba.
+                Nos conseillers vous accompagnent en français et en anglais,
+                partout en Afrique.
               </p>
             </div>
           </RevealOnScroll>

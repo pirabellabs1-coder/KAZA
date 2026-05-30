@@ -2,6 +2,12 @@ import { redirect } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getAdminStats } from "@/lib/queries/admin";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * Admin space layout — garde de route.
@@ -31,5 +37,33 @@ export default async function AdminLayout({
     email: user.email,
   };
 
-  return <AdminShell user={adminDisplay}>{children}</AdminShell>;
+  // Comptes réels pour les badges sidebar + cloche notifications.
+  const supabase = await createClient();
+  const [stats, notifRes] = await Promise.all([
+    getAdminStats(),
+    supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("read_at", null),
+  ]);
+
+  const badges = {
+    kyc: stats.pendingVerifications,
+    properties: stats.propertiesByStatus.PENDING_REVIEW,
+    // Pas encore de table `disputes` — badge masqué tant que le système
+    // de litiges n'est pas en place.
+    disputes: 0,
+  };
+  const notificationCount = notifRes?.count ?? 0;
+
+  return (
+    <AdminShell
+      user={adminDisplay}
+      badges={badges}
+      notificationCount={notificationCount}
+    >
+      {children}
+    </AdminShell>
+  );
 }

@@ -1,11 +1,11 @@
 // =============================================================================
 // KAZA - Admin / Liste des remboursements — client
-// Wave 9 - Yaw Boateng
 // =============================================================================
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, XCircle, Clock4, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast-helper";
+import { approveRefund, rejectRefund } from "@/actions/refunds";
 import { cn, formatPrice } from "@/lib/utils";
 
 export type RefundStatus = "pending" | "approved" | "rejected";
@@ -36,56 +37,10 @@ export interface RefundRequest {
   userEmail: string;
   amount: number;
   reason: string;
-  propertyTitle: string;
   requestedAt: string;
   status: RefundStatus;
+  decisionNote?: string | null;
 }
-
-// === LocalStorage helper (mock — pas dans AdminAction union) ===
-
-interface RefundDecision {
-  id: string;
-  targetId: string;
-  action: "approve" | "reject";
-  reason?: string;
-  decidedBy: string;
-  decidedAt: string;
-}
-
-const STORAGE_KEY = "kaza-admin-refund-decisions";
-
-function getStoredDecisions(): RefundDecision[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? (parsed as RefundDecision[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function recordDecision(input: Omit<RefundDecision, "id" | "decidedAt">): RefundDecision {
-  const decision: RefundDecision = {
-    ...input,
-    id: `ref-${Date.now().toString(36)}-${Math.random()
-      .toString(36)
-      .slice(2, 6)}`,
-    decidedAt: new Date().toISOString(),
-  };
-  if (typeof window === "undefined") return decision;
-  try {
-    const existing = getStoredDecisions();
-    existing.push(decision);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-  } catch {
-    // best-effort
-  }
-  return decision;
-}
-
-// === Composant ===
 
 const statusConfig: Record<
   RefundStatus,
@@ -118,34 +73,22 @@ type DialogState =
   | { type: "reject"; request: RefundRequest }
   | null;
 
-export function RefundsList({ requests, adminEmail }: RefundsListProps) {
+export function RefundsList({ requests }: RefundsListProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [decisions, setDecisions] = useState<RefundDecision[]>([]);
   const [dialog, setDialog] = useState<DialogState>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  useEffect(() => {
-    setDecisions(getStoredDecisions());
-  }, []);
-
-  // Applique les décisions stockées
-  const effectiveRequests = useMemo<RefundRequest[]>(() => {
-    return requests.map((req) => {
-      const lastDecision = decisions
-        .filter((d) => d.targetId === req.id)
-        .at(-1);
-      if (!lastDecision) return req;
-      return {
-        ...req,
-        status: lastDecision.action === "approve" ? "approved" : "rejected",
-      };
-    });
-  }, [requests, decisions]);
-
-  const filtered = effectiveRequests.filter((r) => {
+  const filtered = requests.filter((r) => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     return true;
   });
+
+  const closeDialog = () => {
+    setDialog(null);
+    setRejectReason("");
+  };
 
   const handleConfirm = () => {
     if (!dialog) return;
@@ -153,26 +96,30 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
 
     if (dialog.type === "reject" && rejectReason.trim().length < 3) return;
 
-    const recorded = recordDecision({
-      targetId: request.id,
-      action: dialog.type,
-      reason: dialog.type === "reject" ? rejectReason.trim() : undefined,
-      decidedBy: adminEmail,
+    const isApprove = dialog.type === "approve";
+    const note = rejectReason.trim();
+
+    startTransition(async () => {
+      const result = isApprove
+        ? await approveRefund(request.id)
+        : await rejectRefund(request.id, note);
+
+      if (!result.success) {
+        toast.error(result.error ?? "Impossible d'enregistrer la décision.");
+        return;
+      }
+
+      if (isApprove) {
+        toast.success(
+          `Remboursement de ${formatPrice(request.amount)} approuvé pour ${request.userName}.`,
+        );
+      } else {
+        toast.info(`Demande de remboursement #${request.id.slice(0, 8)} refusée.`);
+      }
+
+      closeDialog();
+      router.refresh();
     });
-    setDecisions((prev) => [...prev, recorded]);
-
-    if (dialog.type === "approve") {
-      toast.success(
-        `Remboursement de ${formatPrice(request.amount)} approuvé pour ${request.userName}.`,
-      );
-    } else {
-      toast.info(
-        `Demande de remboursement #${request.id} refusée.`,
-      );
-    }
-
-    setDialog(null);
-    setRejectReason("");
   };
 
   return (
@@ -218,7 +165,7 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
                 <header className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex flex-col">
                     <span className="font-mono text-xs text-muted-foreground">
-                      #{req.id}
+                      #{req.id.slice(0, 8)}
                     </span>
                     <p className="text-base font-semibold text-foreground">
                       {req.userName}
@@ -260,13 +207,6 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
                 </div>
 
                 <div>
-                  <p className="text-xs text-muted-foreground">Bien</p>
-                  <p className="text-sm font-medium text-foreground">
-                    {req.propertyTitle}
-                  </p>
-                </div>
-
-                <div>
                   <p className="text-xs text-muted-foreground">
                     Motif invoqué
                   </p>
@@ -274,6 +214,17 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
                     « {req.reason} »
                   </p>
                 </div>
+
+                {req.status !== "pending" && req.decisionNote && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      Note de décision
+                    </p>
+                    <p className="mt-1 text-sm text-foreground">
+                      {req.decisionNote}
+                    </p>
+                  </div>
+                )}
 
                 {req.status === "pending" && (
                   <footer className="flex flex-wrap gap-2 border-t border-border pt-4">
@@ -311,7 +262,7 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
       <Dialog
         open={dialog?.type === "approve"}
         onOpenChange={(open) => {
-          if (!open) setDialog(null);
+          if (!open) closeDialog();
         }}
       >
         <DialogContent>
@@ -336,14 +287,15 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialog(null)}>
+            <Button variant="outline" onClick={closeDialog} disabled={isPending}>
               Annuler
             </Button>
             <Button
               className="bg-kaza-green hover:bg-kaza-green/90"
               onClick={handleConfirm}
+              disabled={isPending}
             >
-              Approuver le remboursement
+              {isPending ? "Traitement…" : "Approuver le remboursement"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -353,10 +305,7 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
       <Dialog
         open={dialog?.type === "reject"}
         onOpenChange={(open) => {
-          if (!open) {
-            setDialog(null);
-            setRejectReason("");
-          }
+          if (!open) closeDialog();
         }}
       >
         <DialogContent>
@@ -389,21 +338,15 @@ export function RefundsList({ requests, adminEmail }: RefundsListProps) {
             </div>
           )}
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setDialog(null);
-                setRejectReason("");
-              }}
-            >
+            <Button variant="outline" onClick={closeDialog} disabled={isPending}>
               Annuler
             </Button>
             <Button
               variant="destructive"
               onClick={handleConfirm}
-              disabled={rejectReason.trim().length < 3}
+              disabled={isPending || rejectReason.trim().length < 3}
             >
-              Refuser
+              {isPending ? "Traitement…" : "Refuser"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
   Banknote,
   Calendar,
   Download,
@@ -67,23 +65,9 @@ export const metadata: Metadata = {
 };
 
 // =============================================================================
-// Données dérivées
+// Données dérivées — vues agrégées finance non encore branchées en base.
+// Empty state propre en attendant.
 // =============================================================================
-const REVENUE_12M = [
-  { month: "Juin", revenue: 132_000_000, ebitda: 18_500_000 },
-  { month: "Juil", revenue: 138_500_000, ebitda: 20_200_000 },
-  { month: "Août", revenue: 145_300_000, ebitda: 22_100_000 },
-  { month: "Sep", revenue: 152_800_000, ebitda: 24_500_000 },
-  { month: "Oct", revenue: 158_200_000, ebitda: 25_800_000 },
-  { month: "Nov", revenue: 162_400_000, ebitda: 27_200_000 },
-  { month: "Déc", revenue: 168_900_000, ebitda: 28_800_000 },
-  { month: "Jan", revenue: 159_200_000, ebitda: 26_400_000 },
-  { month: "Fév", revenue: 164_700_000, ebitda: 27_900_000 },
-  { month: "Mar", revenue: 171_200_000, ebitda: 29_500_000 },
-  { month: "Avr", revenue: 175_800_000, ebitda: 30_700_000 },
-  { month: "Mai", revenue: 178_500_000, ebitda: 31_400_000 },
-];
-
 const REVENUE_BREAKDOWN = [
   {
     label: "Commissions",
@@ -102,18 +86,11 @@ const REVENUE_BREAKDOWN = [
   },
 ];
 
-const TOP_REVENUE_SOURCES = [
-  { name: "Premier Immobilier (commission)", type: "Agence", amount: 16_800_000 },
-  { name: "Dakar Habitat (commission)", type: "Agence", amount: 14_500_000 },
-  { name: "Atlantique Habitat (commission)", type: "Agence", amount: 14_200_000 },
-  { name: "Abidjan Élite — Plan ELITE", type: "Abonnement", amount: 850_000 },
-  { name: "Boost Villa Haie Vive 7j", type: "Boost", amount: 280_000 },
-  { name: "Abonnement Premium Atlantique", type: "Abonnement", amount: 145_000 },
-  { name: "Boost T4 Cadjèhoun 3j", type: "Boost", amount: 95_000 },
-  { name: "Cocotier Pro — Plan STARTER", type: "Abonnement", amount: 89_000 },
-  { name: "Boost Studio Ganhi 7j", type: "Boost", amount: 78_000 },
-  { name: "Tropic Immo — Plan STARTER", type: "Abonnement", amount: 65_000 },
-];
+const TOP_REVENUE_SOURCES: Array<{
+  name: string;
+  type: string;
+  amount: number;
+}> = [];
 
 const PAYOUT_STATUS_COLORS: Record<string, string> = {
   SCHEDULED: "bg-blue-100 text-blue-700",
@@ -143,15 +120,20 @@ const COUNTRY_FLAGS: Record<string, string> = {
 // PAGE
 // =============================================================================
 export default function AdminFinancePage() {
-  // GRAPHIQUE 1 — waterfall
+  // GRAPHIQUE 1 — waterfall (empty si pas de data)
+  const hasWaterfall = REVENUE_WATERFALL.length > 0;
   const wW = 800;
   const wH = 320;
   const wPad = { l: 60, r: 16, t: 30, b: 60 };
   const wInnerW = wW - wPad.l - wPad.r;
   const wInnerH = wH - wPad.t - wPad.b;
-  const wMaxAbs = Math.max(...REVENUE_WATERFALL.map((r) => Math.abs(r.value)));
-  const wBarW = (wInnerW / REVENUE_WATERFALL.length) * 0.55;
-  const wStep = wInnerW / REVENUE_WATERFALL.length;
+  const wMaxAbs = hasWaterfall
+    ? Math.max(...REVENUE_WATERFALL.map((r) => Math.abs(r.value)))
+    : 1;
+  const wBarW = hasWaterfall
+    ? (wInnerW / REVENUE_WATERFALL.length) * 0.55
+    : 0;
+  const wStep = hasWaterfall ? wInnerW / REVENUE_WATERFALL.length : 0;
   const wColor = (type: string) =>
     type === "total" ? "#1A3A52" : type === "negative" ? "#EF4444" : "#4CAF50";
 
@@ -161,30 +143,18 @@ export default function AdminFinancePage() {
   const donutCirc = 2 * Math.PI * donutR;
   let cumulative = 0;
   const donutSegments = REVENUE_BREAKDOWN.map((item) => {
-    const pct = item.value / totalBreakdown;
+    const pct = totalBreakdown > 0 ? item.value / totalBreakdown : 0;
     const dashArray = pct * donutCirc;
     const dashOffset = -cumulative;
     cumulative += dashArray;
     return { ...item, dashArray, dashOffset, pct };
   });
 
-  // GRAPHIQUE 3 — revenus 12 mois (aire + ligne EBITDA)
-  const r3W = 800;
-  const r3H = 280;
-  const r3Pad = { l: 60, r: 16, t: 24, b: 36 };
-  const r3InnerW = r3W - r3Pad.l - r3Pad.r;
-  const r3InnerH = r3H - r3Pad.t - r3Pad.b;
-  const r3MaxRev = Math.max(...REVENUE_12M.map((m) => m.revenue));
-  const r3X = (i: number) =>
-    r3Pad.l + (i / (REVENUE_12M.length - 1)) * r3InnerW;
-  const r3Y = (v: number) => r3Pad.t + r3InnerH - (v / r3MaxRev) * r3InnerH;
-  const revLine = REVENUE_12M.map((m, i) => `${r3X(i)},${r3Y(m.revenue)}`).join(" ");
-  const revArea = `${r3Pad.l},${r3Pad.t + r3InnerH} ${revLine} ${r3Pad.l + r3InnerW},${r3Pad.t + r3InnerH}`;
-  const ebitdaLine = REVENUE_12M.map((m, i) => `${r3X(i)},${r3Y(m.ebitda)}`).join(" ");
-
   // geo total
   const geoTotal = GEO_HEATMAP.reduce((s, c) => s + c.revenueFcfa, 0);
-  const geoMax = Math.max(...GEO_HEATMAP.map((c) => c.revenueFcfa));
+  const geoMax = GEO_HEATMAP.length > 0
+    ? Math.max(...GEO_HEATMAP.map((c) => c.revenueFcfa))
+    : 1;
 
   return (
     <div className="space-y-8 pb-24">
@@ -225,8 +195,6 @@ export default function AdminFinancePage() {
             label: "Revenus bruts (30j)",
             value: formatFcfaShort(PLATFORM_FINANCE_30D.grossRevenueFcfa),
             unit: "FCFA",
-            delta: "+8.2%",
-            positive: true,
             Icon: TrendingUp,
             tint: "text-kaza-blue",
             bg: "bg-blue-50",
@@ -235,8 +203,6 @@ export default function AdminFinancePage() {
             label: "Reversements bailleurs",
             value: formatFcfaShort(PLATFORM_FINANCE_30D.payoutsFcfa),
             unit: "FCFA",
-            delta: "+6.4%",
-            positive: true,
             Icon: Banknote,
             tint: "text-emerald-600",
             bg: "bg-emerald-50",
@@ -245,8 +211,6 @@ export default function AdminFinancePage() {
             label: "EBITDA",
             value: formatFcfaShort(PLATFORM_FINANCE_30D.ebitda),
             unit: "FCFA",
-            delta: "+11.7%",
-            positive: true,
             Icon: Wallet,
             tint: "text-amber-600",
             bg: "bg-amber-50",
@@ -255,8 +219,6 @@ export default function AdminFinancePage() {
             label: "Marge EBITDA",
             value: `${PLATFORM_FINANCE_30D.ebitdaMargin}`,
             unit: "%",
-            delta: "+1.4 pts",
-            positive: true,
             Icon: PercentCircle,
             tint: "text-purple-600",
             bg: "bg-purple-50",
@@ -270,21 +232,6 @@ export default function AdminFinancePage() {
                   <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${k.bg}`}>
                     <Icon className={`h-5 w-5 ${k.tint}`} />
                   </div>
-                  <Badge
-                    variant="outline"
-                    className={
-                      k.positive
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        : "border-red-200 bg-red-50 text-red-700"
-                    }
-                  >
-                    {k.positive ? (
-                      <ArrowUpRight className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDownRight className="mr-1 h-3 w-3" />
-                    )}
-                    {k.delta}
-                  </Badge>
                 </div>
                 <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {k.label}
@@ -314,93 +261,106 @@ export default function AdminFinancePage() {
           </p>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <svg
-              viewBox={`0 0 ${wW} ${wH}`}
-              className="h-[320px] w-full min-w-[720px]"
-            >
-              {/* baseline */}
-              <line
-                x1={wPad.l}
-                x2={wPad.l + wInnerW}
-                y1={wPad.t + wInnerH}
-                y2={wPad.t + wInnerH}
-                stroke="#9CA3AF"
-                strokeWidth={1}
-              />
+          {hasWaterfall ? (
+            <>
+              <div className="overflow-x-auto">
+                <svg
+                  viewBox={`0 0 ${wW} ${wH}`}
+                  className="h-[320px] w-full min-w-[720px]"
+                >
+                  {/* baseline */}
+                  <line
+                    x1={wPad.l}
+                    x2={wPad.l + wInnerW}
+                    y1={wPad.t + wInnerH}
+                    y2={wPad.t + wInnerH}
+                    stroke="#9CA3AF"
+                    strokeWidth={1}
+                  />
 
-              {REVENUE_WATERFALL.map((item, i) => {
-                const isPositive = item.value >= 0;
-                const h = (Math.abs(item.value) / wMaxAbs) * wInnerH;
-                const x = wPad.l + i * wStep + (wStep - wBarW) / 2;
-                const y = isPositive
-                  ? wPad.t + wInnerH - h
-                  : wPad.t + wInnerH;
-                const color = wColor(item.type);
-                return (
-                  <g key={item.label}>
-                    {/* bar */}
-                    <rect
-                      x={x}
-                      y={y}
-                      width={wBarW}
-                      height={h}
-                      fill={color}
-                      rx={3}
-                    />
-                    {/* connector dashed */}
-                    {i < REVENUE_WATERFALL.length - 1 && (
-                      <line
-                        x1={x + wBarW}
-                        x2={x + wStep}
-                        y1={isPositive ? y : y - h}
-                        y2={isPositive ? y : y - h}
-                        stroke="#94A3B8"
-                        strokeDasharray="3 3"
-                      />
-                    )}
-                    {/* value */}
-                    <text
-                      x={x + wBarW / 2}
-                      y={(isPositive ? y : y + h) - 8}
-                      textAnchor="middle"
-                      className="fill-kaza-navy"
-                      fontSize="11"
-                      fontWeight="700"
-                    >
-                      {formatFcfaShort(item.value)}
-                    </text>
-                    {/* label X */}
-                    <text
-                      x={x + wBarW / 2}
-                      y={wH - 30}
-                      textAnchor="middle"
-                      className="fill-gray-600"
-                      fontSize="10"
-                    >
-                      {item.label.length > 14
-                        ? item.label.slice(0, 13) + "…"
-                        : item.label}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs">
-            <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-sm bg-emerald-500" />
-              <span className="text-muted-foreground">Positif</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-sm bg-red-500" />
-              <span className="text-muted-foreground">Négatif</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-sm bg-kaza-navy" />
-              <span className="text-muted-foreground">Total / Sous-total</span>
-            </span>
-          </div>
+                  {REVENUE_WATERFALL.map((item, i) => {
+                    const isPositive = item.value >= 0;
+                    const h = (Math.abs(item.value) / wMaxAbs) * wInnerH;
+                    const x = wPad.l + i * wStep + (wStep - wBarW) / 2;
+                    const y = isPositive
+                      ? wPad.t + wInnerH - h
+                      : wPad.t + wInnerH;
+                    const color = wColor(item.type);
+                    return (
+                      <g key={item.label}>
+                        <rect
+                          x={x}
+                          y={y}
+                          width={wBarW}
+                          height={h}
+                          fill={color}
+                          rx={3}
+                        />
+                        {i < REVENUE_WATERFALL.length - 1 && (
+                          <line
+                            x1={x + wBarW}
+                            x2={x + wStep}
+                            y1={isPositive ? y : y - h}
+                            y2={isPositive ? y : y - h}
+                            stroke="#94A3B8"
+                            strokeDasharray="3 3"
+                          />
+                        )}
+                        <text
+                          x={x + wBarW / 2}
+                          y={(isPositive ? y : y + h) - 8}
+                          textAnchor="middle"
+                          className="fill-kaza-navy"
+                          fontSize="11"
+                          fontWeight="700"
+                        >
+                          {formatFcfaShort(item.value)}
+                        </text>
+                        <text
+                          x={x + wBarW / 2}
+                          y={wH - 30}
+                          textAnchor="middle"
+                          className="fill-gray-600"
+                          fontSize="10"
+                        >
+                          {item.label.length > 14
+                            ? item.label.slice(0, 13) + "…"
+                            : item.label}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-4 text-xs">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-sm bg-emerald-500" />
+                  <span className="text-muted-foreground">Positif</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-sm bg-red-500" />
+                  <span className="text-muted-foreground">Négatif</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-sm bg-kaza-navy" />
+                  <span className="text-muted-foreground">
+                    Total / Sous-total
+                  </span>
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/40 py-16 text-center">
+              <TrendingUp className="size-10 text-muted-foreground/40" />
+              <p className="text-sm font-medium text-foreground">
+                Pas encore de données financières
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Le waterfall s&apos;affichera dès que les vues agrégées
+                Supabase seront branchées.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -501,77 +461,18 @@ export default function AdminFinancePage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <svg
-                viewBox={`0 0 ${r3W} ${r3H}`}
-                className="h-[280px] w-full min-w-[600px]"
-              >
-                <defs>
-                  <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1976D2" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#1976D2" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                {/* grid Y */}
-                {Array.from({ length: 5 }).map((_, i) => {
-                  const y = r3Pad.t + (i / 4) * r3InnerH;
-                  const v = Math.round((r3MaxRev * (4 - i)) / 4);
-                  return (
-                    <g key={i}>
-                      <line
-                        x1={r3Pad.l}
-                        x2={r3Pad.l + r3InnerW}
-                        y1={y}
-                        y2={y}
-                        stroke="#E5E7EB"
-                        strokeDasharray={i === 4 ? "0" : "2 4"}
-                      />
-                      <text
-                        x={r3Pad.l - 6}
-                        y={y + 3}
-                        textAnchor="end"
-                        className="fill-gray-400"
-                        fontSize="10"
-                      >
-                        {formatFcfaShort(v)}
-                      </text>
-                    </g>
-                  );
-                })}
-
-                <polygon points={revArea} fill="url(#revGrad)" />
-                <polyline
-                  points={revLine}
-                  fill="none"
-                  stroke="#1976D2"
-                  strokeWidth={2.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <polyline
-                  points={ebitdaLine}
-                  fill="none"
-                  stroke="#4CAF50"
-                  strokeWidth={2.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                {REVENUE_12M.map((m, i) => (
-                  <g key={m.month}>
-                    <circle cx={r3X(i)} cy={r3Y(m.revenue)} r={3} fill="#1976D2" />
-                    <circle cx={r3X(i)} cy={r3Y(m.ebitda)} r={3} fill="#4CAF50" />
-                    <text
-                      x={r3X(i)}
-                      y={r3H - 14}
-                      textAnchor="middle"
-                      className="fill-gray-500"
-                      fontSize="10"
-                    >
-                      {m.month}
-                    </text>
-                  </g>
-                ))}
-              </svg>
+            <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/40 py-16 text-center">
+              <TrendingUp className="size-10 text-muted-foreground/40" />
+              <p className="text-sm font-medium text-foreground">
+                Historique 12 mois indisponible
+              </p>
+              <p className="text-xs text-muted-foreground">
+                La courbe s&apos;affichera dès que la vue agrégée
+                <code className="mx-1 rounded bg-gray-100 px-1 text-[10px]">
+                  monthly_revenue
+                </code>
+                sera branchée en base.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -677,6 +578,18 @@ export default function AdminFinancePage() {
             </p>
           </CardHeader>
           <CardContent>
+            {GEO_HEATMAP.filter((c) => c.revenueFcfa > 0).length === 0 ? (
+              <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/40 py-12 text-center">
+                <Globe2 className="size-8 text-muted-foreground/40" />
+                <p className="text-sm font-medium text-foreground">
+                  Aucune recette par pays
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  La répartition géographique s&apos;affichera dès la
+                  première transaction.
+                </p>
+              </div>
+            ) : (
             <ul className="space-y-3.5">
               {GEO_HEATMAP.filter((c) => c.revenueFcfa > 0).map((c) => {
                 const pct = geoTotal > 0 ? (c.revenueFcfa / geoTotal) * 100 : 0;
@@ -707,6 +620,7 @@ export default function AdminFinancePage() {
                 );
               })}
             </ul>
+            )}
           </CardContent>
         </Card>
 
@@ -718,29 +632,44 @@ export default function AdminFinancePage() {
             <p className="text-sm text-muted-foreground">Ce mois</p>
           </CardHeader>
           <CardContent className="p-0">
-            <ul className="divide-y divide-gray-100">
-              {TOP_REVENUE_SOURCES.map((src, i) => (
-                <li
-                  key={src.name}
-                  className="flex items-center justify-between gap-3 px-6 py-3 hover:bg-gray-50/50"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-kaza-navy/5 text-xs font-bold text-kaza-navy">
-                      {i + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-kaza-navy">
-                        {src.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{src.type}</p>
+            {TOP_REVENUE_SOURCES.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
+                <TrendingUp className="size-8 text-muted-foreground/40" />
+                <p className="text-sm font-medium text-foreground">
+                  Aucune source de revenu
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Le classement s&apos;affichera dès que des paiements seront
+                  traités.
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {TOP_REVENUE_SOURCES.map((src, i) => (
+                  <li
+                    key={src.name}
+                    className="flex items-center justify-between gap-3 px-6 py-3 hover:bg-gray-50/50"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-kaza-navy/5 text-xs font-bold text-kaza-navy">
+                        {i + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-kaza-navy">
+                          {src.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {src.type}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-sm font-semibold text-emerald-600">
-                    {formatFcfaShort(src.amount)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                    <span className="text-sm font-semibold text-emerald-600">
+                      {formatFcfaShort(src.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -765,25 +694,29 @@ export default function AdminFinancePage() {
                 TVA collectée
               </p>
               <p className="mt-1 font-heading text-2xl font-bold text-kaza-navy">
-                {formatFcfa(32_130_000)}
+                {formatFcfa(PLATFORM_FINANCE_30D.taxesFcfa)}
               </p>
-              <p className="mt-1 text-xs text-emerald-600">+8.4% vs M-1</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Sur paiements confirmés
+              </p>
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-4">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 TVA déductible
               </p>
               <p className="mt-1 font-heading text-2xl font-bold text-kaza-navy">
-                {formatFcfa(3_630_000)}
+                {formatFcfa(0)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">Frais opérationnels</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Frais opérationnels
+              </p>
             </div>
             <div className="rounded-xl border border-purple-200 bg-purple-50 p-4">
               <p className="text-xs uppercase tracking-wide text-purple-700">
                 TVA à payer
               </p>
               <p className="mt-1 font-heading text-2xl font-bold text-purple-700">
-                {formatFcfa(28_500_000)}
+                {formatFcfa(PLATFORM_FINANCE_30D.taxesFcfa)}
               </p>
               <Button size="sm" className="mt-2 bg-purple-600 hover:bg-purple-700">
                 <FileText className="mr-1 h-3.5 w-3.5" />

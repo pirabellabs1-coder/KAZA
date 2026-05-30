@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   Lock,
   ShieldCheck,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 
+import { changePassword } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -102,8 +103,9 @@ export function SecurityClient() {
   const [pwdErrors, setPwdErrors] = useState<
     Partial<Record<keyof typeof pwd, string>>
   >({});
-  const [twoFa, setTwoFa] = useState(false);
+  const [twoFa] = useState(false);
   const [sessions, setSessions] = useState(SESSIONS);
+  const [isPending, startTransition] = useTransition();
 
   const handlePasswordSubmit = () => {
     const result = passwordSchema.safeParse(pwd);
@@ -117,21 +119,20 @@ export function SecurityClient() {
       return;
     }
     setPwdErrors({});
-    setPwd({ current: "", next: "", confirm: "" });
-    toast.success("Mot de passe mis à jour");
+    startTransition(async () => {
+      const res = await changePassword(pwd.next);
+      if (res.success) {
+        setPwd({ current: "", next: "", confirm: "" });
+        toast.success("Mot de passe mis à jour");
+      } else {
+        toast.error(res.error ?? "Impossible de changer le mot de passe");
+      }
+    });
   };
 
   const handleRevoke = (id: string) => {
     setSessions((prev) => prev.filter((s) => s.id !== id));
     toast.success("Session déconnectée");
-  };
-
-  const handleToggle2Fa = (value: boolean) => {
-    if (value) {
-      toast.info("Bientôt disponible — l'activation 2FA arrive prochainement");
-      return;
-    }
-    setTwoFa(false);
   };
 
   return (
@@ -170,7 +171,9 @@ export function SecurityClient() {
             onChange={(v) => setPwd({ ...pwd, confirm: v })}
           />
           <div className="flex justify-end pt-2">
-            <Button onClick={handlePasswordSubmit}>Mettre à jour</Button>
+            <Button onClick={handlePasswordSubmit} disabled={isPending}>
+              {isPending ? "Mise à jour…" : "Mettre à jour"}
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -195,7 +198,7 @@ export function SecurityClient() {
                 Recevez un code à 6 chiffres sur votre téléphone à chaque connexion.
               </p>
             </div>
-            <Switch checked={twoFa} onCheckedChange={handleToggle2Fa} />
+            <Switch checked={twoFa} disabled aria-label="2FA bientôt disponible" />
           </div>
           <Alert variant="info">
             <Smartphone />

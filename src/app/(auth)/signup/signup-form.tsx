@@ -205,7 +205,7 @@ export function SignupForm() {
         <Input
           id="phone"
           type="tel"
-          placeholder="+229 97 00 00 00"
+          placeholder="Votre numéro de téléphone"
           autoComplete="tel"
           aria-invalid={!!errors.phone}
           {...register("phone")}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/toast-helper";
 
 type DayKind = "visit" | "blocked" | "rented" | "free";
 
@@ -44,28 +43,15 @@ const MONTH_NAMES = [
 
 const WEEK_DAYS = ["L", "M", "M", "J", "V", "S", "D"];
 
-// Genere des etats stables a partir de l'id de la propriete + mois
+// Aucune donnée d'occupation fabriquée : par défaut tous les jours sont libres.
+// La gestion réelle des indisponibilités se fait dans le gestionnaire de
+// disponibilités dédié (bouton « Gérer les disponibilités »).
 function buildMonthMap(
-  propertyId: string,
-  year: number,
-  month: number,
+  _propertyId: string,
+  _year: number,
+  _month: number,
 ): Map<number, DayKind> {
-  let s = 0;
-  const seed = `${propertyId}-${year}-${month}`;
-  for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
-
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const map = new Map<number, DayKind>();
-  for (let d = 1; d <= daysInMonth; d++) {
-    s = (s * 1103515245 + 12345) >>> 0;
-    const r = s % 100;
-    let kind: DayKind = "free";
-    if (r < 12) kind = "visit";
-    else if (r < 18) kind = "blocked";
-    else if (r < 28) kind = "rented";
-    map.set(d, kind);
-  }
-  return map;
+  return new Map<number, DayKind>();
 }
 
 export function CalendarTab({ propertyId }: CalendarTabProps) {
@@ -115,18 +101,6 @@ export function CalendarTab({ propertyId }: CalendarTabProps) {
   function handleDayClick(day: number) {
     const kind = monthMap.get(day) ?? "free";
     setSelectedDay({ day, kind });
-  }
-
-  function handleMarkUnavailable() {
-    if (!selectedDay) return;
-    toast.success(`Jour ${selectedDay.day} marque comme indisponible`);
-    setSelectedDay(null);
-  }
-
-  function handleViewVisits() {
-    if (!selectedDay) return;
-    toast.info(`Visite du ${selectedDay.day}/${view.month + 1} ouverte`);
-    setSelectedDay(null);
   }
 
   return (
@@ -236,28 +210,12 @@ export function CalendarTab({ propertyId }: CalendarTabProps) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-wrap gap-2">
-            {selectedDay?.kind === "visit" && (
-              <Badge className="bg-kaza-warning/15 text-kaza-warning">
-                Visite confirmee a 15h00
-              </Badge>
-            )}
-            {selectedDay?.kind === "rented" && (
-              <Badge className="bg-kaza-green text-white">Loue</Badge>
-            )}
-            {selectedDay?.kind === "blocked" && (
-              <Badge variant="secondary">Indisponible</Badge>
-            )}
-          </div>
-
           <DialogFooter className="gap-2">
-            {selectedDay?.kind === "visit" ? (
-              <Button onClick={handleViewVisits}>Voir les visites</Button>
-            ) : (
-              <Button onClick={handleMarkUnavailable} variant="outline">
-                Marquer comme indisponible
-              </Button>
-            )}
+            <Button asChild variant="outline">
+              <Link href={`/owner/properties/${propertyId}/availability`}>
+                Gérer les disponibilités
+              </Link>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

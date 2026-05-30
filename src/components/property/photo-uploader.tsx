@@ -22,6 +22,7 @@ import { Loader2, Star, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast-helper";
 import { createClient } from "@/lib/supabase/client";
+import { uploadPropertyPhotoViaServer } from "@/actions/property-photos";
 import { cn } from "@/lib/utils";
 
 interface PhotoUploaderProps {
@@ -100,7 +101,6 @@ export function PhotoUploader({
         );
       }
 
-      const supabase = createClient();
       const maxBytes = maxSizeMb * 1024 * 1024;
 
       await Promise.all(
@@ -117,49 +117,39 @@ export function PhotoUploader({
             return;
           }
 
-          const ext = fileExt(file.name);
-          const uuid =
-            typeof crypto !== "undefined" && "randomUUID" in crypto
-              ? crypto.randomUUID()
-              : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-          const path = `temp/${userId}/${uuid}.${ext}`;
           const previewUrl = URL.createObjectURL(file);
+          // Clé temporaire locale pour suivre ce placeholder précis.
+          const tempKey = `pending-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2)}`;
 
           // Ajoute le placeholder (uploading: true)
           setPhotos((prev) => [
             ...prev,
-            { url: previewUrl, storagePath: path, uploading: true },
+            { url: previewUrl, storagePath: tempKey, uploading: true },
           ]);
 
-          const { error: uploadError } = await supabase.storage
-            .from(BUCKET)
-            .upload(path, file, {
-              upsert: false,
-              contentType: file.type || `image/${ext}`,
-            });
+          // Upload via server action (client admin / service role) — chemin
+          // fiable qui contourne les soucis de session/RLS côté navigateur.
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await uploadPropertyPhotoViaServer(fd);
 
-          if (uploadError) {
-            console.error("[PhotoUploader] upload error:", uploadError);
-            toast.error(
-              `Échec de l'upload de ${file.name} : ${uploadError.message}`,
-            );
-            // Retire le placeholder en erreur
-            setPhotos((prev) => prev.filter((x) => x.storagePath !== path));
+          if (!res.success) {
+            console.error("[PhotoUploader] upload error:", res.error);
+            toast.error(`Échec de l'upload de ${file.name} : ${res.error}`);
+            setPhotos((prev) => prev.filter((x) => x.storagePath !== tempKey));
             URL.revokeObjectURL(previewUrl);
             return;
           }
 
-          const { data: pub } = supabase.storage
-            .from(BUCKET)
-            .getPublicUrl(path);
-
-          // Remplace le placeholder par la version uploadée
+          // Remplace le placeholder par la version uploadée (URL publique réelle)
           setPhotos((prev) =>
             prev.map((x) =>
-              x.storagePath === path
+              x.storagePath === tempKey
                 ? {
-                    url: pub.publicUrl,
-                    storagePath: path,
+                    url: res.url,
+                    storagePath: res.path,
                     uploading: false,
                   }
                 : x,

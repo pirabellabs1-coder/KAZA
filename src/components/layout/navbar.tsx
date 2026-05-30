@@ -30,9 +30,19 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { CountryFlag } from "@/components/shared/country-flag";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
+import { logout } from "@/actions/auth";
 
 // ---------------------------------------------------------------------------
 // Structure des sous-menus (mega-menu desktop, accordéon mobile)
@@ -266,10 +276,32 @@ const QUICK_LINKS: SubItem[] = [
 // Composant Navbar
 // ---------------------------------------------------------------------------
 
-export function Navbar() {
+export interface NavbarUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
+
+function dashboardHref(role: string): string {
+  if (role === "ADMIN") return "/admin";
+  if (role === "AGENCY") return "/agency";
+  return "/dashboard";
+}
+
+export function Navbar({ user = null }: { user?: NavbarUser | null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [mobileOpenSection, setMobileOpenSection] = useState<string | null>(null);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch {
+      // logout() effectue une redirection serveur ; en cas d'échec on force.
+    }
+    window.location.href = "/";
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
@@ -425,16 +457,66 @@ export function Navbar() {
             <Globe className="size-4" />
           </Button>
           <Button variant="ghost" size="icon-sm" asChild>
-            <Link href="/login" aria-label="Favoris">
+            <Link href={user ? "/tenant/saved" : "/login"} aria-label="Favoris">
               <Heart className="size-4" />
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/login">Connexion</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/signup">Inscription</Link>
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Avatar className="size-7">
+                    <AvatarFallback className="bg-kaza-navy text-[11px] text-white">
+                      {getInitials(user.firstName, user.lastName || " ")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="max-w-[120px] truncate text-sm font-medium">
+                    {user.firstName}
+                  </span>
+                  <ChevronDown className="size-3.5 opacity-60" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel className="font-normal">
+                  <p className="text-sm font-medium">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href={dashboardHref(user.role)}>Mon espace</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Mon profil</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">Paramètres</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    void handleLogout();
+                  }}
+                >
+                  Se déconnecter
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/login">Connexion</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/signup">Inscription</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}

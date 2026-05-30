@@ -3,10 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowLeft,
-  Download,
   Edit3,
   FileText,
-  Printer,
   Send,
   ShieldCheck,
 } from "lucide-react";
@@ -14,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { ContractDownloadActions } from "./download-actions";
 import {
   CONTRACT_TEMPLATES,
   getTemplateById,
@@ -58,19 +57,19 @@ function renderPlaceholders(
 ): string {
   const charges = Math.round(contract.monthlyRent * 0.08);
   const map: Record<string, string> = {
-    "property.title": contract.propertyTitle,
-    "property.address": contract.propertyAddress,
-    "property.surface": "180",
-    "property.bedrooms": "4",
-    "property.type": "Villa",
-    "owner.name": contract.ownerName,
-    "owner.cni": "BJ-9876543210",
-    "owner.address": "Cotonou, Bénin",
-    "owner.phone": "+229 97 00 00 00",
-    "tenant.name": contract.tenantName,
-    "tenant.cni": "BJ-1234567890",
-    "tenant.profession": "Cadre supérieur",
-    "tenant.employer": "Sonatel Bénin SA",
+    "property.title": contract.propertyTitle || "À compléter",
+    "property.address": contract.propertyAddress || "À compléter",
+    "property.surface": "À compléter",
+    "property.bedrooms": "À compléter",
+    "property.type": "À compléter",
+    "owner.name": contract.ownerName || "À compléter",
+    "owner.cni": "À compléter",
+    "owner.address": "À compléter",
+    "owner.phone": "À compléter",
+    "tenant.name": contract.tenantName || "À compléter",
+    "tenant.cni": "À compléter",
+    "tenant.profession": "À compléter",
+    "tenant.employer": "À compléter",
     rent: formatPrice(contract.monthlyRent),
     charges: formatPrice(charges),
     depositAmount: formatPrice(contract.deposit),
@@ -268,10 +267,10 @@ export default async function ContractPreviewPage({
               </Link>
             </Button>
             <Separator />
-            <Button className="w-full justify-start bg-kaza-navy hover:bg-kaza-navy/90">
-              <Download className="mr-2 size-4" />
-              Télécharger PDF
-            </Button>
+            <ContractDownloadActions
+              contractId={id}
+              contractNumber={contractNumber}
+            />
             <Button variant="outline" className="w-full justify-start">
               <Send className="mr-2 size-4" />
               Envoyer pour signature
@@ -281,10 +280,6 @@ export default async function ContractPreviewPage({
                 <Edit3 className="mr-2 size-4" />
                 Modifier
               </Link>
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Printer className="mr-2 size-4" />
-              Imprimer
             </Button>
             <Separator />
             <div className="rounded-lg bg-kaza-blue/5 p-3 text-xs">

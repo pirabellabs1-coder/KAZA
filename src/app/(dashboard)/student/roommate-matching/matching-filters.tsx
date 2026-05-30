@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "@/components/ui/toast-helper";
 import { formatPrice } from "@/lib/utils";
 
 // =============================================================================
@@ -42,15 +43,6 @@ const DISCIPLINES = [
   "Sciences exactes",
 ];
 
-const CITIES = [
-  "Toutes les villes",
-  "Cotonou",
-  "Abomey-Calavi",
-  "Porto-Novo",
-  "Parakou",
-  "Bohicon",
-];
-
 interface Filters {
   ageMin: number;
   ageMax: number;
@@ -66,12 +58,16 @@ const DEFAULT_FILTERS: Filters = {
   ageMax: 30,
   gender: "all",
   discipline: "Toutes disciplines",
-  city: "Toutes les villes",
+  city: "",
   budgetMax: 150000,
   habits: new Set<string>(),
 };
 
-export function MatchingFilters() {
+interface MatchingFiltersProps {
+  onApply?: (filters: Filters) => void;
+}
+
+export function MatchingFilters({ onApply }: MatchingFiltersProps) {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 
   function toggleHabit(id: string) {
@@ -113,21 +109,15 @@ export function MatchingFilters() {
       {/* Ville */}
       <div className="space-y-2">
         <Label htmlFor="filter-city">Ville</Label>
-        <Select
+        <Input
+          id="filter-city"
+          type="text"
+          placeholder="Votre ville"
           value={filters.city}
-          onValueChange={(v) => setFilters((p) => ({ ...p, city: v }))}
-        >
-          <SelectTrigger id="filter-city" className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {CITIES.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          onChange={(e) =>
+            setFilters((p) => ({ ...p, city: e.target.value }))
+          }
+        />
       </div>
 
       {/* Âge */}
@@ -265,6 +255,10 @@ export function MatchingFilters() {
       <Button
         type="button"
         className="w-full bg-kaza-blue text-white hover:bg-kaza-blue/90"
+        onClick={() => {
+          onApply?.(filters);
+          toast.success("Filtres appliqués");
+        }}
       >
         Appliquer les filtres
       </Button>

@@ -4,11 +4,17 @@
 // KAZA - Identity Verifications (Server Actions)
 // Wave 2 - Aminata Traoré
 //
-// Tunnel d'identité en 3 étapes :
-//   1) requestPhoneOtp  → génère et envoie un OTP SMS via Twilio
-//   2) verifyPhoneOtp   → vérifie le code (max 5 tentatives, expire après 10 min)
-//   3) submitIdentityVerification → insère la vérification en statut PENDING
-//                                    après upload des pièces dans Storage.
+// Tunnel d'identité (refonte KYC) :
+//   1) Étape EMAIL → l'email du compte fait foi. S'il n'est pas confirmé,
+//      `resendEmailConfirmation()` renvoie l'email de confirmation Supabase.
+//   2) Documents officiels (pièce d'identité) → upload depuis galerie/appareil.
+//   3) Selfie + documents administratifs selon le rôle (justificatif étudiant
+//      OBLIGATOIRE pour les étudiants, etc.).
+//   4) submitIdentityVerification → insère la vérification en statut PENDING
+//      après upload des pièces dans Storage.
+//
+// Les actions OTP SMS (requestPhoneOtp / verifyPhoneOtp) restent disponibles
+// pour rétro-compatibilité mais ne sont plus exigées dans le tunnel.
 //
 // Convention de retour homogène avec les autres actions du projet :
 //   ActionResult<T> = { success: true; data?: T } | { success: false; error: string }
@@ -74,7 +80,8 @@ export async function requestPhoneOtp(
   if (!phone || !isValidPhone(phone)) {
     return {
       success: false,
-      error: "Numéro de téléphone invalide. Format attendu : +229XXXXXXXX.",
+      error:
+        "Numéro de téléphone invalide. Format international : +[indicatif pays][numéro] (ex: +229, +221, +225, +234).",
     };
   }
 
@@ -217,27 +224,131 @@ export async function verifyPhoneOtp(
 }
 
 // ---------------------------------------------------------------------------
-// 3. Upload d'un fichier dans le bucket privé `identity-documents`
+// 2bis. Renvoi de l'email de confirmation (vérification par email)
 // ---------------------------------------------------------------------------
 
 /**
- * Upload un fichier (image) dans Supabase Storage. Le path est scopé par
+ * Renvoie l'email de confirmation Supabase à l'utilisateur connecté.
+ *
+ * Utilise `supabase.auth.resend({ type: 'signup', email })`. Si l'email est
+ * déjà confirmé, ou si la méthode `resend` n'est pas disponible sur la version
+ * du client Supabase, on retourne un message explicite (fallback gracieux)
+ * plutôt que de planter le tunnel.
+ */
+export async function resendEmailConfirmation(): Promise<ActionResult> {
+  const supabase = await getLooseClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Vous devez être connecté." };
+  }
+
+  const email = user.email;
+  if (!email) {
+    return {
+      success: false,
+      error: "Aucune adresse email associée à votre compte.",
+    };
+  }
+
+  // Email déjà confirmé : rien à renvoyer.
+  if (user.email_confirmed_at) {
+    return {
+      success: false,
+      error: "Votre email est déjà confirmé.",
+    };
+  }
+
+  // Fallback gracieux si la méthode n'existe pas (anciennes versions du SDK).
+  const auth = supabase.auth as unknown as {
+    resend?: (params: {
+      type: "signup";
+      email: string;
+    }) => Promise<{ error: { message: string } | null }>;
+  };
+
+  if (typeof auth.resend !== "function") {
+    return {
+      success: false,
+      error:
+        "Le renvoi automatique n'est pas disponible. Veuillez vérifier votre boîte de réception ou contacter le support.",
+    };
+  }
+
+  try {
+    const { error } = await auth.resend({ type: "signup", email });
+    if (error) {
+      return {
+        success: false,
+        error:
+          "Impossible d'envoyer l'email de confirmation pour le moment. Réessayez dans un instant.",
+      };
+    }
+  } catch {
+    return {
+      success: false,
+      error:
+        "Le renvoi de l'email a échoué. Veuillez vérifier votre boîte de réception ou réessayer plus tard.",
+    };
+  }
+
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// 3. Upload d'un fichier dans le bucket privé `identity-documents`
+// ---------------------------------------------------------------------------
+
+/** Catégories de documents administratifs additionnels (par rôle). */
+export type ExtraDocumentKind =
+  | "address_proof"
+  | "student_proof"
+  | "property_title"
+  | "business_doc"
+  | "other";
+
+/** Document administratif additionnel persisté dans `extra_documents`. */
+export interface ExtraDocument {
+  kind: ExtraDocumentKind;
+  label: string;
+  url: string;
+}
+
+/** Types de fichiers acceptés : images + PDF (justificatifs administratifs). */
+const ACCEPTED_MIME_PREFIXES = ["image/"];
+const ACCEPTED_MIME_EXACT = ["application/pdf"];
+
+function isAcceptedFileType(type: string): boolean {
+  return (
+    ACCEPTED_MIME_PREFIXES.some((p) => type.startsWith(p)) ||
+    ACCEPTED_MIME_EXACT.includes(type)
+  );
+}
+
+/**
+ * Upload un fichier (image ou PDF) dans Supabase Storage. Le path est scopé par
  * userId pour faciliter les policies Storage côté Supabase. Retourne le path
  * relatif au bucket (à passer ensuite à `submitIdentityVerification`).
  *
- * Limitations validées côté serveur : type image, taille max 5 MB.
+ * `kind` sert uniquement à nommer le fichier de façon lisible (front/back/
+ * selfie ou catégorie de justificatif administratif).
+ *
+ * Limitations validées côté serveur : image ou PDF, taille max 5 MB.
  */
 export async function uploadIdentityFile(
   file: File,
-  kind: "front" | "back" | "selfie"
+  kind: "front" | "back" | "selfie" | ExtraDocumentKind
 ): Promise<ActionResult<{ path: string }>> {
   if (!file) {
     return { success: false, error: "Aucun fichier fourni." };
   }
-  if (!file.type.startsWith("image/")) {
+  if (!isAcceptedFileType(file.type)) {
     return {
       success: false,
-      error: "Format invalide. Images JPG ou PNG uniquement.",
+      error: "Format invalide. Images (JPG, PNG) ou PDF uniquement.",
     };
   }
   if (file.size > 5 * 1024 * 1024) {
@@ -257,7 +368,8 @@ export async function uploadIdentityFile(
   }
 
   // Extension à partir du mime-type (sécurise contre file.name malicieux).
-  const ext = file.type.split("/")[1] ?? "jpg";
+  const ext =
+    file.type === "application/pdf" ? "pdf" : file.type.split("/")[1] ?? "jpg";
   const path = `${user.id}/${kind}-${Date.now()}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
@@ -288,13 +400,45 @@ export interface SubmitVerificationInput {
   documentFrontPath: string;
   documentBackPath?: string;
   selfiePath: string;
-  phone: string;
+  /** Téléphone facultatif désormais (la vérification se fait par email). */
+  phone?: string;
+  /** Email confirmé (user.email_confirmed_at != null) au moment de la soumission. */
+  emailVerified?: boolean;
+  /** Documents administratifs additionnels selon le rôle. */
+  extraDocuments?: ExtraDocument[];
+}
+
+const VALID_EXTRA_KINDS: ExtraDocumentKind[] = [
+  "address_proof",
+  "student_proof",
+  "property_title",
+  "business_doc",
+  "other",
+];
+
+/** Nettoie/valide les documents additionnels avant persistance JSONB. */
+function sanitizeExtraDocuments(docs?: ExtraDocument[]): ExtraDocument[] {
+  if (!Array.isArray(docs)) return [];
+  return docs
+    .filter(
+      (d) =>
+        d &&
+        typeof d.url === "string" &&
+        d.url.length > 0 &&
+        VALID_EXTRA_KINDS.includes(d.kind),
+    )
+    .map((d) => ({
+      kind: d.kind,
+      label: typeof d.label === "string" ? d.label.slice(0, 120) : d.kind,
+      url: d.url,
+    }));
 }
 
 /**
  * Crée la ligne `identity_verifications` en statut PENDING, en mode "submit
  * after upload" : les fichiers sont déjà dans le bucket, on persiste leurs
- * paths. Vérifie au passage que le téléphone a bien été validé par OTP.
+ * paths. La vérification se fait désormais par EMAIL (email_verified) ; le
+ * téléphone est facultatif et conservé pour rétro-compatibilité.
  */
 export async function submitIdentityVerification(
   input: SubmitVerificationInput
@@ -303,13 +447,9 @@ export async function submitIdentityVerification(
   if (
     !input.documentType ||
     !input.documentFrontPath ||
-    !input.selfiePath ||
-    !input.phone
+    !input.selfiePath
   ) {
     return { success: false, error: "Informations incomplètes." };
-  }
-  if (!isValidPhone(input.phone)) {
-    return { success: false, error: "Numéro de téléphone invalide." };
   }
   // Le verso est obligatoire sauf pour le passeport.
   if (input.documentType !== "passport" && !input.documentBackPath) {
@@ -319,7 +459,13 @@ export async function submitIdentityVerification(
     };
   }
 
-  const normalizedPhone = normalizePhone(input.phone);
+  // Téléphone facultatif : s'il est fourni, on valide son format.
+  const hasPhone = Boolean(input.phone && input.phone.trim());
+  if (hasPhone && !isValidPhone(input.phone!)) {
+    return { success: false, error: "Numéro de téléphone invalide." };
+  }
+  const normalizedPhone = hasPhone ? normalizePhone(input.phone!) : null;
+
   const supabase = await getLooseClient();
 
   const {
@@ -330,27 +476,11 @@ export async function submitIdentityVerification(
     return { success: false, error: "Vous devez être connecté." };
   }
 
-  // Vérifie qu'un OTP a bien été consommé récemment pour ce phone.
-  // On considère le téléphone "vérifié" si un OTP `consumed_at` existe dans
-  // la dernière heure pour ce couple (user, phone).
-  const oneHourAgo = new Date(Date.now() - 60 * 60_000).toISOString();
-  const { data: validOtp } = await supabase
-    .from("phone_otps")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("phone_number", normalizedPhone)
-    .not("consumed_at", "is", null)
-    .gte("consumed_at", oneHourAgo)
-    .limit(1)
-    .maybeSingle();
+  // L'email confirmé fait foi : on se base sur la source de vérité Supabase
+  // (email_confirmed_at) plutôt que sur la valeur transmise par le client.
+  const emailVerified = Boolean(user.email_confirmed_at);
 
-  if (!validOtp) {
-    return {
-      success: false,
-      error:
-        "Numéro de téléphone non vérifié. Veuillez recommencer la vérification SMS.",
-    };
-  }
+  const extraDocuments = sanitizeExtraDocuments(input.extraDocuments);
 
   // Empêche les soumissions multiples (one_verif_per_user).
   const { data: existing } = await supabase
@@ -377,7 +507,9 @@ export async function submitIdentityVerification(
     document_back_url: input.documentBackPath || null,
     selfie_url: input.selfiePath,
     phone_number: normalizedPhone,
-    phone_verified: true,
+    phone_verified: hasPhone,
+    email_verified: emailVerified,
+    extra_documents: extraDocuments,
     status: "PENDING",
   };
 
@@ -419,10 +551,12 @@ export async function submitIdentityVerification(
   }
 
   // Met à jour le statut côté `users` pour qu'il soit visible dans le badge.
-  await supabase
-    .from("users")
-    .update({ verification_status: "PENDING", phone: normalizedPhone })
-    .eq("id", user.id);
+  // On ne met à jour le téléphone que s'il a été fourni (sinon on ne l'écrase pas).
+  const userUpdate: Record<string, unknown> = { verification_status: "PENDING" };
+  if (normalizedPhone) {
+    userUpdate.phone = normalizedPhone;
+  }
+  await supabase.from("users").update(userUpdate).eq("id", user.id);
 
   revalidatePath("/verify-identity");
   revalidatePath("/profile");

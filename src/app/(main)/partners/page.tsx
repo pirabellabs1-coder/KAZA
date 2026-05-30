@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
 import { GlassPanel } from "@/components/shared/glass-panel";
+import { PartnerApplicationForm } from "@/components/partners/partner-application-form";
 
 export const metadata: Metadata = {
   title: "Nos partenaires | KAZA",
@@ -72,7 +73,7 @@ export default function PartnersPage() {
                 size="lg"
                 className="rounded-full border border-white/20 bg-white/15 px-8 text-base font-semibold text-white shadow-2xl backdrop-blur-md transition-all hover:bg-white/25"
               >
-                <a href="#devenir-partenaire">
+                <a href="#candidature">
                   Devenir partenaire
                   <Handshake className="ml-2 size-4" />
                 </a>
@@ -132,7 +133,7 @@ export default function PartnersPage() {
                       size="lg"
                       className="rounded-full border-0 bg-gradient-to-r from-kaza-green to-emerald-500 px-10 py-7 text-base font-bold text-white shadow-2xl transition-all hover:scale-105 hover:from-kaza-green/90 hover:to-emerald-500/90"
                     >
-                      <a href="mailto:partnerships@kaza.africa">
+                      <a href="#candidature">
                         Devenir partenaire
                         <Handshake className="ml-2 size-5" />
                       </a>
@@ -152,6 +153,32 @@ export default function PartnersPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* ===== CANDIDATURE ===================================== */}
+      <section id="candidature" className="scroll-mt-24 bg-slate-50 py-24">
+        <div className="mx-auto max-w-3xl px-4 lg:px-8">
+          <RevealOnScroll>
+            <div className="mb-10 text-center">
+              <Badge className="mb-5 border-kaza-blue/30 bg-kaza-blue/10 text-kaza-blue">
+                <Handshake className="mr-1.5 size-3.5" />
+                Candidature
+              </Badge>
+              <h2 className="font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
+                Devenir partenaire
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
+                Remplissez ce formulaire pour rejoindre l&apos;écosystème KAZA.
+                Notre équipe partenariats étudie chaque dossier et revient vers
+                vous sous 5 jours ouvrés.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-kaza-navy/10 bg-white p-6 shadow-xl sm:p-10">
+              <PartnerApplicationForm />
             </div>
           </RevealOnScroll>
         </div>

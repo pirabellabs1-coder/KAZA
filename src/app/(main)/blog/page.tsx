@@ -28,11 +28,11 @@ import {
 export const metadata: Metadata = {
   title: "Le journal KAZA — Magazine immobilier africain",
   description:
-    "Insights, guides pratiques et analyses sur l'immobilier au Bénin et en Afrique de l'Ouest : location, colocation, investissement, juridique et innovations.",
+    "Insights, guides pratiques et analyses sur l'immobilier en Afrique : location, colocation, investissement, juridique et innovations.",
   openGraph: {
     title: "Le journal KAZA",
     description:
-      "Le magazine éditorial de KAZA : conseils locataires, propriétaires, étudiants et analyses du marché immobilier béninois.",
+      "Le magazine éditorial de KAZA : conseils locataires, propriétaires, étudiants et analyses du marché immobilier africain.",
     type: "website",
   },
 };

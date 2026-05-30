@@ -375,7 +375,7 @@ export function ProfileForm({
                   id="phone"
                   type="tel"
                   value={data.phone}
-                  placeholder="+229 97 00 00 00"
+                  placeholder="Votre numéro de téléphone"
                   onChange={(e) => update("phone", e.target.value)}
                 />
               </Field>

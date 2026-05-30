@@ -59,7 +59,7 @@ export function ProDemoForm() {
             required
             value={form.agencyName}
             onChange={(e) => setForm({ ...form, agencyName: e.target.value })}
-            placeholder="Premier Immobilier"
+            placeholder="Nom de votre agence"
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -72,7 +72,7 @@ export function ProDemoForm() {
               onChange={(e) =>
                 setForm({ ...form, contactName: e.target.value })
               }
-              placeholder="Aïcha Toko"
+              placeholder="Votre nom complet"
             />
           </div>
           <div className="grid gap-2">

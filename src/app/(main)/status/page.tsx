@@ -225,6 +225,43 @@ export default async function StatusPage() {
   const uptimeById = new Map(uptime.map((u) => [u.serviceId, u]));
   const hasHistory = uptime.some((u) => u.samplesCount > 0);
 
+  // ---- Données dérivées pour les graphes additionnels (toutes réelles) ----
+
+  // 1) Uptime global par jour (30 derniers jours, depuis daily90d).
+  const daily30 = [...daily90d]
+    .sort((a, b) => a.day.localeCompare(b.day))
+    .slice(-30)
+    .map((d) => ({
+      day: d.day,
+      pct: d.total > 0 ? ((d.total - d.down - d.degraded) / d.total) * 100 : null,
+    }));
+  const daily30WithData = daily30.filter((d) => d.pct !== null);
+  const globalUptime30 =
+    daily30WithData.length > 0
+      ? daily30WithData.reduce((s, d) => s + (d.pct ?? 0), 0) /
+        daily30WithData.length
+      : null;
+
+  // 2) Latence moy par service + 3) uptime 7j par service.
+  const perService = [...uptime].sort((a, b) =>
+    a.serviceName.localeCompare(b.serviceName),
+  );
+  const maxLatency = Math.max(1, ...perService.map((u) => u.avgLatencyMs));
+
+  // 4) Volume de checks par heure (24h) — somme des samples tous services.
+  const volumeByHour = new Map<string, number>();
+  for (const l of latencyHourly) {
+    const key = new Date(l.hour).toISOString().slice(0, 13);
+    volumeByHour.set(key, (volumeByHour.get(key) ?? 0) + l.samples);
+  }
+  const volumePoints = Array.from(volumeByHour.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([hour, count]) => ({ hour, count }));
+  const maxVolume = Math.max(1, ...volumePoints.map((p) => p.count));
+
+  // 6) Dernier incident (résolu récent sinon ouvert).
+  const lastIncident = resolvedIncidents[0] ?? openIncidents[0] ?? null;
+
   return (
     <div className="bg-gray-50">
       {/* HERO */}
@@ -566,6 +603,249 @@ export default async function StatusPage() {
                   </div>
                 );
               })()}
+            </CardContent>
+          </Card>
+
+          {/* ============================================================ */}
+          {/* WIDGETS DE SUIVI (2) — uptime global 30j + dernier incident   */}
+          {/* ============================================================ */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card className="rounded-2xl border-gray-200/80 shadow-sm">
+              <CardContent className="p-6">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Temps de fonctionnement (30 j)
+                </p>
+                <p className="mt-2 font-heading text-4xl font-bold text-kaza-navy">
+                  {globalUptime30 !== null
+                    ? `${globalUptime30.toFixed(2)} %`
+                    : "—"}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {globalUptime30 !== null
+                    ? "Disponibilité moyenne tous services confondus"
+                    : "Données en cours de collecte"}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl border-gray-200/80 shadow-sm">
+              <CardContent className="p-6">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Dernier incident
+                </p>
+                {lastIncident ? (
+                  <>
+                    <p className="mt-2 truncate font-heading text-lg font-bold text-kaza-navy">
+                      {lastIncident.title}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {lastIncident.severity} ·{" "}
+                      {new Date(
+                        lastIncident.resolvedAt ?? lastIncident.startedAt,
+                      ).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-2 font-heading text-lg font-bold text-emerald-600">
+                      Aucun incident récent
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Tous les services fonctionnent normalement.
+                    </p>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ============================================================ */}
+          {/* GRAPHE 1 — Uptime global 30 jours (courbe)                    */}
+          {/* ============================================================ */}
+          <Card className="rounded-2xl border-gray-200/80 shadow-sm">
+            <CardHeader>
+              <CardTitle className="font-heading text-base text-kaza-navy">
+                Disponibilité globale — 30 derniers jours
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                % de checks OK par jour, tous services confondus.
+              </p>
+            </CardHeader>
+            <CardContent>
+              {daily30WithData.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Données en cours de collecte.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <svg viewBox="0 0 720 180" className="h-44 w-full min-w-[560px]">
+                    {[0, 25, 50, 75, 100].map((g) => (
+                      <line
+                        key={g}
+                        x1={40}
+                        x2={712}
+                        y1={20 + ((100 - g) / 100) * 140}
+                        y2={20 + ((100 - g) / 100) * 140}
+                        stroke="#E5E7EB"
+                        strokeDasharray={g === 0 ? "0" : "2 4"}
+                      />
+                    ))}
+                    <polyline
+                      fill="none"
+                      stroke="#4CAF50"
+                      strokeWidth={2.5}
+                      strokeLinejoin="round"
+                      points={daily30
+                        .map((d, i) => {
+                          const x =
+                            40 + (i / Math.max(1, daily30.length - 1)) * 672;
+                          const y = 20 + ((100 - (d.pct ?? 0)) / 100) * 140;
+                          return `${x},${y}`;
+                        })
+                        .join(" ")}
+                    />
+                    <text x={4} y={24} className="fill-gray-400" fontSize="10">
+                      100%
+                    </text>
+                    <text x={10} y={164} className="fill-gray-400" fontSize="10">
+                      0%
+                    </text>
+                  </svg>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* ============================================================ */}
+          {/* GRAPHE 2 + 3 — Latence par service & Uptime 7j par service    */}
+          {/* ============================================================ */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="rounded-2xl border-gray-200/80 shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-heading text-base text-kaza-navy">
+                  Latence moyenne par service
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Temps de réponse moyen (ms) — 30 derniers jours.
+                </p>
+              </CardHeader>
+              <CardContent>
+                {!hasHistory ? (
+                  <p className="py-6 text-center text-sm text-muted-foreground">
+                    Données en cours de collecte.
+                  </p>
+                ) : (
+                  <ul className="space-y-2.5">
+                    {perService.map((u) => (
+                      <li key={u.serviceId}>
+                        <div className="mb-1 flex items-center justify-between text-xs">
+                          <span className="font-medium text-gray-700">
+                            {u.serviceName}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {u.avgLatencyMs} ms
+                          </span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                          <div
+                            className="h-full rounded-full bg-kaza-blue"
+                            style={{
+                              width: `${(u.avgLatencyMs / maxLatency) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border-gray-200/80 shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-heading text-base text-kaza-navy">
+                  Disponibilité 7 jours par service
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  % de checks OK sur les 7 derniers jours.
+                </p>
+              </CardHeader>
+              <CardContent>
+                {!hasHistory ? (
+                  <p className="py-6 text-center text-sm text-muted-foreground">
+                    Données en cours de collecte.
+                  </p>
+                ) : (
+                  <ul className="space-y-2.5">
+                    {perService.map((u) => {
+                      const pct = u.uptime7d;
+                      const color =
+                        pct >= 99
+                          ? "bg-emerald-500"
+                          : pct >= 95
+                            ? "bg-amber-500"
+                            : "bg-red-500";
+                      return (
+                        <li key={u.serviceId}>
+                          <div className="mb-1 flex items-center justify-between text-xs">
+                            <span className="font-medium text-gray-700">
+                              {u.serviceName}
+                            </span>
+                            <span className="text-muted-foreground">
+                              {pct.toFixed(1)} %
+                            </span>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                            <div
+                              className={`h-full rounded-full ${color}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ============================================================ */}
+          {/* GRAPHE 4 — Volume de checks par heure (24h)                   */}
+          {/* ============================================================ */}
+          <Card className="rounded-2xl border-gray-200/80 shadow-sm">
+            <CardHeader>
+              <CardTitle className="font-heading text-base text-kaza-navy">
+                Volume de surveillance — 24 dernières heures
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Nombre de vérifications effectuées par heure.
+              </p>
+            </CardHeader>
+            <CardContent>
+              {volumePoints.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Données en cours de collecte.
+                </p>
+              ) : (
+                <div className="flex h-40 items-end gap-1 overflow-x-auto">
+                  {volumePoints.map((p) => (
+                    <div
+                      key={p.hour}
+                      className="flex min-w-[10px] flex-1 flex-col items-center justify-end"
+                      title={`${p.count} checks`}
+                    >
+                      <div
+                        className="w-full rounded-t bg-gradient-to-t from-kaza-navy to-kaza-blue"
+                        style={{ height: `${(p.count / maxVolume) * 100}%` }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

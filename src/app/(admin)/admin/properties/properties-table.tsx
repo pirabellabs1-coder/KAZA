@@ -58,7 +58,6 @@ export interface PropertyRow {
   [key: string]: unknown;
 }
 
-const cities = ["Cotonou", "Porto-Novo", "Abomey-Calavi", "Parakou", "Bohicon"];
 const types = [
   "Studio",
   "Appartement",
@@ -87,6 +86,14 @@ export function PropertiesTable({ rows, adminEmail }: PropertiesTableProps) {
   const [reason, setReason] = useState("");
   const [actions, setActions] = useState<AdminAction[]>([]);
   const [isPending, startTransition] = useTransition();
+
+  const cities = useMemo<string[]>(() => {
+    const set = new Set<string>();
+    for (const r of rows) {
+      if (r.city) set.add(r.city);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "fr"));
+  }, [rows]);
 
   useEffect(() => {
     setActions(getAdminActions());
@@ -258,10 +265,16 @@ export function PropertiesTable({ rows, adminEmail }: PropertiesTableProps) {
               variant="ghost"
               size="icon"
               className="size-8"
-              title="Voir"
-              onClick={() => toast.info(`Détails de l'annonce #${row.id}`)}
+              title="Voir l'annonce"
+              asChild
             >
-              <Eye className="size-4" />
+              <a
+                href={`/properties/${row.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Eye className="size-4" />
+              </a>
             </Button>
             <Button
               variant="ghost"

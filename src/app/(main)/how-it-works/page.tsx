@@ -49,21 +49,22 @@ const securityPillars = [
     icon: "FileSignature",
     title: "Contrats numériques",
     description:
-      "Bail conforme au droit béninois, signé électroniquement en quelques minutes. PDF archivé et juridiquement opposable.",
+      "Bail conforme au droit en vigueur, signé électroniquement en quelques minutes. PDF archivé et juridiquement opposable.",
     metric: "Signature électronique légale",
   },
 ];
 
+// Grandes villes africaines couvertes par le référentiel KAZA (panafricain).
 const KAZA_CITIES = [
-  { name: "Cotonou", country: "Bénin", active: true, lat: "6.36°N" },
-  { name: "Porto-Novo", country: "Bénin", active: true, lat: "6.49°N" },
-  { name: "Abomey-Calavi", country: "Bénin", active: true, lat: "6.45°N" },
-  { name: "Parakou", country: "Bénin", active: true, lat: "9.34°N" },
-  { name: "Bohicon", country: "Bénin", active: true, lat: "7.18°N" },
-  { name: "Natitingou", country: "Bénin", active: true, lat: "10.30°N" },
-  { name: "Lomé", country: "Togo", active: false, lat: "Bientôt" },
-  { name: "Abidjan", country: "Côte d'Ivoire", active: false, lat: "Bientôt" },
-  { name: "Dakar", country: "Sénégal", active: false, lat: "Bientôt" },
+  { name: "Cotonou", country: "Bénin", active: true, lat: "" },
+  { name: "Abidjan", country: "Côte d'Ivoire", active: true, lat: "" },
+  { name: "Dakar", country: "Sénégal", active: true, lat: "" },
+  { name: "Lagos", country: "Nigeria", active: true, lat: "" },
+  { name: "Accra", country: "Ghana", active: true, lat: "" },
+  { name: "Lomé", country: "Togo", active: true, lat: "" },
+  { name: "Le Caire", country: "Égypte", active: true, lat: "" },
+  { name: "Casablanca", country: "Maroc", active: true, lat: "" },
+  { name: "Nairobi", country: "Kenya", active: true, lat: "" },
 ];
 
 export default function HowItWorksPage() {
@@ -163,7 +164,7 @@ export default function HowItWorksPage() {
               </h2>
               <p className="mx-auto mt-4 max-w-xl text-lg text-white/75">
                 Découvrez en vidéo comment KAZA transforme l&apos;expérience
-                immobilière au Bénin.
+                immobilière en Afrique.
               </p>
             </div>
           </RevealOnScroll>
@@ -270,7 +271,7 @@ export default function HowItWorksPage() {
                 Couverture géographique
               </p>
               <h2 className="font-heading text-3xl font-bold sm:text-4xl lg:text-5xl">
-                Présents au Bénin et bientôt au-delà
+                Présents dans toute l&apos;Afrique
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-white/75">
                 Du littoral atlantique à l&apos;Atacora, et bientôt dans toute

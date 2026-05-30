@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listSavedProperties } from "@/lib/queries/tenant-activity";
 import { toggleSaveProperty } from "@/actions/favorites";
+import { getMySavedSearches } from "@/actions/saved-searches";
+import { SavedSearchList } from "@/components/property/saved-search-list";
 import { formatPrice } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -36,7 +38,10 @@ export default async function TenantSavedPage() {
   const user = await getCurrentDisplayUser();
   if (!user) redirect("/login?redirect=/tenant/saved");
 
-  const saved = await listSavedProperties(user.id);
+  const [saved, savedSearches] = await Promise.all([
+    listSavedProperties(user.id),
+    getMySavedSearches(),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -75,6 +80,20 @@ export default async function TenantSavedPage() {
           ))}
         </div>
       )}
+
+      {/* Recherches sauvegardées & alertes */}
+      <section className="space-y-3">
+        <div>
+          <h2 className="font-heading text-xl font-bold text-kaza-navy">
+            Mes recherches &amp; alertes
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Relancez vos recherches enregistrées ou gérez vos alertes de
+            nouveaux biens.
+          </p>
+        </div>
+        <SavedSearchList initial={savedSearches} />
+      </section>
     </div>
   );
 }

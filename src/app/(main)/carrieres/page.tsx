@@ -19,17 +19,19 @@ import {
 } from "lucide-react";
 
 import { GradientCard } from "@/components/marketing/gradient-card";
-import { StatCounter } from "@/components/marketing/stat-counter";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/fade-in";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
+import { listPublishedJobOffers } from "@/lib/queries/careers";
+
+// Page dynamique : la liste des offres publiées vient de Supabase.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Carrières — Construisons l'avenir de l'immobilier africain",
   description:
-    "Rejoignez la révolution immobilière en Afrique. 12 talents, 6 nationalités, remote-first, BSPCE pour tous. Découvrez nos postes ouverts chez KAZA.",
+    "Rejoignez la révolution immobilière en Afrique. Équipe panafricaine, remote-first, BSPCE pour tous. Découvrez nos postes ouverts chez KAZA.",
   openGraph: {
     title: "Carrières chez KAZA",
     description:
@@ -116,7 +118,7 @@ const PERKS = [
     icon: Globe2,
     title: "Équipe panafricaine",
     description:
-      "12 talents répartis entre Cotonou, Lomé, Abidjan et Dakar. Six nationalités, une seule ambition.",
+      "Une équipe répartie entre Cotonou, Lomé, Abidjan et Dakar. Plusieurs nationalités, une seule ambition.",
   },
   {
     variant: "green" as const,
@@ -148,15 +150,6 @@ const PERKS = [
   },
 ];
 
-const TEAMS = [
-  "Tous",
-  "Engineering",
-  "Design",
-  "Marketing",
-  "Sales",
-  "Operations",
-];
-
 const PROCESS_STEPS = [
   {
     number: "01",
@@ -180,42 +173,6 @@ const PROCESS_STEPS = [
   },
 ];
 
-const TESTIMONIALS = [
-  {
-    id: "team-aicha",
-    name: "Aïcha Soglo",
-    role: "Tech Lead Engineering",
-    avatarSeed: "Aicha+Soglo",
-    rating: 5,
-    quote:
-      "Une stack moderne, une équipe brillante et une mission qui a du sens pour le continent. Je n'ai jamais autant appris en aussi peu de temps.",
-    city: "Cotonou",
-    highlight: "Stack moderne",
-  },
-  {
-    id: "team-mehdi",
-    name: "Mehdi Toure",
-    role: "Senior Product Designer",
-    avatarSeed: "Mehdi+Toure",
-    rating: 5,
-    quote:
-      "Le ratio impact / autonomie est imbattable. Mes choix de design touchent des milliers d'utilisateurs chaque semaine, sans bureaucratie inutile.",
-    city: "Lomé",
-    highlight: "Impact réel",
-  },
-  {
-    id: "team-leila",
-    name: "Leïla Benali",
-    role: "Head of Customer Success",
-    avatarSeed: "Leila+Benali",
-    rating: 5,
-    quote:
-      "Travailler à 100% remote depuis Abidjan tout en faisant partie d'une équipe ultra-soudée : c'est ce que je cherchais depuis dix ans.",
-    city: "Abidjan",
-    highlight: "Remote-first",
-  },
-];
-
 const TEAM_HERO_IMAGE =
   "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=80";
 
@@ -223,7 +180,13 @@ const TEAM_HERO_IMAGE =
 // Page
 // =============================================================================
 
-export default function CarrieresPage() {
+export default async function CarrieresPage() {
+  // Source de vérité = table `job_offers` (statut PUBLISHED). La constante
+  // `JOBS` ci-dessus est conservée uniquement pour la rétro-compatibilité
+  // avec `/carrieres/[slug]/page.tsx` qui l'importe encore.
+  const offers = await listPublishedJobOffers();
+  const offersCount = offers.length;
+
   return (
     <div className="bg-white">
       {/* ============== HERO IMMERSIF ====================================== */}
@@ -265,7 +228,9 @@ export default function CarrieresPage() {
                 className="h-12 rounded-full bg-kaza-green px-7 text-base font-semibold shadow-xl hover:bg-kaza-green/90"
               >
                 <a href="#postes-ouverts">
-                  Voir les {JOBS.length} postes ouverts
+                  {offersCount > 0
+                    ? `Voir les ${offersCount} postes ouverts`
+                    : "Voir les opportunités"}
                   <ArrowRight className="ml-2 size-4" />
                 </a>
               </Button>
@@ -301,43 +266,39 @@ export default function CarrieresPage() {
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <RevealOnScroll>
-              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
-                <StatCounter
-                  value={12}
-                  label="Talents passionnés"
-                  description="À temps plein, en croissance"
-                />
+              <div className="h-full rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
+                <h3 className="font-heading text-xl font-bold text-kaza-navy">
+                  Panafricain &amp; multiculturel
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Une équipe répartie en Afrique de l&apos;Ouest — Bénin, Togo,
+                  Sénégal, Côte d&apos;Ivoire — réunie autour d&apos;une même
+                  ambition continentale.
+                </p>
               </div>
             </RevealOnScroll>
             <RevealOnScroll delay={100}>
-              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
-                <StatCounter
-                  value={6}
-                  label="Nationalités"
-                  description="Bénin, Togo, Sénégal, Côte d'Ivoire…"
-                />
+              <div className="h-full rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
+                <h3 className="font-heading text-xl font-bold text-kaza-navy">
+                  Remote-first
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Travaillez d&apos;où vous voulez. Des hubs physiques à Cotonou
+                  &amp; Lomé pour se retrouver quand c&apos;est utile.
+                </p>
               </div>
             </RevealOnScroll>
             <RevealOnScroll delay={200}>
-              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
-                <StatCounter
-                  value={100}
-                  suffix="%"
-                  label="Remote-first"
-                  description="Hubs physiques à Cotonou & Lomé"
-                />
-              </div>
-            </RevealOnScroll>
-            <RevealOnScroll delay={300}>
-              <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
-                <StatCounter
-                  value={100}
-                  suffix="%"
-                  label="BSPCE pour tous"
-                  description="Participation au capital systématique"
-                />
+              <div className="h-full rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl">
+                <h3 className="font-heading text-xl font-bold text-kaza-navy">
+                  Participation au capital
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  BSPCE pour chaque recrue : vous construisez KAZA, vous en
+                  partagez la réussite.
+                </p>
               </div>
             </RevealOnScroll>
           </div>
@@ -400,80 +361,92 @@ export default function CarrieresPage() {
                   Postes ouverts
                 </h2>
                 <p className="mt-3 text-base text-muted-foreground">
-                  {JOBS.length} opportunités à pourvoir. Réponse garantie sous
-                  48h.
+                  {offersCount > 0
+                    ? `${offersCount} opportunité${offersCount > 1 ? "s" : ""} à pourvoir. Réponse garantie sous 48h.`
+                    : "Réponse garantie sous 48h sur toutes les candidatures spontanées."}
                 </p>
               </div>
             </div>
           </FadeIn>
 
-          {/* Filtres équipes (visuel, pas de JS pour rester RSC) */}
-          <div className="-mx-4 mb-10 overflow-x-auto px-4">
-            <div className="flex min-w-max items-center gap-2 sm:flex-wrap">
-              <span className="mr-2 hidden text-xs font-semibold uppercase tracking-widest text-muted-foreground sm:inline">
-                Équipes
-              </span>
-              {TEAMS.map((team, i) => (
-                <span
-                  key={team}
-                  className={
-                    i === 0
-                      ? "rounded-full bg-kaza-navy px-5 py-2 text-sm font-semibold text-white shadow-sm"
-                      : "rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-medium text-kaza-navy transition hover:border-kaza-blue hover:text-kaza-blue"
-                  }
+          {offersCount === 0 ? (
+            <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-gray-200 bg-white p-12 text-center shadow-sm">
+              <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-kaza-blue/10">
+                <Briefcase className="size-7 text-kaza-blue" />
+              </div>
+              <h3 className="font-heading text-2xl font-bold text-kaza-navy">
+                Aucune ouverture pour l&apos;instant
+              </h3>
+              <p className="mt-3 text-base text-muted-foreground">
+                Nous embauchons en continu. Envoyez votre candidature spontanée
+                à{" "}
+                <a
+                  href="mailto:contact@pirabellabs.com"
+                  className="font-semibold text-kaza-blue hover:underline"
                 >
-                  {team}
-                </span>
+                  contact@pirabellabs.com
+                </a>
+                .
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-2">
+              {offers.map((offer, i) => (
+                <RevealOnScroll key={offer.id} delay={i * 60}>
+                  <Link
+                    href={`/carrieres/${offer.slug}`}
+                    className="group block focus-visible:outline-none"
+                  >
+                    <article className="relative h-full overflow-hidden rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-kaza-blue/30 hover:shadow-2xl">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className="rounded-full border-kaza-blue/30 bg-kaza-blue/5 text-xs font-semibold text-kaza-blue"
+                          >
+                            {offer.department}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="rounded-full border-kaza-navy/20 bg-kaza-navy/5 text-xs font-semibold text-kaza-navy"
+                          >
+                            {offer.contract}
+                          </Badge>
+                        </div>
+                        <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-kaza-blue/5 text-kaza-blue transition-all group-hover:bg-kaza-blue group-hover:text-white">
+                          <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
+                        </span>
+                      </div>
+                      <h3 className="mt-4 font-heading text-2xl font-bold leading-tight text-kaza-navy transition-colors group-hover:text-kaza-blue">
+                        {offer.title}
+                      </h3>
+                      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5">
+                          <MapPin className="size-3.5" />
+                          {offer.location}
+                        </span>
+                        {offer.level && (
+                          <>
+                            <span className="text-gray-300">•</span>
+                            <span className="font-semibold text-kaza-navy">
+                              {offer.level}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+                        {offer.summary}
+                      </p>
+                      <p className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-kaza-blue">
+                        Voir le poste
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                      </p>
+                    </article>
+                  </Link>
+                </RevealOnScroll>
               ))}
             </div>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            {JOBS.map((job, i) => (
-              <RevealOnScroll key={job.slug} delay={i * 60}>
-                <Link
-                  href={`/carrieres/${job.slug}`}
-                  className="group block focus-visible:outline-none"
-                >
-                  <article className="relative h-full overflow-hidden rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-kaza-blue/30 hover:shadow-2xl">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <Badge
-                          variant="outline"
-                          className="rounded-full border-kaza-blue/30 bg-kaza-blue/5 text-xs font-semibold text-kaza-blue"
-                        >
-                          {job.team}
-                        </Badge>
-                        <h3 className="mt-4 font-heading text-2xl font-bold leading-tight text-kaza-navy transition-colors group-hover:text-kaza-blue">
-                          {job.title}
-                        </h3>
-                      </div>
-                      <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-kaza-blue/5 text-kaza-blue transition-all group-hover:bg-kaza-blue group-hover:text-white">
-                        <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
-                    <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1.5">
-                        <MapPin className="size-3.5" />
-                        {job.location}
-                      </span>
-                      <span className="text-gray-300">•</span>
-                      <span className="font-semibold text-kaza-navy">
-                        {job.type}
-                      </span>
-                    </div>
-                    <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                      {job.summary}
-                    </p>
-                    <p className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-kaza-blue">
-                      Voir le poste
-                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                    </p>
-                  </article>
-                </Link>
-              </RevealOnScroll>
-            ))}
-          </div>
+          )}
         </div>
       </section>
 
@@ -528,38 +501,6 @@ export default function CarrieresPage() {
         </div>
       </section>
 
-      {/* ============== TÉMOIGNAGES ======================================== */}
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <FadeIn>
-            <div className="mb-12 text-center">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
-                Voix de l&apos;équipe
-              </p>
-              <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                Ils ont rejoint KAZA
-              </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground">
-                Trois témoignages au-delà des fiches de poste, pour vous donner
-                un avant-goût.
-              </p>
-            </div>
-          </FadeIn>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {TESTIMONIALS.map((t, i) => {
-              const { id: _id, ...cardProps } = t;
-              void _id;
-              return (
-                <RevealOnScroll key={t.id} delay={i * 100}>
-                  <TestimonialCard {...cardProps} />
-                </RevealOnScroll>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* ============== CTA CANDIDATURE SPONTANÉE ========================== */}
       <section className="relative overflow-hidden bg-gradient-to-br from-kaza-navy via-[#0F2A40] to-kaza-blue py-24 text-white">
         <div
@@ -587,9 +528,9 @@ export default function CarrieresPage() {
               size="lg"
               className="h-12 rounded-full bg-kaza-green px-8 text-base font-semibold hover:bg-kaza-green/90"
             >
-              <a href="mailto:careers@kaza.africa?subject=Candidature%20spontan%C3%A9e">
+              <a href="mailto:contact@pirabellabs.com?subject=Candidature%20spontan%C3%A9e">
                 <Mail className="mr-2 size-4" />
-                careers@kaza.africa
+                contact@pirabellabs.com
               </a>
             </Button>
             <Button

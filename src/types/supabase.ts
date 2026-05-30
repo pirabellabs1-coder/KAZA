@@ -41,6 +41,9 @@ export type Database = {
           address: string | null
           bio: string | null
           rating_average: number | null
+          notification_prefs: Json
+          privacy_prefs: Json
+          deletion_requested_at: string | null
           created_at: string
           updated_at: string
         }
@@ -60,6 +63,9 @@ export type Database = {
           address?: string | null
           bio?: string | null
           rating_average?: number | null
+          notification_prefs?: Json
+          privacy_prefs?: Json
+          deletion_requested_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -79,7 +85,31 @@ export type Database = {
           address?: string | null
           bio?: string | null
           rating_average?: number | null
+          notification_prefs?: Json
+          privacy_prefs?: Json
+          deletion_requested_at?: string | null
           created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          value: Json
+          updated_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          key: string
+          value?: Json
+          updated_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          value?: Json
+          updated_by?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -448,6 +478,12 @@ export type Database = {
           roommate_group_id: string | null
           contract_type: 'RENTAL' | 'ROOMMATE' | 'SUBLEASE'
           contract_pdf_url: string | null
+          pdf_url: string | null
+          status: 'DRAFT' | 'PENDING_TENANT' | 'PENDING_OWNER' | 'SIGNED' | 'CANCELLED'
+          tenant_signature_hash: string | null
+          tenant_signed_at: string | null
+          owner_signature_hash: string | null
+          owner_signed_at: string | null
           signed_by_owner: boolean
           signed_by_tenant: boolean
           created_at: string
@@ -459,6 +495,12 @@ export type Database = {
           roommate_group_id?: string | null
           contract_type: 'RENTAL' | 'ROOMMATE' | 'SUBLEASE'
           contract_pdf_url?: string | null
+          pdf_url?: string | null
+          status?: 'DRAFT' | 'PENDING_TENANT' | 'PENDING_OWNER' | 'SIGNED' | 'CANCELLED'
+          tenant_signature_hash?: string | null
+          tenant_signed_at?: string | null
+          owner_signature_hash?: string | null
+          owner_signed_at?: string | null
           signed_by_owner?: boolean
           signed_by_tenant?: boolean
           created_at?: string
@@ -470,6 +512,12 @@ export type Database = {
           roommate_group_id?: string | null
           contract_type?: 'RENTAL' | 'ROOMMATE' | 'SUBLEASE'
           contract_pdf_url?: string | null
+          pdf_url?: string | null
+          status?: 'DRAFT' | 'PENDING_TENANT' | 'PENDING_OWNER' | 'SIGNED' | 'CANCELLED'
+          tenant_signature_hash?: string | null
+          tenant_signed_at?: string | null
+          owner_signature_hash?: string | null
+          owner_signed_at?: string | null
           signed_by_owner?: boolean
           signed_by_tenant?: boolean
           created_at?: string
@@ -615,6 +663,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_push_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          token: string
+          platform: string
+          device_info: Json | null
+          enabled: boolean
+          created_at: string
+          last_used_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          token: string
+          platform: string
+          device_info?: Json | null
+          enabled?: boolean
+          created_at?: string
+          last_used_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          token?: string
+          platform?: string
+          device_info?: Json | null
+          enabled?: boolean
+          created_at?: string
+          last_used_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -634,6 +715,7 @@ export type Database = {
       visit_status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW'
       roommate_status: 'INVITED' | 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'LEFT'
       contract_type: 'RENTAL' | 'ROOMMATE' | 'SUBLEASE'
+      contract_status: 'DRAFT' | 'PENDING_TENANT' | 'PENDING_OWNER' | 'SIGNED' | 'CANCELLED'
       roommate_listing_status: 'ACTIVE' | 'FULL' | 'CLOSED' | 'ARCHIVED'
       notification_type:
         | 'visit_request'

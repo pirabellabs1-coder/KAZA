@@ -12,6 +12,13 @@ import { StatsCard } from "@/components/dashboard/stats-card";
 import { StatsGrid } from "@/components/admin/stats-grid";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -44,88 +51,9 @@ interface DisputeRow {
   [key: string]: unknown;
 }
 
-const allDisputes: DisputeRow[] = [
-  {
-    id: "L-2103",
-    type: "Paiement",
-    plaintiff: "Aminata Sow",
-    defendant: "Pierre Hounsou",
-    status: "open",
-    openedAt: "2026-05-24",
-  },
-  {
-    id: "L-2102",
-    type: "Annonce",
-    plaintiff: "Karim Lawal",
-    defendant: "Mariam Bio",
-    status: "in_progress",
-    openedAt: "2026-05-23",
-  },
-  {
-    id: "L-2101",
-    type: "Comportement",
-    plaintiff: "Lucie Houessou",
-    defendant: "Jean Sossa",
-    status: "open",
-    openedAt: "2026-05-22",
-  },
-  {
-    id: "L-2100",
-    type: "Visite",
-    plaintiff: "Fatima Adjovi",
-    defendant: "Eric Tchégoun",
-    status: "resolved",
-    openedAt: "2026-05-20",
-  },
-  {
-    id: "L-2099",
-    type: "Paiement",
-    plaintiff: "Rose Akpovi",
-    defendant: "Antoine Zinsou",
-    status: "in_progress",
-    openedAt: "2026-05-19",
-  },
-  {
-    id: "L-2098",
-    type: "Annonce",
-    plaintiff: "Pascal Agbo",
-    defendant: "Société KAZA Pro",
-    status: "closed",
-    openedAt: "2026-05-18",
-  },
-  {
-    id: "L-2097",
-    type: "Comportement",
-    plaintiff: "Yvonne Dossou",
-    defendant: "Karim Lawal",
-    status: "resolved",
-    openedAt: "2026-05-17",
-  },
-  {
-    id: "L-2096",
-    type: "Visite",
-    plaintiff: "Sébastien Aho",
-    defendant: "Moussa Adékambi",
-    status: "open",
-    openedAt: "2026-05-16",
-  },
-  {
-    id: "L-2095",
-    type: "Paiement",
-    plaintiff: "Béatrice Codjia",
-    defendant: "Pierre Hounsou",
-    status: "resolved",
-    openedAt: "2026-05-14",
-  },
-  {
-    id: "L-2094",
-    type: "Annonce",
-    plaintiff: "Aminata Sow",
-    defendant: "Mariam Bio",
-    status: "closed",
-    openedAt: "2026-05-12",
-  },
-];
+// Pas encore de table dédiée `disputes` en base — empty state propre
+// en attendant le branchement Supabase (voir specs Wave Trust & Safety).
+const allDisputes: DisputeRow[] = [];
 
 const typeBadgeClasses: Record<DisputeType, string> = {
   Paiement: "bg-red-100 text-red-700 border-red-200",
@@ -137,6 +65,7 @@ const typeBadgeClasses: Record<DisputeType, string> = {
 export default function AdminDisputesPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [selected, setSelected] = useState<DisputeRow | null>(null);
 
   const rows = allDisputes.filter((d) => {
     if (statusFilter !== "all" && d.status !== statusFilter) return false;
@@ -213,7 +142,7 @@ export default function AdminDisputesPage() {
           variant="ghost"
           size="sm"
           className="gap-1"
-          onClick={() => console.log("view dispute", row.id)}
+          onClick={() => setSelected(row)}
         >
           <Eye className="size-4" />
           Détails
@@ -251,13 +180,13 @@ export default function AdminDisputesPage() {
           title="Résolus 30j"
           value={stats.resolved30d}
           icon={CheckCircle2}
-          trend={{ label: "+22% vs mois dernier", type: "positive" }}
+          trend={{ label: "Sur la période", type: "neutral" }}
         />
         <StatsCard
           title="Délai moyen"
-          value="3,2 j"
+          value="—"
           icon={Clock4}
-          trend={{ label: "-0,4 j vs mois dernier", type: "positive" }}
+          trend={{ label: "Aucune donnée", type: "neutral" }}
         />
       </StatsGrid>
 
@@ -299,6 +228,46 @@ export default function AdminDisputesPage() {
         emptyTitle="Aucun litige"
         emptyDescription="Aucun litige ne correspond à ces filtres."
       />
+
+      <Dialog
+        open={selected !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Litige #{selected?.id}</DialogTitle>
+            <DialogDescription>
+              Détails du signalement enregistré sur la plateforme.
+            </DialogDescription>
+          </DialogHeader>
+          {selected && (
+            <dl className="grid grid-cols-3 gap-x-4 gap-y-3 text-sm">
+              <dt className="text-muted-foreground">Type</dt>
+              <dd className="col-span-2 font-medium text-kaza-navy">
+                {selected.type}
+              </dd>
+              <dt className="text-muted-foreground">Plaignant</dt>
+              <dd className="col-span-2 font-medium text-kaza-navy">
+                {selected.plaintiff}
+              </dd>
+              <dt className="text-muted-foreground">Mis en cause</dt>
+              <dd className="col-span-2 font-medium text-kaza-navy">
+                {selected.defendant}
+              </dd>
+              <dt className="text-muted-foreground">Statut</dt>
+              <dd className="col-span-2">
+                <StatusBadge status={selected.status} />
+              </dd>
+              <dt className="text-muted-foreground">Ouvert le</dt>
+              <dd className="col-span-2 font-medium text-kaza-navy">
+                {new Date(selected.openedAt).toLocaleDateString("fr-FR")}
+              </dd>
+            </dl>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

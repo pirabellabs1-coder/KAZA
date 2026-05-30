@@ -1,6 +1,8 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { getAllCities, COUNTRIES } from "@/lib/geo/locations";
+import type { Enums } from "@/types/supabase";
 
 // =============================================================================
 // KAZA — Queries propriétés Supabase (server-side)
@@ -67,7 +69,7 @@ export async function listPublicProperties(
     .order("created_at", { ascending: false })
     .limit(options.limit ?? 24);
 
-  if (options.type) q = q.eq("property_type", options.type);
+  if (options.type) q = q.eq("property_type", options.type as Enums<'property_type'>);
   if (options.minPrice) q = q.gte("price", options.minPrice);
   if (options.maxPrice) q = q.lte("price", options.maxPrice);
   if (options.minBedrooms) q = q.gte("bedrooms", options.minBedrooms);
@@ -80,7 +82,7 @@ export async function listPublicProperties(
   }
 
   return (data ?? []).map((p): PublicProperty => {
-    const photos = (p.photos as Array<{ photo_url: string; display_order: number }> | null)
+    const photos = (p.photos as unknown as Array<{ photo_url: string; display_order: number }> | null)
       ?.slice()
       ?.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
       ?.map((ph) => ph.photo_url) ?? [];
@@ -136,7 +138,7 @@ export async function getPropertyById(
     if (error) console.error("[queries/properties] getPropertyById:", error.message);
     return null;
   }
-  const photos = (data.photos as Array<{ photo_url: string; display_order: number }> | null)
+  const photos = (data.photos as unknown as Array<{ photo_url: string; display_order: number }> | null)
     ?.slice()
     ?.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
     ?.map((ph) => ph.photo_url) ?? [];
@@ -175,6 +177,7 @@ export async function getPlatformStats(): Promise<{
   totalAvailable: number;
   totalUsers: number;
   totalCities: number;
+  totalCountries: number;
 }> {
   const supabase = await createClient();
   const [props, available, users] = await Promise.all([
@@ -190,6 +193,8 @@ export async function getPlatformStats(): Promise<{
     totalProperties: props.count ?? 0,
     totalAvailable: available.count ?? 0,
     totalUsers: users.count ?? 0,
-    totalCities: 7, // valeur dérivée du référentiel geo (Cotonou, Calavi, etc.)
+    // Villes & pays réellement référencés dans le référentiel géo panafricain.
+    totalCities: getAllCities().length,
+    totalCountries: COUNTRIES.length,
   };
 }

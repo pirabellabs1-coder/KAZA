@@ -81,6 +81,30 @@ function fullName(firstName?: string | null, lastName?: string | null): string {
 }
 
 // ---------------------------------------------------------------------------
+// Nombre de demandes de visite reçues pour une propriété donnée
+// ---------------------------------------------------------------------------
+
+export async function countPropertyVisitRequests(
+  propertyId: string,
+): Promise<number> {
+  if (!propertyId) return 0;
+  try {
+    const supabase = await getLooseClient();
+    const { count, error } = await supabase
+      .from("visit_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("property_id", propertyId);
+    if (error) {
+      console.error("[owner-activity] countPropertyVisitRequests:", error.message);
+      return 0;
+    }
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Demandes de visite reçues par un owner
 // ---------------------------------------------------------------------------
 

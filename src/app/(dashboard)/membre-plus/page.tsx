@@ -149,24 +149,21 @@ export default function PlusDashboardPage() {
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatsCard
           title="Économies réalisées"
-          value={formatFcfa(127_500)}
+          value={formatFcfa(0)}
           subtitle="depuis l'adhésion"
           icon={Wallet}
-          trend={{ label: "Équivalent 13 mois d'abo.", type: "positive" }}
         />
         <StatsCard
           title="Avantages utilisés"
-          value="12 / 30"
+          value="0 / 30"
           subtitle="ce mois-ci"
           icon={Sparkles}
-          trend={{ label: "+4 vs avril", type: "positive" }}
         />
         <StatsCard
           title="Points bonus Plus"
-          value="2 450"
+          value="0"
           subtitle="Échangeables en récompenses"
           icon={Star}
-          trend={{ label: "+150 cette semaine", type: "positive" }}
         />
       </section>
 

@@ -39,8 +39,11 @@ const GDPR_REQUESTS: Array<{
   id: string;
   type: string;
   user: string;
+  userId: string;
+  userName: string;
   email: string;
   requestedAt: string;
+  deadline: string;
   status: string;
   daysLeft: number;
 }> = [];
@@ -230,7 +233,7 @@ export default async function AdminDocumentsPage() {
         </p>
       </div>
 
-      {/* RGPD requests (mock conservé pour le MVP) */}
+      {/* RGPD requests — branché sur `gdpr_requests` (vide tant que la table n'existe pas) */}
       <Card className="rounded-2xl border-blue-200 bg-blue-50/40 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
@@ -247,6 +250,13 @@ export default async function AdminDocumentsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {GDPR_REQUESTS.length === 0 && (
+            <div className="rounded-xl border border-dashed border-blue-200 bg-white/60 px-4 py-8 text-center text-sm text-muted-foreground">
+              Aucune demande RGPD en attente. Les demandes d&apos;accès,
+              rectification ou suppression apparaîtront ici une fois la table{" "}
+              <code className="font-mono text-xs">gdpr_requests</code> branchée.
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {GDPR_REQUESTS.map((r) => {
               const statusCfg =
@@ -426,13 +436,14 @@ export default async function AdminDocumentsPage() {
             </div>
 
             <div className="overflow-x-auto rounded-xl border">
-              <table className="min-w-[1000px] w-full text-sm">
+              <table className="min-w-[1150px] w-full text-sm">
                 <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
                   <tr>
                     <th className="px-3 py-3 text-left">Type</th>
                     <th className="px-3 py-3 text-left">Utilisateur</th>
                     <th className="px-3 py-3 text-left">Email</th>
                     <th className="px-3 py-3 text-left">Catégorie</th>
+                    <th className="px-3 py-3 text-left">Justificatifs</th>
                     <th className="px-3 py-3 text-left">Statut</th>
                     <th className="px-3 py-3 text-left">Soumis</th>
                     <th className="px-3 py-3 text-left">Revue</th>
@@ -464,12 +475,51 @@ export default async function AdminDocumentsPage() {
                           )}
                         </td>
                         <td className="px-3 py-3 text-xs text-muted-foreground">
-                          {d.userEmail || "—"}
+                          <div className="flex flex-col gap-1">
+                            <span>{d.userEmail || "—"}</span>
+                            {d.emailVerified ? (
+                              <span className="inline-flex w-fit items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                                <CheckCircle2 className="size-3" /> Email vérifié
+                              </span>
+                            ) : (
+                              <span className="inline-flex w-fit items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                                <XCircle className="size-3" /> Non confirmé
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-3 py-3">
                           <Badge variant="secondary" className="text-xs">
                             {getDocLabel(d.documentType)}
                           </Badge>
+                        </td>
+                        <td className="px-3 py-3">
+                          {d.extraDocuments.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          ) : (
+                            <div className="flex flex-col gap-1">
+                              {d.extraDocuments.map((ex, idx) =>
+                                ex.url ? (
+                                  <a
+                                    key={idx}
+                                    href={ex.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex w-fit items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 hover:bg-blue-100"
+                                  >
+                                    <FileText className="size-3" /> {ex.label}
+                                  </a>
+                                ) : (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex w-fit items-center gap-1 rounded-md border bg-muted/40 px-2 py-0.5 text-[11px] text-muted-foreground"
+                                  >
+                                    <FileText className="size-3" /> {ex.label}
+                                  </span>
+                                ),
+                              )}
+                            </div>
+                          )}
                         </td>
                         <td className="px-3 py-3">
                           <DocStatusPill status={d.status} />

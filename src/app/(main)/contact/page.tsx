@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   MapPin,
-  Phone,
   Mail,
   Clock,
   Facebook,
@@ -33,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contactez l'équipe KAZA",
     description:
-      "Joignez l'équipe KAZA à Cotonou par téléphone, email ou via notre formulaire.",
+      "Joignez l'équipe KAZA par email ou via notre formulaire de contact.",
     type: "website",
   },
 };
@@ -86,15 +85,15 @@ const quickFaq = [
   },
   {
     q: "Comment signaler un problème urgent ?",
-    a: "Pour toute urgence (litige, fraude, accès bloqué), appelez directement notre support au +229 21 12 34 56 ou utilisez le chat en direct.",
+    a: "Pour toute urgence (litige, fraude, accès bloqué), écrivez à contact@pirabellabs.com ou utilisez le chat en direct.",
   },
   {
     q: "Puis-je devenir partenaire de KAZA ?",
-    a: "Oui. Choisissez le sujet « Partenariat » dans le formulaire ou écrivez à partners@kaza.africa. Notre équipe revient vers vous sous 48h.",
+    a: "Oui. Choisissez le sujet « Partenariat » dans le formulaire ou écrivez à contact@pirabellabs.com. Notre équipe revient vers vous sous 48h.",
   },
   {
     q: "Comment contacter le service presse ?",
-    a: "Pour toute demande presse, écrivez à press@kaza.africa. Nous fournissons kit média, interviews et données sur demande.",
+    a: "Pour toute demande presse, écrivez à contact@pirabellabs.com. Nous fournissons kit média, interviews et données sur demande.",
   },
 ];
 
@@ -226,24 +225,7 @@ export default function ContactPage() {
               <RevealOnScroll>
                 <div className="mt-6 space-y-4">
                   <a
-                    href="tel:+22921123456"
-                    className="group flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-kaza-blue hover:shadow-lg"
-                  >
-                    <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10 text-kaza-blue transition-transform group-hover:scale-110">
-                      <Phone className="size-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                        Téléphone
-                      </p>
-                      <p className="font-heading text-base font-semibold text-kaza-navy group-hover:text-kaza-blue">
-                        +229 21 12 34 56
-                      </p>
-                    </div>
-                  </a>
-
-                  <a
-                    href="mailto:contact@kaza.africa"
+                    href="mailto:contact@pirabellabs.com"
                     className="group flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-kaza-green hover:shadow-lg"
                   >
                     <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-green/10 text-kaza-green transition-transform group-hover:scale-110">
@@ -254,7 +236,7 @@ export default function ContactPage() {
                         Email
                       </p>
                       <p className="font-heading text-base font-semibold text-kaza-navy group-hover:text-kaza-green">
-                        contact@kaza.africa
+                        contact@pirabellabs.com
                       </p>
                     </div>
                   </a>
@@ -379,10 +361,10 @@ export default function ContactPage() {
                   Pour toute demande presse, interview ou kit média, écrivez-nous
                   à{" "}
                   <a
-                    href="mailto:press@kaza.africa"
+                    href="mailto:contact@pirabellabs.com"
                     className="font-semibold text-kaza-green underline-offset-4 hover:underline"
                   >
-                    press@kaza.africa
+                    contact@pirabellabs.com
                   </a>
                   .
                 </p>
@@ -392,7 +374,7 @@ export default function ContactPage() {
                 size="lg"
                 className="rounded-full bg-kaza-green text-white hover:bg-kaza-green/90"
               >
-                <a href="mailto:press@kaza.africa">
+                <a href="mailto:contact@pirabellabs.com">
                   Contact presse
                   <ArrowRight className="ml-2 size-4" />
                 </a>

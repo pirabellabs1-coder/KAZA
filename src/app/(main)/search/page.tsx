@@ -11,7 +11,6 @@ import {
   Bath,
   Bed,
   Bell,
-  BookmarkPlus,
   Building2,
   Camera,
   ChevronRight,
@@ -41,7 +40,7 @@ import {
 import {
   COUNTRIES,
   getCountryByCode,
-  getLiveCountries,
+  getAllCities,
   type Country,
   type City,
   type Neighborhood,
@@ -56,11 +55,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CountryFlag, GlobeFlag } from "@/components/shared/country-flag";
 import { PageTracker } from "@/components/analytics/page-tracker";
+import { SearchSaveActions } from "@/components/property/search-save-actions";
 
 export const metadata: Metadata = {
-  title: "Rechercher un logement en Afrique de l'Ouest",
+  title: "Rechercher un logement en Afrique",
   description:
-    "Annonces immobilières vérifiées au Bénin, Côte d'Ivoire, Sénégal, Togo et Burkina Faso. Filtres avancés par pays, ville, quartier, prix et équipements.",
+    "Annonces immobilières vérifiées partout en Afrique. Filtres avancés par pays, ville, quartier, prix et équipements.",
 };
 
 // -----------------------------------------------------------------------------
@@ -135,22 +135,24 @@ const VIEWS = [
 
 const POPULAR_SEARCHES = [
   { label: "Studio Cotonou", country: "BJ", city: "cotonou", type: "STUDIO" },
-  { label: "Villa Calavi", country: "BJ", city: "abomey-calavi", type: "VILLA" },
-  { label: "Coloc étudiant", country: "BJ", city: "abomey-calavi", targets: "etudiant" },
-  { label: "T3 Cadjèhoun", country: "BJ", city: "cotonou", neighborhood: "cadjehoun" },
-  { label: "Maison Yopougon", country: "CI", city: "abidjan", neighborhood: "yopougon" },
-  { label: "Appart Dakar Plateau", country: "SN", city: "dakar", neighborhood: "plateau" },
+  { label: "Appart Abidjan", country: "CI", city: "abidjan", type: "APARTMENT" },
+  { label: "Villa Dakar", country: "SN", city: "dakar", type: "VILLA" },
+  { label: "Studio Lagos", country: "NG", city: "lagos", type: "STUDIO" },
+  { label: "Appart Le Caire", country: "EG", city: "le-caire", type: "APARTMENT" },
+  { label: "Villa Casablanca", country: "MA", city: "casablanca", type: "VILLA" },
 ];
 
-const RECENT_SEARCHES = [
-  "Villa piscine Cotonou",
-  "Studio meublé Ganhi",
-  "T2 Almadies Dakar",
-  "Maison familiale Calavi",
-  "Loft Cocody Abidjan",
-  "Appart vue mer Fidjrossè",
-  "Colocation étudiante UAC",
-  "Villa Ouaga 2000",
+// Villes proposées par défaut quand la plateforme n'a pas encore assez
+// d'annonces pour calculer des recherches populaires réelles (pan-africain).
+const POPULAR_FALLBACK_CITIES = [
+  "Cotonou",
+  "Abidjan",
+  "Dakar",
+  "Lagos",
+  "Accra",
+  "Lomé",
+  "Le Caire",
+  "Casablanca",
 ];
 
 const AMENITIES = [
@@ -260,15 +262,17 @@ export default async function SearchPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const country = params.country ?? "BJ";
+  const country = params.country ?? "all";
   const citySlug = params.city ?? "";
   const view = params.view ?? "grid";
   const sort = params.sort ?? "relevance";
   const perPage = parseInt(params.perPage ?? "24", 10);
   const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
 
-  const liveCountries = getLiveCountries();
-  const soonCountries = COUNTRIES.filter((c) => c.status === "soon");
+  // Tous les pays africains sont sélectionnables à la recherche.
+  const allCountries = [...COUNTRIES].sort((a, b) =>
+    a.name.localeCompare(b.name, "fr"),
+  );
   const selectedCountry = country === "all" ? null : getCountryByCode(country);
   const selectedCity = selectedCountry?.cities.find((c) => c.slug === citySlug);
 
@@ -285,6 +289,17 @@ export default async function SearchPage({
   const COUNTRY_COUNTS = { ...COUNTRY_COUNTS_FALLBACK, ...geoStats.countryCounts };
   const CITY_COUNTS = { ...CITY_COUNTS_FALLBACK, ...geoStats.cityCounts };
   const AVG_PRICE_BY_CITY = geoStats.cityAvgPrice;
+
+  // Recherches populaires réelles : villes ayant le plus d'annonces publiées.
+  const cityNameBySlug = new Map(getAllCities().map((c) => [c.slug, c.name]));
+  const realPopular = Object.entries(geoStats.cityCounts)
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([slug]) => cityNameBySlug.get(slug))
+    .filter((x): x is string => Boolean(x));
+  const popularSearches =
+    realPopular.length > 0 ? realPopular : POPULAR_FALLBACK_CITIES;
 
   // Vraie source : Supabase. Tri serveur = created_at DESC (cf. helper).
   const properties = await listPublicProperties({
@@ -412,7 +427,7 @@ export default async function SearchPage({
                     className="w-full appearance-none bg-transparent text-sm font-medium text-foreground outline-none"
                   >
                     <option value="all">Tous pays</option>
-                    {liveCountries.map((c) => (
+                    {allCountries.map((c) => (
                       <option key={c.code} value={c.code}>
                         {c.name}
                       </option>
@@ -512,8 +527,6 @@ export default async function SearchPage({
                       country: s.country,
                       city: s.city,
                       type: s.type,
-                      neighborhood: s.neighborhood,
-                      targets: s.targets,
                     },
                   )}
                   className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:border-kaza-blue hover:bg-kaza-blue/5 hover:text-kaza-blue"
@@ -567,8 +580,8 @@ export default async function SearchPage({
               </span>
             </Link>
 
-            {/* Pays live */}
-            {liveCountries.map((c) => {
+            {/* Tous les pays — sélectionnables */}
+            {allCountries.map((c) => {
               const active = country === c.code;
               return (
                 <Link
@@ -590,27 +603,6 @@ export default async function SearchPage({
                 </Link>
               );
             })}
-
-            {/* Pays bientôt */}
-            {soonCountries.map((c) => (
-              <div
-                key={c.code}
-                aria-disabled="true"
-                className="relative flex shrink-0 cursor-not-allowed flex-col items-center gap-1 rounded-2xl border-b-4 border-transparent px-5 py-3 opacity-50"
-              >
-                <CountryFlag
-                  code={c.code}
-                  className="h-5 w-7 grayscale opacity-60"
-                  title={c.name}
-                />
-                <span className="text-sm font-semibold text-foreground">
-                  {c.name}
-                </span>
-                <Badge className="absolute -right-1 -top-1 border-amber-200 bg-amber-100 px-1.5 py-0 text-[9px] font-semibold uppercase tracking-wider text-amber-800">
-                  Bientôt
-                </Badge>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -736,7 +728,7 @@ export default async function SearchPage({
                           className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-kaza-blue focus:outline-none"
                         >
                           <option value="all">Tous</option>
-                          {liveCountries.map((c) => (
+                          {allCountries.map((c) => (
                             <option key={c.code} value={c.code}>
                               {c.name}
                             </option>
@@ -1091,21 +1083,18 @@ export default async function SearchPage({
                   })}
                 </div>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="hidden gap-1.5 sm:inline-flex"
-                >
-                  <BookmarkPlus className="size-4" />
-                  Sauvegarder
-                </Button>
-                <Button
-                  size="sm"
-                  className="gap-1.5 bg-kaza-green hover:bg-kaza-green/90"
-                >
-                  <Bell className="size-4" />
-                  Alerte
-                </Button>
+                <SearchSaveActions
+                  criteria={{
+                    country: country !== "all" ? country : undefined,
+                    city: selectedCity?.name ?? undefined,
+                    type: params.type,
+                    minPrice: params.minPrice,
+                    maxPrice: params.maxPrice,
+                    bedrooms: params.bedrooms,
+                    q: params.q,
+                    targets: params.targets,
+                  }}
+                />
               </div>
             </div>
 
@@ -1316,13 +1305,19 @@ export default async function SearchPage({
                 publication.
               </p>
             </div>
-            <Button
-              size="lg"
-              className="bg-kaza-green text-base shadow-lg hover:bg-kaza-green/90"
-            >
-              <Bell className="mr-2 size-5" />
-              Créer une alerte
-            </Button>
+            <SearchSaveActions
+              alertOnly
+              criteria={{
+                country: country !== "all" ? country : undefined,
+                city: selectedCity?.name ?? undefined,
+                type: params.type,
+                minPrice: params.minPrice,
+                maxPrice: params.maxPrice,
+                bedrooms: params.bedrooms,
+                q: params.q,
+                targets: params.targets,
+              }}
+            />
           </div>
         </div>
       </section>
@@ -1337,18 +1332,18 @@ export default async function SearchPage({
               Inspiration
             </span>
             <h2 className="mt-2 font-heading text-2xl font-bold sm:text-3xl">
-              Recherches récentes des utilisateurs
+              Recherches populaires
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
-            {RECENT_SEARCHES.map((s) => (
+            {popularSearches.map((city) => (
               <Link
-                key={s}
-                href={`/search?q=${encodeURIComponent(s)}`}
+                key={city}
+                href={`/search?q=${encodeURIComponent(city)}`}
                 className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-kaza-blue hover:bg-kaza-blue/5 hover:text-kaza-blue hover:shadow-md"
               >
                 <Search className="size-3.5" />
-                {s}
+                {city}
               </Link>
             ))}
           </div>
@@ -1517,51 +1512,6 @@ export default async function SearchPage({
                 </div>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================== */}
-      {/* STATISTIQUES DU MARCHÉ                                       */}
-      {/* =========================================================== */}
-      <section className="bg-gradient-to-br from-kaza-navy to-[#0E2A40] py-16 text-white">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="mb-10 text-center">
-            <span className="text-xs font-semibold uppercase tracking-widest text-kaza-green">
-              KAZA Insights
-            </span>
-            <h2 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">
-              Statistiques du marché
-            </h2>
-            <p className="mt-2 text-white/70">
-              Données agrégées mai 2026 — KAZA Market Intelligence
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
-            {[
-              { label: "Prix moyen m²", value: "2 850", unit: "FCFA / mois", trend: "+6%" },
-              { label: "Délai location", value: "18", unit: "jours", trend: "-12%" },
-              { label: "Taux d'occupation", value: "87", unit: "%", trend: "+4%" },
-              { label: "Satisfaction client", value: "4.7", unit: "/5", trend: "+0.2" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
-              >
-                <p className="text-xs font-medium uppercase tracking-widest text-white/60">
-                  {s.label}
-                </p>
-                <p className="mt-3 font-heading text-4xl font-bold">
-                  {s.value}
-                </p>
-                <p className="text-xs text-white/70">{s.unit}</p>
-                <p className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-kaza-green">
-                  <TrendingUp className="size-3" />
-                  {s.trend} vs avr.
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

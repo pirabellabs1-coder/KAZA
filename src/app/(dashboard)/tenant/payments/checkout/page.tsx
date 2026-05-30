@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { redirect } from "next/navigation";
+import { ArrowLeft, ReceiptText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentSummary } from "@/components/payments/payment-summary";
 import { CheckoutForm } from "./checkout-form";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { listTenantRentals } from "@/lib/queries/tenant-activity";
 
 // =============================================================================
-// KAZA - Page Checkout (tunnel paiement loyer)
+// KAZA - Page Checkout (tunnel paiement loyer) — données réelles Supabase
 // =============================================================================
 
 export const metadata: Metadata = {
@@ -17,24 +20,60 @@ interface CheckoutPageProps {
   searchParams: Promise<{ rentalId?: string }>;
 }
 
-// Mock data en attendant l'intégration Supabase
-const MOCK_RENTAL = {
-  id: "rental-001",
-  propertyTitle: "Appartement 3 pièces - Cotonou Cocotomey",
-  propertyAddress: "Quartier Cocotomey, Cotonou, Bénin",
-  propertyImageUrl: undefined,
-  periodLabel: "Loyer du 1er juin 2026",
-  monthlyRent: 150000,
-};
+const MONTHS_FR = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
 
 export default async function CheckoutPage({
   searchParams,
 }: CheckoutPageProps) {
   const params = await searchParams;
-  const rentalId = params.rentalId ?? MOCK_RENTAL.id;
+  const user = await getCurrentDisplayUser();
+  if (!user) redirect("/login?redirect=/tenant/payments");
 
-  // En production : fetch Supabase via rentalId. Ici on utilise un mock.
-  const rental = MOCK_RENTAL;
+  // Vraies locations du locataire connecté.
+  const rentals = await listTenantRentals(user.id);
+  const rental =
+    rentals.find((r) => r.id === params.rentalId) ?? rentals[0] ?? null;
+
+  // Aucune location active → rien à payer (état vide honnête).
+  if (!rental) {
+    return (
+      <div className="space-y-6">
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="w-fit gap-1.5 px-2 text-muted-foreground hover:text-foreground"
+        >
+          <Link href="/tenant/payments">
+            <ArrowLeft className="size-4" />
+            Retour aux paiements
+          </Link>
+        </Button>
+        <div className="flex flex-col items-center gap-3 rounded-xl border bg-card py-16 text-center">
+          <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+            <ReceiptText className="size-6 text-muted-foreground" />
+          </div>
+          <h1 className="font-heading text-xl font-bold text-foreground">
+            Aucun loyer à régler
+          </h1>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Vous n&apos;avez pas encore de location active sur KAZA. Dès qu&apos;un
+            bail sera signé, vos échéances de loyer apparaîtront ici.
+          </p>
+          <Button asChild variant="outline" className="mt-2">
+            <Link href="/search">Trouver un logement</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const now = new Date();
+  const periodLabel = `Loyer de ${MONTHS_FR[now.getMonth()]} ${now.getFullYear()}`;
+  const rentalId = rental.id;
   const serviceFee = Math.round(rental.monthlyRent * 0.03);
   const total = rental.monthlyRent + serviceFee;
 
@@ -74,10 +113,10 @@ export default async function CheckoutPage({
         {/* Colonne droite : récap */}
         <div>
           <PaymentSummary
-            propertyTitle={rental.propertyTitle}
-            propertyAddress={rental.propertyAddress}
-            propertyImageUrl={rental.propertyImageUrl}
-            periodLabel={rental.periodLabel}
+            propertyTitle={rental.property.title}
+            propertyAddress={rental.property.address}
+            propertyImageUrl={rental.property.primaryPhotoUrl}
+            periodLabel={periodLabel}
             monthlyRent={rental.monthlyRent}
           />
         </div>

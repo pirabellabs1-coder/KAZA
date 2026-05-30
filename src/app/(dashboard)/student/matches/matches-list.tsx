@@ -25,96 +25,9 @@ type Match = {
   bio: string;
 };
 
-const MATCHES: Match[] = [
-  {
-    id: "m-1",
-    name: "Aïcha Diop",
-    age: 22,
-    university: "UAC",
-    discipline: "Médecine",
-    score: 95,
-    commonHabits: ["Non-fumeuse", "Sportive", "Couche-tôt", "Ménage soigné"],
-    differences: ["Végétarienne"],
-    bio: "Étudiante en 4e année médecine, calme et organisée.",
-  },
-  {
-    id: "m-2",
-    name: "Kofi Mensah",
-    age: 24,
-    university: "EPAC",
-    discipline: "Informatique",
-    score: 87,
-    commonHabits: ["Non-fumeur", "Cinéma", "Couche-tard"],
-    differences: ["Niveau bruit +2", "Animaux"],
-    bio: "Dev backend le jour, gamer la nuit. Cherche ambiance détendue.",
-  },
-  {
-    id: "m-3",
-    name: "Mariam Touré",
-    age: 21,
-    university: "UAC",
-    discipline: "Droit",
-    score: 91,
-    commonHabits: ["Non-fumeuse", "Sportive", "Pratiquante", "Halal"],
-    differences: ["Couche-tôt strict"],
-    bio: "Future avocate, j'aime cuisiner et recevoir.",
-  },
-  {
-    id: "m-4",
-    name: "Tomé Da Silva",
-    age: 25,
-    university: "IRGIB",
-    discipline: "Marketing & Commerce",
-    score: 78,
-    commonHabits: ["Sportif", "Voyage"],
-    differences: ["Fumeur", "Couche-tard", "Bruit +2"],
-    bio: "Toujours en mouvement, sorties weekend, semaine au calme.",
-  },
-  {
-    id: "m-5",
-    name: "Fatou Bamba",
-    age: 23,
-    university: "ESGIS",
-    discipline: "Économie",
-    score: 89,
-    commonHabits: ["Non-fumeuse", "Lecture", "Couche-tôt", "Sans porc"],
-    differences: ["Pas sportive"],
-    bio: "Lectrice insatiable, je travaille beaucoup à la maison.",
-  },
-  {
-    id: "m-6",
-    name: "Yaw Boateng",
-    age: 26,
-    university: "UAC",
-    discipline: "Génie civil",
-    score: 72,
-    commonHabits: ["Non-fumeur", "Sportif"],
-    differences: ["Religieux strict", "Pas d'animaux", "Couche-tôt"],
-    bio: "Ingénieur en chantier, je rentre tard mais propre.",
-  },
-  {
-    id: "m-7",
-    name: "Nia Adeyemi",
-    age: 20,
-    university: "Bénin Excellence",
-    discipline: "Architecture",
-    score: 84,
-    commonHabits: ["Art", "Photo", "Non-fumeuse"],
-    differences: ["Vegan strict"],
-    bio: "Aspirante archi, projets jusqu'à 2h. Très créative.",
-  },
-  {
-    id: "m-8",
-    name: "Olamide Adesanya",
-    age: 27,
-    university: "ENEAM",
-    discipline: "Sciences politiques",
-    score: 65,
-    commonHabits: ["Lecture", "Cinéma"],
-    differences: ["Fumeur", "Animaux", "Couche-tard", "Bruit +3"],
-    bio: "Doctorant, vie nocturne intense, soirées débats.",
-  },
-];
+// Profils de colocataires compatibles — alimentés par les vrais profils
+// étudiants une fois le matching branché. Vide tant qu'aucun profil réel.
+const MATCHES: Match[] = [];
 
 type FilterKey = "new" | "viewed" | "requested" | "all";
 

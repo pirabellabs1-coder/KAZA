@@ -86,7 +86,7 @@ export function PropertySearchBar({
       <div className="relative flex-1">
         <MapPin className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Cotonou, Porto-Novo, Abidjan..."
+          placeholder="Ville, quartier, pays..."
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           onKeyDown={handleKeyDown}

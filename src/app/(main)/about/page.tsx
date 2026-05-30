@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Shield, MapPin, Users, Building2, Mail, Phone } from "lucide-react";
+import { Shield, MapPin, Users, Building2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,7 +21,7 @@ const values = [
     icon: MapPin,
     title: "Proximité Locale",
     description:
-      "Né au Bénin, conçu pour l'Afrique. Nous comprenons les défis locaux et y apportons des solutions numériques.",
+      "Conçu en Afrique, pour l'Afrique. Nous comprenons les défis locaux et y apportons des solutions numériques.",
   },
   {
     icon: Users,
@@ -61,10 +61,9 @@ export default function AboutPage() {
             <h2 className="font-heading text-2xl font-bold">Notre Mission</h2>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
               Créer la plus grande plateforme d&apos;immobilier en Afrique en
-              numérisant complètement le processus de location. En commençant
-              par le Bénin, nous nous étendons progressivement à toute
-              l&apos;Afrique de l&apos;Ouest : Togo, Côte d&apos;Ivoire,
-              Sénégal et au-delà.
+              numérisant complètement le processus de location. Notre couverture
+              s&apos;étend à tout le continent africain — Afrique de l&apos;Ouest,
+              de l&apos;Est, du Nord, centrale et australe.
             </p>
           </div>
         </div>
@@ -116,18 +115,7 @@ export default function AboutPage() {
                   <div>
                     <p className="text-sm font-medium">Email</p>
                     <p className="text-sm text-muted-foreground">
-                      contact@kaza.com
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                    <Phone className="size-5 text-kaza-navy" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Téléphone</p>
-                    <p className="text-sm text-muted-foreground">
-                      +229 97 00 00 00
+                      contact@pirabellabs.com
                     </p>
                   </div>
                 </div>

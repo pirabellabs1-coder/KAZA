@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { logout } from "@/actions/auth";
 import { Search, Bell, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AdminSidebar } from "@/components/admin/sidebar";
+import { NotificationBell } from "@/components/shared/notification-bell";
 import { getInitials } from "@/lib/utils";
 
 interface AdminHeaderProps {
@@ -30,10 +32,19 @@ interface AdminHeaderProps {
 
 export function AdminHeader({
   user,
-  notificationCount = 5,
+  notificationCount = 0,
 }: AdminHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch {
+      // ignore — redirection forcée ci-dessous
+    }
+    window.location.href = "/";
+  }
 
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-white px-4 lg:px-6">
@@ -94,20 +105,8 @@ export function AdminHeader({
           <Search className="size-5" />
         </Button>
 
-        {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          aria-label={`${notificationCount} notifications`}
-        >
-          <Bell className="size-5" />
-          {notificationCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-kaza-error px-1 text-[10px] font-bold leading-none text-white">
-              {notificationCount > 9 ? "9+" : notificationCount}
-            </span>
-          )}
-        </Button>
+        {/* Notifications — cloche cliquable avec dropdown réel */}
+        <NotificationBell initialUnread={notificationCount} />
 
         {/* Admin avatar */}
         <DropdownMenu>
@@ -144,8 +143,9 @@ export function AdminHeader({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => {
-                window.location.href = "/login";
+              onSelect={(e) => {
+                e.preventDefault();
+                void handleLogout();
               }}
             >
               Se déconnecter

@@ -121,7 +121,7 @@ export default async function TemplatesGalleryPage() {
         <StatBox icon={Scale} value="4" label="Modèles certifiés" />
         <StatBox icon={FileText} value="50+" label="Clauses légales" />
         <StatBox icon={Sparkles} value="100%" label="Conforme Loi 2018-12" />
-        <StatBox icon={Users} value="2.3k" label="Contrats générés" />
+        <StatBox icon={FileText} value="PDF" label="Export & e-signature" />
       </div>
 
       {/* Templates grid */}

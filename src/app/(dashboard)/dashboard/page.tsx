@@ -27,6 +27,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { createClient } from "@/lib/supabase/server";
+import { listOwnerVisits, type OwnerVisit } from "@/lib/queries/owner-activity";
+import {
+  listSavedProperties,
+  listTenantMessages,
+  listStudentColocations,
+} from "@/lib/queries/tenant-activity";
+import { getTenantFinanceSummary } from "@/lib/queries/tenant-finance";
+import { getAdminStats } from "@/lib/queries/admin";
 import {
   formatFcfa,
   formatFcfaShort,
@@ -61,17 +70,33 @@ const OWNER_VISITS_FUNNEL: Array<{
   color: string;
 }> = [];
 
-// Fallbacks vides — à brancher sur queries Supabase (payments, roommate listings, saved properties)
-type DemoPayment = { id: string; status: string; amount: number };
-const mockPayments: DemoPayment[] = [];
-const getOpenRoommateListings = (): unknown[] => [];
-const getSavedPropertyIds = (_userId: string): string[] => [];
-
 export const metadata: Metadata = {
   title: "Tableau de bord",
 };
 
-const MOCK_TENANT_ID = "u-004-tenant-thomas";
+// Statut de vérification d'identité réel (table public.users.is_verified).
+async function fetchIsVerified(userId: string): Promise<boolean> {
+  try {
+    const supabase = (await createClient()) as unknown as {
+      from: (t: string) => {
+        select: (c: string) => {
+          eq: (
+            k: string,
+            v: string,
+          ) => { maybeSingle: () => Promise<{ data: { is_verified?: boolean } | null }> };
+        };
+      };
+    };
+    const { data } = await supabase
+      .from("users")
+      .select("is_verified")
+      .eq("id", userId)
+      .maybeSingle();
+    return Boolean(data?.is_verified);
+  } catch {
+    return false;
+  }
+}
 
 export default async function DashboardPage() {
   const user = await getCurrentDisplayUser();
@@ -83,18 +108,59 @@ export default async function DashboardPage() {
     return <AdminOverview firstName={user.firstName} />;
   }
   if (role === "OWNER") {
-    return <OwnerOverview firstName={user.firstName} />;
+    const visits = await listOwnerVisits(user.id);
+    const now = Date.now();
+    const upcomingVisits = visits
+      .filter(
+        (v) =>
+          (v.status === "PENDING" || v.status === "ACCEPTED") &&
+          new Date(v.proposedDate).getTime() >= now,
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.proposedDate).getTime() - new Date(b.proposedDate).getTime(),
+      )
+      .slice(0, 5);
+    const pendingCount = visits.filter((v) => v.status === "PENDING").length;
+    // Visites planifiées cette semaine (7 prochains jours, réel).
+    const weekEnd = now + 7 * 24 * 60 * 60 * 1000;
+    const visitsThisWeek = visits.filter((v) => {
+      const t = new Date(v.proposedDate).getTime();
+      return (
+        (v.status === "PENDING" || v.status === "ACCEPTED") &&
+        t >= now &&
+        t <= weekEnd
+      );
+    }).length;
+    return (
+      <OwnerOverview
+        firstName={user.firstName}
+        upcomingVisits={upcomingVisits}
+        pendingVisitsCount={pendingCount}
+        visitsThisWeek={visitsThisWeek}
+      />
+    );
   }
   if (role === "STUDENT") {
-    return <StudentOverview firstName={user.firstName} />;
+    return <StudentOverview firstName={user.firstName} userId={user.id} />;
   }
-  return <TenantOverview firstName={user.firstName} />;
+  return <TenantOverview firstName={user.firstName} userId={user.id} />;
 }
 
 // =============================================================================
 // OWNER — DASHBOARD RICHE (analytics + activité + raccourcis)
 // =============================================================================
-function OwnerOverview({ firstName }: { firstName: string }) {
+function OwnerOverview({
+  firstName,
+  upcomingVisits,
+  pendingVisitsCount,
+  visitsThisWeek,
+}: {
+  firstName: string;
+  upcomingVisits: OwnerVisit[];
+  visitsThisWeek: number;
+  pendingVisitsCount: number;
+}) {
   const today = new Date().toLocaleDateString("fr-FR", {
     weekday: "long",
     day: "numeric",
@@ -187,10 +253,14 @@ function OwnerOverview({ firstName }: { firstName: string }) {
                 Action requise
               </p>
               <p className="font-heading text-lg font-semibold sm:text-xl">
-                Vous avez 3 nouvelles demandes de visite
+                {pendingVisitsCount > 0
+                  ? `Vous avez ${pendingVisitsCount} demande${pendingVisitsCount > 1 ? "s" : ""} de visite en attente`
+                  : "Aucune demande de visite en attente"}
               </p>
               <p className="text-sm text-white/80">
-                Les locataires attendent une réponse depuis moins de 4 heures
+                {pendingVisitsCount > 0
+                  ? "Les locataires attendent votre réponse."
+                  : "Vous serez notifié dès qu'un locataire demandera à visiter un bien."}
               </p>
             </div>
           </div>
@@ -225,21 +295,21 @@ function OwnerOverview({ firstName }: { firstName: string }) {
         />
         <KpiCard
           label="Visites planifiées"
-          value="18"
+          value={String(visitsThisWeek)}
           delta="cette semaine"
           deltaType="neutral"
           icon={CalendarCheck}
-          sparkData={[6, 4, 8, 5, 11, 9, 18]}
+          sparkData={[]}
           sparkColor="#F59E0B"
           accent="from-amber-100 to-amber-50"
         />
         <KpiCard
           label="Note moyenne"
-          value={`${avgRating}/5`}
+          value={totalReviews > 0 ? `${avgRating}/5` : "—"}
           delta={`sur ${totalReviews} avis`}
           deltaType="neutral"
           icon={Star}
-          sparkData={[4.5, 4.6, 4.6, 4.7, 4.7, 4.8, 4.8, 4.8]}
+          sparkData={[]}
           sparkColor="#1A3A52"
           accent="from-slate-100 to-slate-50"
         />
@@ -592,68 +662,78 @@ function OwnerOverview({ firstName }: { firstName: string }) {
         </CardContent>
       </Card>
 
-      {/* Activité récente + Prochaines visites */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="rounded-2xl shadow-sm lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="font-heading text-lg">
-              Activité récente
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ol className="relative space-y-5 border-l border-slate-200 pl-6">
-              {RECENT_ACTIVITY.map((event) => (
-                <li key={event.id}>
-                  <span
-                    className={`absolute -left-3 flex size-6 items-center justify-center rounded-full ring-4 ring-white ${event.color}`}
+      {/* Prochaines visites (réelles) */}
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="font-heading text-lg">
+            Prochaines visites
+          </CardTitle>
+          <Badge className="bg-kaza-blue/10 text-kaza-blue hover:bg-kaza-blue/10">
+            {upcomingVisits.length}
+          </Badge>
+        </CardHeader>
+        <CardContent>
+          {upcomingVisits.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-8 text-center">
+              <CalendarCheck className="size-8 text-muted-foreground" />
+              <p className="text-sm font-medium text-foreground">
+                Aucune visite programmée
+              </p>
+              <p className="max-w-sm text-xs text-muted-foreground">
+                Les demandes de visite confirmées apparaîtront ici.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {upcomingVisits.map((v) => {
+                const dt = new Date(v.proposedDate);
+                const dateLabel = dt.toLocaleDateString("fr-FR", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                });
+                const timeLabel = dt.toLocaleTimeString("fr-FR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                return (
+                  <div
+                    key={v.id}
+                    className="rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-kaza-blue/30 hover:bg-kaza-blue/5"
                   >
-                    <event.icon className="size-3 text-white" />
-                  </span>
-                  <p className="text-sm font-medium">{event.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {event.description}
-                  </p>
-                  <p className="mt-0.5 text-xs text-slate-400">{event.time}</p>
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="font-heading text-lg">
-              Prochaines visites
-            </CardTitle>
-            <Badge className="bg-kaza-blue/10 text-kaza-blue hover:bg-kaza-blue/10">
-              3
-            </Badge>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {UPCOMING_VISITS.map((v) => (
-              <div
-                key={v.id}
-                className="rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-kaza-blue/30 hover:bg-kaza-blue/5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-kaza-navy">
-                    {v.date}
-                  </span>
-                  <Badge variant="outline" className="text-[10px]">
-                    {v.time}
-                  </Badge>
-                </div>
-                <p className="mt-1.5 text-sm font-medium">{v.tenant}</p>
-                <p className="text-xs text-muted-foreground">{v.property}</p>
-                <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
-                  <Users className="size-3" />
-                  Agent : {v.agent}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold capitalize text-kaza-navy">
+                        {dateLabel}
+                      </span>
+                      <Badge variant="outline" className="text-[10px]">
+                        {timeLabel}
+                      </Badge>
+                    </div>
+                    <p className="mt-1.5 text-sm font-medium">
+                      {v.requesterName || "Visiteur"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {v.propertyTitle}
+                    </p>
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                      <Badge
+                        variant="outline"
+                        className={
+                          v.status === "ACCEPTED"
+                            ? "border-emerald-300 text-emerald-700"
+                            : "border-amber-300 text-amber-700"
+                        }
+                      >
+                        {v.status === "ACCEPTED" ? "Confirmée" : "En attente"}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Raccourcis 6 cards */}
       <div>
@@ -700,106 +780,9 @@ function OwnerOverview({ firstName }: { firstName: string }) {
         </div>
       </div>
 
-      {/* Footer KPI */}
-      <div className="rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-white p-4 text-sm text-muted-foreground">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p>
-            <span className="font-semibold text-foreground">Plateforme</span> ·
-            Ce mois :{" "}
-            <span className="font-semibold text-kaza-green">+3 contrats</span>,{" "}
-            <span className="font-semibold text-kaza-blue">+1 propriété</span>,{" "}
-            <span className="font-semibold text-foreground">0 incident</span>
-          </p>
-          <span className="flex items-center gap-1 text-xs">
-            <span className="size-2 animate-pulse rounded-full bg-kaza-green" />
-            Toutes les données sont à jour
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
-
-// =============================================================================
-// Mock activité & visites (OWNER)
-// =============================================================================
-const RECENT_ACTIVITY = [
-  {
-    id: "a1",
-    title: "Contrat signé — Villa 5ch Haie Vive",
-    description: "Locataire : Thomas Leroy — bail 24 mois",
-    time: "Il y a 12 min",
-    icon: FileSignature,
-    color: "bg-kaza-green",
-  },
-  {
-    id: "a2",
-    title: "Paiement reçu — 380 000 FCFA",
-    description: "T3 Cocotiers — Marie Ahoussou (mai 2026)",
-    time: "Il y a 1 h",
-    icon: CreditCard,
-    color: "bg-kaza-blue",
-  },
-  {
-    id: "a3",
-    title: "Nouveau message",
-    description: "Fatou Diallo : « La visite de samedi est-elle confirmée ? »",
-    time: "Il y a 3 h",
-    icon: MessageCircle,
-    color: "bg-amber-500",
-  },
-  {
-    id: "a4",
-    title: "Visite terminée — T4 Cadjèhoun",
-    description: "Visiteur : Amadou Sow — note 5/5",
-    time: "Il y a 5 h",
-    icon: CalendarCheck,
-    color: "bg-kaza-navy",
-  },
-  {
-    id: "a5",
-    title: "Nouvel avis 5 étoiles",
-    description: "« Propriétaire très réactif, logement comme sur les photos »",
-    time: "Hier",
-    icon: Star,
-    color: "bg-amber-500",
-  },
-  {
-    id: "a6",
-    title: "Nouveau lead — Studio Ganhi",
-    description: "Caroline Doumbé a marqué votre annonce comme favori",
-    time: "Hier",
-    icon: UserPlus,
-    color: "bg-purple-600",
-  },
-];
-
-const UPCOMING_VISITS = [
-  {
-    id: "v1",
-    date: "Aujourd'hui",
-    time: "16:00",
-    tenant: "Thomas Leroy",
-    property: "Appartement 3ch Cadjèhoun",
-    agent: "Vous-même",
-  },
-  {
-    id: "v2",
-    date: "Demain",
-    time: "10:30",
-    tenant: "Fatou Diallo",
-    property: "Villa 4ch Calavi",
-    agent: "Agent Premier Immo",
-  },
-  {
-    id: "v3",
-    date: "Samedi 30 mai",
-    time: "14:00",
-    tenant: "Amadou Sow",
-    property: "Studio Akpakpa",
-    agent: "Vous-même",
-  },
-];
 
 // =============================================================================
 // Sub-component : KPI card avec sparkline
@@ -920,10 +903,27 @@ function ShortcutCard({
 // =============================================================================
 // TENANT (inchangé)
 // =============================================================================
-function TenantOverview({ firstName }: { firstName: string }) {
-  const favs = getSavedPropertyIds(MOCK_TENANT_ID).length;
-  const pending = mockPayments.filter((p) => p.status === "PENDING");
-  const pendingAmount = pending.reduce((sum, p) => sum + p.amount, 0);
+async function TenantOverview({
+  firstName,
+  userId,
+}: {
+  firstName: string;
+  userId: string;
+}) {
+  const [saved, conversations, finance, isVerified] = await Promise.all([
+    listSavedProperties(userId),
+    listTenantMessages(userId),
+    getTenantFinanceSummary(userId),
+    fetchIsVerified(userId),
+  ]);
+
+  const favs = saved.length;
+  const unreadMessages = conversations.reduce(
+    (sum, c) => sum + (c.unreadCount ?? 0),
+    0,
+  );
+  const upcomingPayments = finance.activeRentals;
+  const upcomingAmount = finance.currentRent;
 
   return (
     <div className="space-y-6">
@@ -943,21 +943,21 @@ function TenantOverview({ firstName }: { firstName: string }) {
         />
         <StatsCard
           title="Paiements à venir"
-          value={pending.length}
+          value={upcomingPayments}
           icon={Wallet}
-          subtitle={pendingAmount > 0 ? formatPrice(pendingAmount) : "Aucun"}
+          subtitle={upcomingAmount > 0 ? formatPrice(upcomingAmount) : "Aucun"}
         />
         <StatsCard
           title="Messages non lus"
-          value={2}
+          value={unreadMessages}
           icon={MessagesSquare}
-          subtitle="2 conversations"
+          subtitle={`${conversations.length} conversation${conversations.length > 1 ? "s" : ""}`}
         />
         <StatsCard
           title="Vérification"
-          value="✓"
+          value={isVerified ? "✓" : "—"}
           icon={ShieldCheck}
-          subtitle="Identité vérifiée"
+          subtitle={isVerified ? "Identité vérifiée" : "Non vérifiée"}
         />
       </div>
 
@@ -1004,8 +1004,27 @@ function TenantOverview({ firstName }: { firstName: string }) {
 // =============================================================================
 // STUDENT (inchangé)
 // =============================================================================
-function StudentOverview({ firstName }: { firstName: string }) {
-  const colocs = getOpenRoommateListings().length;
+async function StudentOverview({
+  firstName,
+  userId,
+}: {
+  firstName: string;
+  userId: string;
+}) {
+  const [colocations, saved, conversations, isVerified] = await Promise.all([
+    listStudentColocations(userId),
+    listSavedProperties(userId),
+    listTenantMessages(userId),
+    fetchIsVerified(userId),
+  ]);
+
+  const myColocations = colocations.length;
+  const favs = saved.length;
+  const unreadMessages = conversations.reduce(
+    (sum, c) => sum + (c.unreadCount ?? 0),
+    0,
+  );
+
   return (
     <div className="space-y-6">
       <WelcomeBanner
@@ -1017,28 +1036,28 @@ function StudentOverview({ firstName }: { firstName: string }) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Colocations dispo"
-          value={colocs}
+          title="Mes colocations"
+          value={myColocations}
           icon={Users}
-          subtitle="Près des campus"
+          subtitle={myColocations > 0 ? "Annonces & groupes" : "Aucune pour l'instant"}
         />
         <StatsCard
-          title="Mes dépenses ce mois"
-          value="42 500 FCFA"
-          icon={Wallet}
-          subtitle="Réparties équitablement"
+          title="Favoris"
+          value={favs}
+          icon={Heart}
+          subtitle="Logements sauvegardés"
         />
         <StatsCard
-          title="Demandes en cours"
-          value={3}
-          icon={CalendarCheck}
-          subtitle="2 en attente"
+          title="Messages non lus"
+          value={unreadMessages}
+          icon={MessagesSquare}
+          subtitle={`${conversations.length} conversation${conversations.length > 1 ? "s" : ""}`}
         />
         <StatsCard
-          title="Score colocation"
-          value="92%"
-          icon={Sparkles}
-          subtitle="Compatibilité élevée"
+          title="Vérification"
+          value={isVerified ? "✓" : "—"}
+          icon={ShieldCheck}
+          subtitle={isVerified ? "Identité vérifiée" : "Non vérifiée"}
         />
       </div>
 
@@ -1094,7 +1113,10 @@ function StudentOverview({ firstName }: { firstName: string }) {
 // =============================================================================
 // ADMIN (inchangé)
 // =============================================================================
-function AdminOverview({ firstName }: { firstName: string }) {
+async function AdminOverview({ firstName }: { firstName: string }) {
+  const stats = await getAdminStats();
+  const activeListings = stats.propertiesByStatus?.AVAILABLE ?? 0;
+
   return (
     <div className="space-y-6">
       <WelcomeBanner
@@ -1107,25 +1129,25 @@ function AdminOverview({ firstName }: { firstName: string }) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Utilisateurs"
-          value="3 240"
+          value={formatNumber(stats.totalUsers)}
           icon={Users}
-          trend={{ label: "+8% ce mois", type: "positive" }}
+          subtitle="Total inscrits"
         />
         <StatsCard
           title="Annonces actives"
-          value="12 540"
+          value={formatNumber(activeListings)}
           icon={Building2}
-          trend={{ label: "+12%", type: "positive" }}
+          subtitle="Publiées & disponibles"
         />
         <StatsCard
           title="Revenus 30j"
-          value="84,2 M FCFA"
+          value={formatFcfaShort(stats.totalRevenue30d)}
           icon={TrendingUp}
-          trend={{ label: "+18%", type: "positive" }}
+          subtitle="Paiements encaissés"
         />
         <StatsCard
-          title="Litiges ouverts"
-          value={3}
+          title="Vérifications en attente"
+          value={stats.pendingVerifications}
           icon={ShieldCheck}
           subtitle="À traiter"
         />

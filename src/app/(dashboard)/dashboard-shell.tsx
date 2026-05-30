@@ -29,8 +29,10 @@ import {
 import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { PushTokenRegister } from "@/components/shared/push-token-register";
+import { NotificationBell } from "@/components/shared/notification-bell";
 import { getInitials } from "@/lib/utils";
 import { logout } from "@/actions/auth";
+import { createClient } from "@/lib/supabase/client";
 
 const ROLE_LABELS: Record<string, string> = {
   OWNER: "Propriétaire",
@@ -49,17 +51,68 @@ interface DashboardShellProps {
     role: string;
     isDemo: boolean;
   };
+  // NotificationBell importé pour la cloche cliquable (dropdown réel).
+  /** Nombre réel de notifications non lues, calculé côté serveur. */
+  initialUnreadCount?: number;
   children: React.ReactNode;
 }
 
 const SIDEBAR_COLLAPSED_KEY = "kaza:sidebar-collapsed";
 
-export function DashboardShell({ user, children }: DashboardShellProps) {
+export function DashboardShell({
+  user,
+  initialUnreadCount = 0,
+  children,
+}: DashboardShellProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
   // Sidebar collapse state — persisté en localStorage. Vrai = sidebar masquée.
   const [collapsed, setCollapsed] = useState(false);
+  // Compteur de notifications non lues — initialisé côté serveur puis tenu à
+  // jour en temps réel via Supabase Realtime (INSERT/UPDATE sur notifications).
+  const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+
+  // Resynchronise si le serveur renvoie un nouveau compte (revalidation/nav).
+  useEffect(() => {
+    setUnreadCount(initialUnreadCount);
+  }, [initialUnreadCount]);
+
+  // Abonnement Realtime : on recompte les non-lues à chaque changement sur
+  // la table notifications de l'utilisateur courant (nouvelle notif, lecture).
+  useEffect(() => {
+    if (!user.id) return;
+    const supabase = createClient();
+
+    async function refreshCount() {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .is("read_at", null);
+      setUnreadCount(count ?? 0);
+    }
+
+    const channel = supabase
+      .channel(`notifications:${user.id}`)
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        } as never,
+        () => {
+          void refreshCount();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [user.id]);
 
   useEffect(() => {
     try {
@@ -157,21 +210,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
               <span className="sr-only">Rechercher</span>
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              asChild
-            >
-              <Link href="/notifications">
-                <Bell className="size-5" />
-                <span className="absolute right-1.5 top-1.5 flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-kaza-blue opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-kaza-blue" />
-                </span>
-                <span className="sr-only">Notifications</span>
-              </Link>
-            </Button>
+            <NotificationBell initialUnread={unreadCount} />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -212,11 +251,6 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
                       <Badge variant="secondary" className="w-fit text-xs">
                         {ROLE_LABELS[user.role] ?? user.role}
                       </Badge>
-                      {user.isDemo ? (
-                        <Badge className="border-0 bg-amber-100 text-[10px] text-amber-800">
-                          Mode démo
-                        </Badge>
-                      ) : null}
                     </div>
                   </div>
                 </DropdownMenuLabel>

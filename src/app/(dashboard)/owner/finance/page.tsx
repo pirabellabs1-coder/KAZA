@@ -21,47 +21,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatFcfa, formatFcfaShort } from "@/lib/utils";
-
-// Fallback vide — à brancher quand l'agrégation mensuelle des revenus
-// propriétaire sera connectée à Supabase (table payments).
-const OWNER_MONTHLY_REVENUE: Array<{
-  month: string;
-  revenue: number;
-  occupancy: number;
-}> = [];
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { listOwnerPayments } from "@/lib/queries/owner-activity";
+import { listWithdrawalRequests } from "@/lib/queries/wallet";
 
 export const metadata: Metadata = {
   title: "Finances propriétaire",
 };
 
-// =============================================================================
-// Fallbacks vides — à brancher quand les tables payments / payouts seront
-// agrégées côté Supabase et exposées via @/lib/queries.
-// =============================================================================
-
-const RENT_DUE_THIS_MONTH: Array<{
-  id: string;
-  tenant: string;
-  property: string;
-  expected: number;
-  status: "RECEIVED" | "PENDING" | "LATE";
-  dueDate: string;
-}> = [];
-
-const OWNER_PAYOUTS: Array<{
-  id: string;
-  date: string;
-  amount: number;
-  method: string;
-  status: "PAID" | "PROCESSING" | "SCHEDULED";
-}> = [];
-
-const DONUT_BREAKDOWN: Array<{
-  label: string;
-  percentage: number;
-  color: string;
-  amount: number;
-}> = [];
+// Palette du donut « répartition par bien ».
+const DONUT_COLORS = [
+  "#1976D2",
+  "#4CAF50",
+  "#FF9800",
+  "#9C27B0",
+  "#00BCD4",
+  "#E91E63",
+  "#795548",
+];
 
 const JUSTIFICATIFS: Array<{
   id: string;
@@ -71,18 +48,156 @@ const JUSTIFICATIFS: Array<{
   description: string;
 }> = [];
 
+const MONTH_LABELS = [
+  "Jan",
+  "Fév",
+  "Mar",
+  "Avr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Aoû",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Déc",
+];
+
+function payoutStatusFromDb(
+  status: string,
+): "PAID" | "PROCESSING" | "SCHEDULED" {
+  const s = status.toUpperCase();
+  if (s === "COMPLETED" || s === "PAID" || s === "APPROVED") return "PAID";
+  if (s === "PENDING" || s === "SCHEDULED") return "SCHEDULED";
+  return "PROCESSING";
+}
+
 // =============================================================================
 // PAGE
 // =============================================================================
 
-export default function OwnerFinancePage() {
+export default async function OwnerFinancePage() {
+  const user = await getCurrentDisplayUser();
+  const userId = user?.id ?? "";
+
+  const [payments, withdrawals] = await Promise.all([
+    userId ? listOwnerPayments(userId) : Promise.resolve([]),
+    userId ? listWithdrawalRequests(userId) : Promise.resolve([]),
+  ]);
+
+  const now = new Date();
+
+  // --- Revenus par mois (12 derniers mois) -----------------------------------
+  // On agrège les paiements complétés par mois calendaire.
+  const monthBuckets: Array<{ key: string; month: string; revenue: number }> =
+    [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    monthBuckets.push({
+      key,
+      month: `${MONTH_LABELS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`,
+      revenue: 0,
+    });
+  }
+  const bucketByKey = new Map(monthBuckets.map((b) => [b.key, b]));
+
+  const completedPayments = payments.filter(
+    (p) => p.status.toUpperCase() === "COMPLETED",
+  );
+  for (const p of completedPayments) {
+    const ref = p.paidAt ?? p.createdAt;
+    if (!ref) continue;
+    const d = new Date(ref);
+    if (Number.isNaN(d.getTime())) continue;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const bucket = bucketByKey.get(key);
+    if (bucket) bucket.revenue += p.amount;
+  }
+
+  const OWNER_MONTHLY_REVENUE = monthBuckets.map((b) => ({
+    month: b.month,
+    revenue: b.revenue,
+    occupancy: 0,
+  }));
+
+  // --- Loyers du mois en cours -----------------------------------------------
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const paymentsThisMonth = payments.filter((p) => {
+    const ref = p.paidAt ?? p.dueDate ?? p.createdAt;
+    if (!ref) return false;
+    const d = new Date(ref);
+    return d >= monthStart && d < monthEnd;
+  });
+
+  const RENT_DUE_THIS_MONTH = paymentsThisMonth.map((p) => {
+    const dbStatus = p.status.toUpperCase();
+    const ref = p.dueDate ?? p.createdAt;
+    const isLate =
+      dbStatus !== "COMPLETED" && ref ? new Date(ref) < now : false;
+    const status: "RECEIVED" | "PENDING" | "LATE" =
+      dbStatus === "COMPLETED" ? "RECEIVED" : isLate ? "LATE" : "PENDING";
+    return {
+      id: p.id,
+      tenant: p.tenantName,
+      property: p.propertyTitle,
+      expected: p.amount,
+      status,
+      dueDate: ref ?? now.toISOString(),
+    };
+  });
+
+  // --- Payouts (demandes de retrait) -----------------------------------------
+  const OWNER_PAYOUTS = withdrawals.map((w) => ({
+    id: w.id,
+    date: w.processedAt ?? w.requestedAt,
+    amount: w.amount,
+    method: w.method,
+    status: payoutStatusFromDb(w.status),
+  }));
+
+  // --- Répartition par bien (donut) sur 12 mois ------------------------------
+  const byProperty = new Map<string, number>();
+  for (const p of completedPayments) {
+    byProperty.set(
+      p.propertyTitle,
+      (byProperty.get(p.propertyTitle) ?? 0) + p.amount,
+    );
+  }
+  const totalByProperty = Array.from(byProperty.values()).reduce(
+    (s, v) => s + v,
+    0,
+  );
+  const DONUT_BREAKDOWN = Array.from(byProperty.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 7)
+    .map(([label, amount], i) => ({
+      label,
+      amount,
+      percentage:
+        totalByProperty > 0 ? Math.round((amount / totalByProperty) * 100) : 0,
+      color: DONUT_COLORS[i % DONUT_COLORS.length],
+    }));
+
   const data = OWNER_MONTHLY_REVENUE;
   const totalRev = data.reduce((s, d) => s + d.revenue, 0);
-  const maxRev = data.length > 0 ? Math.max(...data.map((d) => d.revenue)) : 0;
+  const hasRevenue = totalRev > 0;
+  const maxRev = hasRevenue ? Math.max(...data.map((d) => d.revenue), 1) : 0;
 
   const grossRevenue = totalRev;
   const deductibles = 0;
   const taxableIncome = grossRevenue - deductibles;
+
+  // KPIs dérivés des vraies données.
+  const rentDueThisMonth = RENT_DUE_THIS_MONTH.filter(
+    (r) => r.status !== "RECEIVED",
+  ).reduce((s, r) => s + r.expected, 0);
+  const payoutsReceived = OWNER_PAYOUTS.filter(
+    (p) => p.status === "PAID",
+  ).reduce((s, p) => s + p.amount, 0);
+  const estimatedTax = Math.round(taxableIncome * 0.25);
 
   return (
     <div className="space-y-6">
@@ -109,30 +224,38 @@ export default function OwnerFinancePage() {
         </div>
       </div>
 
-      {/* KPI ROW — Fallbacks à zéro tant que l'agrégation Supabase n'est pas branchée */}
+      {/* KPI ROW — valeurs dérivées des paiements / retraits réels */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <KpiCard
           label="Revenus 12 mois"
           value={`${formatFcfaShort(grossRevenue)} FCFA`}
-          subtitle="Aucune donnée agrégée"
+          subtitle={
+            hasRevenue
+              ? "Loyers nets perçus sur 12 mois"
+              : "Aucune donnée agrégée"
+          }
           icon={Wallet}
         />
         <KpiCard
           label="Loyers à percevoir ce mois"
-          value={formatFcfa(0)}
-          subtitle="Aucun loyer enregistré"
+          value={formatFcfa(rentDueThisMonth)}
+          subtitle={
+            rentDueThisMonth > 0
+              ? "En attente ou en retard"
+              : "Aucun loyer en attente"
+          }
           icon={CalendarClock}
         />
         <KpiCard
           label="Payouts reçus"
-          value={`${formatFcfaShort(0)} FCFA`}
-          subtitle="Aucun versement"
+          value={`${formatFcfaShort(payoutsReceived)} FCFA`}
+          subtitle={payoutsReceived > 0 ? "Versements confirmés" : "Aucun versement"}
           icon={CheckCircle2}
         />
         <KpiCard
           label="Taxes estimées"
-          value={formatFcfa(0)}
-          subtitle="À provisionner"
+          value={formatFcfa(estimatedTax)}
+          subtitle="À provisionner (25%)"
           icon={Landmark}
           subtitleType="warning"
         />
@@ -154,7 +277,7 @@ export default function OwnerFinancePage() {
           </div>
         </CardHeader>
         <CardContent>
-          {data.length === 0 ? (
+          {!hasRevenue ? (
             <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
               Aucun revenu agrégé pour le moment.
             </div>
@@ -271,6 +394,11 @@ export default function OwnerFinancePage() {
             </p>
           </CardHeader>
           <CardContent>
+            {DONUT_BREAKDOWN.length === 0 ? (
+              <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
+                Aucune recette à répartir pour le moment.
+              </div>
+            ) : (
             <div className="flex flex-col items-center gap-4">
               <Donut
                 data={DONUT_BREAKDOWN}
@@ -299,6 +427,7 @@ export default function OwnerFinancePage() {
                 ))}
               </div>
             </div>
+            )}
           </CardContent>
         </Card>
 

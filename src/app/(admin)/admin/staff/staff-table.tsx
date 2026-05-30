@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MoreVertical, Plus, Shield, UserCog, UserX } from "lucide-react";
+import { Mail, Plus, Shield, UserCog, UserX } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -237,15 +237,6 @@ export function StaffTable({ rows }: StaffTableProps) {
             onClick={() => setDialog({ type: "deactivate", member: row })}
           >
             <UserX className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8"
-            title="Plus d'options"
-            onClick={() => toast.info("Plus d'options (démo)")}
-          >
-            <MoreVertical className="size-4" />
           </Button>
         </div>
       ),

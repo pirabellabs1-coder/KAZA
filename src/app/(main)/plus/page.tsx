@@ -24,8 +24,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
-import { StatCounter } from "@/components/marketing/stat-counter";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
 import { GlassPanel } from "@/components/shared/glass-panel";
@@ -38,7 +36,7 @@ import { PlusPricingToggle } from "./pricing-toggle";
 export const metadata: Metadata = {
   title: "KAZA Plus — l'expérience premium de l'immobilier",
   description:
-    "KAZA Plus : boost mensuel, analytics privées, support prioritaire 24/7, identité validée en 2h, stockage illimité et concierge personnel. 9 900 FCFA/mois ou 99 000 FCFA/an (2 mois offerts).",
+    "KAZA Plus : boost mensuel, analytics privées, support prioritaire, identité validée en express, stockage illimité et concierge personnel. 9 900 FCFA/mois ou 99 000 FCFA/an (2 mois offerts).",
   openGraph: {
     title: "KAZA Plus — l'expérience premium",
     description:
@@ -82,17 +80,17 @@ const plusFeatures: PlusFeature[] = [
   },
   {
     icon: Headphones,
-    title: "Support prioritaire 24/7",
+    title: "Support prioritaire",
     description:
-      "Une équipe dédiée joignable jour et nuit avec une réponse garantie en moins d'une heure.",
-    detail: "Réponse < 1h, 24/7",
+      "Une équipe dédiée traite vos demandes en priorité, avec une réponse plus rapide qu'en version Free.",
+    detail: "File d'attente prioritaire",
   },
   {
     icon: ShieldCheck,
-    title: "Identité validée en 2h",
+    title: "Identité validée en express",
     description:
       "Procédure express avec badge Premium visible sur votre profil et toutes vos annonces.",
-    detail: "vs 48h en version Free",
+    detail: "Traitement prioritaire",
   },
   {
     icon: FolderLock,
@@ -118,7 +116,7 @@ const PRIVILEGES_DETAILS = [
   {
     icon: Megaphone,
     title: "Visibilité maximale",
-    text: "Votre annonce passe en tête des résultats pendant 7 jours, avec un badge Premium reconnaissable. En moyenne, +4x de vues et +3x de contacts qualifiés.",
+    text: "Votre annonce passe en tête des résultats pendant 7 jours, avec un badge Premium reconnaissable pour capter l'attention des acheteurs et locataires.",
   },
   {
     icon: LineChart,
@@ -127,13 +125,13 @@ const PRIVILEGES_DETAILS = [
   },
   {
     icon: Headphones,
-    title: "Support VIP non-stop",
-    text: "Chat, WhatsApp ou appel direct. Notre équipe Plus est joignable 24h/24, week-ends et jours fériés compris, avec un SLA de réponse sous 1h.",
+    title: "Support VIP",
+    text: "Chat, WhatsApp ou appel direct. Notre équipe Plus traite vos demandes en priorité par rapport à la file standard.",
   },
   {
     icon: ShieldCheck,
     title: "Validation express",
-    text: "Votre dossier d'identité est traité en 2h ouvrées au lieu de 48h. Le badge Premium rassure instantanément vos interlocuteurs.",
+    text: "Votre dossier d'identité est traité en priorité par notre équipe KYC. Le badge Premium rassure instantanément vos interlocuteurs.",
   },
   {
     icon: FolderLock,
@@ -144,43 +142,6 @@ const PRIVILEGES_DETAILS = [
     icon: ConciergeBell,
     title: "Concierge sur-mesure",
     text: "Un conseiller KAZA dédié vous accompagne : présélection d'annonces, prise de RDV, accompagnement aux visites et négociation à votre place.",
-  },
-];
-
-// =============================================================================
-// Témoignages
-// =============================================================================
-
-const plusTestimonials = [
-  {
-    name: "Fatou Adjovi",
-    role: "Locataire Premium",
-    city: "Cotonou",
-    avatarSeed: "Fatou Adjovi",
-    rating: 5,
-    quote:
-      "Mon concierge KAZA a trouvé mon appartement à Cadjèhoun en 4 jours. Le support 24/7 a tout géré, même les visites depuis Paris.",
-    highlight: "en 4 jours",
-  },
-  {
-    name: "Komlan Adjété",
-    role: "Propriétaire Premium",
-    city: "Calavi",
-    avatarSeed: "Komlan Adjete",
-    rating: 5,
-    quote:
-      "Le boost mensuel m'a permis de louer mes 3 studios en moins de 15 jours. Les analytics sont vraiment puissantes et utiles.",
-    highlight: "moins de 15 jours",
-  },
-  {
-    name: "Sandrine Boko",
-    role: "Étudiante Premium",
-    city: "Abomey-Calavi",
-    avatarSeed: "Sandrine Boko",
-    rating: 5,
-    quote:
-      "Identité validée en 90 minutes et badge Premium qui rassure mes futurs colocataires. Ça change vraiment tout au quotidien.",
-    highlight: "90 minutes",
   },
 ];
 
@@ -197,8 +158,8 @@ const plusComparison: PlusRow[] = [
   { feature: "Alertes personnalisées", free: "3 actives", plus: "Illimitées" },
   { feature: "Boost mensuel offert", free: false, plus: true },
   { feature: "Analytics privées", free: false, plus: true },
-  { feature: "Support prioritaire 24/7", free: "Email 48h", plus: "Chat + appel < 1h" },
-  { feature: "Validation d'identité", free: "48 heures", plus: "2 heures" },
+  { feature: "Support prioritaire", free: "File standard", plus: "File prioritaire" },
+  { feature: "Validation d'identité", free: "File standard", plus: "Traitement express" },
   { feature: "Badge Premium sur le profil", free: false, plus: true },
   { feature: "Stockage de documents", free: "500 Mo", plus: "Illimité" },
   { feature: "Concierge personnel", free: false, plus: true },
@@ -297,8 +258,9 @@ export default async function PlusPage() {
 
           <FadeIn delay={240}>
             <p className="mx-auto mt-8 max-w-2xl text-lg text-white/90 sm:text-xl">
-              Tout KAZA, en mieux. Visibilité boostée, support 24/7, concierge
-              personnel et privilèges exclusifs réservés à nos membres Plus.
+              Tout KAZA, en mieux. Visibilité boostée, support prioritaire,
+              concierge personnel et privilèges exclusifs réservés à nos
+              membres Plus.
             </p>
           </FadeIn>
 
@@ -346,26 +308,6 @@ export default async function PlusPage() {
               </div>
             )}
           </FadeIn>
-        </div>
-      </section>
-
-      {/* ===== STATS Privilèges ============================================ */}
-      <section className="relative bg-gradient-to-br from-white via-amber-50/30 to-yellow-50/30 py-20">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="grid grid-cols-2 gap-10 sm:gap-14 lg:grid-cols-4">
-            <RevealOnScroll>
-              <StatCounter value={5000} suffix="+" label="Membres Plus" description="Au Bénin et au-delà" />
-            </RevealOnScroll>
-            <RevealOnScroll delay={100}>
-              <StatCounter value={150000} suffix=" FCFA" label="Économies moyennes" description="Par membre Plus / an" />
-            </RevealOnScroll>
-            <RevealOnScroll delay={200}>
-              <StatCounter value={12} label="Avantages exclusifs" description="Réservés aux membres" />
-            </RevealOnScroll>
-            <RevealOnScroll delay={300}>
-              <StatCounter value={24} suffix="/7" label="Concierge dédié" description="Réponse < 1h garantie" />
-            </RevealOnScroll>
-          </div>
         </div>
       </section>
 
@@ -463,36 +405,6 @@ export default async function PlusPage() {
             currentPlan={subscription?.plan ?? null}
             manageHref="/profile"
           />
-        </div>
-      </section>
-
-      {/* ===== TÉMOIGNAGES MEMBRES PLUS ===================================== */}
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-16 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-600">
-                Témoignages
-              </p>
-              <h2 className="mt-3 font-heading text-4xl font-bold tracking-tight text-kaza-navy sm:text-5xl">
-                Nos membres{" "}
-                <span className="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                  Plus
-                </span>{" "}
-                en parlent
-              </h2>
-            </div>
-          </RevealOnScroll>
-          <div className="grid gap-8 md:grid-cols-3">
-            {plusTestimonials.map((t, idx) => (
-              <RevealOnScroll key={t.name} delay={idx * 100}>
-                <TestimonialCard
-                  {...t}
-                  className="h-full rounded-3xl shadow-md hover:shadow-2xl"
-                />
-              </RevealOnScroll>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -617,8 +529,8 @@ export default async function PlusPage() {
               ?
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-kaza-navy/90 sm:text-xl">
-              Rejoignez plus de 5 000 membres KAZA Plus qui profitent déjà
-              d&apos;une expérience supérieure, d&apos;un concierge dédié et de
+              Rejoignez les membres KAZA Plus qui profitent d&apos;une
+              expérience supérieure, d&apos;un concierge dédié et de
               privilèges exclusifs.
             </p>
 

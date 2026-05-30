@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Check, FileText, Loader2, Phone, Upload } from "lucide-react";
+import {
+  Camera,
+  Check,
+  FileText,
+  Loader2,
+  Mail,
+  Upload,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,18 +22,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { OtpInput } from "@/components/shared/otp-input";
 import { cn } from "@/lib/utils";
 import {
-  requestPhoneOtp,
-  verifyPhoneOtp,
+  resendEmailConfirmation,
   uploadIdentityFile,
   submitIdentityVerification,
+  type ExtraDocument,
+  type ExtraDocumentKind,
 } from "@/actions/verification";
 import { toast } from "@/components/ui/toast-helper";
 
 type Step = 1 | 2 | 3;
 type DocType = "national_id" | "passport" | "driver_license" | "voter_card";
+type Role = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "ADMIN";
 
 const DOC_LABELS: Record<DocType, string> = {
   national_id: "Carte nationale d'identité",
@@ -35,23 +43,85 @@ const DOC_LABELS: Record<DocType, string> = {
   voter_card: "Carte d'électeur",
 };
 
-const STEPS: Array<{ id: Step; label: string; icon: typeof Phone }> = [
-  { id: 1, label: "Téléphone", icon: Phone },
+const STEPS: Array<{ id: Step; label: string; icon: typeof Mail }> = [
+  { id: 1, label: "Email", icon: Mail },
   { id: 2, label: "Documents", icon: FileText },
-  { id: 3, label: "Selfie", icon: Camera },
+  { id: 3, label: "Selfie & justificatifs", icon: Camera },
 ];
 
-export function VerificationWizard() {
+const ACCEPT = "image/*,application/pdf";
+
+// ---------------------------------------------------------------------------
+// Documents administratifs selon le rôle
+// ---------------------------------------------------------------------------
+
+interface ExtraDocSpec {
+  kind: ExtraDocumentKind;
+  label: string;
+  hint: string;
+  required: boolean;
+}
+
+function getExtraDocSpecs(role: Role): ExtraDocSpec[] {
+  switch (role) {
+    case "STUDENT":
+      return [
+        {
+          kind: "student_proof",
+          label: "Justificatif de statut étudiant",
+          hint: "Carte étudiante ou certificat de scolarité (image ou PDF). Obligatoire.",
+          required: true,
+        },
+      ];
+    case "TENANT":
+      return [
+        {
+          kind: "address_proof",
+          label: "Justificatif de domicile",
+          hint: "Facture récente, attestation d'hébergement, etc. (recommandé).",
+          required: false,
+        },
+      ];
+    case "OWNER":
+    case "AGENCY":
+      return [
+        {
+          kind: "property_title",
+          label: "Titre de propriété ou justificatif",
+          hint: "Acte de propriété, mandat de gestion, etc. (recommandé).",
+          required: false,
+        },
+        {
+          kind: "business_doc",
+          label: "Document d'entreprise",
+          hint: "Registre du commerce, NIF/IFU, statuts (recommandé pour les agences).",
+          required: false,
+        },
+      ];
+    default:
+      return [];
+  }
+}
+
+export function VerificationWizard({
+  role,
+  email,
+  emailConfirmed,
+}: {
+  role: Role;
+  email: string;
+  emailConfirmed: boolean;
+}) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
 
-  // Step 1 state
-  const [phone, setPhone] = useState("+229 ");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [resendIn, setResendIn] = useState(0);
+  const extraSpecs = getExtraDocSpecs(role);
 
-  // Step 2 state
+  // Step 1 — Email
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
+  // Step 2 — Pièce d'identité
   const [docType, setDocType] = useState<DocType>("national_id");
   const [docNumber, setDocNumber] = useState("");
   const [frontFile, setFrontFile] = useState<File | null>(null);
@@ -59,53 +129,32 @@ export function VerificationWizard() {
   const [frontPath, setFrontPath] = useState<string | null>(null);
   const [backPath, setBackPath] = useState<string | null>(null);
 
-  // Step 3 state
+  // Step 3 — Selfie + documents administratifs
   const [selfieFile, setSelfieFile] = useState<File | null>(null);
-  const [selfiePath, setSelfiePath] = useState<string | null>(null);
+  const [extraFiles, setExtraFiles] = useState<
+    Partial<Record<ExtraDocumentKind, File | null>>
+  >({});
 
   // UI state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [phoneVerified, setPhoneVerified] = useState(false);
-
-  // Resend timer
-  useEffect(() => {
-    if (resendIn <= 0) return;
-    const t = setTimeout(() => setResendIn((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [resendIn]);
 
   const reportError = (message: string) => {
     setError(message);
     toast.error(message);
   };
 
-  const handleRequestOtp = async () => {
+  const handleResendEmail = async () => {
     setError(null);
-    setLoading(true);
-    const res = await requestPhoneOtp(phone);
-    setLoading(false);
+    setResending(true);
+    const res = await resendEmailConfirmation();
+    setResending(false);
     if (!res.success) {
       reportError(res.error);
       return;
     }
-    setOtpSent(true);
-    setResendIn(60);
-    toast.success("Code SMS envoyé.");
-  };
-
-  const handleVerifyOtp = async () => {
-    setError(null);
-    setLoading(true);
-    const res = await verifyPhoneOtp(phone, otp);
-    setLoading(false);
-    if (!res.success) {
-      reportError(res.error);
-      return;
-    }
-    setPhoneVerified(true);
-    toast.success("Numéro vérifié.");
-    setStep(2);
+    setResent(true);
+    toast.success("Email de confirmation envoyé. Pensez à vérifier vos spams.");
   };
 
   const handleUploadDocs = async () => {
@@ -145,22 +194,52 @@ export function VerificationWizard() {
       reportError("Veuillez ajouter votre selfie.");
       return;
     }
+
+    // Vérifie les justificatifs administratifs obligatoires (ex. étudiant).
+    for (const spec of extraSpecs) {
+      if (spec.required && !extraFiles[spec.kind]) {
+        reportError(`${spec.label} est obligatoire.`);
+        return;
+      }
+    }
+
     setLoading(true);
+
+    // 1) Upload du selfie.
     const selfieRes = await uploadIdentityFile(selfieFile, "selfie");
     if (!selfieRes.success) {
       setLoading(false);
       reportError(selfieRes.error);
       return;
     }
-    setSelfiePath(selfieRes.data!.path);
 
+    // 2) Upload des documents administratifs additionnels.
+    const extraDocuments: ExtraDocument[] = [];
+    for (const spec of extraSpecs) {
+      const file = extraFiles[spec.kind];
+      if (!file) continue;
+      const up = await uploadIdentityFile(file, spec.kind);
+      if (!up.success) {
+        setLoading(false);
+        reportError(`${spec.label} : ${up.error}`);
+        return;
+      }
+      extraDocuments.push({
+        kind: spec.kind,
+        label: spec.label,
+        url: up.data!.path,
+      });
+    }
+
+    // 3) Soumission.
     const submitRes = await submitIdentityVerification({
       documentType: docType,
       documentNumber: docNumber || undefined,
       documentFrontPath: frontPath!,
       documentBackPath: backPath || undefined,
       selfiePath: selfieRes.data!.path,
-      phone,
+      emailVerified: emailConfirmed,
+      extraDocuments,
     });
     setLoading(false);
     if (!submitRes.success) {
@@ -179,21 +258,12 @@ export function VerificationWizard() {
       </CardHeader>
       <CardContent className="space-y-6 pt-2">
         {step === 1 && (
-          <Step1Phone
-            phone={phone}
-            setPhone={setPhone}
-            otpSent={otpSent}
-            otp={otp}
-            setOtp={setOtp}
-            resendIn={resendIn}
-            loading={loading}
-            onRequest={handleRequestOtp}
-            onVerify={handleVerifyOtp}
-            onResend={() => {
-              setOtp("");
-              setOtpSent(false);
-              handleRequestOtp();
-            }}
+          <Step1Email
+            email={email}
+            emailConfirmed={emailConfirmed}
+            resending={resending}
+            resent={resent}
+            onResend={handleResendEmail}
           />
         )}
 
@@ -211,13 +281,18 @@ export function VerificationWizard() {
         )}
 
         {step === 3 && (
-          <Step3Selfie
+          <Step3SelfieAndExtras
             selfieFile={selfieFile}
             setSelfieFile={setSelfieFile}
+            extraSpecs={extraSpecs}
+            extraFiles={extraFiles}
+            setExtraFile={(kind, file) =>
+              setExtraFiles((prev) => ({ ...prev, [kind]: file }))
+            }
             recap={{
-              phone,
+              email,
+              emailConfirmed,
               docLabel: DOC_LABELS[docType],
-              phoneVerified,
             }}
           />
         )}
@@ -239,29 +314,12 @@ export function VerificationWizard() {
           </Button>
 
           {step === 1 ? (
-            otpSent ? (
-              <Button
-                onClick={handleVerifyOtp}
-                disabled={otp.length !== 6 || loading}
-                className="bg-kaza-blue hover:bg-kaza-blue/90"
-              >
-                {loading ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                ) : null}
-                Vérifier le code
-              </Button>
-            ) : (
-              <Button
-                onClick={handleRequestOtp}
-                disabled={loading || phone.length < 8}
-                className="bg-kaza-blue hover:bg-kaza-blue/90"
-              >
-                {loading ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                ) : null}
-                Envoyer le code
-              </Button>
-            )
+            <Button
+              onClick={() => setStep(2)}
+              className="bg-kaza-blue hover:bg-kaza-blue/90"
+            >
+              Continuer
+            </Button>
           ) : step === 2 ? (
             <Button
               onClick={handleUploadDocs}
@@ -336,69 +394,63 @@ function Stepper({ current }: { current: Step }) {
   );
 }
 
-function Step1Phone({
-  phone,
-  setPhone,
-  otpSent,
-  otp,
-  setOtp,
-  resendIn,
-  loading,
-  onRequest,
-  onVerify,
+function Step1Email({
+  email,
+  emailConfirmed,
+  resending,
+  resent,
   onResend,
 }: {
-  phone: string;
-  setPhone: (s: string) => void;
-  otpSent: boolean;
-  otp: string;
-  setOtp: (s: string) => void;
-  resendIn: number;
-  loading: boolean;
-  onRequest: () => void;
-  onVerify: () => void;
+  email: string;
+  emailConfirmed: boolean;
+  resending: boolean;
+  resent: boolean;
   onResend: () => void;
 }) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Confirmez votre numéro</h2>
+        <h2 className="text-lg font-semibold">Votre adresse email</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Nous envoyons un code à 6 chiffres par SMS pour valider votre numéro.
+          Votre identité est rattachée à l&apos;email de votre compte KAZA.
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone">Numéro de téléphone</Label>
-        <Input
-          id="phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="+229 ..."
-          disabled={otpSent}
-        />
+        <Label htmlFor="email">Email du compte</Label>
+        <Input id="email" type="email" value={email} disabled readOnly />
       </div>
 
-      {otpSent ? (
-        <div className="space-y-3">
-          <Label>Code reçu par SMS</Label>
-          <OtpInput value={otp} onChange={setOtp} />
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              Code envoyé à {phone}.
-            </span>
-            <button
-              type="button"
-              onClick={onResend}
-              disabled={resendIn > 0 || loading}
-              className="font-medium text-kaza-blue hover:underline disabled:cursor-not-allowed disabled:text-muted-foreground disabled:no-underline"
-            >
-              {resendIn > 0 ? `Renvoyer dans ${resendIn}s` : "Renvoyer le code"}
-            </button>
-          </div>
+      {emailConfirmed ? (
+        <div className="flex items-center gap-2 rounded-lg border border-kaza-green/30 bg-kaza-green/5 px-3 py-2.5 text-sm font-medium text-kaza-green">
+          <Check className="size-4" />
+          Email vérifié
         </div>
-      ) : null}
+      ) : (
+        <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3">
+          <p className="text-sm text-amber-800">
+            Votre email n&apos;est pas encore confirmé. Confirmez-le pour
+            renforcer la sécurité de votre compte. Vous pouvez tout de même
+            poursuivre la vérification de vos documents.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onResend}
+            disabled={resending}
+          >
+            {resending ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <Mail className="mr-2 size-4" />
+            )}
+            {resent
+              ? "Renvoyer à nouveau"
+              : "Renvoyer l'email de confirmation"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -430,7 +482,8 @@ function Step2Documents({
         <h2 className="text-lg font-semibold">Vos documents officiels</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Pièces acceptées : carte nationale, passeport, permis ou carte d&apos;électeur.
-          Formats JPG/PNG, 5 Mo max.
+          Images (JPG/PNG) ou PDF, 5 Mo max. Vous pouvez choisir un fichier
+          depuis votre galerie ou votre appareil.
         </p>
       </div>
 
@@ -480,23 +533,29 @@ function Step2Documents({
   );
 }
 
-function Step3Selfie({
+function Step3SelfieAndExtras({
   selfieFile,
   setSelfieFile,
+  extraSpecs,
+  extraFiles,
+  setExtraFile,
   recap,
 }: {
   selfieFile: File | null;
   setSelfieFile: (f: File | null) => void;
-  recap: { phone: string; docLabel: string; phoneVerified: boolean };
+  extraSpecs: ExtraDocSpec[];
+  extraFiles: Partial<Record<ExtraDocumentKind, File | null>>;
+  setExtraFile: (kind: ExtraDocumentKind, file: File | null) => void;
+  recap: { email: string; emailConfirmed: boolean; docLabel: string };
 }) {
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Selfie de confirmation</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Prenez un selfie en tenant votre pièce d&apos;identité visible à côté de
-          votre visage. Cela nous aide à confirmer que vous êtes bien la personne
-          sur la pièce.
+          Prenez ou choisissez un selfie en tenant votre pièce d&apos;identité
+          visible à côté de votre visage. Cela nous aide à confirmer que vous
+          êtes bien la personne sur la pièce.
         </p>
       </div>
 
@@ -507,14 +566,38 @@ function Step3Selfie({
         required
       />
 
+      {extraSpecs.length > 0 ? (
+        <div className="space-y-4 border-t pt-4">
+          <div>
+            <h3 className="text-base font-semibold">Documents administratifs</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Selon votre profil, ces justificatifs accélèrent la validation de
+              votre dossier.
+            </p>
+          </div>
+          {extraSpecs.map((spec) => (
+            <FileDrop
+              key={spec.kind}
+              label={spec.label}
+              hint={spec.hint}
+              file={extraFiles[spec.kind] ?? null}
+              onChange={(f) => setExtraFile(spec.kind, f)}
+              required={spec.required}
+            />
+          ))}
+        </div>
+      ) : null}
+
       <div className="rounded-lg border bg-muted/30 p-4">
         <p className="mb-2 text-sm font-medium">Récapitulatif</p>
         <ul className="space-y-1 text-sm text-muted-foreground">
           <li>
-            Téléphone vérifié : <span className="font-medium text-foreground">{recap.phone}</span>
-            {recap.phoneVerified ? (
+            Email : <span className="font-medium text-foreground">{recap.email}</span>
+            {recap.emailConfirmed ? (
               <Check className="ml-1 inline size-3.5 text-kaza-green" />
-            ) : null}
+            ) : (
+              <span className="ml-1 text-xs text-amber-600">(non confirmé)</span>
+            )}
           </li>
           <li>
             Type de pièce : <span className="font-medium text-foreground">{recap.docLabel}</span>
@@ -527,11 +610,13 @@ function Step3Selfie({
 
 function FileDrop({
   label,
+  hint,
   file,
   onChange,
   required,
 }: {
   label: string;
+  hint?: string;
   file: File | null;
   onChange: (f: File | null) => void;
   required?: boolean;
@@ -566,8 +651,12 @@ function FileDrop({
             </>
           ) : (
             <>
-              <p className="text-sm font-medium">Cliquez pour téléverser</p>
-              <p className="text-xs text-muted-foreground">JPG ou PNG, 5 Mo max</p>
+              <p className="text-sm font-medium">
+                Choisir un fichier (galerie ou appareil)
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {hint ?? "Image (JPG, PNG) ou PDF, 5 Mo max"}
+              </p>
             </>
           )}
         </div>
@@ -575,7 +664,7 @@ function FileDrop({
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png"
+        accept={ACCEPT}
         className="hidden"
         onChange={(e) => onChange(e.target.files?.[0] ?? null)}
       />

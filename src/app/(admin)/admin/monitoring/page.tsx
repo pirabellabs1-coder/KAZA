@@ -181,7 +181,7 @@ export default async function AdminMonitoringPage() {
                     <div className="min-w-0">
                       <p className="font-semibold text-kaza-navy">{inc.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {inc.summary}
+                        {inc.description}
                       </p>
                     </div>
                     <Badge className="shrink-0 border-amber-300 bg-amber-100 text-amber-800">

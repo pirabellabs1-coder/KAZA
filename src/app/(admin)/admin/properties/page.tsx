@@ -153,7 +153,8 @@ function timeAgo(iso: string): string {
   return `il y a ${d}j`;
 }
 
-// Signalements
+// Signalements / boosts — tables `property_reports` et `property_boosts`
+// non encore branchées. Empty state propre en attendant.
 interface ReportedListing {
   id: string;
   title: string;
@@ -165,60 +166,8 @@ interface ReportedListing {
   reportsCount: number;
 }
 
-const reportedListings: ReportedListing[] = [
-  {
-    id: "rpt-001",
-    title: "Studio neuf - Akpakpa",
-    city: "Cotonou",
-    ownerName: "Karim Lawal",
-    photo: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80",
-    priceFcfa: 85_000,
-    reason: "Photo trompeuse",
-    reportsCount: 8,
-  },
-  {
-    id: "rpt-002",
-    title: "Villa 6ch piscine Calavi",
-    city: "Calavi",
-    ownerName: "Antoine Zinsou",
-    photo: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80",
-    priceFcfa: 1_850_000,
-    reason: "Prix abusif",
-    reportsCount: 5,
-  },
-  {
-    id: "rpt-003",
-    title: "T3 Cadjèhoun moderne",
-    city: "Cotonou",
-    ownerName: "Pascal Agbo",
-    photo: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=80",
-    priceFcfa: 320_000,
-    reason: "Doublon (annonce identique)",
-    reportsCount: 4,
-  },
-  {
-    id: "rpt-004",
-    title: "Maison familiale Bohicon",
-    city: "Bohicon",
-    ownerName: "Yvonne Dossou",
-    photo: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=400&q=80",
-    priceFcfa: 120_000,
-    reason: "Logement vétuste / insalubre",
-    reportsCount: 7,
-  },
-  {
-    id: "rpt-005",
-    title: "Studio Ganhi",
-    city: "Cotonou",
-    ownerName: "Pierre Hounsou",
-    photo: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&q=80",
-    priceFcfa: 95_000,
-    reason: "Annonce expirée (déjà loué)",
-    reportsCount: 3,
-  },
-];
+const reportedListings: ReportedListing[] = [];
 
-// Premium / boosts
 interface PremiumBoost {
   id: string;
   title: string;
@@ -230,16 +179,7 @@ interface PremiumBoost {
   contacts: number;
 }
 
-const premiumBoosts: PremiumBoost[] = [
-  { id: "b-1", title: "Villa 5ch Haie Vive", ownerName: "Aïcha Toko", city: "Cotonou", daysLeft: 12, pricePaidFcfa: 45_000, views: 4_215, contacts: 87 },
-  { id: "b-2", title: "T4 Cadjèhoun", ownerName: "Komi Agbeko", city: "Cotonou", daysLeft: 9, pricePaidFcfa: 30_000, views: 2_840, contacts: 62 },
-  { id: "b-3", title: "Maison Calavi", ownerName: "Sandra Mensah", city: "Calavi", daysLeft: 22, pricePaidFcfa: 45_000, views: 1_956, contacts: 48 },
-  { id: "b-4", title: "Studio Ganhi", ownerName: "Yacine Sow", city: "Cotonou", daysLeft: 4, pricePaidFcfa: 20_000, views: 3_120, contacts: 71 },
-  { id: "b-5", title: "Villa Fidjrossè 5ch", ownerName: "Mariam Bio", city: "Cotonou", daysLeft: 18, pricePaidFcfa: 45_000, views: 5_410, contacts: 102 },
-  { id: "b-6", title: "T3 Cocotiers", ownerName: "Léa Tossou", city: "Cotonou", daysLeft: 7, pricePaidFcfa: 30_000, views: 1_820, contacts: 41 },
-  { id: "b-7", title: "Duplex Akpakpa", ownerName: "Olivier Adjovi", city: "Cotonou", daysLeft: 15, pricePaidFcfa: 45_000, views: 2_310, contacts: 55 },
-  { id: "b-8", title: "Bureau Ganhi", ownerName: "Jules Codjia", city: "Cotonou", daysLeft: 2, pricePaidFcfa: 20_000, views: 980, contacts: 18 },
-];
+const premiumBoosts: PremiumBoost[] = [];
 
 function StatusPill({ status }: { status: keyof typeof STATUS_BADGE }) {
   const cfg = STATUS_BADGE[status]!;
@@ -670,62 +610,74 @@ export default async function AdminPropertiesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {reportedListings.map((r) => (
-              <div
-                key={r.id}
-                className="flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted">
-                    <Image
-                      src={r.photo}
-                      alt={r.title}
-                      fill
-                      sizes="56px"
-                      className="object-cover"
-                      unoptimized
-                    />
+          {reportedListings.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-red-200 bg-white/60 p-8 text-center">
+              <Flag className="mx-auto size-8 text-red-300" />
+              <p className="mt-3 text-sm font-semibold text-kaza-navy">
+                Aucune annonce signalée
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Les signalements remontés par la communauté apparaîtront ici.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {reportedListings.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted">
+                      <Image
+                        src={r.photo}
+                        alt={r.title}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-kaza-navy">
+                        {r.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {r.city} · {r.ownerName}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-kaza-blue">
+                        {formatFcfa(r.priceFcfa)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-kaza-navy">
-                      {r.title}
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs">
+                    <p className="font-medium text-red-700">
+                      <AlertTriangle className="mr-1 inline size-3" />
+                      Motif : {r.reason}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {r.city} · {r.ownerName}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-kaza-blue">
-                      {formatFcfa(r.priceFcfa)}
+                    <p className="mt-0.5 text-red-600">
+                      {r.reportsCount} signalements
                     </p>
                   </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <Button size="sm" variant="outline" className="text-xs">
+                      Vérifier
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-red-200 text-xs text-red-600 hover:bg-red-50"
+                    >
+                      Bannir
+                    </Button>
+                    <Button size="sm" variant="ghost" className="text-xs">
+                      Conserver
+                    </Button>
+                  </div>
                 </div>
-                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs">
-                  <p className="font-medium text-red-700">
-                    <AlertTriangle className="mr-1 inline size-3" />
-                    Motif : {r.reason}
-                  </p>
-                  <p className="mt-0.5 text-red-600">
-                    {r.reportsCount} signalements
-                  </p>
-                </div>
-                <div className="grid grid-cols-3 gap-1.5">
-                  <Button size="sm" variant="outline" className="text-xs">
-                    Vérifier
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-red-200 text-xs text-red-600 hover:bg-red-50"
-                  >
-                    Bannir
-                  </Button>
-                  <Button size="sm" variant="ghost" className="text-xs">
-                    Conserver
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -745,80 +697,101 @@ export default async function AdminPropertiesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-xl border">
-            <table className="min-w-[800px] w-full text-sm">
-              <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="px-3 py-3 text-left">Annonce</th>
-                  <th className="px-3 py-3 text-left">Propriétaire</th>
-                  <th className="px-3 py-3 text-left">Ville</th>
-                  <th className="px-3 py-3 text-right">Durée restante</th>
-                  <th className="px-3 py-3 text-right">Prix payé</th>
-                  <th className="px-3 py-3 text-right">Vues</th>
-                  <th className="px-3 py-3 text-right">Contacts</th>
-                  <th className="px-3 py-3 text-left">Performance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {premiumBoosts.map((b) => {
-                  const ctr = Math.round((b.contacts / b.views) * 1000) / 10;
-                  return (
-                    <tr key={b.id} className="hover:bg-muted/30">
-                      <td className="px-3 py-3 font-medium text-kaza-navy">
-                        {b.title}
-                      </td>
-                      <td className="px-3 py-3 text-muted-foreground">
-                        {b.ownerName}
-                      </td>
-                      <td className="px-3 py-3 text-muted-foreground">
-                        {b.city}
-                      </td>
-                      <td className="px-3 py-3 text-right">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-                            b.daysLeft <= 5
-                              ? "bg-red-50 text-red-600"
-                              : "bg-emerald-50 text-emerald-700"
-                          }`}
-                        >
-                          <Clock className="size-3" /> {b.daysLeft} j
-                        </span>
-                      </td>
-                      <td className="px-3 py-3 text-right tabular-nums">
-                        {formatFcfa(b.pricePaidFcfa)}
-                      </td>
-                      <td className="px-3 py-3 text-right tabular-nums">
-                        {formatNumber(b.views)}
-                      </td>
-                      <td className="px-3 py-3 text-right tabular-nums">
-                        {b.contacts}
-                      </td>
-                      <td className="px-3 py-3">
-                        <span className="inline-flex items-center gap-1 text-xs text-emerald-700">
-                          <TrendingUp className="size-3" /> CTR {ctr}%
-                        </span>
-                      </td>
+          {premiumBoosts.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-amber-200 bg-white/60 p-8 text-center">
+              <Sparkles className="mx-auto size-8 text-amber-300" />
+              <p className="mt-3 text-sm font-semibold text-kaza-navy">
+                Aucun boost actif
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Les annonces premium en cours apparaîtront ici dès qu&apos;un
+                propriétaire achètera un boost.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto rounded-xl border">
+                <table className="min-w-[800px] w-full text-sm">
+                  <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
+                    <tr>
+                      <th className="px-3 py-3 text-left">Annonce</th>
+                      <th className="px-3 py-3 text-left">Propriétaire</th>
+                      <th className="px-3 py-3 text-left">Ville</th>
+                      <th className="px-3 py-3 text-right">Durée restante</th>
+                      <th className="px-3 py-3 text-right">Prix payé</th>
+                      <th className="px-3 py-3 text-right">Vues</th>
+                      <th className="px-3 py-3 text-right">Contacts</th>
+                      <th className="px-3 py-3 text-left">Performance</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <Separator className="my-4" />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>
-              <ShieldCheck className="mr-1 inline size-3 text-kaza-green" />
-              Boosts conformes à la grille tarifaire publique
-            </span>
-            <span>
-              Revenu boosts cumulés :{" "}
-              <strong className="text-kaza-navy">
-                {formatFcfa(
-                  premiumBoosts.reduce((sum, b) => sum + b.pricePaidFcfa, 0),
-                )}
-              </strong>
-            </span>
-          </div>
+                  </thead>
+                  <tbody className="divide-y">
+                    {premiumBoosts.map((b) => {
+                      const ctr =
+                        b.views > 0
+                          ? Math.round((b.contacts / b.views) * 1000) / 10
+                          : 0;
+                      return (
+                        <tr key={b.id} className="hover:bg-muted/30">
+                          <td className="px-3 py-3 font-medium text-kaza-navy">
+                            {b.title}
+                          </td>
+                          <td className="px-3 py-3 text-muted-foreground">
+                            {b.ownerName}
+                          </td>
+                          <td className="px-3 py-3 text-muted-foreground">
+                            {b.city}
+                          </td>
+                          <td className="px-3 py-3 text-right">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                                b.daysLeft <= 5
+                                  ? "bg-red-50 text-red-600"
+                                  : "bg-emerald-50 text-emerald-700"
+                              }`}
+                            >
+                              <Clock className="size-3" /> {b.daysLeft} j
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 text-right tabular-nums">
+                            {formatFcfa(b.pricePaidFcfa)}
+                          </td>
+                          <td className="px-3 py-3 text-right tabular-nums">
+                            {formatNumber(b.views)}
+                          </td>
+                          <td className="px-3 py-3 text-right tabular-nums">
+                            {b.contacts}
+                          </td>
+                          <td className="px-3 py-3">
+                            <span className="inline-flex items-center gap-1 text-xs text-emerald-700">
+                              <TrendingUp className="size-3" /> CTR {ctr}%
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <Separator className="my-4" />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>
+                  <ShieldCheck className="mr-1 inline size-3 text-kaza-green" />
+                  Boosts conformes à la grille tarifaire publique
+                </span>
+                <span>
+                  Revenu boosts cumulés :{" "}
+                  <strong className="text-kaza-navy">
+                    {formatFcfa(
+                      premiumBoosts.reduce(
+                        (sum, b) => sum + b.pricePaidFcfa,
+                        0,
+                      ),
+                    )}
+                  </strong>
+                </span>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

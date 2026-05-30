@@ -18,11 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
+import { reportContent } from "@/actions/reports";
 // =============================================================================
-// Fallbacks locaux : la persistance réelle des signalements n'est pas encore
-// branchée. On garde les libellés et le typage afin de préserver l'UI ;
-// `addReport` est un no-op tant qu'aucune table `reports` n'est exposée via
-// une server action publique.
+// Signalement de contenu : le Dialog ci-dessous appelle la Server Action
+// `reportContent()` qui persiste dans `public.reports` (Supabase). Les libellés
+// de raison sont normalisés côté serveur vers les valeurs acceptées en base.
 // =============================================================================
 type ReportReason =
   | "inappropriate"
@@ -65,17 +65,6 @@ const REASON_META: Record<ReportReason, { label: string; description: string }> 
     description: "Précisez la raison dans la description ci-dessous.",
   },
 };
-
-function addReport(_payload: {
-  targetType: ReportTargetType;
-  targetId: string;
-  targetLabel: string;
-  reason: ReportReason;
-  description: string;
-  reporterId: string;
-}): void {
-  // TODO: brancher sur une server action `reportContent()` (Supabase `reports`).
-}
 
 interface ReportButtonProps {
   targetType: ReportTargetType;
@@ -128,19 +117,22 @@ export function ReportButton({
       return;
     }
 
-    startTransition(() => {
-      addReport({
+    startTransition(async () => {
+      const result = await reportContent({
         targetType,
         targetId,
-        targetLabel,
         reason,
-        description: description.trim(),
-        reporterId: "demo-user",
+        details: description.trim(),
       });
-      toast.success("Signalement envoyé. Notre équipe va l'examiner.");
-      setOpen(false);
-      // Petit délai pour éviter le flicker pendant la fermeture
-      setTimeout(resetState, 200);
+
+      if (result.success) {
+        toast.success("Signalement envoyé. Notre équipe va l'examiner.");
+        setOpen(false);
+        // Petit délai pour éviter le flicker pendant la fermeture
+        setTimeout(resetState, 200);
+      } else {
+        toast.error(result.error);
+      }
     });
   }
 

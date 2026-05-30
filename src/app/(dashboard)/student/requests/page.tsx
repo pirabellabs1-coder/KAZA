@@ -19,36 +19,19 @@ export const metadata: Metadata = {
   title: "Demandes de Colocation",
 };
 
-// Placeholder requests data
-const placeholderRequests = [
-  {
-    id: "req-001",
-    listingTitle: "Colocation étudiante près de l'UAC",
-    address: "Zogbadjè, Abomey-Calavi, Bénin",
-    price: 35000,
-    status: "APPROVED" as const,
-    appliedDate: "2025-08-03",
-    responseDate: "2025-08-05",
-  },
-  {
-    id: "req-002",
-    listingTitle: "Chambre disponible - Campus IRGIB Africa",
-    address: "Sainte Rita, Cotonou, Bénin",
-    price: 45000,
-    status: "PENDING" as const,
-    appliedDate: "2025-09-10",
-    responseDate: null,
-  },
-  {
-    id: "req-003",
-    listingTitle: "Colocation mixte centre-ville",
-    address: "Ganhi, Cotonou, Bénin",
-    price: 50000,
-    status: "REJECTED" as const,
-    appliedDate: "2025-08-20",
-    responseDate: "2025-08-22",
-  },
-];
+// Aucune fausse demande : les demandes de colocation réelles de l'étudiant
+// s'afficheront ici (table roommate_members / colocation_requests). En attendant
+// un branchement complet, on n'injecte AUCUNE donnée fictive — l'EmptyState
+// honnête ci-dessous s'affiche tant qu'il n'y a pas de demande réelle.
+const placeholderRequests: Array<{
+  id: string;
+  listingTitle: string;
+  address: string;
+  price: number;
+  status: "APPROVED" | "PENDING" | "REJECTED";
+  appliedDate: string;
+  responseDate: string | null;
+}> = [];
 
 function getRequestStatusBadge(status: string) {
   switch (status) {

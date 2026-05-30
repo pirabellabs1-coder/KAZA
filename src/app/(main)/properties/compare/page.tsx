@@ -63,72 +63,6 @@ type CompareProperty = {
 const STORAGE_KEY = "kaza-compare";
 const MAX_SLOTS = 4;
 
-const SEED_PROPERTIES: CompareProperty[] = [
-  {
-    id: "cmp-001",
-    title: "Appartement lumineux à Fidjrossè",
-    price: 185000,
-    imageUrl: "https://picsum.photos/seed/kaza-cmp-001/800/600",
-    type: "Appartement",
-    bedrooms: 2,
-    bathrooms: 1,
-    squareMeters: 78,
-    neighborhood: "Fidjrossè",
-    city: "Cotonou",
-    isVerified: true,
-    amenities: {
-      parking: true,
-      airConditioning: true,
-      furnished: false,
-      waterIncluded: true,
-      internet: true,
-      securityGuard: true,
-    },
-  },
-  {
-    id: "cmp-002",
-    title: "Studio meublé moderne à Cadjèhoun",
-    price: 130000,
-    imageUrl: "https://picsum.photos/seed/kaza-cmp-002/800/600",
-    type: "Studio",
-    bedrooms: 1,
-    bathrooms: 1,
-    squareMeters: 38,
-    neighborhood: "Cadjèhoun",
-    city: "Cotonou",
-    isVerified: true,
-    amenities: {
-      parking: false,
-      airConditioning: true,
-      furnished: true,
-      waterIncluded: true,
-      internet: true,
-      securityGuard: false,
-    },
-  },
-  {
-    id: "cmp-003",
-    title: "Villa familiale avec jardin à Akpakpa",
-    price: 320000,
-    imageUrl: "https://picsum.photos/seed/kaza-cmp-003/800/600",
-    type: "Villa",
-    bedrooms: 4,
-    bathrooms: 3,
-    squareMeters: 180,
-    neighborhood: "Akpakpa",
-    city: "Cotonou",
-    isVerified: true,
-    amenities: {
-      parking: true,
-      airConditioning: true,
-      furnished: false,
-      waterIncluded: false,
-      internet: false,
-      securityGuard: true,
-    },
-  },
-];
-
 // =============================================================================
 // Helpers
 // =============================================================================
@@ -166,13 +100,10 @@ export default function ComparePage() {
   useEffect(() => {
     // Hydratation depuis localStorage (pattern client-only, pas de SSR)
     const stored = loadFromStorage();
-    if (stored.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setItems(stored);
-    } else {
-      setItems(SEED_PROPERTIES);
-      saveToStorage(SEED_PROPERTIES);
-    }
+    // Aucune donnée de démonstration : on n'affiche que les biens réellement
+    // ajoutés par l'utilisateur (état vide honnête sinon).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems(stored);
     setHydrated(true);
   }, []);
 

@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
 import {
-  Newspaper,
-  FileText,
-  TrendingUp,
-  Users,
-  Building2,
-  Receipt,
-  Download,
-  FileSpreadsheet,
   Calendar as CalendarIcon,
   Mail,
   ShieldCheck,
-  Clock,
   Sparkles,
   Plus,
   Archive,
+  Newspaper,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -27,14 +19,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 // Fallback vide — à brancher quand la table agency_profiles sera en place.
@@ -49,183 +33,8 @@ export const metadata: Metadata = {
 };
 
 // ---------------------------------------------------------------------------
-// Données mockées (statiques pour cette page)
+// Options statiques (formulaire de génération)
 // ---------------------------------------------------------------------------
-
-const READY_REPORTS = [
-  {
-    id: "r-pnl-05",
-    title: "P&L Mai 2026",
-    description: "Compte de résultat consolidé du mois en cours.",
-    icon: Receipt,
-    color: "bg-emerald-100 text-emerald-700",
-    generatedAt: "2026-05-27 06:00",
-    size: "1,2 Mo",
-  },
-  {
-    id: "r-activity-05",
-    title: "Rapport activité mensuel",
-    description: "Synthèse des visites, signatures et leads de mai 2026.",
-    icon: Newspaper,
-    color: "bg-blue-100 text-blue-700",
-    generatedAt: "2026-05-27 06:05",
-    size: "2,8 Mo",
-  },
-  {
-    id: "r-commissions-05",
-    title: "Commissions agents Mai 2026",
-    description: "Détail des commissions individuelles par agent.",
-    icon: Users,
-    color: "bg-purple-100 text-purple-700",
-    generatedAt: "2026-05-27 06:10",
-    size: "640 Ko",
-  },
-  {
-    id: "r-perf-q1",
-    title: "Performance annonces Q1 2026",
-    description: "Top annonces, vues, contacts et taux de conversion.",
-    icon: TrendingUp,
-    color: "bg-amber-100 text-amber-700",
-    generatedAt: "2026-04-02 09:30",
-    size: "3,4 Mo",
-  },
-  {
-    id: "r-pipeline-05",
-    title: "Pipeline leads détaillé",
-    description: "État du CRM par étape, par agent et par source.",
-    icon: FileText,
-    color: "bg-rose-100 text-rose-700",
-    generatedAt: "2026-05-26 18:00",
-    size: "1,7 Mo",
-  },
-  {
-    id: "r-portfolio",
-    title: "État du portefeuille",
-    description: "Inventaire complet des 147 biens gérés au 27 mai.",
-    icon: Building2,
-    color: "bg-cyan-100 text-cyan-700",
-    generatedAt: "2026-05-27 06:15",
-    size: "4,1 Mo",
-  },
-];
-
-const SCHEDULED_REPORTS = [
-  {
-    id: "s-1",
-    name: "Rapport hebdo équipe",
-    frequency: "Tous les lundis 08h00",
-    recipients: "aicha@premier-immobilier.bj",
-    format: "PDF",
-    status: "Actif",
-  },
-  {
-    id: "s-2",
-    name: "Synthèse commissions",
-    frequency: "1er du mois 06h00",
-    recipients: "pierre@premier-immobilier.bj",
-    format: "Excel",
-    status: "Actif",
-  },
-  {
-    id: "s-3",
-    name: "Pipeline leads",
-    frequency: "Tous les vendredis 17h00",
-    recipients: "aicha@, komi@, sandra@",
-    format: "PDF",
-    status: "Actif",
-  },
-  {
-    id: "s-4",
-    name: "État du portefeuille",
-    frequency: "Le 15 de chaque mois 09h00",
-    recipients: "direction@premier-immobilier.bj",
-    format: "Excel",
-    status: "En pause",
-  },
-];
-
-const ARCHIVED_REPORTS = [
-  {
-    id: "a-1",
-    date: "2026-05-26",
-    type: "Activité hebdo",
-    generatedBy: "Aïcha Toko",
-    size: "1,4 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-2",
-    date: "2026-05-20",
-    type: "Pipeline leads",
-    generatedBy: "Automatique",
-    size: "1,6 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-3",
-    date: "2026-05-15",
-    type: "État portefeuille",
-    generatedBy: "Automatique",
-    size: "4,0 Mo",
-    format: "Excel",
-  },
-  {
-    id: "a-4",
-    date: "2026-05-13",
-    type: "Activité hebdo",
-    generatedBy: "Aïcha Toko",
-    size: "1,3 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-5",
-    date: "2026-05-06",
-    type: "Activité hebdo",
-    generatedBy: "Aïcha Toko",
-    size: "1,3 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-6",
-    date: "2026-05-01",
-    type: "P&L Avril 2026",
-    generatedBy: "Pierre Kpondéhou",
-    size: "1,1 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-7",
-    date: "2026-05-01",
-    type: "Commissions Avril",
-    generatedBy: "Pierre Kpondéhou",
-    size: "580 Ko",
-    format: "Excel",
-  },
-  {
-    id: "a-8",
-    date: "2026-04-29",
-    type: "Activité hebdo",
-    generatedBy: "Aïcha Toko",
-    size: "1,2 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-9",
-    date: "2026-04-22",
-    type: "Activité hebdo",
-    generatedBy: "Aïcha Toko",
-    size: "1,2 Mo",
-    format: "PDF",
-  },
-  {
-    id: "a-10",
-    date: "2026-04-15",
-    type: "État portefeuille",
-    generatedBy: "Automatique",
-    size: "3,9 Mo",
-    format: "Excel",
-  },
-];
 
 const REPORT_TYPES = [
   { value: "financial", label: "Financier" },
@@ -255,9 +64,7 @@ const INCLUDE_OPTIONS = [
 export default function AgencyReportsPage() {
   return (
     <div className="space-y-8">
-      {/* ============================================================== */}
-      {/* HEADER                                                          */}
-      {/* ============================================================== */}
+      {/* HEADER */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h1 className="font-heading text-3xl font-bold text-kaza-navy">
@@ -268,8 +75,8 @@ export default function AgencyReportsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Archive className="size-4" /> Voir l'archive
+          <Button variant="outline" size="sm" disabled>
+            <Archive className="size-4" /> Voir l&apos;archive
           </Button>
           <Button className="bg-kaza-blue hover:bg-kaza-blue/90" size="sm">
             <Plus className="size-4" /> Nouveau rapport
@@ -277,9 +84,7 @@ export default function AgencyReportsPage() {
         </div>
       </div>
 
-      {/* ============================================================== */}
-      {/* RAPPORTS PRÊTS                                                  */}
-      {/* ============================================================== */}
+      {/* RAPPORTS PRÊTS — empty state */}
       <section>
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -291,73 +96,36 @@ export default function AgencyReportsPage() {
             </p>
           </div>
           <Badge variant="secondary" className="bg-kaza-blue/10 text-kaza-blue">
-            {READY_REPORTS.length} disponibles
+            0 disponible
           </Badge>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {READY_REPORTS.map((r) => {
-            const Icon = r.icon;
-            return (
-              <Card
-                key={r.id}
-                className="rounded-2xl border bg-card shadow-sm transition-all hover:border-kaza-blue/40 hover:shadow-md"
-              >
-                <CardContent className="flex h-full flex-col p-5">
-                  <div className="flex items-start justify-between">
-                    <span
-                      className={cn(
-                        "flex size-11 items-center justify-center rounded-xl",
-                        r.color,
-                      )}
-                    >
-                      <Icon className="size-5" />
-                    </span>
-                    <Badge variant="outline" className="text-[10px]">
-                      {r.size}
-                    </Badge>
-                  </div>
-                  <div className="mt-4 flex-1">
-                    <h3 className="font-heading text-base font-bold text-kaza-navy">
-                      {r.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {r.description}
-                    </p>
-                    <p className="mt-3 flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <Clock className="size-3" />
-                      Généré le {r.generatedAt}
-                    </p>
-                  </div>
-                  <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm">
-                      <FileText className="size-4" /> PDF
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-kaza-green text-white hover:bg-kaza-green/90"
-                    >
-                      <FileSpreadsheet className="size-4" /> Excel
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        <Card className="rounded-2xl">
+          <CardContent className="flex flex-col items-center justify-center px-6 py-12 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-kaza-blue/10">
+              <Newspaper className="size-7 text-kaza-blue" />
+            </div>
+            <p className="mt-4 font-heading text-base font-semibold text-kaza-navy">
+              Aucun rapport généré pour le moment
+            </p>
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              Les rapports périodiques apparaîtront ici dès la fin du premier
+              cycle de génération (mensuel, hebdomadaire ou personnalisé).
+            </p>
+          </CardContent>
+        </Card>
       </section>
 
-      {/* ============================================================== */}
-      {/* GÉNÉRER UN RAPPORT PERSONNALISÉ                                 */}
-      {/* ============================================================== */}
+      {/* GÉNÉRER UN RAPPORT PERSONNALISÉ */}
       <Card className="rounded-2xl border-kaza-blue/20 bg-gradient-to-br from-kaza-blue/5 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading">
-            <Sparkles className="size-5 text-kaza-blue" /> Générer un rapport personnalisé
+            <Sparkles className="size-5 text-kaza-blue" /> Générer un rapport
+            personnalisé
           </CardTitle>
           <CardDescription>
-            Choisissez le type, la période et le format. Le rapport sera disponible
-            sous 60 secondes.
+            Choisissez le type, la période et le format. Le rapport sera
+            disponible sous 60 secondes.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -395,7 +163,6 @@ export default function AgencyReportsPage() {
                   <Input
                     type="date"
                     name="from"
-                    defaultValue="2026-05-01"
                     className="pl-9"
                     aria-label="Date de début"
                   />
@@ -405,7 +172,6 @@ export default function AgencyReportsPage() {
                   <Input
                     type="date"
                     name="to"
-                    defaultValue="2026-05-27"
                     className="pl-9"
                     aria-label="Date de fin"
                   />
@@ -477,9 +243,7 @@ export default function AgencyReportsPage() {
         </CardContent>
       </Card>
 
-      {/* ============================================================== */}
-      {/* RAPPORTS PLANIFIÉS                                              */}
-      {/* ============================================================== */}
+      {/* RAPPORTS PLANIFIÉS — empty state */}
       <Card className="rounded-2xl">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -495,118 +259,48 @@ export default function AgencyReportsPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Fréquence</TableHead>
-                <TableHead>Destinataires</TableHead>
-                <TableHead>Format</TableHead>
-                <TableHead className="text-right">Statut</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {SCHEDULED_REPORTS.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="font-medium text-foreground">
-                    {r.name}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="size-3.5" />
-                      {r.frequency}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {r.recipients}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{r.format}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge
-                      className={cn(
-                        r.status === "Actif"
-                          ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-100",
-                      )}
-                    >
-                      {r.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+              <Mail className="size-6 text-kaza-blue" />
+            </div>
+            <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+              Aucun rapport planifié
+            </p>
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              Programmez l&apos;envoi automatique de rapports (hebdo, mensuel)
+              aux membres de votre équipe.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
-      {/* ============================================================== */}
-      {/* ARCHIVE                                                         */}
-      {/* ============================================================== */}
+      {/* ARCHIVE — empty state */}
       <Card className="rounded-2xl">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2 font-heading">
-              <Archive className="size-5 text-kaza-blue" /> Archive
-            </CardTitle>
-            <CardDescription>
-              Les 10 derniers rapports générés. Conservation 10 ans.
-            </CardDescription>
-          </div>
-          <Button variant="ghost" size="sm">
-            Voir tout
-          </Button>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-heading">
+            <Archive className="size-5 text-kaza-blue" /> Archive
+          </CardTitle>
+          <CardDescription>
+            Tous vos rapports générés — conservation 10 ans.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Généré par</TableHead>
-                <TableHead>Format</TableHead>
-                <TableHead className="text-right">Taille</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ARCHIVED_REPORTS.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="text-sm font-medium text-kaza-navy tabular-nums">
-                    {new Date(r.date).toLocaleDateString("fr-FR", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </TableCell>
-                  <TableCell className="text-sm text-foreground">
-                    {r.type}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {r.generatedBy}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{r.format}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right text-sm text-muted-foreground tabular-nums">
-                    {r.size}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <Download className="size-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+              <Archive className="size-6 text-kaza-blue" />
+            </div>
+            <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+              Archive vide
+            </p>
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              Vos rapports archivés s&apos;afficheront ici dès qu&apos;un
+              premier rapport aura été généré.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
-      {/* ============================================================== */}
-      {/* CONFORMITÉ & RGPD                                               */}
-      {/* ============================================================== */}
+      {/* CONFORMITÉ & RGPD */}
       <Card className="rounded-2xl border-muted bg-muted/30">
         <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start">
           <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-kaza-navy/10 text-kaza-navy">
@@ -617,10 +311,10 @@ export default function AgencyReportsPage() {
               Conformité & RGPD
             </h3>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Tous les rapports respectent la réglementation OHADA et l'APDP Bénin.
-              Les données personnelles incluses sont anonymisées dans les exports
-              publics. Conservation 10 ans conformément au Code Général des Impôts.
-              Pour exercer vos droits RGPD, contactez{" "}
+              Tous les rapports respectent la réglementation OHADA et l&apos;APDP
+              Bénin. Les données personnelles incluses sont anonymisées dans les
+              exports publics. Conservation 10 ans conformément au Code Général
+              des Impôts. Pour exercer vos droits RGPD, contactez{" "}
               <a
                 href={`mailto:dpo@${AGENCY_PROFILE.email.split("@")[1] ?? "kaza.africa"}`}
                 className="font-medium text-kaza-blue underline-offset-2 hover:underline"

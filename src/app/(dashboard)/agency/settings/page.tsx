@@ -20,11 +20,9 @@ import {
   Key,
   Webhook,
   Download,
-  LogOut,
   Trash2,
   PauseCircle,
   Monitor,
-  MapPin,
   Pencil,
 } from "lucide-react";
 
@@ -218,7 +216,7 @@ export default function AgencySettingsPage() {
                   </span>
                   <Input
                     id="custom-url"
-                    defaultValue="premier-immobilier"
+                    placeholder="votre-agence"
                     className="border-0 focus-visible:ring-0"
                   />
                 </div>
@@ -528,90 +526,41 @@ export default function AgencySettingsPage() {
             <CardContent>
               <div className="flex items-center justify-between rounded-lg border border-border/70 bg-muted/30 p-4">
                 <div className="flex items-center gap-3">
-                  <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                    Activée
+                  <Badge variant="outline" className="border-muted-foreground/40 text-muted-foreground">
+                    Désactivée
                   </Badge>
-                  <p className="text-sm text-foreground">
-                    Méthode : SMS sur +229 97 11 22 33
+                  <p className="text-sm text-muted-foreground">
+                    Activez la 2FA pour sécuriser l&apos;accès à votre espace agence.
                   </p>
                 </div>
                 <Button variant="outline" size="sm">
-                  Désactiver
+                  Activer
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Sessions actives */}
+          {/* Sessions actives — branché plus tard sur la table auth_sessions */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Monitor className="size-5 text-kaza-blue" />
-                Sessions actives (3)
+                Sessions actives
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Appareil</TableHead>
-                    <TableHead>Localisation</TableHead>
-                    <TableHead>Dernière activité</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Chrome sur Windows</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="size-3" />
-                        Cotonou, BJ
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                        Maintenant
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right text-sm text-muted-foreground">
-                      Session actuelle
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Safari sur iPhone</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="size-3" />
-                        Cotonou, BJ
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">Il y a 2h</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700">
-                        <LogOut className="mr-1 size-3.5" />
-                        Déconnecter
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Firefox sur Ubuntu</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="size-3" />
-                        Calavi, BJ
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">Hier, 18h32</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700">
-                        <LogOut className="mr-1 size-3.5" />
-                        Déconnecter
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
+            <CardContent>
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+                  <Monitor className="size-6 text-kaza-blue" />
+                </div>
+                <p className="mt-3 font-heading text-base font-semibold text-kaza-navy">
+                  Liste des sessions indisponible
+                </p>
+                <p className="mt-1 max-w-md text-sm text-muted-foreground">
+                  Les appareils connectés à votre compte apparaîtront ici dès que
+                  le journal des sessions sera activé.
+                </p>
+              </div>
             </CardContent>
           </Card>
 

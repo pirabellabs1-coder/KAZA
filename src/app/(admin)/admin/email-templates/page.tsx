@@ -1,9 +1,11 @@
-import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { listEmailTemplates } from "@/lib/queries/email-templates";
+
 import { TemplatesEditor } from "./templates-editor";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminEmailTemplatesPage() {
-  const admin = await getCurrentDisplayUser();
-  const adminEmail = admin?.email ?? "admin@kaza.africa";
+  const templates = await listEmailTemplates();
 
   return (
     <div className="flex flex-col gap-6">
@@ -12,12 +14,13 @@ export default async function AdminEmailTemplatesPage() {
           Templates d&apos;emails Resend
         </h1>
         <p className="text-sm text-muted-foreground">
-          Éditez le sujet et le corps HTML des emails transactionnels envoyés
-          via Resend.
+          Consultez et modifiez le sujet et le corps HTML des emails
+          transactionnels envoyés via Resend. Les modifications sont persistées
+          en base et surchargent les modèles par défaut du code.
         </p>
       </div>
 
-      <TemplatesEditor adminEmail={adminEmail} />
+      <TemplatesEditor templates={templates} />
     </div>
   );
 }

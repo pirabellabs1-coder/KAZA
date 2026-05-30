@@ -86,14 +86,18 @@ export default function MentionsLegalesPage() {
               <dd className="text-muted-foreground">1 000 000 FCFA</dd>
               <dt className="font-medium text-foreground">Siège social</dt>
               <dd className="text-muted-foreground">
-                Lot XXX, Quartier Cadjèhoun
+                Quartier Cadjèhoun
                 <br />
-                01 BP XXXX, Cotonou, République du Bénin
+                Cotonou, République du Bénin
               </dd>
               <dt className="font-medium text-foreground">RCCM</dt>
-              <dd className="text-muted-foreground">RCCM-COT-2024-B-XXXXX</dd>
+              <dd className="text-muted-foreground">
+                En cours d&apos;immatriculation
+              </dd>
               <dt className="font-medium text-foreground">IFU</dt>
-              <dd className="text-muted-foreground">1234567890</dd>
+              <dd className="text-muted-foreground">
+                Communiqué sur demande
+              </dd>
               <dt className="font-medium text-foreground">Site institutionnel</dt>
               <dd className="text-muted-foreground">
                 <a

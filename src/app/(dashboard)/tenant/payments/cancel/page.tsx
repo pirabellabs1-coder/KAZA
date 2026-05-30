@@ -82,7 +82,7 @@ export default async function PaymentCancelPage({
       </div>
 
       <Button asChild variant="link" size="sm" className="mt-4">
-        <Link href="/support">Contacter le support KAZA</Link>
+        <Link href="/help">Contacter le support KAZA</Link>
       </Button>
     </div>
   );

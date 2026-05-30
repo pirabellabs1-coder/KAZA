@@ -5,6 +5,11 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/notifications/resend";
+import {
+  PARTNER_TYPES,
+  PARTNER_TYPE_LABELS,
+  type PartnerType,
+} from "@/lib/partners/constants";
 
 // =============================================================================
 // KAZA - Server Action : candidatures partenaires (page /partners)
@@ -12,34 +17,6 @@ import { sendEmail } from "@/lib/notifications/resend";
 // Insère une candidature dans `partner_applications` (RLS public INSERT),
 // puis notifie l'équipe interne et envoie une confirmation au candidat.
 // =============================================================================
-
-export const PARTNER_TYPES = [
-  "NOTARY",
-  "BROKER",
-  "INSURANCE",
-  "MOVING",
-  "CLEANING",
-  "DECORATION",
-  "TECHNICAL_AUDIT",
-  "LEGAL",
-  "PROPERTY_MGMT",
-  "OTHER",
-] as const;
-
-export type PartnerType = (typeof PARTNER_TYPES)[number];
-
-export const PARTNER_TYPE_LABELS: Record<PartnerType, string> = {
-  NOTARY: "Notaire",
-  BROKER: "Courtier / Agent immobilier",
-  INSURANCE: "Assurance",
-  MOVING: "Déménagement",
-  CLEANING: "Nettoyage / Ménage",
-  DECORATION: "Décoration & Aménagement",
-  TECHNICAL_AUDIT: "Audit technique / Diagnostic",
-  LEGAL: "Juridique",
-  PROPERTY_MGMT: "Gestion locative",
-  OTHER: "Autre",
-};
 
 const PartnerApplicationSchema = z.object({
   partnerType: z.enum(PARTNER_TYPES),
@@ -172,7 +149,7 @@ export async function submitPartnerApplication(
   }
 
   const recipient =
-    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "contact@kaza.africa";
+    process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "contact@pirabellabs.com";
   try {
     await sendEmail(
       recipient,

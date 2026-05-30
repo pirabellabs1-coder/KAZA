@@ -27,8 +27,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { StatCounter } from "@/components/marketing/stat-counter";
-import { TestimonialCard } from "@/components/marketing/testimonial-card";
 import { GradientCard } from "@/components/marketing/gradient-card";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
@@ -53,17 +51,6 @@ const HERO_IMAGE =
 
 const formatPrice = (value: number) =>
   `${new Intl.NumberFormat("fr-FR").format(value)} FCFA`;
-
-// =============================================================================
-// Logos agences clientes (mock visible en bas du hero)
-// =============================================================================
-
-const HERO_AGENCIES = [
-  { name: "Premier Immobilier", letters: "PI", color: "#1A3A52" },
-  { name: "Bénin Habitat", letters: "BH", color: "#1976D2" },
-  { name: "Atlantique Real", letters: "AR", color: "#4CAF50" },
-  { name: "Coastline Properties", letters: "CP", color: "#D97706" },
-];
 
 // =============================================================================
 // Features
@@ -222,43 +209,6 @@ const proComparison: ProComparisonRow[] = [
 ];
 
 // =============================================================================
-// Témoignages
-// =============================================================================
-
-const proTestimonials = [
-  {
-    name: "Aïcha Toko",
-    role: "Directrice, Premier Immobilier",
-    city: "Cotonou",
-    avatarSeed: "Aicha Toko",
-    rating: 5,
-    quote:
-      "KAZA Pro nous a fait gagner 12h par semaine sur la gestion des visites. Mes 8 agents travaillent enfin sur la même base de données, en temps réel.",
-    highlight: "12h par semaine",
-  },
-  {
-    name: "Olivier Hounkpatin",
-    role: "Gérant, Imoba Patrimoine",
-    city: "Porto-Novo",
-    avatarSeed: "Olivier Hounkpatin",
-    rating: 5,
-    quote:
-      "L'API nous a permis de connecter KAZA à notre CRM existant en moins d'une semaine. Le support technique est tout simplement exceptionnel.",
-    highlight: "moins d'une semaine",
-  },
-  {
-    name: "Mariam Tossou",
-    role: "Co-fondatrice, AgenceCalavi",
-    city: "Calavi",
-    avatarSeed: "Mariam Tossou",
-    rating: 5,
-    quote:
-      "Le white-label est bluffant : nos clients voient notre marque, et nous bénéficions de la puissance technique de KAZA en arrière-plan.",
-    highlight: "white-label",
-  },
-];
-
-// =============================================================================
 // Étapes d'onboarding
 // =============================================================================
 
@@ -404,53 +354,6 @@ export default function ProPage() {
             </div>
           </FadeIn>
 
-          {/* Logos agences clientes */}
-          <FadeIn delay={500}>
-            <div className="mt-16">
-              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-white/60">
-                Déjà 120+ agences nous font confiance
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
-                {HERO_AGENCIES.map((agency) => (
-                  <div
-                    key={agency.name}
-                    className="flex items-center gap-2.5 opacity-80 transition-opacity hover:opacity-100"
-                  >
-                    <span
-                      className="flex size-10 items-center justify-center rounded-full text-xs font-bold text-white ring-2 ring-white/20"
-                      style={{ backgroundColor: agency.color }}
-                      aria-hidden="true"
-                    >
-                      {agency.letters}
-                    </span>
-                    <span className="text-sm font-medium text-white/85">
-                      {agency.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ===== STATS bandeau gradient subtil =============================== */}
-      <section className="relative bg-gradient-to-br from-white via-blue-50/40 to-emerald-50/40 py-20">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="grid grid-cols-2 gap-10 sm:gap-14 lg:grid-cols-4">
-            <RevealOnScroll>
-              <StatCounter value={120} suffix="+" label="Agences clientes" description="Au Bénin & Afrique de l'Ouest" />
-            </RevealOnScroll>
-            <RevealOnScroll delay={100}>
-              <StatCounter value={8500} suffix="+" label="Annonces gérées" description="Mises à jour temps réel" />
-            </RevealOnScroll>
-            <RevealOnScroll delay={200}>
-              <StatCounter value={92} suffix="%" label="Satisfaction clients" description="Mesurée chaque trimestre" />
-            </RevealOnScroll>
-            <RevealOnScroll delay={300}>
-              <StatCounter value={24} suffix="/7" label="Support dédié" description="Réponse garantie < 1h" />
-            </RevealOnScroll>
-          </div>
         </div>
       </section>
 
@@ -677,32 +580,6 @@ export default function ProPage() {
         </div>
       </section>
 
-      {/* ===== TÉMOIGNAGES AGENCES ========================================= */}
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-16 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-kaza-blue">
-                Témoignages
-              </p>
-              <h2 className="mt-3 font-heading text-4xl font-bold tracking-tight text-kaza-navy sm:text-5xl">
-                Des agences béninoises{" "}
-                <span className="bg-gradient-to-r from-kaza-green to-kaza-blue bg-clip-text text-transparent">
-                  qui ont franchi le pas
-                </span>
-              </h2>
-            </div>
-          </RevealOnScroll>
-          <div className="grid gap-8 md:grid-cols-3">
-            {proTestimonials.map((t, idx) => (
-              <RevealOnScroll key={t.name} delay={idx * 100}>
-                <TestimonialCard {...t} className="h-full rounded-3xl shadow-md hover:shadow-2xl" />
-              </RevealOnScroll>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ===== COMMENT ÇA MARCHE — 4 étapes ================================ */}
       <section className="relative overflow-hidden bg-gradient-to-br from-kaza-navy via-[#0F2A40] to-kaza-navy py-24 text-white">
         <div
@@ -815,7 +692,7 @@ export default function ProPage() {
 
                 <div className="mt-10 flex items-center gap-3 text-sm text-white/70">
                   <Globe className="size-5" />
-                  <span>+229 60 00 00 00 · pro@kaza.africa</span>
+                  <span>contact@pirabellabs.com</span>
                 </div>
               </div>
 

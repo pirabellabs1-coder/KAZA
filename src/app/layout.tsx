@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | KAZA",
   },
   description:
-    "La plus grande plateforme d'immobilier en Afrique. Trouvez votre logement idéal au Bénin et en Afrique de l'Ouest.",
+    "La plus grande plateforme d'immobilier en Afrique. Trouvez votre logement idéal partout sur le continent africain.",
   keywords: [
     "immobilier",
     "Afrique",

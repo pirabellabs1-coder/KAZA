@@ -262,9 +262,12 @@ export interface GetContractPdfUrlResult {
 }
 
 /**
- * Retourne une signed URL Supabase Storage (60s) pour afficher le PDF/HTML du
- * contrat dans une iframe. L'autorisation est appliquée par les policies RLS
- * du bucket privé `contracts`.
+ * Retourne une signed URL Supabase Storage (10 min) pour afficher ou
+ * télécharger le PDF/HTML du contrat. 60s était trop court : un utilisateur
+ * qui lit un bail de plusieurs pages ou recharge l'iframe dépasse souvent ce
+ * délai et reçoit un 403. 600s laisse de la marge sans compromettre la
+ * sécurité (l'URL reste à usage unique côté navigateur).
+ * L'autorisation est appliquée par les policies RLS du bucket privé `contracts`.
  */
 export async function getContractPdfUrl(
   input: GetContractPdfUrlInput
@@ -297,7 +300,7 @@ export async function getContractPdfUrl(
   const admin = createAdminClient();
   const { data: signed, error: sErr } = await admin.storage
     .from("contracts")
-    .createSignedUrl(path, 60);
+    .createSignedUrl(path, 600); // 10 min
 
   if (sErr || !signed) {
     console.error("[contracts] signed URL échec:", sErr);

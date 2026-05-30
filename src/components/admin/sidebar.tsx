@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
+import { logout } from "@/actions/auth";
 import {
   LayoutDashboard,
   Building2,
@@ -24,6 +26,10 @@ import {
   Megaphone,
   Briefcase,
   Gavel,
+  Handshake,
+  Inbox,
+  TicketPercent,
+  Flag,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -33,12 +39,20 @@ interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
-  badge?: number;
+  /** Clé pour résoudre un compteur dynamique réel (badges live). */
+  badgeKey?: "kyc" | "properties" | "disputes";
 }
 
 interface NavSection {
   label?: string;
   items: NavItem[];
+}
+
+/** Comptes réels passés depuis le layout serveur. */
+export interface AdminSidebarBadges {
+  kyc?: number;
+  properties?: number;
+  disputes?: number;
 }
 
 const adminNavSections: NavSection[] = [
@@ -59,7 +73,7 @@ const adminNavSections: NavSection[] = [
         href: "/admin/verifications",
         label: "Vérifications KYC",
         icon: ShieldCheck,
-        badge: 47,
+        badgeKey: "kyc",
       },
     ],
   },
@@ -70,16 +84,18 @@ const adminNavSections: NavSection[] = [
         href: "/admin/properties",
         label: "Annonces",
         icon: Building2,
-        badge: 12,
+        badgeKey: "properties",
       },
       { href: "/admin/contracts", label: "Contrats", icon: FileText },
       { href: "/admin/documents", label: "Documents", icon: FolderArchive },
+      { href: "/admin/careers", label: "Carrières", icon: Briefcase },
       { href: "/admin/content", label: "Modération", icon: ShieldAlert },
+      { href: "/admin/reports", label: "Signalements", icon: Flag },
       {
         href: "/admin/disputes",
         label: "Litiges",
         icon: Gavel,
-        badge: 3,
+        badgeKey: "disputes",
       },
     ],
   },
@@ -90,6 +106,7 @@ const adminNavSections: NavSection[] = [
       { href: "/admin/payments", label: "Paiements", icon: CreditCard },
       { href: "/admin/payouts", label: "Demandes retrait", icon: Wallet },
       { href: "/admin/refunds", label: "Remboursements", icon: Receipt },
+      { href: "/admin/promo-codes", label: "Codes promo", icon: TicketPercent },
     ],
   },
   {
@@ -97,6 +114,8 @@ const adminNavSections: NavSection[] = [
     items: [
       { href: "/admin/notifications", label: "Campagnes", icon: Megaphone },
       { href: "/admin/email-templates", label: "Templates Email", icon: Mail },
+      { href: "/admin/messages", label: "Messages de contact", icon: Inbox },
+      { href: "/admin/partners", label: "Demandes partenariat", icon: Handshake },
     ],
   },
   {
@@ -125,6 +144,7 @@ interface AdminSidebarProps {
     lastName: string;
     email: string;
   };
+  badges?: AdminSidebarBadges;
   onNavigate?: () => void;
 }
 
@@ -135,9 +155,11 @@ export function AdminSidebar({
     lastName: "KAZA",
     email: "admin@kaza.africa",
   },
+  badges = {},
   onNavigate,
 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [isLoggingOut, startLogout] = useTransition();
 
   return (
     <aside
@@ -175,6 +197,7 @@ export function AdminSidebar({
                 item.href === "/admin"
                   ? pathname === "/admin"
                   : pathname.startsWith(item.href);
+              const badgeValue = item.badgeKey ? badges[item.badgeKey] : undefined;
               return (
                 <Link
                   key={item.href}
@@ -191,7 +214,7 @@ export function AdminSidebar({
                     <item.icon className="size-5" />
                     {item.label}
                   </span>
-                  {item.badge !== undefined && item.badge > 0 && (
+                  {badgeValue !== undefined && badgeValue > 0 && (
                     <span
                       className={cn(
                         "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
@@ -200,7 +223,7 @@ export function AdminSidebar({
                           : "bg-kaza-blue/10 text-kaza-blue"
                       )}
                     >
-                      {item.badge}
+                      {badgeValue}
                     </span>
                   )}
                 </Link>
@@ -228,11 +251,18 @@ export function AdminSidebar({
           </div>
           <button
             type="button"
-            onClick={() => {
-              // Placeholder: will integrate with Supabase auth
-              window.location.href = "/login";
-            }}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-white hover:text-kaza-error"
+            disabled={isLoggingOut}
+            onClick={() =>
+              startLogout(async () => {
+                try {
+                  await logout();
+                } catch {
+                  // ignore — on force la redirection ci-dessous
+                }
+                window.location.href = "/";
+              })
+            }
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-white hover:text-kaza-error disabled:opacity-50"
             aria-label="Se déconnecter"
             title="Se déconnecter"
           >

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
 import { VisitRequestButton } from "@/components/property/visit-request-button";
+import { ReportButton } from "@/components/shared/report-button";
 
 const FAVORITES_KEY = "kaza-favorites";
 
@@ -153,6 +154,14 @@ export function PropertyActions({
       >
         <Share2 className="size-4" />
       </Button>
+      {!isOwnProperty && (
+        <ReportButton
+          targetType="property"
+          targetId={propertyId}
+          targetLabel={propertyTitle}
+          variant="icon"
+        />
+      )}
     </div>
   );
 }

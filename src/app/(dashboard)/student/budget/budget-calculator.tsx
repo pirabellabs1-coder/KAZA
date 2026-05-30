@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Calculator, Save, Share2, TrendingDown, TrendingUp } from "lucide-react";
+import { Calculator, Save, Share2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,6 @@ import { toast } from "@/components/ui/toast-helper";
 import { cn, formatPrice } from "@/lib/utils";
 
 const STORAGE_KEY = "kaza-budget-coloc";
-const UAC_AVERAGE_PER_PERSON = 75_000; // moyenne mock par personne (FCFA)
 
 type Budget = {
   rent: string;
@@ -22,13 +21,14 @@ type Budget = {
   groceries: string;
 };
 
+// Aucune valeur fictive pré-remplie : l'étudiant saisit son propre budget.
 const INITIAL: Budget = {
-  rent: "180000",
-  roommates: "3",
-  electricity: "24000",
-  water: "8000",
-  internet: "20000",
-  groceries: "45000",
+  rent: "",
+  roommates: "",
+  electricity: "",
+  water: "",
+  internet: "",
+  groceries: "",
 };
 
 const CATEGORIES = [
@@ -81,13 +81,6 @@ export function BudgetCalculator() {
     };
   }, [budget]);
 
-  const diffPct = useMemo(() => {
-    if (totals.perPerson === 0) return 0;
-    return Math.round(
-      ((totals.perPerson - UAC_AVERAGE_PER_PERSON) / UAC_AVERAGE_PER_PERSON) * 100
-    );
-  }, [totals.perPerson]);
-
   const handleSave = () => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(budget));
@@ -97,8 +90,21 @@ export function BudgetCalculator() {
     }
   };
 
-  const handleShare = () => {
-    toast.info("Lien partagé avec votre groupe colocataire (mock).");
+  const handleShare = async () => {
+    const summary =
+      `Budget colocation KAZA\n` +
+      `Total mensuel : ${formatPrice(totals.total)}\n` +
+      `Par personne : ${formatPrice(totals.perPerson)}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Budget colocation KAZA", text: summary });
+      } else {
+        await navigator.clipboard.writeText(summary);
+        toast.success("Récapitulatif copié dans le presse-papiers.");
+      }
+    } catch {
+      // partage annulé par l'utilisateur — pas d'erreur à afficher
+    }
   };
 
   if (!loaded) {
@@ -241,36 +247,6 @@ export function BudgetCalculator() {
               );
             })}
           </div>
-
-          {/* Comparaison */}
-          {totals.perPerson > 0 && (
-            <div
-              className={cn(
-                "flex items-center gap-3 rounded-xl p-4",
-                diffPct < 0
-                  ? "bg-kaza-green/10 text-kaza-green"
-                  : diffPct > 0
-                    ? "bg-orange-50 text-orange-700"
-                    : "bg-muted text-foreground"
-              )}
-            >
-              {diffPct < 0 ? (
-                <TrendingDown className="size-5 shrink-0" />
-              ) : (
-                <TrendingUp className="size-5 shrink-0" />
-              )}
-              <div>
-                <p className="text-sm font-semibold">
-                  Vous payez {Math.abs(diffPct)}%{" "}
-                  {diffPct < 0 ? "moins" : "plus"} que la moyenne UAC
-                </p>
-                <p className="text-xs opacity-80">
-                  Moyenne référence : {formatPrice(UAC_AVERAGE_PER_PERSON)} /
-                  personne / mois (étudiants UAC, 2026).
-                </p>
-              </div>
-            </div>
-          )}
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={handleSave}>

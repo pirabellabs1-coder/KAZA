@@ -49,108 +49,9 @@ interface Application {
   message: string;
 }
 
-const MOCK_APPLICATIONS: Application[] = [
-  {
-    id: "app-001",
-    property: {
-      id: "p-002",
-      title: "Villa 4 chambres avec jardin a Calavi",
-      address: "Abomey-Calavi, Benin",
-      monthly_rent: 300000,
-      photo_url: "https://picsum.photos/seed/p2-facade/800/600",
-    },
-    owner: {
-      id: "u-002-owner-jean",
-      first_name: "Jean",
-      last_name: "Dupont",
-      profile_photo_url: null,
-    },
-    sentAt: "2026-05-15T10:00:00.000Z",
-    status: "PENDING",
-    message:
-      "Bonjour, je suis tres interesse par votre villa pour une location longue duree avec ma famille. Je travaille en CDI depuis 4 ans dans une banque a Cotonou.",
-  },
-  {
-    id: "app-002",
-    property: {
-      id: "p-004",
-      title: "Appartement 3 chambres a Cadjehoun",
-      address: "Cadjehoun, Cotonou, Benin",
-      monthly_rent: 200000,
-      photo_url: "https://picsum.photos/seed/p4-exterieur/800/600",
-    },
-    owner: {
-      id: "u-003-owner-amina",
-      first_name: "Amina",
-      last_name: "Kone",
-      profile_photo_url: null,
-    },
-    sentAt: "2026-05-12T14:30:00.000Z",
-    status: "ACCEPTED",
-    message:
-      "Bonjour Mme Kone, votre annonce correspond parfaitement a ce que je recherche pour ma famille. Disponible pour une visite des cette semaine.",
-  },
-  {
-    id: "app-003",
-    property: {
-      id: "p-006",
-      title: "Appartement standing a Porto-Novo",
-      address: "Ouando, Porto-Novo, Benin",
-      monthly_rent: 120000,
-      photo_url: "https://picsum.photos/seed/p6-salon/800/600",
-    },
-    owner: {
-      id: "u-003-owner-amina",
-      first_name: "Amina",
-      last_name: "Kone",
-      profile_photo_url: null,
-    },
-    sentAt: "2026-05-08T09:15:00.000Z",
-    status: "REJECTED",
-    message:
-      "Bonjour, je suis interesse par votre bien. Je peux fournir toutes les garanties necessaires.",
-  },
-  {
-    id: "app-004",
-    property: {
-      id: "p-005",
-      title: "Chambre meublee a Ganhi",
-      address: "Ganhi, Cotonou, Benin",
-      monthly_rent: 65000,
-      photo_url: "https://picsum.photos/seed/p5-facade/800/600",
-    },
-    owner: {
-      id: "u-002-owner-jean",
-      first_name: "Jean",
-      last_name: "Dupont",
-      profile_photo_url: null,
-    },
-    sentAt: "2026-05-20T16:00:00.000Z",
-    status: "PENDING",
-    message:
-      "Bonjour, je suis etudiant en Master et je recherche une chambre proche du centre. Disponible immediatement.",
-  },
-  {
-    id: "app-005",
-    property: {
-      id: "p-008",
-      title: "Villa avec piscine a Calavi",
-      address: "Abomey-Calavi, Benin",
-      monthly_rent: 450000,
-      photo_url: "https://picsum.photos/seed/p8-exterieur/800/600",
-    },
-    owner: {
-      id: "u-002-owner-jean",
-      first_name: "Jean",
-      last_name: "Dupont",
-      profile_photo_url: null,
-    },
-    sentAt: "2026-05-22T11:00:00.000Z",
-    status: "PENDING",
-    message:
-      "Bonjour, votre villa nous a tout de suite seduits. Nous sommes une famille de 4 et cherchons une location pour 2 ans minimum.",
-  },
-];
+// Tant que la requête Supabase `listTenantApplications` n'est pas branchée
+// côté serveur, on initialise la liste à vide. L'UI affiche un empty state.
+const INITIAL_APPLICATIONS: Application[] = [];
 
 const STATUS_META: Record<
   ApplicationStatus,
@@ -175,7 +76,7 @@ const STATUS_META: Record<
 
 export default function TenantApplicationsPage() {
   const [applications, setApplications] =
-    useState<Application[]>(MOCK_APPLICATIONS);
+    useState<Application[]>(INITIAL_APPLICATIONS);
   const [tab, setTab] = useState<string>("PENDING");
 
   const counts = useMemo(

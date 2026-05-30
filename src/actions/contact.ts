@@ -2,8 +2,10 @@
 
 import "server-only";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { sendEmail } from "@/lib/notifications/resend";
 
 // =============================================================================
@@ -282,5 +284,56 @@ export async function submitContactMessage(
     console.error("[contact] email failed:", err);
   }
 
+  return { success: true };
+}
+
+// ----- Admin : gestion des messages -----------------------------------------
+
+/**
+ * Marque un message de contact comme lu (statut → 'READ').
+ * Réservé aux ADMIN (RLS + vérification applicative). Revalide la page admin.
+ */
+export async function markContactMessageRead(
+  id: string,
+): Promise<{ success: boolean; error?: string }> {
+  if (!id || typeof id !== "string") {
+    return { success: false, error: "Identifiant invalide." };
+  }
+
+  const user = await getCurrentDisplayUser();
+  if (!user) {
+    return { success: false, error: "Authentification requise." };
+  }
+  if (user.role !== "ADMIN") {
+    return { success: false, error: "Réservé aux administrateurs." };
+  }
+
+  const supabase = await createClient();
+
+  // Types Supabase générés ne contiennent pas encore `contact_messages` →
+  // cast explicite. La sécurité reste assurée par la policy RLS admin_update.
+  const { error } = await (supabase as unknown as {
+    from: (t: string) => {
+      update: (row: Record<string, unknown>) => {
+        eq: (
+          col: string,
+          val: string,
+        ) => Promise<{ error: { message: string } | null }>;
+      };
+    };
+  })
+    .from("contact_messages")
+    .update({ status: "READ", handled_by: user.id })
+    .eq("id", id);
+
+  if (error) {
+    console.error("[contact] markRead failed:", error.message);
+    return {
+      success: false,
+      error: "Impossible de mettre à jour le message.",
+    };
+  }
+
+  revalidatePath("/admin/messages");
   return { success: true };
 }

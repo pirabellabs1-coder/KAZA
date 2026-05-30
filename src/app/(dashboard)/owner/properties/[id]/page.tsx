@@ -25,7 +25,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getPropertyById } from "@/lib/queries/properties";
-import { formatPrice, formatDate, getInitials } from "@/lib/utils";
+import { getPropertyReviews } from "@/lib/queries/reviews";
+import { countPropertyVisitRequests } from "@/lib/queries/owner-activity";
+import { formatPrice, formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { AnalyticsTab } from "./analytics-tab";
 import { CalendarTab } from "./calendar-tab";
@@ -66,25 +68,20 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  // Fallback vide — à brancher quand la table reviews sera connectée.
-  const MOCK_REVIEWS: Array<{
-    id: string;
-    author: string;
-    rating: number;
-    date: string;
-    text: string;
-  }> = [];
+  // Avis réels (table `ratings`) + nombre de demandes de visite réelles.
+  const [reviewsData, visitRequestsCount] = await Promise.all([
+    getPropertyReviews(id),
+    countPropertyVisitRequests(id),
+  ]);
+  const reviews = reviewsData.reviews;
+  const averageRating = reviewsData.averageRating;
+  const totalReviews = reviewsData.totalCount;
 
   const statusLabel = property.status === "RENTED" ? "Loué" : "Vacant";
   const statusColor =
     property.status === "RENTED"
       ? "bg-kaza-green text-white"
       : "border-kaza-warning bg-kaza-warning/10 text-kaza-warning";
-
-  const averageRating =
-    MOCK_REVIEWS.length === 0
-      ? 0
-      : MOCK_REVIEWS.reduce((acc, r) => acc + r.rating, 0) / MOCK_REVIEWS.length;
 
   return (
     <div className="space-y-6">
@@ -266,8 +263,10 @@ export default async function PropertyDetailPage({
         {/* Analytics */}
         <TabsContent value="analytics">
           <AnalyticsTab
-            propertyId={property.id}
             totalViews={property.viewsCount ?? 0}
+            visitRequests={visitRequestsCount}
+            reviewsCount={totalReviews}
+            averageRating={averageRating}
           />
         </TabsContent>
 
@@ -297,15 +296,16 @@ export default async function PropertyDetailPage({
                     <RatingStars value={Math.round(averageRating)} />
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {MOCK_REVIEWS.length} avis
+                    {totalReviews} avis
                   </p>
                 </div>
                 <div className="flex-1 space-y-1.5">
                   {[5, 4, 3, 2, 1].map((stars) => {
-                    const count = MOCK_REVIEWS.filter(
+                    const count = reviews.filter(
                       (r) => r.rating === stars,
                     ).length;
-                    const pct = (count / MOCK_REVIEWS.length) * 100;
+                    const pct =
+                      totalReviews > 0 ? (count / totalReviews) * 100 : 0;
                     return (
                       <div key={stars} className="flex items-center gap-3">
                         <span className="w-6 text-xs text-muted-foreground">
@@ -328,34 +328,42 @@ export default async function PropertyDetailPage({
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {MOCK_REVIEWS.map((review) => {
-              const [first, ...rest] = review.author.split(" ");
-              return (
+          {reviews.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center text-sm text-muted-foreground">
+                Aucun avis pour le moment. Les locataires pourront laisser un
+                avis une fois leur location terminée.
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {reviews.map((review) => (
                 <Card key={review.id}>
                   <CardContent className="space-y-3 pt-6">
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarFallback>
-                          {getInitials(first, rest.join(" ") || first)}
+                          {review.reviewerInitials}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-semibold">{review.author}</p>
+                        <p className="text-sm font-semibold">
+                          {review.reviewerName}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          {review.date}
+                          {formatDate(review.createdAt)}
                         </p>
                       </div>
                     </div>
                     <RatingStars value={review.rating} size={3.5} />
                     <p className="text-sm text-muted-foreground">
-                      {review.text}
+                      {review.comment}
                     </p>
                   </CardContent>
                 </Card>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

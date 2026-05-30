@@ -37,17 +37,6 @@ import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "kaza-coloc-profile";
 
-const UNIVERSITES = [
-  "UAC (Abomey-Calavi)",
-  "IRGIB Africa",
-  "EPAC",
-  "ESGIS Bénin",
-  "Bénin Excellence",
-  "ENEAM",
-  "UATM Gasa Formation",
-  "Autre",
-] as const;
-
 const DISCIPLINES = [
   "Médecine",
   "Informatique",
@@ -311,22 +300,14 @@ export function ColocForm() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Université</Label>
-                    <Select
+                    <Label htmlFor="university">Université</Label>
+                    <Input
+                      id="university"
+                      type="text"
+                      placeholder="Nom de votre université"
                       value={profile.university}
-                      onValueChange={(v) => update("university", v)}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Choisir" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {UNIVERSITES.map((u) => (
-                          <SelectItem key={u} value={u}>
-                            {u}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onChange={(e) => update("university", e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Année</Label>

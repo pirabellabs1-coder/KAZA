@@ -1,15 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Les uploads photo passent par une server action (FormData). Défaut Next =
+  // 1 Mo ; on monte à 12 Mo pour accepter des photos jusqu'à 10 Mo.
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "12mb",
+    },
+  },
   // Les types Supabase doivent être régénérés via `supabase gen types`
   // après chaque migration. En attendant la connexion live à un projet
   // Supabase, on n'échoue pas le build sur les erreurs de typage.
   typescript: {
     ignoreBuildErrors: true,
-  },
-  // Idem pour ESLint : on n'échoue pas le build sur les warnings de style.
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   images: {
     remotePatterns: [

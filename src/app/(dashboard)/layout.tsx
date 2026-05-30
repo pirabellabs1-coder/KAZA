@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getUnreadCount } from "@/lib/queries/notifications";
 
 import { DashboardShell } from "./dashboard-shell";
 
@@ -17,5 +18,12 @@ export default async function DashboardLayout({
     redirect("/login?redirect=/dashboard");
   }
 
-  return <DashboardShell user={user}>{children}</DashboardShell>;
+  // Compteur réel de notifications non lues pour la cloche du header.
+  const unreadCount = await getUnreadCount(user.id);
+
+  return (
+    <DashboardShell user={user} initialUnreadCount={unreadCount}>
+      {children}
+    </DashboardShell>
+  );
 }

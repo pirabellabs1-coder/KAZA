@@ -218,7 +218,7 @@ function RentalCard({ rental }: { rental: TenantRentalItem }) {
 
             <div className="mt-3 flex flex-wrap gap-2">
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/contracts?rentalId=${rental.id}`}>
+                <Link href={`/contracts/${rental.id}`}>
                   <FileText className="mr-1.5 size-3.5" />
                   Contrat
                 </Link>

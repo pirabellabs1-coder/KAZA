@@ -1,0 +1,79 @@
+import "server-only";
+
+import { createClient } from "@/lib/supabase/server";
+
+// =============================================================================
+// KAZA — Queries Signalements (back-office admin, server-side)
+// Lecture de `public.reports` pour la page /admin/reports.
+// RLS : SELECT réservé aux ADMIN (et au reporter pour ses propres signalements).
+// L'INSERT public est géré par la server action `reportContent`.
+// Ne throw jamais : retourne [] en cas d'erreur.
+// La table `reports` n'est pas encore dans les types Supabase générés : on cast
+// le client en `any` (même pattern que partners-admin).
+// =============================================================================
+
+export type ReportStatus = "PENDING" | "REVIEWED" | "RESOLVED" | "DISMISSED";
+
+export interface ReportSummary {
+  id: string;
+  reporterId: string | null;
+  targetType: string;
+  targetId: string | null;
+  reason: string;
+  details: string | null;
+  status: ReportStatus;
+  createdAt: string;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+}
+
+interface ReportRow {
+  id: string;
+  reporter_id: string | null;
+  target_type: string;
+  target_id: string | null;
+  reason: string;
+  details: string | null;
+  status: ReportStatus;
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+}
+
+function mapRow(row: ReportRow): ReportSummary {
+  return {
+    id: row.id,
+    reporterId: row.reporter_id,
+    targetType: row.target_type,
+    targetId: row.target_id,
+    reason: row.reason,
+    details: row.details,
+    status: row.status,
+    createdAt: row.created_at,
+    resolvedAt: row.resolved_at,
+    resolvedBy: row.resolved_by,
+  };
+}
+
+/**
+ * Liste les signalements, du plus récent au plus ancien.
+ * Le passage des policies RLS garantit que seuls les ADMIN voient la liste
+ * complète. Renvoie un tableau vide en cas d'erreur ou d'absence de données.
+ */
+export async function listReports(): Promise<ReportSummary[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from("reports")
+    .select(
+      "id, reporter_id, target_type, target_id, reason, details, status, created_at, resolved_at, resolved_by",
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.warn("[reports-admin] listReports:", error.message);
+    return [];
+  }
+
+  return ((data ?? []) as ReportRow[]).map(mapRow);
+}

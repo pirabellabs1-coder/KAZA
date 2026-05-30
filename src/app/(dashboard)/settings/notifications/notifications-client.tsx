@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useTransition } from "react";
 import { Bell, Save, BellOff, BellRing } from "lucide-react";
 
+import { updateNotificationPrefs } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,8 +15,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/toast-helper";
-
-const STORAGE_KEY = "kaza-notif-prefs";
 
 type Channel = "email" | "push" | "sms";
 type Category =
@@ -69,18 +68,29 @@ const defaultPrefs: Prefs = {
   marketing: { email: false, push: false, sms: false },
 };
 
-export function NotificationsClient() {
-  const [prefs, setPrefs] = useState<Prefs>(defaultPrefs);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setPrefs({ ...defaultPrefs, ...JSON.parse(raw) });
-    } catch {
-      // ignore
+function mergePrefs(initial: Record<string, unknown>): Prefs {
+  const next: Prefs = JSON.parse(JSON.stringify(defaultPrefs));
+  for (const cat of CATEGORIES) {
+    const raw = initial[cat.key];
+    if (raw && typeof raw === "object") {
+      const r = raw as Partial<Record<Channel, unknown>>;
+      for (const channel of CHANNELS) {
+        if (typeof r[channel.key] === "boolean") {
+          next[cat.key][channel.key] = r[channel.key] as boolean;
+        }
+      }
     }
-  }, []);
+  }
+  return next;
+}
+
+export function NotificationsClient({
+  initialPrefs = {},
+}: {
+  initialPrefs?: Record<string, unknown>;
+}) {
+  const [prefs, setPrefs] = useState<Prefs>(() => mergePrefs(initialPrefs));
+  const [isPending, startTransition] = useTransition();
 
   const toggle = (category: Category, channel: Channel, value: boolean) => {
     setPrefs((prev) => ({
@@ -99,12 +109,14 @@ export function NotificationsClient() {
   };
 
   const handleSave = () => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-      toast.success("Préférences de notification enregistrées");
-    } catch {
-      toast.error("Impossible d'enregistrer les préférences");
-    }
+    startTransition(async () => {
+      const result = await updateNotificationPrefs(prefs);
+      if (result.success) {
+        toast.success("Préférences de notification enregistrées");
+      } else {
+        toast.error(result.error ?? "Impossible d'enregistrer les préférences");
+      }
+    });
   };
 
   return (
@@ -214,9 +226,9 @@ export function NotificationsClient() {
 
         <Separator />
         <div className="flex justify-end">
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={isPending}>
             <Save className="mr-2 size-4" />
-            Enregistrer les préférences
+            {isPending ? "Enregistrement…" : "Enregistrer les préférences"}
           </Button>
         </div>
       </CardContent>

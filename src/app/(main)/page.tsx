@@ -21,7 +21,6 @@ import { StatCounter } from "@/components/marketing/stat-counter";
 import { GradientCard } from "@/components/marketing/gradient-card";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
-import { CountryFlag } from "@/components/shared/country-flag";
 import { GlassPanel } from "@/components/shared/glass-panel";
 import { PageTracker } from "@/components/analytics/page-tracker";
 
@@ -94,7 +93,7 @@ const studentSteps = [
     step: "03",
     title: "Bail numérique",
     description:
-      "Signature électronique du bail, opposable et conforme au droit béninois. Plus de papiers perdus.",
+      "Signature électronique du bail, opposable et conforme au droit en vigueur. Plus de papiers perdus.",
   },
 ];
 
@@ -102,7 +101,7 @@ const studentBenefits = [
   { icon: CheckCircle2, label: "Colocataires vérifiés" },
   { icon: CheckCircle2, label: "Frais partagés automatiquement" },
   { icon: CheckCircle2, label: "Bail numérique légal" },
-  { icon: CheckCircle2, label: "Proche des campus UAC, IRGIB, EPAC" },
+  { icon: CheckCircle2, label: "Proche des campus universitaires" },
 ];
 
 export default async function HomePage() {
@@ -133,13 +132,12 @@ export default async function HomePage() {
     {
       value: stats.totalCities,
       label: "Villes couvertes",
-      description: "De Cotonou à Parakou, et au-delà",
+      description: "Partout en Afrique, et en pleine expansion",
     },
     {
-      value: 4.8,
-      suffix: "/5",
-      label: "Note moyenne",
-      description: "Basée sur les retours de nos utilisateurs",
+      value: stats.totalCountries,
+      label: "Pays couverts",
+      description: "Présence sur tout le continent africain",
     },
   ];
 
@@ -176,9 +174,8 @@ export default async function HomePage() {
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-4 py-24 text-center lg:px-8 lg:py-32">
           <FadeIn>
             <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-md sm:text-sm">
-              <CountryFlag code="BJ" className="h-3 w-4" />
-              N°1 de l&apos;immobilier en Afrique de l&apos;Ouest
               <Sparkles className="size-3.5 text-kaza-green" aria-hidden />
+              La plus grande plateforme d&apos;immobilier en Afrique
             </span>
           </FadeIn>
 
@@ -188,14 +185,14 @@ export default async function HomePage() {
               <span className="bg-gradient-to-r from-kaza-green via-emerald-400 to-kaza-blue bg-clip-text text-transparent">
                 logement de rêve
               </span>
-              <br className="hidden sm:block" /> au Bénin
+              <br className="hidden sm:block" /> en Afrique
             </h1>
           </FadeIn>
 
           <FadeIn delay={300}>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl">
-              Plus de 12 500 annonces vérifiées, Paiements 100% sécurisés
-              et contrats numériques.
+              Annonces vérifiées, paiements 100% sécurisés et contrats
+              numériques.
               <br className="hidden sm:block" />
               Toute la confiance d&apos;une plateforme moderne, sans
               intermédiaire.
@@ -213,7 +210,7 @@ export default async function HomePage() {
           <FadeIn delay={600}>
             <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/90">
               {[
-                "12 500+ annonces vérifiées",
+                "Annonces vérifiées",
                 "Paiements 100% sécurisés",
                 "Contrats numériques légaux",
               ].map((item) => (
@@ -288,7 +285,7 @@ export default async function HomePage() {
                 </h2>
                 <p className="mt-3 max-w-xl text-muted-foreground">
                   Une sélection de biens premium soigneusement vérifiés dans les
-                  plus belles villes du Bénin.
+                  plus belles villes d&apos;Afrique.
                 </p>
               </div>
               {hasFeatured ? (
@@ -340,7 +337,7 @@ export default async function HomePage() {
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Soyez le premier à publier votre bien et touchez une
-                  communauté grandissante de locataires vérifiés au Bénin.
+                  communauté grandissante de locataires vérifiés en Afrique.
                 </p>
                 <Link
                   href="/signup?role=owner"

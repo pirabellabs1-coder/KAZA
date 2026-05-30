@@ -27,60 +27,12 @@ interface Invoice {
   status: "paid" | "pending" | "failed";
 }
 
-const DEFAULT_METHODS: PaymentMethod[] = [
-  {
-    id: "pm-1",
-    type: "card",
-    label: "Carte bancaire",
-    detail: "···· 4242 — Expire 12/27",
-    isDefault: true,
-  },
-  {
-    id: "pm-2",
-    type: "wallet",
-    label: "KAZA Wallet",
-    detail: "Solde : 18 500 FCFA",
-    isDefault: false,
-  },
-];
+// Tant que la query `listUserPaymentMethods` / `listUserInvoices` n'est pas
+// branchée côté serveur, on initialise tout à vide et on affiche des empty
+// states honnêtes (cartes / factures réelles uniquement).
+const DEFAULT_METHODS: PaymentMethod[] = [];
 
-const INVOICES: Invoice[] = [
-  {
-    id: "INV-2026-005",
-    date: "2026-05-01",
-    label: "Loyer mai 2026 — Appartement Cocotiers",
-    amount: 180_000,
-    status: "paid",
-  },
-  {
-    id: "INV-2026-004",
-    date: "2026-04-01",
-    label: "Loyer avril 2026 — Appartement Cocotiers",
-    amount: 180_000,
-    status: "paid",
-  },
-  {
-    id: "INV-2026-003",
-    date: "2026-03-01",
-    label: "Loyer mars 2026 — Appartement Cocotiers",
-    amount: 180_000,
-    status: "paid",
-  },
-  {
-    id: "INV-2026-002",
-    date: "2026-02-15",
-    label: "Caution — Appartement Cocotiers",
-    amount: 360_000,
-    status: "paid",
-  },
-  {
-    id: "INV-2026-001",
-    date: "2026-02-15",
-    label: "Frais de service KAZA",
-    amount: 5_400,
-    status: "paid",
-  },
-];
+const INVOICES: Invoice[] = [];
 
 const STATUS_META: Record<
   Invoice["status"],
@@ -98,10 +50,10 @@ function formatPrice(amount: number): string {
 export function BillingClient() {
   const [methods, setMethods] = useState<PaymentMethod[]>(DEFAULT_METHODS);
   const [address, setAddress] = useState({
-    name: "Marie Dossou",
-    line1: "Rue 12.345",
-    city: "Cotonou",
-    country: "Bénin",
+    name: "",
+    line1: "",
+    city: "",
+    country: "",
   });
 
   const setDefault = (id: string) => {
@@ -117,7 +69,9 @@ export function BillingClient() {
   };
 
   const addMethod = () => {
-    toast.info("Ajout d'une méthode de paiement (démo).");
+    toast.info(
+      "L'ajout d'une méthode de paiement sera disponible prochainement.",
+    );
   };
 
   const saveAddress = () => {
@@ -125,7 +79,7 @@ export function BillingClient() {
   };
 
   const downloadInvoice = (id: string) => {
-    toast.success(`Téléchargement facture ${id} (démo).`);
+    toast.info(`Le téléchargement de la facture ${id} sera bientôt disponible.`);
   };
 
   return (
@@ -205,52 +159,67 @@ export function BillingClient() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-hidden rounded-lg border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
-                <tr>
-                  <th className="px-3 py-2">Date</th>
-                  <th className="px-3 py-2">Référence</th>
-                  <th className="px-3 py-2">Libellé</th>
-                  <th className="px-3 py-2 text-right">Montant</th>
-                  <th className="px-3 py-2">Statut</th>
-                  <th className="px-3 py-2"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {INVOICES.map((inv) => {
-                  const meta = STATUS_META[inv.status];
-                  return (
-                    <tr key={inv.id}>
-                      <td className="px-3 py-2 text-xs text-muted-foreground">
-                        {new Date(inv.date).toLocaleDateString("fr-FR")}
-                      </td>
-                      <td className="px-3 py-2 font-mono text-xs">{inv.id}</td>
-                      <td className="px-3 py-2">{inv.label}</td>
-                      <td className="px-3 py-2 text-right font-medium">
-                        {formatPrice(inv.amount)}
-                      </td>
-                      <td className="px-3 py-2">
-                        <Badge className={`border-0 text-[10px] ${meta.className}`}>
-                          {meta.label}
-                        </Badge>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => downloadInvoice(inv.id)}
-                          className="text-kaza-blue"
-                        >
-                          PDF
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          {INVOICES.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/20 px-6 py-10 text-center">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
+                <Receipt className="size-6 text-kaza-blue" />
+              </div>
+              <p className="mt-3 text-sm font-semibold text-kaza-navy">
+                Aucune facture émise
+              </p>
+              <p className="mt-1 max-w-sm text-xs text-muted-foreground">
+                Vos quittances de loyer et factures KAZA s&apos;afficheront ici
+                après la première transaction.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-lg border">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
+                  <tr>
+                    <th className="px-3 py-2">Date</th>
+                    <th className="px-3 py-2">Référence</th>
+                    <th className="px-3 py-2">Libellé</th>
+                    <th className="px-3 py-2 text-right">Montant</th>
+                    <th className="px-3 py-2">Statut</th>
+                    <th className="px-3 py-2"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {INVOICES.map((inv) => {
+                    const meta = STATUS_META[inv.status];
+                    return (
+                      <tr key={inv.id}>
+                        <td className="px-3 py-2 text-xs text-muted-foreground">
+                          {new Date(inv.date).toLocaleDateString("fr-FR")}
+                        </td>
+                        <td className="px-3 py-2 font-mono text-xs">{inv.id}</td>
+                        <td className="px-3 py-2">{inv.label}</td>
+                        <td className="px-3 py-2 text-right font-medium">
+                          {formatPrice(inv.amount)}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge className={`border-0 text-[10px] ${meta.className}`}>
+                            {meta.label}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => downloadInvoice(inv.id)}
+                            className="text-kaza-blue"
+                          >
+                            PDF
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 

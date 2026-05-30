@@ -43,9 +43,51 @@ const ROLE_RULES: Record<string, Role[]> = {
 const ROLE_COOKIE = "kaza-role";
 const ROLE_COOKIE_MAX_AGE = 60 * 5; // 5 minutes
 
+// Cache court du flag maintenance pour éviter une requête DB par requête.
+const MAINT_COOKIE = "kaza-maint";
+const MAINT_COOKIE_MAX_AGE = 30; // 30 secondes
+
 function isProtectedRoute(pathname: string): boolean {
   return protectedPrefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+/**
+ * Lit le flag `maintenanceMode` depuis platform_settings (service role).
+ * Renvoie null si indéterminable (pas de blocage en cas de doute).
+ */
+async function fetchMaintenanceMode(): Promise<boolean | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) return null;
+  try {
+    const admin = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const { data, error } = await admin
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "maintenance")
+      .maybeSingle();
+    if (error) return null;
+    const value = (data?.value ?? {}) as { maintenanceMode?: boolean };
+    return Boolean(value.maintenanceMode);
+  } catch {
+    return null;
+  }
+}
+
+// Chemins toujours accessibles même en maintenance.
+function isMaintenanceExempt(pathname: string): boolean {
+  return (
+    pathname === "/maintenance" ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/sw.js"
   );
 }
 
@@ -110,6 +152,63 @@ export async function middleware(request: NextRequest) {
   // ---------------------------------------------------------------------------
   // 1. Rafraîchit la session (gère la rotation des cookies Supabase)
   const response = await updateSession(request);
+
+  // ---------------------------------------------------------------------------
+  // MODE MAINTENANCE
+  // Si activé dans platform_settings, on redirige tout le monde vers
+  // /maintenance SAUF les admins (qui doivent pouvoir le désactiver) et les
+  // chemins exemptés (login, api, assets). Cache cookie 30s pour la perf.
+  // ---------------------------------------------------------------------------
+  if (!isMaintenanceExempt(pathname)) {
+    const cached = request.cookies.get(MAINT_COOKIE)?.value;
+    let maintenanceOn: boolean | null;
+    if (cached === "1") maintenanceOn = true;
+    else if (cached === "0") maintenanceOn = false;
+    else {
+      maintenanceOn = await fetchMaintenanceMode();
+      if (maintenanceOn !== null) {
+        response.cookies.set(MAINT_COOKIE, maintenanceOn ? "1" : "0", {
+          sameSite: "lax",
+          path: "/",
+          maxAge: MAINT_COOKIE_MAX_AGE,
+        });
+      }
+    }
+
+    if (maintenanceOn) {
+      // Les admins passent (pour pouvoir désactiver la maintenance).
+      const cookieRole = request.cookies.get(ROLE_COOKIE)?.value;
+      let isAdmin = cookieRole === "ADMIN";
+      if (!isAdmin) {
+        const supabaseCheck = createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            cookies: {
+              getAll() {
+                return request.cookies.getAll();
+              },
+              setAll() {},
+            },
+          }
+        );
+        const {
+          data: { user: maintUser },
+        } = await supabaseCheck.auth.getUser();
+        if (maintUser) {
+          const r = await resolveUserRole(
+            maintUser.id,
+            maintUser.user_metadata?.role,
+            cookieRole
+          );
+          isAdmin = r === "ADMIN";
+        }
+      }
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL("/maintenance", request.url));
+      }
+    }
+  }
 
   if (!isProtectedRoute(pathname)) {
     return response;

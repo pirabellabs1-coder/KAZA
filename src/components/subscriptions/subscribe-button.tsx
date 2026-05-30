@@ -82,8 +82,30 @@ export function SubscribeButton({
         } else {
           router.refresh();
         }
-      } else {
-        toast.error(result.error ?? "Impossible d'activer l'abonnement.");
+        return;
+      }
+
+      // Mapping des codes d'erreur vers des messages utilisateur
+      switch (result.error) {
+        case "NOT_AUTHENTICATED":
+          router.push(
+            `/signup?plan=${encodeURIComponent(plan)}${signupRoleSuffix}`,
+          );
+          return;
+        case "ALREADY_SUBSCRIBED":
+          toast.error("Vous avez déjà un abonnement actif.");
+          return;
+        case "INSUFFICIENT_FUNDS":
+          toast.error(
+            "Solde wallet insuffisant. Redirection vers votre wallet...",
+          );
+          router.push("/owner/wallet");
+          return;
+        case "INTERNAL":
+          toast.error("Une erreur interne est survenue. Réessayez.");
+          return;
+        default:
+          toast.error(result.error ?? "Impossible d'activer l'abonnement.");
       }
     });
   };

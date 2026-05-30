@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-import { AdminSidebar } from "@/components/admin/sidebar";
+import { AdminSidebar, type AdminSidebarBadges } from "@/components/admin/sidebar";
 import { AdminHeader } from "@/components/admin/header";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,8 @@ interface AdminShellProps {
     lastName: string;
     email: string;
   };
+  badges?: AdminSidebarBadges;
+  notificationCount?: number;
   children: React.ReactNode;
 }
 
@@ -26,7 +28,12 @@ interface AdminShellProps {
  * - injection d'un bouton "Replier le menu" à gauche du header
  * - mobile : sheet déjà géré dans AdminHeader (burger)
  */
-export function AdminShell({ user, children }: AdminShellProps) {
+export function AdminShell({
+  user,
+  badges = {},
+  notificationCount = 0,
+  children,
+}: AdminShellProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -58,13 +65,13 @@ export function AdminShell({ user, children }: AdminShellProps) {
           collapsed ? "w-0 overflow-hidden" : "w-[260px]"
         }`}
       >
-        <AdminSidebar user={user} />
+        <AdminSidebar user={user} badges={badges} />
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header avec bouton toggle desktop intégré à gauche */}
         <div className="relative">
-          <AdminHeader user={user} notificationCount={5} />
+          <AdminHeader user={user} notificationCount={notificationCount} />
           <Button
             variant="ghost"
             size="icon"

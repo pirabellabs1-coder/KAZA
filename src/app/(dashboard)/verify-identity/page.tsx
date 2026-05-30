@@ -4,6 +4,8 @@ import { CheckCircle2, Clock, ShieldCheck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getMyVerification } from "@/actions/verification";
+import { createClient } from "@/lib/supabase/server";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 
 import { VerificationWizard } from "./verification-wizard";
 
@@ -19,6 +21,23 @@ export default async function VerifyIdentityPage() {
   } catch {
     current = null;
   }
+
+  // Récupère le rôle (pour les documents administratifs par rôle) et l'état de
+  // confirmation de l'email (source de vérité Supabase Auth).
+  const displayUser = await getCurrentDisplayUser();
+  let email = displayUser?.email ?? "";
+  let emailConfirmed = false;
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    email = user?.email ?? email;
+    emailConfirmed = Boolean(user?.email_confirmed_at);
+  } catch {
+    emailConfirmed = false;
+  }
+  const role = displayUser?.role ?? "TENANT";
 
   if (current?.status === "APPROVED") {
     return (
@@ -101,7 +120,11 @@ export default async function VerifyIdentityPage() {
         </div>
       ) : null}
 
-      <VerificationWizard />
+      <VerificationWizard
+        role={role}
+        email={email}
+        emailConfirmed={emailConfirmed}
+      />
     </div>
   );
 }

@@ -24,6 +24,8 @@ export interface AdminUser {
   reportsAgainst: number;
   trustScore: number;
   hasTwoFactor: boolean;
+  /** Classement dérivé (calculé côté backend) : VIP ou suspicion de fraude. */
+  flag?: "vip" | "fraud_suspect" | null;
 }
 
 export const STATUS_COLORS_USER: Record<UserStatus, string> = {
