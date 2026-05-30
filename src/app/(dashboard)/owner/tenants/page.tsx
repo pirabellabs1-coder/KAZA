@@ -23,5 +23,7 @@ export default async function OwnerTenantsPage() {
   }
 
   const tenants = await listOwnerTenants(user.id);
-  return <OwnerTenantsView tenants={tenants} />;
+  return (
+    <OwnerTenantsView tenants={tenants} detailHrefBase="/owner/tenants" />
+  );
 }
