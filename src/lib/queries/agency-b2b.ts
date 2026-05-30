@@ -14,9 +14,14 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 async function loose(): Promise<SupabaseClient> {
   return (await createClient()) as unknown as SupabaseClient;
+}
+
+function adminLoose(): SupabaseClient {
+  return createAdminClient() as unknown as SupabaseClient;
 }
 
 function fullName(first?: string | null, last?: string | null): string {
@@ -583,5 +588,268 @@ export async function getAgencyTenantDetail(
     };
   } catch {
     return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Fiche bail (détail) — scopée à l'agence
+// ---------------------------------------------------------------------------
+
+export interface RentalPaymentLine {
+  id: string;
+  amount: number;
+  status: string;
+  method: string | null;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+export interface AgencyRentalDetail {
+  id: string;
+  propertyId: string;
+  propertyTitle: string;
+  tenantId: string;
+  tenantName: string;
+  tenantEmail: string;
+  tenantPhone: string | null;
+  monthlyRent: number;
+  securityDeposit: number | null;
+  status: string;
+  startDate: string | null;
+  endDate: string | null;
+  contractUrl: string | null;
+  contractStatus: string | null;
+  payments: RentalPaymentLine[];
+  totalCollected: number;
+  latePayments: RentalPaymentLine[];
+}
+
+export async function getAgencyRentalDetail(
+  agencyId: string,
+  rentalId: string,
+): Promise<AgencyRentalDetail | null> {
+  if (!agencyId || !rentalId) return null;
+  try {
+    const supabase = await loose();
+
+    const { data: rental } = await supabase
+      .from("rentals")
+      .select(
+        "id, property_id, tenant_id, monthly_rent, security_deposit, status, start_date, end_date, contract_url",
+      )
+      .eq("id", rentalId)
+      .maybeSingle();
+    if (!rental) return null;
+    const r = rental as {
+      id: string;
+      property_id: string;
+      tenant_id: string;
+      monthly_rent: number;
+      security_deposit: number | null;
+      status: string;
+      start_date: string | null;
+      end_date: string | null;
+      contract_url: string | null;
+    };
+
+    // Vérifie que le bien appartient bien à l'agence courante
+    const { data: prop } = await supabase
+      .from("properties")
+      .select("title, owner_id")
+      .eq("id", r.property_id)
+      .maybeSingle();
+    const p = prop as { title: string; owner_id: string } | null;
+    if (!p || p.owner_id !== agencyId) return null;
+
+    // Locataire
+    const { data: tenant } = await supabase
+      .from("users")
+      .select("first_name, last_name, email, phone")
+      .eq("id", r.tenant_id)
+      .maybeSingle();
+    const t = tenant as {
+      first_name: string | null;
+      last_name: string | null;
+      email: string;
+      phone: string | null;
+    } | null;
+
+    // Paiements du bail
+    const { data: pays } = await supabase
+      .from("payments")
+      .select("id, amount, status, payment_method, payment_date, created_at")
+      .eq("rental_id", rentalId)
+      .order("created_at", { ascending: false });
+    const payments: RentalPaymentLine[] = (
+      (pays ?? []) as Array<{
+        id: string;
+        amount: number;
+        status: string;
+        payment_method: string | null;
+        payment_date: string | null;
+        created_at: string;
+      }>
+    ).map((x) => ({
+      id: x.id,
+      amount: Number(x.amount),
+      status: x.status,
+      method: x.payment_method,
+      paidAt: x.payment_date,
+      createdAt: x.created_at,
+    }));
+
+    const totalCollected = payments
+      .filter((x) => x.status === "COMPLETED")
+      .reduce((s, x) => s + x.amount, 0);
+    const latePayments = payments.filter(
+      (x) => x.status === "PENDING" || x.status === "FAILED",
+    );
+
+    // Contrat le plus récent
+    const { data: contract } = await supabase
+      .from("contracts")
+      .select("pdf_url, contract_pdf_url, status, created_at")
+      .eq("rental_id", rentalId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const c = contract as {
+      pdf_url: string | null;
+      contract_pdf_url: string | null;
+      status: string;
+    } | null;
+
+    return {
+      id: r.id,
+      propertyId: r.property_id,
+      propertyTitle: p.title,
+      tenantId: r.tenant_id,
+      tenantName: fullName(t?.first_name, t?.last_name),
+      tenantEmail: t?.email ?? "",
+      tenantPhone: t?.phone ?? null,
+      monthlyRent: Number(r.monthly_rent),
+      securityDeposit:
+        r.security_deposit != null ? Number(r.security_deposit) : null,
+      status: r.status,
+      startDate: r.start_date,
+      endDate: r.end_date,
+      contractUrl: r.contract_url ?? c?.pdf_url ?? c?.contract_pdf_url ?? null,
+      contractStatus: c?.status ?? null,
+      payments,
+      totalCollected,
+      latePayments,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Documents agence : contrats de bail (biens gérés) + contrats de mandat
+// Lecture via service role, strictement scopée aux biens de l'agence.
+// ---------------------------------------------------------------------------
+
+export interface AgencyDocument {
+  id: string;
+  kind: "BAIL" | "MANDAT";
+  label: string;
+  reference: string;
+  status: string;
+  url: string | null;
+  createdAt: string;
+}
+
+export async function listAgencyDocuments(
+  agencyId: string,
+): Promise<AgencyDocument[]> {
+  if (!agencyId) return [];
+  try {
+    const admin = adminLoose();
+
+    // Biens de l'agence
+    const { data: props } = await admin
+      .from("properties")
+      .select("id, title")
+      .eq("owner_id", agencyId);
+    const propList = (props ?? []) as Array<{ id: string; title: string }>;
+    const propTitle = new Map(propList.map((p) => [p.id, p.title]));
+
+    const docs: AgencyDocument[] = [];
+
+    // Contrats de bail sur les baux des biens de l'agence
+    if (propList.length > 0) {
+      const { data: rentals } = await admin
+        .from("rentals")
+        .select("id, property_id")
+        .in(
+          "property_id",
+          propList.map((p) => p.id),
+        );
+      const rentalRows = (rentals ?? []) as Array<{
+        id: string;
+        property_id: string;
+      }>;
+      const rentalProp = new Map(rentalRows.map((r) => [r.id, r.property_id]));
+
+      if (rentalRows.length > 0) {
+        const { data: contracts } = await admin
+          .from("contracts")
+          .select("id, rental_id, pdf_url, contract_pdf_url, status, created_at")
+          .in(
+            "rental_id",
+            rentalRows.map((r) => r.id),
+          )
+          .order("created_at", { ascending: false });
+
+        for (const c of (contracts ?? []) as Array<{
+          id: string;
+          rental_id: string;
+          pdf_url: string | null;
+          contract_pdf_url: string | null;
+          status: string;
+          created_at: string;
+        }>) {
+          const pid = rentalProp.get(c.rental_id) ?? "";
+          docs.push({
+            id: c.id,
+            kind: "BAIL",
+            label: propTitle.get(pid) ?? "Bail",
+            reference: "Contrat de bail",
+            status: c.status,
+            url: c.pdf_url ?? c.contract_pdf_url ?? null,
+            createdAt: c.created_at,
+          });
+        }
+      }
+    }
+
+    // Contrats de mandat (agency_mandates.contract_url)
+    const { data: mandates } = await admin
+      .from("agency_mandates")
+      .select("id, owner_name, status, contract_url, created_at")
+      .eq("agency_id", agencyId)
+      .order("created_at", { ascending: false });
+    for (const m of (mandates ?? []) as Array<{
+      id: string;
+      owner_name: string | null;
+      status: string;
+      contract_url: string | null;
+      created_at: string;
+    }>) {
+      docs.push({
+        id: m.id,
+        kind: "MANDAT",
+        label: m.owner_name || "Mandat",
+        reference: "Contrat de mandat",
+        status: m.status,
+        url: m.contract_url,
+        createdAt: m.created_at,
+      });
+    }
+
+    docs.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    return docs;
+  } catch {
+    return [];
   }
 }

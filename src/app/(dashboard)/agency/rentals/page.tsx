@@ -20,5 +20,7 @@ export default async function AgencyRentalsPage() {
   if (!ALLOWED.has(user.role)) redirect("/dashboard");
 
   const rentals = await listOwnerRentals(user.id);
-  return <OwnerRentalsView rentals={rentals} />;
+  return (
+    <OwnerRentalsView rentals={rentals} detailHrefBase="/agency/rentals" />
+  );
 }

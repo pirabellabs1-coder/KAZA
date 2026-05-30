@@ -8,7 +8,10 @@ import {
   Wallet,
 } from "lucide-react";
 
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -71,9 +74,17 @@ function durationLabel(startDate: string, endDate: string | null): string {
 
 interface OwnerRentalsViewProps {
   rentals: OwnerRental[];
+  /**
+   * Base d'URL de la fiche bail (ex: "/agency/rentals"). Si fournie, chaque
+   * carte affiche un lien « Voir le détail » vers `${detailHrefBase}/${id}`.
+   */
+  detailHrefBase?: string;
 }
 
-export function OwnerRentalsView({ rentals }: OwnerRentalsViewProps) {
+export function OwnerRentalsView({
+  rentals,
+  detailHrefBase,
+}: OwnerRentalsViewProps) {
   const [filter, setFilter] = useState<Filter>("ACTIVE");
 
   const counts = useMemo(() => {
@@ -213,6 +224,19 @@ export function OwnerRentalsView({ rentals }: OwnerRentalsViewProps) {
                     </p>
                   </div>
                 </div>
+
+                {detailHrefBase && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Link href={`${detailHrefBase}/${rental.id}`}>
+                      Voir le détail
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}
