@@ -48,9 +48,9 @@ export const metadata: Metadata = {
 
 const stats = [
   { value: 100, suffix: "%", label: "Identités vérifiées", description: "KYC obligatoire pour tous" },
-  { value: 0, label: "Fraude depuis le lancement", description: "Surveillance continue 24/7" },
-  { value: 256, label: "Chiffrement AES", description: "Standard bancaire militaire" },
-  { value: 1, label: "Audit indépendant", description: "Réalisé chaque année" },
+  { value: 24, suffix: "/7", label: "Surveillance anti-fraude", description: "Détection continue des comportements suspects" },
+  { value: 256, label: "Chiffrement AES", description: "Standard bancaire" },
+  { value: 100, suffix: "%", label: "Paiements sécurisés", description: "Séquestre & traçabilité" },
 ];
 
 const pillars = [
@@ -220,10 +220,10 @@ export default function SecuritePage() {
               KYC obligatoire, escrow garanti, contrats numériques OHADA,
               chiffrement AES-256, modération humaine et conformité APDP.
               <br />
-              Six piliers qui font de KAZA la plateforme immobilière la plus sûre
-              d&apos;Afrique de l&apos;Ouest.
+              Six piliers qui font de KAZA une plateforme immobilière sûre,
+              partout en Afrique.
               <br />
-              Zéro fraude depuis le lancement.
+              Surveillance anti-fraude permanente.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="bg-kaza-green hover:bg-kaza-green/90">

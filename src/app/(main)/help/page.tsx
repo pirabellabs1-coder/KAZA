@@ -431,7 +431,7 @@ export default function HelpPage() {
                       Tous systèmes opérationnels
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Aucun incident en cours · Mis à jour il y a 2 minutes
+                      Consultez l&apos;état en temps réel sur la page Statut
                     </p>
                   </div>
                 </div>

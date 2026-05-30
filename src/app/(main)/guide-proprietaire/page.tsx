@@ -55,10 +55,10 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { value: 8500, suffix: "+", label: "Propriétaires actifs", description: "Sur toute l'Afrique de l'Ouest" },
-  { value: 35, suffix: "%", prefix: "+", label: "Revenus moyens", description: "vs gestion traditionnelle" },
-  { value: 48, label: "Satisfaction", suffix: "/50", description: "Note moyenne propriétaires (4,8 / 5)" },
-  { value: 24, suffix: "/7", label: "Support dédié", description: "Réponse en moins de 2 heures" },
+  { value: 54, label: "Pays africains", description: "Couverture panafricaine" },
+  { value: 100, suffix: "%", label: "Annonces vérifiées", description: "Contrôle qualité systématique" },
+  { value: 0, suffix: " FCFA", label: "Inscription", description: "Publier une annonce est gratuit" },
+  { value: 24, suffix: "/7", label: "Support dédié", description: "Une équipe à votre écoute" },
 ];
 
 const whyKaza = [
@@ -274,7 +274,6 @@ export default function GuideProprietairePage() {
               <RevealOnScroll key={stat.label} delay={idx * 100}>
                 <StatCounter
                   value={stat.value}
-                  prefix={stat.prefix}
                   suffix={stat.suffix}
                   label={stat.label}
                   description={stat.description}
@@ -398,7 +397,8 @@ export default function GuideProprietairePage() {
               Les 6 règles d&apos;or pour louer rapidement
             </h2>
             <p className="mt-4 text-base text-muted-foreground">
-              Inspirées des 8 500 propriétaires qui réussissent sur KAZA.
+              Les bonnes pratiques pour louer plus vite et en toute sérénité sur
+              KAZA.
             </p>
           </div>
 
