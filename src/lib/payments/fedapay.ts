@@ -8,6 +8,7 @@ import {
   type PaymentStatus,
   PaymentProviderError,
   type WebhookEvent,
+  normalizeProviderMetadata,
 } from "./types";
 
 // =============================================================================
@@ -221,12 +222,14 @@ function parseWebhookEvent(body: unknown): WebhookEvent {
       reference?: string;
       amount?: number;
       status?: string;
+      custom_metadata?: unknown;
     };
     data?: {
       id?: number | string;
       reference?: string;
       amount?: number;
       status?: string;
+      custom_metadata?: unknown;
     };
   };
 
@@ -248,6 +251,7 @@ function parseWebhookEvent(body: unknown): WebhookEvent {
     paymentId,
     status,
     amount: typeof entity.amount === "number" ? entity.amount : 0,
+    metadata: normalizeProviderMetadata(entity.custom_metadata),
     raw: body,
   };
 }

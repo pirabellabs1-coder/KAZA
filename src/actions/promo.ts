@@ -346,18 +346,45 @@ export async function redeemPromo(
   const user = await getCurrentDisplayUser();
   if (!user) return { success: false, error: "Authentification requise." };
 
-  const validation = await validatePromoCode(code, context, user.id);
+  return redeemPromoForUser(code, context, amountDiscounted, user.id);
+}
+
+/**
+ * Variante de {@link redeemPromo} pour les contextes SANS session (webhooks de
+ * paiement, jobs). L'identifiant utilisateur est fourni explicitement et un
+ * client Supabase (typiquement le client admin) peut être injecté afin de
+ * contourner la RLS `insert own` qui s'appuie sur `auth.uid()`.
+ *
+ * IDEMPOTENCE : l'appelant DOIT garantir que cette fonction n'est invoquée
+ * qu'une seule fois par paiement (le webhook ne la déclenche qu'au passage
+ * PENDING → COMPLETED, état final qui court-circuite tout retraitement). En
+ * filet de sécurité supplémentaire, on revalide le code dans le contexte
+ * utilisateur, ce qui rejette une seconde redemption une fois le quota
+ * `per_user_limit` atteint.
+ *
+ * À appeler uniquement après un paiement confirmé.
+ */
+export async function redeemPromoForUser(
+  code: string,
+  context: PromoContext,
+  amountDiscounted: number,
+  userId: string,
+  client?: SupabaseClient,
+): Promise<ActionResult<{ redemptionId: string }>> {
+  if (!userId) return { success: false, error: "Utilisateur requis." };
+
+  const validation = await validatePromoCode(code, context, userId);
   if (!validation.valid || !validation.promoId) {
     return { success: false, error: promoReasonLabel(validation.reason) };
   }
 
-  const supabase = await getLooseClient();
+  const supabase = client ?? (await getLooseClient());
 
   const { data, error } = await supabase
     .from("promo_redemptions")
     .insert({
       promo_id: validation.promoId,
-      user_id: user.id,
+      user_id: userId,
       context,
       amount_discounted: Math.max(0, Math.round(amountDiscounted)),
     })

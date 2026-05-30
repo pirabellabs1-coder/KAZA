@@ -60,7 +60,41 @@ export interface WebhookEvent {
   paymentId: string;
   status: PaymentStatus;
   amount: number;
+  /**
+   * Metadonnees libres renvoyees par le provider (echo du `custom_metadata`
+   * FedaPay / `data` Kkiapay envoye a l'initiation). Sert notamment a
+   * retrouver le code promo (`promo_code` / `promo_discount`) et le `user_id`
+   * au moment de confirmer le paiement. Vide si le provider ne renvoie rien.
+   */
+  metadata: Record<string, string>;
   raw: unknown;
+}
+
+/**
+ * Normalise une valeur `custom_metadata` (FedaPay) / `data` (Kkiapay) renvoyee
+ * par un provider en `Record<string, string>`. Tolere aussi bien un objet deja
+ * parse qu'une chaine JSON. Toute valeur non-string est convertie via String();
+ * les valeurs null/undefined sont ignorees. Renvoie `{}` si la valeur est
+ * absente ou non parsable.
+ */
+export function normalizeProviderMetadata(
+  raw: unknown,
+): Record<string, string> {
+  let obj = raw;
+  if (typeof obj === "string") {
+    try {
+      obj = JSON.parse(obj);
+    } catch {
+      return {};
+    }
+  }
+  if (!obj || typeof obj !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+    if (v == null) continue;
+    out[k] = typeof v === "string" ? v : String(v);
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------

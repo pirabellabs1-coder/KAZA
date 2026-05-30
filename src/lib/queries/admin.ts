@@ -136,10 +136,20 @@ export async function listAllUsers(
     /** Filtrage statut KYC (PENDING/APPROVED/REJECTED/UNVERIFIED) */
     status?: AdminUserVerification | "all";
     search?: string;
+    /** Nombre max de lignes (défaut 100, borné à 500). */
     limit?: number;
+    /** Décalage pour la pagination (défaut 0). */
+    offset?: number;
   } = {},
 ): Promise<AdminUserRow[]> {
   const supabase = await createClient();
+
+  // Pagination : limite par défaut à 100 (au lieu d'un plafond dur de 500),
+  // bornée à [1, 500], avec un offset optionnel. Les appels existants qui ne
+  // passent ni limit ni offset restent fonctionnels (100 premières lignes).
+  const limit = Math.min(Math.max(filters.limit ?? 100, 1), 500);
+  const offset = Math.max(filters.offset ?? 0, 0);
+
   let q = supabase
     .from("users")
     .select(
@@ -148,7 +158,7 @@ export async function listAllUsers(
        rating_average, created_at, updated_at`,
     )
     .order("created_at", { ascending: false })
-    .limit(filters.limit ?? 500);
+    .range(offset, offset + limit - 1);
 
   if (filters.role && filters.role !== "all") {
     q = q.eq("role", filters.role);

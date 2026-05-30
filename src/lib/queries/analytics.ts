@@ -81,11 +81,15 @@ export async function getOwnerPropertyViews30d(ownerId: string): Promise<{
 }> {
   const supabase = await createClient();
 
-  // Récupère les biens de l'owner avec leur compte de vues
+  // Récupère les biens de l'owner avec leur compte de vues.
+  // Borné à 100 biens, triés par vues décroissantes (les plus consultés
+  // d'abord) pour éviter de charger un portefeuille illimité.
   const { data: props } = await (supabase as any)
     .from("properties")
     .select("id, title, views_count")
-    .eq("owner_id", ownerId);
+    .eq("owner_id", ownerId)
+    .order("views_count", { ascending: false })
+    .limit(100);
 
   const propsList = props ?? [];
   const propIds = propsList.map((p: any) => p.id);

@@ -15,6 +15,7 @@
 // =============================================================================
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/actions/notifications";
@@ -86,6 +87,36 @@ function normalizeTargetType(value: string): ReportTargetType {
 }
 
 // ---------------------------------------------------------------------------
+// Validation Zod de l'entrée publique `reportContent`
+// ---------------------------------------------------------------------------
+// On valide AVANT toute écriture. Le `targetType` et la `reason` acceptent le
+// vocabulaire UI étendu (scam, harassment, illegal…) qui est ensuite normalisé
+// vers les valeurs de la base. La normalisation conserve la logique métier
+// existante : la validation ne fait qu'ajouter un garde-fou sur les types.
+
+const reportContentSchema = z.object({
+  targetType: z.enum([
+    "property",
+    "review",
+    "user",
+    "message",
+    "other",
+  ]),
+  targetId: z.string().trim().min(1, "Cible du signalement manquante."),
+  reason: z.enum([
+    "fake",
+    "fraud",
+    "scam",
+    "inappropriate",
+    "harassment",
+    "illegal",
+    "spam",
+    "other",
+  ]),
+  details: z.string().trim().max(2000).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Server Actions publiques
 // ---------------------------------------------------------------------------
 
@@ -99,12 +130,17 @@ function normalizeTargetType(value: string): ReportTargetType {
 export async function reportContent(
   input: ReportContentInput,
 ): Promise<ActionResult> {
-  const targetType = normalizeTargetType(input.targetType);
-  const targetId = input.targetId?.trim();
-
-  if (!targetId) {
-    return { success: false, error: "Cible du signalement manquante." };
+  // Validation Zod en tête : rejette une entrée malformée avant tout accès BDD.
+  const parsed = reportContentSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? "Signalement invalide.",
+    };
   }
+
+  const targetType = normalizeTargetType(parsed.data.targetType);
+  const targetId = parsed.data.targetId.trim();
 
   const supabase = await createClient();
 
@@ -112,14 +148,14 @@ export async function reportContent(
     data: { user },
   } = await supabase.auth.getUser();
 
-  const details = input.details?.trim();
+  const details = parsed.data.details?.trim();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any).from("reports").insert({
     reporter_id: user?.id ?? null,
     target_type: targetType,
     target_id: targetId,
-    reason: normalizeReason(input.reason),
+    reason: normalizeReason(parsed.data.reason),
     details: details && details.length > 0 ? details : null,
     status: "PENDING",
   });

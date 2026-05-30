@@ -13,6 +13,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { z } from "zod";
+
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { writeAuditLog } from "@/lib/audit/write-log";
@@ -23,6 +25,26 @@ export interface RefundDecisionResult {
 }
 
 type Decision = "APPROVED" | "REJECTED";
+
+// ---------------------------------------------------------------------------
+// Validation Zod des entrées admin
+// ---------------------------------------------------------------------------
+// `id` DOIT être un UUID (clé primaire de `refund_requests`). La `note` est
+// libre mais bornée. Pour un rejet, le motif est requis (>= 3 caractères) car
+// il est communiqué à l'utilisateur.
+
+const approveSchema = z.object({
+  id: z.string().uuid("Identifiant de demande invalide."),
+  note: z.string().trim().max(1000).optional(),
+});
+
+const rejectSchema = z.object({
+  id: z.string().uuid("Identifiant de demande invalide."),
+  note: z
+    .string()
+    .trim()
+    .min(3, "Motif du refus requis (3 caracteres min)."),
+});
 
 /**
  * Coeur commun des decisions admin sur une demande de remboursement.
@@ -115,7 +137,14 @@ export async function approveRefund(
   id: string,
   note?: string,
 ): Promise<RefundDecisionResult> {
-  return decideRefund(id, "APPROVED", note);
+  const parsed = approveSchema.safeParse({ id, note });
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides.",
+    };
+  }
+  return decideRefund(parsed.data.id, "APPROVED", parsed.data.note);
 }
 
 /**
@@ -127,11 +156,12 @@ export async function rejectRefund(
   id: string,
   note: string,
 ): Promise<RefundDecisionResult> {
-  if (!note || note.trim().length < 3) {
+  const parsed = rejectSchema.safeParse({ id, note });
+  if (!parsed.success) {
     return {
       success: false,
-      error: "Motif du refus requis (3 caracteres min).",
+      error: parsed.error.issues[0]?.message ?? "Données invalides.",
     };
   }
-  return decideRefund(id, "REJECTED", note);
+  return decideRefund(parsed.data.id, "REJECTED", parsed.data.note);
 }

@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { kkiapayClient } from "@/lib/payments/kkiapay";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeReleaseDate, holdInEscrow } from "@/lib/escrow";
+import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
 
 // =============================================================================
 // Webhook Kkiapay
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient();
   const { data: payment, error: lookupErr } = await admin
     .from("payments")
-    .select("id, rental_id, status")
+    .select("id, rental_id, status, user_id")
     .eq("transaction_id", event.paymentId)
     .single();
 
@@ -99,6 +100,13 @@ export async function POST(req: NextRequest) {
       payment_date: newStatus === "COMPLETED" ? now : null,
     })
     .eq("id", payment.id);
+
+  // Code promo : redemption UNIQUEMENT au passage COMPLETED. Idempotence
+  // garantie par le garde `FINAL_STATUSES` (paiement final = jamais retraite).
+  // Best-effort : un echec ici ne casse pas le traitement du paiement.
+  if (newStatus === "COMPLETED") {
+    await redeemPromoOnComplete(event, payment.user_id, admin);
+  }
 
   // Kkiapay envoie `payment.success` ou similaire en cas d'approbation.
   if (

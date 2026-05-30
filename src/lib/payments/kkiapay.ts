@@ -8,6 +8,7 @@ import {
   type PaymentStatus,
   PaymentProviderError,
   type WebhookEvent,
+  normalizeProviderMetadata,
 } from "./types";
 
 // =============================================================================
@@ -170,7 +171,7 @@ function parseWebhookEvent(body: unknown): WebhookEvent {
     id?: string;
     status?: string;
     amount?: number;
-    data?: Record<string, unknown>;
+    data?: unknown;
   };
 
   const paymentId = payload.transactionId ?? payload.id ?? "";
@@ -187,6 +188,7 @@ function parseWebhookEvent(body: unknown): WebhookEvent {
     paymentId,
     status: mapKkiapayStatus(payload.status ?? "PENDING"),
     amount: typeof payload.amount === "number" ? payload.amount : 0,
+    metadata: normalizeProviderMetadata(payload.data),
     raw: body,
   };
 }

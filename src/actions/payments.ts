@@ -5,7 +5,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
 import type { PaymentProvider } from "@/lib/payments/types";
 import { validatePromoCode, computeDiscount } from "@/lib/queries/promo";
-import { redeemPromo } from "@/actions/promo";
 
 // =============================================================================
 // KAZA - Server Actions Paiements
@@ -145,18 +144,14 @@ export async function initiateRentPayment(
       };
     }
 
-    // Enregistre l'utilisation du code promo (best-effort : un échec ici ne
-    // doit pas casser le paiement déjà initié).
-    if (appliedPromoCode && discount > 0) {
-      const redeemResult = await redeemPromo(
-        appliedPromoCode,
-        "RESERVATION",
-        discount,
-      );
-      if (!redeemResult.success) {
-        console.error("[payments] redeemPromo:", redeemResult.error);
-      }
-    }
+    // NOTE : on n'enregistre PLUS la redemption du code promo ici. Tant que le
+    // paiement est PENDING, rien ne garantit qu'il aboutira ; compter la
+    // redemption + le quota dès l'initiation les fausserait en cas d'échec.
+    // Le code promo et le montant remisé sont propagés au provider via
+    // `metadata` (promo_code / promo_discount) et la redemption est désormais
+    // enregistrée par le webhook (FedaPay / Kkiapay) UNIQUEMENT au passage du
+    // paiement à COMPLETED. Voir `redeemPromoForUser` + les routes
+    // `src/app/api/webhooks/*`.
 
     return {
       success: true,
