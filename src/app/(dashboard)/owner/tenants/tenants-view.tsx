@@ -26,9 +26,18 @@ function formatFcfa(value: number): string {
 
 interface OwnerTenantsViewProps {
   tenants: OwnerTenant[];
+  /**
+   * Base d'URL de la fiche locataire (ex: "/agency/tenants"). Si fournie, le
+   * bouton « Voir profil » devient un lien vers `${detailHrefBase}/${id}`.
+   * Absent (espace propriétaire) → comportement inchangé.
+   */
+  detailHrefBase?: string;
 }
 
-export function OwnerTenantsView({ tenants }: OwnerTenantsViewProps) {
+export function OwnerTenantsView({
+  tenants,
+  detailHrefBase,
+}: OwnerTenantsViewProps) {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -91,6 +100,7 @@ export function OwnerTenantsView({ tenants }: OwnerTenantsViewProps) {
             <TenantCard
               key={t.id}
               tenant={t}
+              detailHrefBase={detailHrefBase}
               onMessage={() => handleMessage(t)}
             />
           ))}
@@ -103,9 +113,10 @@ export function OwnerTenantsView({ tenants }: OwnerTenantsViewProps) {
 interface TenantCardProps {
   tenant: OwnerTenant;
   onMessage: () => void;
+  detailHrefBase?: string;
 }
 
-function TenantCard({ tenant, onMessage }: TenantCardProps) {
+function TenantCard({ tenant, onMessage, detailHrefBase }: TenantCardProps) {
   const initials =
     getInitials(tenant.firstName || tenant.email, tenant.lastName || " ") ||
     "?";
@@ -173,14 +184,20 @@ function TenantCard({ tenant, onMessage }: TenantCardProps) {
               Message
             </Link>
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={onMessage}
-          >
-            Voir profil
-          </Button>
+          {detailHrefBase ? (
+            <Button asChild variant="outline" size="sm" className="flex-1">
+              <Link href={`${detailHrefBase}/${tenant.id}`}>Voir profil</Link>
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={onMessage}
+            >
+              Voir profil
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

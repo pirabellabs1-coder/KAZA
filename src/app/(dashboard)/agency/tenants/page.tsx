@@ -22,5 +22,7 @@ export default async function AgencyTenantsPage() {
   // owner_id des biens gérés = id du compte agence : on réutilise la requête
   // propriétaire, paramétrée par l'id utilisateur courant.
   const tenants = await listOwnerTenants(user.id);
-  return <OwnerTenantsView tenants={tenants} />;
+  return (
+    <OwnerTenantsView tenants={tenants} detailHrefBase="/agency/tenants" />
+  );
 }
