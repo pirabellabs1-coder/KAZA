@@ -62,41 +62,24 @@ interface SessionItem {
   icon: typeof Monitor;
 }
 
+// Aucune session fictive : on n'affiche que la session courante (réelle), sans
+// localisation/IP inventées. Le suivi multi-appareils détaillé sera branché
+// quand l'infrastructure de sessions sera disponible.
 const SESSIONS: SessionItem[] = [
   {
-    id: "s1",
-    device: "Windows 11",
-    browser: "Chrome 138",
-    location: "Cotonou, Bénin",
+    id: "current",
+    device: "Cet appareil",
+    browser: "Navigateur courant",
+    location: "Session active",
     lastActive: "Actif maintenant",
     current: true,
     icon: Monitor,
   },
-  {
-    id: "s2",
-    device: "iPhone 15",
-    browser: "Safari Mobile",
-    location: "Porto-Novo, Bénin",
-    lastActive: "il y a 2 heures",
-    icon: Smartphone,
-  },
-  {
-    id: "s3",
-    device: "macOS Sonoma",
-    browser: "Firefox 129",
-    location: "Abidjan, Côte d'Ivoire",
-    lastActive: "il y a 3 jours",
-    icon: Monitor,
-  },
 ];
 
-const LOGIN_HISTORY = [
-  { date: "26/05/2026 09:42", ip: "102.16.45.12", browser: "Chrome / Windows" },
-  { date: "25/05/2026 18:11", ip: "102.16.45.12", browser: "Chrome / Windows" },
-  { date: "24/05/2026 14:30", ip: "41.203.78.221", browser: "Safari / iOS" },
-  { date: "23/05/2026 21:05", ip: "102.16.45.12", browser: "Firefox / macOS" },
-  { date: "22/05/2026 08:50", ip: "102.16.45.12", browser: "Chrome / Windows" },
-];
+// Pas d'historique de connexion fabriqué : vide tant que le suivi réel n'est
+// pas branché (empty-state honnête affiché dans le rendu).
+const LOGIN_HISTORY: Array<{ date: string; ip: string; browser: string }> = [];
 
 export function SecurityClient() {
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
@@ -289,15 +272,27 @@ export function SecurityClient() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {LOGIN_HISTORY.map((row) => (
-                <TableRow key={row.date}>
-                  <TableCell className="text-sm">{row.date}</TableCell>
-                  <TableCell className="text-sm font-mono text-muted-foreground">
-                    {row.ip}
+              {LOGIN_HISTORY.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="py-6 text-center text-sm text-muted-foreground"
+                  >
+                    L&apos;historique détaillé de vos connexions sera bientôt
+                    disponible.
                   </TableCell>
-                  <TableCell className="text-sm">{row.browser}</TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                LOGIN_HISTORY.map((row) => (
+                  <TableRow key={row.date}>
+                    <TableCell className="text-sm">{row.date}</TableCell>
+                    <TableCell className="text-sm font-mono text-muted-foreground">
+                      {row.ip}
+                    </TableCell>
+                    <TableCell className="text-sm">{row.browser}</TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
           <Separator className="my-4" />
