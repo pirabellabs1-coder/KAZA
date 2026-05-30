@@ -84,18 +84,22 @@ const studentNav: NavItem[] = [
 
 const agencyNav: NavItem[] = [
   { href: "/agency", label: "Vue d'ensemble", icon: LayoutDashboard },
-  { href: "/agency/team", label: "Équipe", icon: Users },
   { href: "/agency/portfolio", label: "Portefeuille", icon: Building2 },
-  { href: "/agency/leads", label: "Leads & CRM", icon: HandCoins },
+  { href: "/owner/properties", label: "Mes annonces", icon: Home },
+  { href: "/agency/tenants", label: "Locataires", icon: Users },
+  { href: "/agency/rentals", label: "Baux & locations", icon: HandCoins },
+  { href: "/agency/visits", label: "Visites", icon: CalendarCheck },
+  { href: "/agency/payments", label: "Loyers & encaissements", icon: Receipt },
+  { href: "/agency/leads", label: "Leads & CRM", icon: MessageSquare },
+  { href: "/agency/team", label: "Équipe", icon: Users },
   { href: "/agency/calendar", label: "Agenda équipe", icon: CalendarCheck },
   { href: "/agency/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/agency/reports", label: "Rapports", icon: ClipboardList },
   { href: "/agency/billing", label: "Facturation", icon: CreditCard },
   { href: "/agency/wallet", label: "Wallet & retraits", icon: Wallet },
-  { href: "/agency/settings", label: "Paramètres agence", icon: Settings },
-  { href: "/owner/properties", label: "Mes annonces", icon: Home },
   { href: "/contracts", label: "Contrats", icon: FileText },
   { href: "/contracts/templates", label: "Modèles contrats", icon: FileText },
+  { href: "/agency/settings", label: "Paramètres agence", icon: Settings },
 ];
 
 const roleNavMap: Record<string, NavItem[]> = {
