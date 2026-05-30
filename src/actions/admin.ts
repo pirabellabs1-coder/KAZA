@@ -17,8 +17,13 @@
 
 import "server-only";
 
+import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { sendEmail } from "@/lib/notifications/resend";
 import { writeAuditLog } from "@/lib/audit/write-log";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -382,4 +387,256 @@ export async function resolveDispute(
 
   const emailSent = await trySendEmail(input.plaintiffEmail, subject, html);
   return { success: true, emailSent };
+}
+
+// ===========================================================================
+// 7. Modération des agences B2B (users où role = 'AGENCY')
+// ===========================================================================
+//
+// Ces actions écrivent réellement dans `public.users` via le client
+// service_role (bypass RLS) après vérification du rôle ADMIN du caller.
+// Le statut d'une agence est dérivé côté affichage (cf. /admin/agencies)
+// depuis `verification_status` :
+//   - APPROVED  → ACTIVE
+//   - REJECTED  → SUSPENDED
+//   - PENDING / UNVERIFIED → KYC en attente
+// ===========================================================================
+
+/** Convention de retour homogène avec les autres actions du projet. */
+export type AgencyActionResult =
+  | { success: true }
+  | { success: false; error: string };
+
+/** Vérifie que le caller est admin. Renvoie l'id admin en cas de succès. */
+async function assertAdmin(): Promise<
+  { ok: true; adminId: string } | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { ok: false, error: "Non authentifié." };
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if ((profile as { role?: string } | null)?.role !== "ADMIN") {
+    return { ok: false, error: "Accès réservé aux administrateurs." };
+  }
+
+  return { ok: true, adminId: user.id };
+}
+
+/**
+ * Récupère le profil agence ciblé (nom + email) et garantit que la cible
+ * est bien une agence. Utilise le service_role pour fiabiliser la lecture.
+ */
+async function loadAgency(
+  admin: SupabaseClient,
+  userId: string,
+): Promise<
+  | { ok: true; name: string; email: string }
+  | { ok: false; error: string }
+> {
+  const { data, error } = await admin
+    .from("users")
+    .select("first_name, last_name, email, role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return { ok: false, error: "Agence introuvable." };
+  }
+
+  const row = data as {
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
+    role: string | null;
+  };
+
+  if (row.role !== "AGENCY") {
+    return { ok: false, error: "Cet utilisateur n'est pas une agence." };
+  }
+
+  const name =
+    `${row.first_name ?? ""} ${row.last_name ?? ""}`.trim() ||
+    (row.email ?? "Agence");
+
+  return { ok: true, name, email: row.email ?? "" };
+}
+
+/** Best-effort : notification in-app pour l'agence (jamais throw). */
+async function notifyAgency(
+  admin: SupabaseClient,
+  userId: string,
+  type: string,
+  title: string,
+  body: string,
+): Promise<void> {
+  try {
+    await admin.from("notifications").insert({
+      user_id: userId,
+      type,
+      title,
+      body,
+      link: "/agency/settings",
+    });
+  } catch (err) {
+    console.warn("[admin.agency] notification skipped:", err);
+  }
+}
+
+/**
+ * Active / désactive le badge "vérifiée" d'une agence (KYC).
+ *  - verified=true  → is_verified=true, verification_status='APPROVED'
+ *  - verified=false → is_verified=false, verification_status='UNVERIFIED'
+ */
+export async function setAgencyVerified(
+  userId: string,
+  verified: boolean,
+): Promise<AgencyActionResult> {
+  if (!userId) return { success: false, error: "Identifiant manquant." };
+
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  const agency = await loadAgency(admin, userId);
+  if (!agency.ok) return { success: false, error: agency.error };
+
+  const { error } = await admin
+    .from("users")
+    .update({
+      is_verified: verified,
+      verification_status: verified ? "APPROVED" : "UNVERIFIED",
+    })
+    .eq("id", userId);
+
+  if (error) {
+    return {
+      success: false,
+      error: "Impossible de mettre à jour le statut de vérification.",
+    };
+  }
+
+  await notifyAgency(
+    admin,
+    userId,
+    verified ? "agency_verified" : "agency_unverified",
+    verified ? "Agence vérifiée" : "Vérification retirée",
+    verified
+      ? "Votre agence a été vérifiée par l'équipe KAZA. Le badge de confiance est activé."
+      : "Le badge de vérification de votre agence a été retiré. Contactez le support pour en savoir plus.",
+  );
+
+  await writeAuditLog({
+    action: verified ? "AGENCY_VERIFIED" : "AGENCY_UNVERIFIED",
+    targetType: "AGENCY",
+    targetId: userId,
+    targetLabel: agency.name,
+  });
+
+  revalidatePath("/admin/agencies");
+  revalidatePath("/admin/audit-log");
+
+  return { success: true };
+}
+
+/**
+ * Suspend ou réactive une agence.
+ *  - "SUSPEND"   → verification_status='REJECTED' (affiché "Suspendu")
+ *  - "ACTIVATE"  → verification_status='APPROVED', is_verified=true
+ */
+export async function setAgencyStatus(
+  userId: string,
+  action: "SUSPEND" | "ACTIVATE",
+  reason?: string,
+): Promise<AgencyActionResult> {
+  if (!userId) return { success: false, error: "Identifiant manquant." };
+  if (action !== "SUSPEND" && action !== "ACTIVATE") {
+    return { success: false, error: "Action invalide." };
+  }
+
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  const agency = await loadAgency(admin, userId);
+  if (!agency.ok) return { success: false, error: agency.error };
+
+  const suspend = action === "SUSPEND";
+
+  const { error } = await admin
+    .from("users")
+    .update(
+      suspend
+        ? { verification_status: "REJECTED" }
+        : { verification_status: "APPROVED", is_verified: true },
+    )
+    .eq("id", userId);
+
+  if (error) {
+    return {
+      success: false,
+      error: suspend
+        ? "Impossible de suspendre l'agence."
+        : "Impossible de réactiver l'agence.",
+    };
+  }
+
+  const trimmedReason = reason?.trim() || undefined;
+
+  await notifyAgency(
+    admin,
+    userId,
+    suspend ? "agency_suspended" : "agency_reactivated",
+    suspend ? "Agence suspendue" : "Agence réactivée",
+    suspend
+      ? trimmedReason
+        ? `Votre agence a été suspendue. Motif : ${trimmedReason}`
+        : "Votre agence a été suspendue par l'équipe KAZA. Contactez le support."
+      : "Votre agence a été réactivée. Vous pouvez de nouveau utiliser tous les services KAZA.",
+  );
+
+  // Email best-effort à l'agence lors d'une suspension (template existant).
+  if (suspend && agency.email) {
+    const subject = "Votre agence KAZA a été suspendue";
+    const html = layout(
+      `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Suspension de votre agence</h2>
+      <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
+        Bonjour ${esc(agency.name)},
+      </p>
+      <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
+        Nous vous informons que votre agence a été suspendue sur KAZA. Pendant cette période,
+        vos annonces ne sont plus mises en avant et certains services sont restreints.
+      </p>
+      ${trimmedReason ? reasonBlock(trimmedReason) : ""}
+      <p style="margin:16px 0; line-height:1.6; font-size:15px;">
+        Pour contester cette décision ou obtenir des précisions, contactez notre équipe.
+      </p>
+      ${ctaButton("Contacter le support", `${APP_URL}/contact`)}`,
+      "Suspension de votre agence KAZA",
+    );
+    await trySendEmail(agency.email, subject, html);
+  }
+
+  await writeAuditLog({
+    action: suspend ? "AGENCY_SUSPENDED" : "AGENCY_REACTIVATED",
+    targetType: "AGENCY",
+    targetId: userId,
+    targetLabel: agency.name,
+    reason: trimmedReason,
+  });
+
+  revalidatePath("/admin/agencies");
+  revalidatePath("/admin/audit-log");
+
+  return { success: true };
 }

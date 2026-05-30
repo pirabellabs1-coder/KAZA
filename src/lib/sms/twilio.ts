@@ -1,15 +1,20 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Twilio SMS Helper (placeholder)
+// KAZA - Twilio SMS Helper
 // Wave 2 - Aminata Traoré
 //
-// Helper minimaliste pour l'envoi de SMS via Twilio. Tant que les credentials
-// Twilio ne sont pas configurés (TWILIO_ACCOUNT_SID), on tombe sur un mode
-// "DEV" qui logge le SMS dans la console et retourne un message id factice.
+// Helper d'envoi de SMS via l'API Twilio Programmable Messaging
+// (POST /2010-04-01/Accounts/{SID}/Messages.json, Basic auth).
 //
-// L'appel réel Twilio (POST /2010-04-01/Accounts/{SID}/Messages.json) est à
-// brancher quand la décision sera prise (Twilio Programmable SMS ou Verify API).
+// Comportement selon les credentials :
+//   - Credentials présents (SID + token + numéro émetteur) → appel API réel,
+//     on retourne le `sid` Twilio.
+//   - Credentials absents EN DÉVELOPPEMENT (NODE_ENV !== 'production') → mode
+//     "DEV" : on logge le SMS en console et on retourne un succès simulé
+//     explicite (messageId préfixé "dev-").
+//   - Credentials absents EN PRODUCTION → échec explicite { success:false } :
+//     on ne prétend jamais avoir envoyé le SMS.
 // =============================================================================
 
 import crypto from "node:crypto";
@@ -20,46 +25,87 @@ export interface SmsResult {
   error?: string;
 }
 
+/** Erreur de configuration affichée quand les credentials manquent. */
+const MISSING_CREDS_ERROR =
+  "Service SMS indisponible (configuration Twilio manquante). Réessayez plus tard.";
+
 /**
- * Envoie un SMS via Twilio. En l'absence de credentials, log le contenu en
- * console (mode DEV) — pratique pour tester le tunnel d'OTP sans facturation.
+ * Envoie un SMS via Twilio. En l'absence de credentials :
+ *   - en dev, log le contenu en console et retourne un succès simulé ;
+ *   - en production, retourne un échec explicite (jamais de faux succès).
  *
  * @param to     Numéro destinataire au format E.164 (+22996123456).
  * @param message Texte du SMS (max ~160 caractères pour un segment unique).
  */
 export async function sendSms(to: string, message: string): Promise<SmsResult> {
-  // Mode DEV : pas de credentials → on logge le SMS et on retourne un id factice.
-  if (!process.env.TWILIO_ACCOUNT_SID) {
-    console.log("[SMS DEV]", to, "→", message);
-    return {
-      success: true,
-      messageId: "dev-" + crypto.randomBytes(4).toString("hex"),
-    };
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const fromNumber = process.env.TWILIO_PHONE_NUMBER;
+
+  // Credentials incomplets : dev → succès simulé, prod → échec explicite.
+  if (!accountSid || !authToken || !fromNumber) {
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[SMS DEV]", to, "→", message);
+      return {
+        success: true,
+        messageId: "dev-" + crypto.randomBytes(4).toString("hex"),
+      };
+    }
+    console.error(
+      "[SMS] Credentials Twilio manquants en production — envoi impossible."
+    );
+    return { success: false, error: MISSING_CREDS_ERROR };
   }
 
-  // TODO: appel API Twilio réel
-  // const auth = Buffer.from(
-  //   `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`
-  // ).toString("base64");
-  // const url = `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`;
-  // const body = new URLSearchParams({
-  //   To: to,
-  //   From: process.env.TWILIO_PHONE_NUMBER!,
-  //   Body: message,
-  // });
-  // const res = await fetch(url, {
-  //   method: "POST",
-  //   headers: {
-  //     Authorization: `Basic ${auth}`,
-  //     "Content-Type": "application/x-www-form-urlencoded",
-  //   },
-  //   body,
-  // });
-  // const json = await res.json();
-  // if (!res.ok) return { success: false, error: json.message ?? "Erreur Twilio" };
-  // return { success: true, messageId: json.sid };
+  // Appel API Twilio réel.
+  const auth = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const body = new URLSearchParams({
+    From: fromNumber,
+    To: to,
+    Body: message,
+  });
 
-  return { success: true, messageId: "live-todo" };
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
+      body,
+    });
+
+    const json = (await res.json().catch(() => null)) as {
+      sid?: string;
+      message?: string;
+      code?: number;
+    } | null;
+
+    if (!res.ok) {
+      const errMsg =
+        json?.message ?? `Erreur Twilio (HTTP ${res.status}).`;
+      console.error("[SMS] Échec Twilio:", res.status, errMsg);
+      return { success: false, error: errMsg };
+    }
+
+    if (!json?.sid) {
+      console.error("[SMS] Réponse Twilio sans sid:", json);
+      return { success: false, error: "Réponse Twilio invalide." };
+    }
+
+    return { success: true, messageId: json.sid };
+  } catch (err) {
+    console.error(
+      "[SMS] Erreur réseau lors de l'appel Twilio:",
+      err instanceof Error ? err.message : err
+    );
+    return {
+      success: false,
+      error: "Impossible de contacter le service SMS. Réessayez dans un instant.",
+    };
+  }
 }
 
 /**

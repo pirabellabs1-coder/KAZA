@@ -37,12 +37,15 @@ import { PlusPricingToggle } from "./pricing-toggle";
 export const metadata: Metadata = {
   title: "KAZA Plus — l'expérience premium de l'immobilier",
   description:
-    "KAZA Plus : boost mensuel, analytics privées, support prioritaire, identité validée en express, stockage illimité et concierge personnel. 9 900 FCFA/mois ou 99 000 FCFA/an (2 mois offerts).",
+    "KAZA Plus : boost mensuel, analytics privées, support prioritaire et concierge personnel. À partir de 9 900 FCFA/mois.",
+  alternates: { canonical: "/plus" },
   openGraph: {
     title: "KAZA Plus — l'expérience premium",
     description:
       "Tout KAZA, en mieux. 9 900 FCFA/mois ou 99 000 FCFA/an (2 mois offerts).",
+    url: "/plus",
     type: "website",
+    images: ["/images/hero-bg.jpg"],
   },
 };
 

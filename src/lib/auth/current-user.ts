@@ -22,9 +22,17 @@ const VALID_ROLES: AuthRole[] = [
 ];
 
 function coerceRole(value: unknown): AuthRole {
-  return typeof value === "string" && (VALID_ROLES as string[]).includes(value)
-    ? (value as AuthRole)
-    : "TENANT";
+  if (typeof value === "string" && (VALID_ROLES as string[]).includes(value)) {
+    return value as AuthRole;
+  }
+  // Rôle absent/corrompu : on retombe sur le rôle le moins privilégié (TENANT)
+  // mais on TRACE l'événement — un ADMIN ne doit jamais être rétrogradé en silence.
+  if (value !== null && value !== undefined && value !== "") {
+    console.error(
+      `[auth] Rôle utilisateur invalide rencontré: "${String(value)}" — fallback TENANT.`,
+    );
+  }
+  return "TENANT";
 }
 
 /**

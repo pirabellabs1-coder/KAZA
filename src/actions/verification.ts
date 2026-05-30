@@ -53,6 +53,12 @@ const OTP_TTL_MINUTES = 10;
 /** Nombre maximum de tentatives de saisie d'un OTP avant blocage. */
 const OTP_MAX_ATTEMPTS = 5;
 
+/** Nombre maximum d'OTP qu'un utilisateur peut demander sur 24h (anti-abus). */
+const OTP_MAX_PER_DAY = 5;
+
+/** Fenêtre de throttling en millisecondes (24h). */
+const OTP_THROTTLE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 /** Validation minimale d'un numéro de téléphone (format international). */
 function isValidPhone(phone: string): boolean {
   // E.164 : '+' suivi de 8 à 15 chiffres. On tolère les espaces qui seront strippés.
@@ -94,6 +100,30 @@ export async function requestPhoneOtp(
 
   if (!user) {
     return { success: false, error: "Vous devez être connecté." };
+  }
+
+  // Throttle anti-abus : max OTP_MAX_PER_DAY OTP par utilisateur sur 24h.
+  // On compte les lignes `phone_otps` déjà émises par ce user sur la fenêtre
+  // glissante (chaque demande insère une ligne avec `created_at`).
+  const sinceIso = new Date(Date.now() - OTP_THROTTLE_WINDOW_MS).toISOString();
+  const { count: recentCount, error: countError } = await supabase
+    .from("phone_otps")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", sinceIso);
+
+  if (countError) {
+    return {
+      success: false,
+      error: "Impossible de vérifier les demandes récentes. Réessayez.",
+    };
+  }
+
+  if ((recentCount ?? 0) >= OTP_MAX_PER_DAY) {
+    return {
+      success: false,
+      error: `Limite atteinte : ${OTP_MAX_PER_DAY} codes maximum par 24 heures. Réessayez plus tard.`,
+    };
   }
 
   // Génère un code à 6 chiffres + hash SHA-256.

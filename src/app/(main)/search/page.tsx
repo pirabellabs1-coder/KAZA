@@ -58,10 +58,77 @@ import { CountryFlag, GlobeFlag } from "@/components/shared/country-flag";
 import { PageTracker } from "@/components/analytics/page-tracker";
 import { SearchSaveActions } from "@/components/property/search-save-actions";
 
-export const metadata: Metadata = {
-  title: "Rechercher un logement en Afrique",
-  description:
-    "Annonces immobilières vérifiées partout en Afrique. Filtres avancés par pays, ville, quartier, prix et équipements.",
+// SEO longue traîne : le titre et la description s'adaptent aux filtres de
+// l'URL (pays / ville / type / budget) pour cibler des requêtes précises type
+// « Appartements à Dakar ». Fallback générique si aucun filtre.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+
+  const selectedCountry =
+    params.country && params.country !== "all"
+      ? getCountryByCode(params.country)
+      : undefined;
+  const selectedCity = selectedCountry?.cities.find(
+    (c) => c.slug === params.city,
+  );
+  const cityName = selectedCity?.name ?? params.q?.trim();
+  const countryName = selectedCountry?.name;
+
+  const normalizedType = normalizePropertyType(params.type);
+  const typeLabel = normalizedType
+    ? METADATA_TYPE_LABELS[normalizedType]
+    : undefined;
+  const maxPriceNum = params.maxPrice ? Number(params.maxPrice) : undefined;
+  const hasMaxPrice =
+    maxPriceNum !== undefined && Number.isFinite(maxPriceNum) && maxPriceNum > 0;
+
+  const noun = typeLabel ?? "Logements";
+  const place = cityName
+    ? ` à ${cityName}`
+    : countryName
+      ? ` en ${countryName}`
+      : "";
+
+  let title: string;
+  let description: string;
+
+  if (cityName || countryName || typeLabel) {
+    title = `${noun}${place} - KAZA`;
+    description = `${noun} à louer${place} : annonces immobilières vérifiées${
+      hasMaxPrice ? ` jusqu'à ${formatFcfa(maxPriceNum!)}` : ""
+    }. Filtrez par quartier, prix et équipements sur KAZA.`;
+  } else {
+    title = "Rechercher un logement en Afrique";
+    description =
+      "Annonces immobilières vérifiées partout en Afrique. Filtres avancés par pays, ville, quartier, prix et équipements.";
+  }
+
+  return {
+    title,
+    description: description.slice(0, 160),
+    alternates: { canonical: "/search" },
+    openGraph: {
+      title,
+      description: description.slice(0, 160),
+      url: "/search",
+      type: "website",
+    },
+  };
+}
+
+// Libellés FR des types de bien pour les métadonnées SEO (singulier→pluriel).
+const METADATA_TYPE_LABELS: Record<string, string> = {
+  APARTMENT: "Appartements",
+  HOUSE: "Maisons",
+  VILLA: "Villas",
+  STUDIO: "Studios",
+  ROOM: "Chambres",
+  COMMERCIAL: "Bureaux & commerces",
+  LAND: "Terrains",
 };
 
 // -----------------------------------------------------------------------------

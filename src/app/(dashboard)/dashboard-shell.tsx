@@ -85,12 +85,21 @@ export function DashboardShell({
     const supabase = createClient();
 
     async function refreshCount() {
-      const { count } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .is("read_at", null);
-      setUnreadCount(count ?? 0);
+      // try/catch : un echec reseau ne doit pas faire planter le shell, on
+      // conserve simplement le dernier compteur connu.
+      try {
+        const { count } = await supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .is("read_at", null);
+        setUnreadCount(count ?? 0);
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.error("[dashboard-shell] refreshCount:", err);
+        }
+      }
     }
 
     const channel = supabase
@@ -107,7 +116,16 @@ export function DashboardShell({
           void refreshCount();
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        // Gestion d'erreur Realtime : on log les etats degradant sans geler
+        // l'UI. Le compteur reste sur sa derniere valeur connue (SSR ou refetch).
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.error("[dashboard-shell] Realtime notifications:", status);
+          }
+        }
+      });
 
     return () => {
       void supabase.removeChannel(channel);

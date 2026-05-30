@@ -32,11 +32,14 @@ export const metadata: Metadata = {
   title: "FAQ — Questions fréquentes | KAZA",
   description:
     "Trouvez les réponses aux questions les plus fréquentes sur KAZA : fonctionnement, sécurité, paiements, colocations, contrats et plus.",
+  alternates: { canonical: "/faq" },
   openGraph: {
     title: "FAQ KAZA — Toutes vos questions, nos réponses",
     description:
       "Tout ce que vous devez savoir sur KAZA, la plateforme immobilière de référence en Afrique de l'Ouest.",
+    url: "/faq",
     type: "website",
+    images: ["/images/hero-bg.jpg"],
   },
 };
 
@@ -377,8 +380,30 @@ const CONTACT_OPTIONS = [
 ];
 
 export default function FaqPage() {
+  // JSON-LD FAQPage construit depuis les vraies Q/R des catégories — permet à
+  // Google d'afficher les questions en featured snippets / rich results.
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: CATEGORIES.flatMap((cat) =>
+      cat.items.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
+        },
+      })),
+    ),
+  };
+
   return (
     <div className="overflow-hidden">
+      {/* JSON-LD FAQPage (rich results Google) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* ===== HERO ================================================== */}
       <AnimatedGradientBg className="relative flex min-h-[60vh] items-center">
         <div className="relative mx-auto w-full max-w-5xl px-4 py-24 text-center lg:px-8">

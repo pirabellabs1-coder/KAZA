@@ -369,20 +369,16 @@ export async function redeemPromo(
     return { success: false, error: "Impossible d'enregistrer le code promo." };
   }
 
-  // Incrémente le compteur global. On relit puis on écrit : pas de course
-  // critique pour le MVP (le quota est revalidé à chaque application).
-  const { data: current } = await supabase
-    .from("promo_codes")
-    .select("used_count")
-    .eq("id", validation.promoId)
-    .maybeSingle();
-
-  const nextCount = Number((current as { used_count: number | null } | null)?.used_count ?? 0) + 1;
-
-  const { error: incError } = await supabase
-    .from("promo_codes")
-    .update({ used_count: nextCount })
-    .eq("id", validation.promoId);
+  // Incrément ATOMIQUE du compteur global via RPC Postgres
+  // (used_count = used_count + 1) — évite toute race condition sur le quota.
+  const { error: incError } = await (
+    supabase as unknown as {
+      rpc: (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ error: { message: string } | null }>;
+    }
+  ).rpc("increment_promo_used_count", { p_id: validation.promoId });
 
   if (incError) {
     // La redemption est enregistrée ; on logge sans faire échouer le paiement.

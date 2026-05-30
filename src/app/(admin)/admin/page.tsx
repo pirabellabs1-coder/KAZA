@@ -28,10 +28,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { getAdminStats, listAllAgencies } from "@/lib/queries/admin";
-import { listAuditLogs } from "@/lib/queries/audit-logs";
+import {
+  getAdminStats,
+  listAllAgencies,
+  type AdminStats,
+  type AdminAgencyRow,
+} from "@/lib/queries/admin";
+import { listAuditLogs, type AuditLogEntry } from "@/lib/queries/audit-logs";
 import { runHealthchecks } from "@/lib/health/check";
-import { formatFcfaShort, formatNumber } from "@/lib/utils";
+import { formatFcfaShort, formatNumber, settleAll } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Centre de contrôle — KAZA Admin",
@@ -100,13 +105,42 @@ function timeAgo(iso: string): string {
 // Page
 // =============================================================================
 
+// Replis (degradation gracieuse) — utilises si une requete echoue, pour que la
+// page s'affiche avec des sections vides plutot qu'une erreur 500.
+const EMPTY_STATS: AdminStats = {
+  totalUsers: 0,
+  usersByRole: { TENANT: 0, OWNER: 0, STUDENT: 0, ADMIN: 0 },
+  totalProperties: 0,
+  propertiesByStatus: {
+    DRAFT: 0,
+    PENDING_REVIEW: 0,
+    AVAILABLE: 0,
+    RENTED: 0,
+    UNAVAILABLE: 0,
+    ARCHIVED: 0,
+  },
+  activeRentals: 0,
+  totalRevenue30d: 0,
+  totalVisits30d: 0,
+  pendingVerifications: 0,
+};
+
+const EMPTY_HEALTH: Awaited<ReturnType<typeof runHealthchecks>> = {
+  checks: [],
+  global: "UNKNOWN",
+  lastCheckedAt: new Date(0).toISOString(),
+};
+
 export default async function AdminDashboardPage() {
-  const [stats, agencies, auditLogs, health] = await Promise.all([
-    getAdminStats(),
-    listAllAgencies(),
-    listAuditLogs({ limit: 6 }),
-    runHealthchecks(),
-  ]);
+  const [stats, agencies, auditLogs, health] = await settleAll(
+    [
+      getAdminStats(),
+      listAllAgencies(),
+      listAuditLogs({ limit: 6 }),
+      runHealthchecks(),
+    ] as const,
+    [EMPTY_STATS, [] as AdminAgencyRow[], [] as AuditLogEntry[], EMPTY_HEALTH] as const,
+  );
 
   // Donut roles (réel)
   const roleEntries = Object.entries(stats.usersByRole)

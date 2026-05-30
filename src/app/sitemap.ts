@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { JOBS } from "@/app/(main)/carrieres/page";
+import { BLOG_ARTICLES } from "@/lib/blog-data";
 
 // =============================================================================
 // KAZA - Sitemap dynamique
@@ -16,7 +17,8 @@ import { JOBS } from "@/app/(main)/carrieres/page";
 //  - URLs dynamiques des offres d'emploi (export `JOBS` de carrieres/page)
 // =============================================================================
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://kaza.africa";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://kaza-jade.vercel.app";
 
 // Regenere le sitemap au plus une fois par heure (ISR). Evite un hit DB a
 // chaque requete tout en gardant les nouvelles annonces indexables rapidement.
@@ -123,5 +125,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticUrls, ...propertyUrls, ...jobUrls];
+  const blogUrls: SitemapEntry[] = BLOG_ARTICLES.map((article) => ({
+    url: `${BASE_URL}/blog/${article.slug}`,
+    lastModified: article.publishedAt ? new Date(article.publishedAt) : now,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...staticUrls, ...propertyUrls, ...jobUrls, ...blogUrls];
 }

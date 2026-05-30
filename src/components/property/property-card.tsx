@@ -92,7 +92,7 @@ export function PropertyCard({
           <div className="relative h-52 w-full shrink-0 overflow-hidden sm:h-auto sm:w-64">
             <Image
               src={imageUrl}
-              alt={title}
+              alt={`${title} — ${typeLabel} à louer, ${address}`}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               sizes="(max-width: 640px) 100vw, 256px"
@@ -163,7 +163,7 @@ export function PropertyCard({
         <div className={cn("relative w-full overflow-hidden", aspectClass)}>
           <Image
             src={imageUrl}
-            alt={title}
+            alt={`${title} — ${typeLabel} à louer, ${address}`}
             fill
             className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.08]"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

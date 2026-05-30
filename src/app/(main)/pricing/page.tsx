@@ -37,11 +37,14 @@ export const metadata: Metadata = {
   title: "Tarifs — KAZA",
   description:
     "Une tarification limpide pour chaque profil. Gratuit pour les locataires et étudiants. Commission uniquement sur loyer perçu pour les propriétaires.",
+  alternates: { canonical: "/pricing" },
   openGraph: {
     title: "Tarifs KAZA — Transparent, sans frais cachés",
     description:
       "Locataires : gratuit. Propriétaires : 0 FCFA + 5% sur loyer perçu ou Pro illimité à 15 000 FCFA/mois.",
+    url: "/pricing",
     type: "website",
+    images: ["/images/hero-bg.jpg"],
   },
 };
 

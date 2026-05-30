@@ -238,6 +238,48 @@ L'équipe KAZA`;
   return { subject, html, text };
 }
 
+export function referralInviteTemplate(params: {
+  inviterName: string;
+  code: string;
+  signupUrl: string;
+}): EmailTemplate {
+  const { inviterName, code, signupUrl } = params;
+  const subject = `${inviterName} vous invite à rejoindre KAZA`;
+  const text = `Bonjour,
+
+${inviterName} vous invite à rejoindre KAZA, la plus grande plateforme d'immobilier en Afrique.
+
+Inscrivez-vous avec le code de parrainage ${code} pour profiter d'avantages exclusifs :
+${signupUrl}
+
+À très vite sur KAZA !
+
+Besoin d'aide ? Écrivez-nous à immobilierkaza@gmail.com`;
+
+  const html = layout(
+    `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">${esc(inviterName)} vous invite sur KAZA</h2>
+    <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
+      <strong>${esc(inviterName)}</strong> pense que KAZA pourrait vous être utile et vous invite à rejoindre
+      la plus grande plateforme d'immobilier en Afrique : annonces vérifiées, contact direct avec les
+      propriétaires, Paiements 100% sécurisés.
+    </p>
+    <div style="background-color:#f9fafb; border-left:4px solid ${BRAND_BLUE}; padding:16px; margin:16px 0; border-radius:4px;">
+      <p style="margin:0 0 4px; font-size:13px; color:#6b7280;">Votre code de parrainage</p>
+      <p style="margin:0; font-size:24px; font-weight:700; letter-spacing:0.08em; color:${BRAND_NAVY};">${esc(code)}</p>
+    </div>
+    <p style="margin:16px 0; line-height:1.6; font-size:15px;">
+      Inscrivez-vous avec ce code pour bénéficier d'un bonus de bienvenue.
+    </p>
+    ${button('Créer mon compte KAZA', signupUrl)}
+    <p style="margin:24px 0 0; color:#6b7280; font-size:13px;">
+      Une question ? Écrivez-nous à <a href="mailto:immobilierkaza@gmail.com" style="color:${BRAND_BLUE}; text-decoration:none;">immobilierkaza@gmail.com</a>.
+    </p>`,
+    `${inviterName} vous invite à rejoindre KAZA`,
+  );
+
+  return { subject, html, text };
+}
+
 export function verificationApprovedTemplate(params: {
   firstName: string;
 }): EmailTemplate {

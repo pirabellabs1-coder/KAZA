@@ -37,13 +37,26 @@ export async function generateMetadata({
   const property = await getPropertyById(id);
   if (!property) return { title: "Propriété introuvable" };
 
+  const canonical = `/properties/${id}`;
+  const ogTitle = `${property.title} - ${formatPrice(property.price)}/mois`;
+  const description = property.description?.slice(0, 160);
+  const images = property.primaryPhotoUrl ? [property.primaryPhotoUrl] : [];
+
   return {
-    title: property.title,
-    description: property.description?.slice(0, 160),
+    title: `${property.title} - ${formatPrice(property.price)}/mois | KAZA`,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: `${property.title} - ${formatPrice(property.price)}/mois`,
-      description: property.description?.slice(0, 160),
-      images: property.primaryPhotoUrl ? [property.primaryPhotoUrl] : [],
+      title: ogTitle,
+      description,
+      url: canonical,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description,
+      images,
     },
   };
 }

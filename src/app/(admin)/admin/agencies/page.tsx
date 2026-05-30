@@ -5,10 +5,7 @@ import {
   ShieldCheck,
   Clock,
   FileCheck2,
-  XCircle,
   Search,
-  Eye,
-  ClipboardCheck,
   ArrowUpRight,
 } from "lucide-react";
 
@@ -34,7 +31,8 @@ import {
 import { cn, formatFcfa, formatFcfaShort, formatNumber } from "@/lib/utils";
 import { listAllAgencies, type AdminAgencyRow } from "@/lib/queries/admin";
 
-import { AgencyRowMenu } from "./agency-actions";
+import { AgencyActions } from "./agency-actions";
+import { KycReviewActions } from "./kyc-review-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -217,13 +215,22 @@ function AgencyCard({ agency }: { agency: AdminAgencyRow }) {
       </div>
 
       <footer className="flex items-center gap-2 border-t border-border pt-3">
-        <Button size="sm" variant="outline" className="flex-1">
-          <Eye className="size-3.5" /> Voir détail
-        </Button>
-        <Button size="sm" variant="outline">
-          <ClipboardCheck className="size-3.5" /> Auditer
-        </Button>
-        <AgencyRowMenu />
+        <AgencyActions
+          agency={{
+            id: agency.id,
+            name: agency.name,
+            email: agency.email,
+            phone: agency.phone,
+            city: agency.city,
+            isVerified: agency.isVerified,
+            verificationStatus: agency.verificationStatus,
+            signedAt: agency.signedAt,
+            activeProperties: agency.activeProperties,
+            monthlyPlanFcfa: agency.monthlyPlanFcfa,
+            planName: agency.planName,
+            displayStatus: status,
+          }}
+        />
       </footer>
     </article>
   );
@@ -366,14 +373,7 @@ export default async function AdminAgenciesPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="flex flex-col gap-2 lg:items-end">
-                  <Button className="bg-kaza-green hover:bg-kaza-green/90">
-                    <FileCheck2 className="size-4" /> Approuver tout
-                  </Button>
-                  <Button variant="outline" className="border-red-300 text-red-700 hover:bg-red-50">
-                    <XCircle className="size-4" /> Rejeter
-                  </Button>
-                </div>
+                <KycReviewActions agencyId={a.id} agencyName={a.name} />
               </div>
             ))}
           </div>

@@ -97,18 +97,36 @@ export function ConversationView({
           filter: `recipient_id=eq.${currentUserId}`,
         },
         (payload) => {
-          const raw = payload.new as RawIncomingMessage;
-          if (raw.sender_id !== otherUserId) return;
-          if (propertyId && raw.property_id !== propertyId) return;
-          upsertMessage({
-            id: raw.id,
-            content: raw.content,
-            senderId: raw.sender_id,
-            createdAt: raw.created_at,
-          });
+          // try/catch : un payload malforme ne doit pas faire planter la vue.
+          try {
+            const raw = payload.new as RawIncomingMessage;
+            if (raw.sender_id !== otherUserId) return;
+            if (propertyId && raw.property_id !== propertyId) return;
+            upsertMessage({
+              id: raw.id,
+              content: raw.content,
+              senderId: raw.sender_id,
+              createdAt: raw.created_at,
+            });
+          } catch (err) {
+            if (process.env.NODE_ENV !== "production") {
+              // eslint-disable-next-line no-console
+              console.error("[conversation-view] payload realtime:", err);
+            }
+          }
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        // Gestion d'erreur Realtime : on log les etats degradant. Les messages
+        // restent envoyables (server action) et l'historique initial est intact ;
+        // seule la reception en direct est momentanement indisponible.
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.error("[conversation-view] Realtime messages:", status);
+          }
+        }
+      });
 
     return () => {
       void supabase.removeChannel(channel);

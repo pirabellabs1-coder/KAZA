@@ -361,6 +361,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                 >
                   {section.label}
                   <ChevronDown
+                    aria-hidden="true"
                     className={cn(
                       "size-3.5 transition-transform",
                       isActive && "rotate-180"
@@ -439,7 +440,10 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                                 {section.cta.description}
                               </div>
                             </div>
-                            <ChevronDown className="size-4 -rotate-90" />
+                            <ChevronDown
+                              aria-hidden="true"
+                              className="size-4 -rotate-90"
+                            />
                           </Link>
                         </div>
                       )}
@@ -473,7 +477,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                   <span className="max-w-[120px] truncate text-sm font-medium">
                     {user.firstName}
                   </span>
-                  <ChevronDown className="size-3.5 opacity-60" />
+                  <ChevronDown aria-hidden="true" className="size-3.5 opacity-60" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
@@ -523,7 +527,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild className="lg:hidden">
             <Button variant="ghost" size="icon">
-              <Menu className="size-5" />
+              <Menu aria-hidden="true" className="size-5" />
               <span className="sr-only">Menu</span>
             </Button>
           </SheetTrigger>
@@ -592,6 +596,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                       >
                         {section.label}
                         <ChevronDown
+                          aria-hidden="true"
                           className={cn(
                             "size-4 transition-transform",
                             isExpanded && "rotate-180"
@@ -639,7 +644,10 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                               className="mx-2 mt-2 flex items-center justify-between rounded-lg bg-kaza-navy px-3 py-2.5 text-xs font-semibold text-white"
                             >
                               {section.cta.label}
-                              <ChevronDown className="size-3.5 -rotate-90" />
+                              <ChevronDown
+                                aria-hidden="true"
+                                className="size-3.5 -rotate-90"
+                              />
                             </Link>
                           )}
                         </div>

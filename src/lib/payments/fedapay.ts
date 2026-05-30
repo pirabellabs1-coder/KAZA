@@ -252,10 +252,150 @@ function parseWebhookEvent(body: unknown): WebhookEvent {
   };
 }
 
+// =============================================================================
+// Payouts FedaPay (transfert sortant vers un bénéficiaire mobile money)
+// =============================================================================
+// Flux en 2 étapes (cf. docs.fedapay.com / payouts) :
+//   1) POST /payouts                → crée le payout (statut "pending")
+//   2) PUT  /payouts/start          → déclenche réellement le transfert
+//
+// Utilisé aussi bien pour libérer l'escrow vers le propriétaire que pour
+// rembourser le locataire : dans les deux cas il s'agit d'un transfert
+// sortant vers un numéro mobile money.
+// =============================================================================
+
+export interface PayoutInput {
+  /** Montant entier en FCFA (pas de centimes pour XOF). */
+  amount: number;
+  /** Numéro mobile money du bénéficiaire au format E.164 (+229...). */
+  phoneNumber: string;
+  /** Code ISO pays du numéro (ex: "bj" pour le Bénin). Défaut: "bj". */
+  countryCode?: string;
+  /** Mode opérateur FedaPay (ex: "mtn_open", "moov_open"). Optionnel: auto-détection. */
+  mode?: string;
+  /** Email du bénéficiaire (FedaPay l'utilise pour identifier le customer). */
+  email?: string;
+  firstname?: string;
+  lastname?: string;
+  description?: string;
+  /** Référence interne KAZA (idempotence côté FedaPay). */
+  merchantReference?: string;
+}
+
+export interface PayoutResult {
+  /** Identifiant du payout côté FedaPay. */
+  payoutId: string;
+  status: string;
+  amount: number;
+  raw: unknown;
+}
+
+interface FedapayPayoutResponse {
+  "v1/payout"?: {
+    id: number;
+    amount: number;
+    status: string;
+    reference?: string;
+  };
+}
+
+/**
+ * Crée puis déclenche un payout FedaPay (transfert mobile money sortant).
+ * Lève une {@link PaymentProviderError} si la clé secrète manque ou si l'API
+ * échoue — l'appelant DOIT traiter cette erreur (ne pas marquer les fonds
+ * comme transférés en cas d'échec).
+ */
+async function sendPayout(input: PayoutInput): Promise<PayoutResult> {
+  const { secretKey, baseUrl } = getConfig();
+
+  if (!Number.isFinite(input.amount) || input.amount <= 0) {
+    throw new PaymentProviderError(
+      "fedapay",
+      `Montant de payout invalide: ${input.amount}.`
+    );
+  }
+  if (!input.phoneNumber) {
+    throw new PaymentProviderError(
+      "fedapay",
+      "Numéro de téléphone du bénéficiaire manquant pour le payout."
+    );
+  }
+
+  // Étape 1 : créer le payout.
+  const createPayload: Record<string, unknown> = {
+    amount: Math.round(input.amount),
+    currency: { iso: "XOF" },
+    description: input.description,
+    customer: {
+      firstname: input.firstname,
+      lastname: input.lastname,
+      email: input.email,
+      phone_number: {
+        number: input.phoneNumber,
+        country: (input.countryCode ?? "bj").toLowerCase(),
+      },
+    },
+  };
+  if (input.mode) createPayload.mode = input.mode;
+  if (input.merchantReference) {
+    createPayload.merchant_reference = input.merchantReference;
+  }
+
+  const createRes = await fetch(`${baseUrl}/payouts`, {
+    method: "POST",
+    headers: buildHeaders(secretKey),
+    body: JSON.stringify(createPayload),
+  });
+
+  if (!createRes.ok) {
+    const errText = await createRes.text().catch(() => "");
+    throw new PaymentProviderError(
+      "fedapay",
+      `Échec de création du payout FedaPay (${createRes.status}): ${errText}`,
+      { statusCode: createRes.status }
+    );
+  }
+
+  const createData = (await createRes.json()) as FedapayPayoutResponse;
+  const payout = createData["v1/payout"];
+  if (!payout?.id) {
+    throw new PaymentProviderError(
+      "fedapay",
+      "Réponse FedaPay invalide: champ payout manquant."
+    );
+  }
+
+  // Étape 2 : déclencher l'envoi du payout (transfert immédiat).
+  const startRes = await fetch(`${baseUrl}/payouts/start`, {
+    method: "PUT",
+    headers: buildHeaders(secretKey),
+    body: JSON.stringify({ payouts: [{ id: payout.id }] }),
+  });
+
+  if (!startRes.ok) {
+    const errText = await startRes.text().catch(() => "");
+    throw new PaymentProviderError(
+      "fedapay",
+      `Échec du déclenchement du payout FedaPay (${startRes.status}): ${errText}`,
+      { statusCode: startRes.status }
+    );
+  }
+
+  const startData = await startRes.json().catch(() => null);
+
+  return {
+    payoutId: String(payout.id),
+    status: payout.status ?? "started",
+    amount: payout.amount ?? Math.round(input.amount),
+    raw: { create: createData, start: startData },
+  };
+}
+
 export const fedapayClient = {
   createCheckout,
   verifyWebhookSignature,
   parseWebhookEvent,
+  sendPayout,
 };
 
 export type FedapayClient = typeof fedapayClient;

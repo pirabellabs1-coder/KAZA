@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -26,6 +27,42 @@ import { PageTracker } from "@/components/analytics/page-tracker";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80";
+
+const OG_IMAGE =
+  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&h=630&q=80";
+
+export const metadata: Metadata = {
+  title: "KAZA — Louer un logement partout en Afrique",
+  description:
+    "Trouvez et louez appartements, maisons et colocations partout en Afrique. Annonces vérifiées, paiements sécurisés et contrats numériques dans 54 pays.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "KAZA — Louer un logement partout en Afrique",
+    description:
+      "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez partout en Afrique dans 54 pays.",
+    url: "/",
+    type: "website",
+    siteName: "KAZA",
+    locale: "fr_FR",
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: "KAZA — Immobilier panafricain",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KAZA — Louer un logement partout en Afrique",
+    description:
+      "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez partout en Afrique.",
+    images: [OG_IMAGE],
+  },
+};
 
 const STUDENT_IMAGES = [
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80",
@@ -154,7 +191,7 @@ export default async function HomePage() {
         {/* Background image */}
         <Image
           src={HERO_IMAGE}
-          alt="Villa moderne en Afrique de l'Ouest"
+          alt="Villa moderne avec piscine en Afrique — logement à louer sur KAZA"
           fill
           priority
           sizes="100vw"
@@ -592,7 +629,7 @@ export default async function HomePage() {
                       <div className="group relative h-44 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 lg:h-56">
                         <Image
                           src={STUDENT_IMAGES[0]}
-                          alt="Étudiants en colocation"
+                          alt="Étudiants africains en colocation dans un appartement KAZA"
                           fill
                           sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -601,7 +638,7 @@ export default async function HomePage() {
                       <div className="group relative h-32 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 lg:h-40">
                         <Image
                           src={STUDENT_IMAGES[1]}
-                          alt="Espace de colocation moderne"
+                          alt="Espace de colocation étudiante moderne et lumineux près du campus"
                           fill
                           sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -612,7 +649,7 @@ export default async function HomePage() {
                       <div className="group relative h-32 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 lg:h-40">
                         <Image
                           src={STUDENT_IMAGES[2]}
-                          alt="Chambre étudiante meublée"
+                          alt="Chambre étudiante meublée à louer en colocation sur KAZA"
                           fill
                           sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -621,7 +658,7 @@ export default async function HomePage() {
                       <div className="group relative h-44 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 lg:h-56">
                         <Image
                           src={STUDENT_IMAGES[3]}
-                          alt="Salon commun lumineux"
+                          alt="Salon commun lumineux d'une colocation étudiante en Afrique"
                           fill
                           sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-110"

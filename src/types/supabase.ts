@@ -44,6 +44,7 @@ export type Database = {
           notification_prefs: Json
           privacy_prefs: Json
           billing_address: Json
+          agency_settings: Json
           deletion_requested_at: string | null
           created_at: string
           updated_at: string
@@ -67,6 +68,7 @@ export type Database = {
           notification_prefs?: Json
           privacy_prefs?: Json
           billing_address?: Json
+          agency_settings?: Json
           deletion_requested_at?: string | null
           created_at?: string
           updated_at?: string
@@ -90,6 +92,7 @@ export type Database = {
           notification_prefs?: Json
           privacy_prefs?: Json
           billing_address?: Json
+          agency_settings?: Json
           deletion_requested_at?: string | null
           created_at?: string
           updated_at?: string
@@ -416,6 +419,8 @@ export type Database = {
           duration_days: number
           status: 'HELD' | 'PARTIALLY_RELEASED' | 'RELEASED' | 'REFUNDED' | 'DISPUTED'
           release_date: string | null
+          payout_ref: string | null
+          refund_ref: string | null
           created_at: string
         }
         Insert: {
@@ -428,6 +433,8 @@ export type Database = {
           duration_days?: number
           status?: 'HELD' | 'PARTIALLY_RELEASED' | 'RELEASED' | 'REFUNDED' | 'DISPUTED'
           release_date?: string | null
+          payout_ref?: string | null
+          refund_ref?: string | null
           created_at?: string
         }
         Update: {
@@ -440,6 +447,8 @@ export type Database = {
           duration_days?: number
           status?: 'HELD' | 'PARTIALLY_RELEASED' | 'RELEASED' | 'REFUNDED' | 'DISPUTED'
           release_date?: string | null
+          payout_ref?: string | null
+          refund_ref?: string | null
           created_at?: string
         }
         Relationships: []

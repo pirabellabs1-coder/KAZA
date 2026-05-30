@@ -5,9 +5,13 @@ import { OfflineBanner } from "@/components/shared/offline-banner";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { CookieBanner } from "@/components/shared/cookie-banner";
 import { Toaster } from "@/components/ui/sonner";
+import { JsonLd } from "@/components/seo/json-ld";
 
 import "./globals.css";
 import "@/styles/animations.css";
+
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://kaza-jade.vercel.app";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,15 +27,25 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
   title: {
     default: "KAZA - Immobilier en Afrique",
     template: "%s | KAZA",
   },
   description:
-    "La plus grande plateforme d'immobilier en Afrique. Trouvez votre logement idéal partout sur le continent africain.",
+    "La plus grande plateforme d'immobilier panafricaine. Louez appartements, maisons et colocations dans 54 pays : Côte d'Ivoire, Nigeria, Sénégal, Ghana, Togo, Kenya, Maroc, Bénin et partout en Afrique.",
   keywords: [
-    "immobilier",
+    "immobilier panafricain",
+    "immobilier Afrique",
+    "location Afrique",
     "Afrique",
+    "Côte d'Ivoire",
+    "Nigeria",
+    "Sénégal",
+    "Ghana",
+    "Togo",
+    "Kenya",
+    "Maroc",
     "Bénin",
     "location",
     "appartement",
@@ -49,6 +63,16 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     siteName: "KAZA",
+    url: "/",
+    title: "KAZA - Immobilier en Afrique",
+    description:
+      "La plus grande plateforme d'immobilier panafricaine. Louez partout en Afrique : appartements, maisons et colocations dans 54 pays.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KAZA - Immobilier en Afrique",
+    description:
+      "La plus grande plateforme d'immobilier panafricaine. Louez partout en Afrique dans 54 pays.",
   },
 };
 
@@ -65,6 +89,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${inter.variable} ${poppins.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
+        <JsonLd baseUrl={APP_URL} />
         <OfflineBanner />
         <div className="pb-16 md:pb-0">{children}</div>
         <BottomNav />

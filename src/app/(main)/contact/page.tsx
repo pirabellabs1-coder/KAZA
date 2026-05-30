@@ -29,11 +29,14 @@ export const metadata: Metadata = {
   title: "Contact — KAZA",
   description:
     "Une question, un partenariat ou une demande presse ? L'équipe KAZA vous répond en moins de 24h. Téléphone, email et formulaire de contact.",
+  alternates: { canonical: "/contact" },
   openGraph: {
     title: "Contactez l'équipe KAZA",
     description:
       "Joignez l'équipe KAZA par email ou via notre formulaire de contact.",
+    url: "/contact",
     type: "website",
+    images: ["/images/hero-bg.jpg"],
   },
 };
 

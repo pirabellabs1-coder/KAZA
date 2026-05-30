@@ -19,9 +19,20 @@ import {
   getTopAdminsByActivity,
   listAuditLogs,
   type AuditLogEntry,
+  type AuditStats,
+  type AdminActivitySummary,
 } from "@/lib/queries/audit-logs";
+import { settleAll } from "@/lib/utils";
 
 import { AuditFilters } from "./audit-filters";
+
+// Replis (degradation gracieuse) si une requete echoue.
+const EMPTY_AUDIT_STATS: AuditStats = {
+  actions7d: 0,
+  actions30d: 0,
+  riskActions30d: 0,
+  activeAdmins30d: 0,
+};
 
 export const metadata: Metadata = {
   title: "Journal d'audit — KAZA Admin",
@@ -86,16 +97,19 @@ export default async function AdminAuditLogPage({
 }) {
   const { admin = "", action = "", target = "" } = await searchParams;
 
-  const [logs, stats, topAdmins] = await Promise.all([
-    listAuditLogs({
-      limit: 100,
-      adminId: admin || undefined,
-      action: action || undefined,
-      targetType: target || undefined,
-    }),
-    getAuditStats(),
-    getTopAdminsByActivity(3),
-  ]);
+  const [logs, stats, topAdmins] = await settleAll(
+    [
+      listAuditLogs({
+        limit: 100,
+        adminId: admin || undefined,
+        action: action || undefined,
+        targetType: target || undefined,
+      }),
+      getAuditStats(),
+      getTopAdminsByActivity(3),
+    ] as const,
+    [[] as AuditLogEntry[], EMPTY_AUDIT_STATS, [] as AdminActivitySummary[]] as const,
+  );
 
   return (
     <div className="space-y-8">

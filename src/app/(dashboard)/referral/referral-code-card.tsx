@@ -12,12 +12,14 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Loader2, Share2, Sparkles } from "lucide-react";
+import { Copy, Loader2, Mail, Send, Share2, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/toast-helper";
-import { getOrCreateReferralCode } from "@/actions/referrals";
+import { getOrCreateReferralCode, inviteByEmail } from "@/actions/referrals";
 
 interface ReferralCodeCardProps {
   initialCode: string | null;
@@ -31,8 +33,32 @@ export function ReferralCodeCard({
   const router = useRouter();
   const [code, setCode] = useState<string | null>(initialCode);
   const [isPending, startTransition] = useTransition();
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [isInviting, startInviting] = useTransition();
 
-  const referralLink = code ? `https://kaza.bj/signup?ref=${code}` : null;
+  const appUrl = (
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://kaza-jade.vercel.app"
+  ).replace(/\/$/, "");
+  const referralLink = code ? `${appUrl}/signup?ref=${code}` : null;
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = inviteEmail.trim();
+    if (!email) {
+      toast.error("Saisissez une adresse email.");
+      return;
+    }
+    startInviting(async () => {
+      const result = await inviteByEmail(email);
+      if (result.success) {
+        toast.success(`Invitation envoyee a ${email}`);
+        setInviteEmail("");
+        router.refresh();
+      } else {
+        toast.error(result.error ?? "Impossible d'envoyer l'invitation.");
+      }
+    });
+  };
 
   const handleGenerate = () => {
     startTransition(async () => {
@@ -151,6 +177,48 @@ export function ReferralCodeCard({
             </Button>
           </div>
         )}
+
+        <Separator className="w-full" />
+
+        {/* Invitation par email — envoie un vrai email avec le lien d'inscription */}
+        <form
+          onSubmit={handleInvite}
+          className="flex w-full max-w-md flex-col items-center gap-3"
+        >
+          <div className="flex items-center gap-2 text-sm font-medium text-kaza-navy">
+            <Mail className="size-4" />
+            Inviter un proche par email
+          </div>
+          <p className="text-center text-xs text-muted-foreground">
+            Nous lui enverrons un email avec votre lien d&apos;inscription. Vous
+            gagnez 1 000 points des sa premiere location signee.
+          </p>
+          <div className="flex w-full flex-col gap-2 sm:flex-row">
+            <Input
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="email@exemple.com"
+              autoComplete="email"
+              disabled={isInviting}
+              className="bg-white"
+              aria-label="Email du proche a inviter"
+              required
+            />
+            <Button
+              type="submit"
+              disabled={isInviting}
+              className="gap-2 sm:shrink-0"
+            >
+              {isInviting ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Send className="size-4" />
+              )}
+              {isInviting ? "Envoi…" : "Inviter"}
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

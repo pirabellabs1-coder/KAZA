@@ -38,11 +38,14 @@ export const metadata: Metadata = {
   title: "KAZA Pro — Solution premium pour agences immobilières",
   description:
     "KAZA Pro : plateforme PropTech enterprise pour les agences immobilières en Afrique de l'Ouest. Multi-utilisateurs, analytics, API, support 24/7 et white-label.",
+  alternates: { canonical: "/pro" },
   openGraph: {
     title: "KAZA Pro — la solution PropTech pour les agences immobilières",
     description:
       "Gérez votre agence, votre équipe et votre parc immobilier sur une seule plateforme premium.",
+    url: "/pro",
     type: "website",
+    images: ["/images/hero-bg.jpg"],
   },
 };
 

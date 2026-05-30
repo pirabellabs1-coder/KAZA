@@ -1,6 +1,9 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fedapayClient } from "@/lib/payments/fedapay";
 
 // =============================================================================
 // KAZA - Logique Escrow
@@ -131,17 +134,84 @@ export async function holdInEscrow(
   };
 }
 
+type AdminClient = ReturnType<typeof createAdminClient>;
+
+/** Destination mobile money d'un bénéficiaire pour un transfert FedaPay. */
+interface PayoutDestination {
+  phoneNumber: string;
+  /** Mode opérateur FedaPay (mtn_open / moov_open) si déductible. */
+  mode?: string;
+  email?: string;
+  countryCode?: string;
+}
+
+/**
+ * Mappe un libellé d'opérateur mobile money stocké en base
+ * (`user_wallets.mobile_money_provider`) vers un mode payout FedaPay.
+ * Retourne undefined si inconnu (FedaPay tentera l'auto-détection).
+ */
+function mapProviderToMode(provider?: string | null): string | undefined {
+  if (!provider) return undefined;
+  const p = provider.toLowerCase();
+  if (p.includes("mtn")) return "mtn_open";
+  if (p.includes("moov")) return "moov_open";
+  return undefined;
+}
+
+/**
+ * Résout la destination mobile money d'un utilisateur depuis `user_wallets`.
+ * Retourne null si aucune coordonnée de versement n'est enregistrée — auquel
+ * cas le transfert ne doit PAS être tenté (et donc l'escrow non libéré).
+ */
+async function resolvePayoutDestination(
+  supabase: AdminClient,
+  userId: string
+): Promise<PayoutDestination | null> {
+  // `user_wallets` n'est pas déclaré dans les types générés (`Database`) — on
+  // passe par un client loose-typed uniquement pour cette table, comme dans
+  // src/actions/wallet.ts.
+  const loose = supabase as unknown as SupabaseClient;
+
+  const { data: wallet } = await loose
+    .from("user_wallets")
+    .select("mobile_money_number, mobile_money_provider")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const phoneNumber = (wallet as { mobile_money_number?: string | null } | null)
+    ?.mobile_money_number;
+  if (!phoneNumber) return null;
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("email")
+    .eq("id", userId)
+    .maybeSingle();
+
+  return {
+    phoneNumber,
+    mode: mapProviderToMode(
+      (wallet as { mobile_money_provider?: string | null } | null)
+        ?.mobile_money_provider
+    ),
+    email: (profile as { email?: string | null } | null)?.email ?? undefined,
+  };
+}
+
 /**
  * Libere les fonds en escrow vers le proprietaire.
- * TODO(payments): declencher un transfert reel via FedaPay payouts ou virement
- * bancaire une fois l'API de payout integree.
+ *
+ * Sécurité de l'argent : le statut n'est marqué 'RELEASED' QU'APRÈS un payout
+ * FedaPay réussi vers le propriétaire. Si la clé secrète FedaPay manque, si la
+ * destination mobile money est absente, ou si le transfert échoue, l'escrow
+ * reste en 'HELD' et une erreur est levée — jamais de faux release.
  */
 export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult> {
   const supabase = createAdminClient();
 
   const { data: payment, error } = await supabase
     .from("payments")
-    .select("id, rental_id")
+    .select("id, rental_id, amount")
     .eq("id", paymentId)
     .single();
 
@@ -151,19 +221,84 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
     );
   }
 
-  const now = new Date().toISOString();
-
-  const { error: escrowErr } = await supabase
+  // Récupère la ligne escrow pour connaître le bénéficiaire (owner) et le montant.
+  const { data: escrow, error: escrowFetchErr } = await supabase
     .from("escrow_payments")
-    .update({ status: "RELEASED", release_date: now })
-    .eq("rental_id", payment.rental_id);
+    .select("id, owner_id, amount_paid, total_amount, status")
+    .eq("rental_id", payment.rental_id)
+    .maybeSingle();
 
-  if (escrowErr) {
-    throw new Error(`Escrow release: mise a jour echouee: ${escrowErr.message}`);
+  if (escrowFetchErr || !escrow) {
+    throw new Error(
+      `Escrow release: escrow introuvable pour rental ${payment.rental_id}: ${escrowFetchErr?.message ?? "not found"}`
+    );
   }
 
-  // TODO(payments): appeler l'API de payout du provider pour transferer
-  // les fonds vers le compte du proprietaire.
+  if (escrow.status === "RELEASED") {
+    // Idempotence : déjà libéré, on ne retente pas de transfert.
+    return { paymentId, status: "released" };
+  }
+
+  const amount = Number(
+    escrow.amount_paid ?? escrow.total_amount ?? payment.amount ?? 0
+  );
+
+  // 1) Vérifier la présence de la clé FedaPay AVANT toute mutation de statut.
+  if (!process.env.FEDAPAY_SECRET_KEY) {
+    throw new Error(
+      "Escrow release impossible : FEDAPAY_SECRET_KEY manquante — l'argent ne peut pas être transféré au propriétaire."
+    );
+  }
+
+  // 2) Résoudre la destination de versement du propriétaire.
+  const destination = await resolvePayoutDestination(supabase, escrow.owner_id);
+  if (!destination) {
+    throw new Error(
+      `Escrow release impossible : aucune coordonnée mobile money pour le propriétaire ${escrow.owner_id}. Escrow laissé en attente.`
+    );
+  }
+
+  // 3) Déclencher le payout réel FedaPay. En cas d'échec, on NE touche PAS
+  //    au statut escrow (reste HELD) et on propage l'erreur.
+  let payoutId: string;
+  try {
+    const result = await fedapayClient.sendPayout({
+      amount,
+      phoneNumber: destination.phoneNumber,
+      mode: destination.mode,
+      email: destination.email,
+      countryCode: destination.countryCode,
+      description: `KAZA — libération escrow location ${payment.rental_id}`,
+      merchantReference: `escrow-release-${escrow.id}`,
+    });
+    payoutId = result.payoutId;
+  } catch (err) {
+    console.error(
+      `[escrow] payout release échoué pour paiement ${paymentId}:`,
+      err instanceof Error ? err.message : err
+    );
+    throw new Error(
+      `Escrow release : le transfert FedaPay a échoué — fonds NON libérés. ${err instanceof Error ? err.message : ""}`
+    );
+  }
+
+  // 4) Transfert réussi → marquer l'escrow comme libéré et stocker la référence.
+  const now = new Date().toISOString();
+  const { error: escrowErr } = await supabase
+    .from("escrow_payments")
+    .update({ status: "RELEASED", release_date: now, payout_ref: payoutId })
+    .eq("id", escrow.id);
+
+  if (escrowErr) {
+    // Le transfert a eu lieu mais l'update DB a échoué : on log fortement pour
+    // réconciliation manuelle (l'argent est parti, le statut doit suivre).
+    console.error(
+      `[escrow] payout ${payoutId} effectué mais MAJ escrow échouée (${escrow.id}): ${escrowErr.message}`
+    );
+    throw new Error(
+      `Escrow release : transfert effectué (ref ${payoutId}) mais mise à jour du statut échouée — réconciliation requise.`
+    );
+  }
 
   await supabase
     .from("payments")
@@ -176,7 +311,10 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
 /**
  * Rembourse un paiement en escrow au locataire (ex: litige tranche en sa
  * faveur, annulation avant fin du delai de retenue).
- * TODO(payments): declencher un refund reel via l'API du provider.
+ *
+ * Même garantie que le release : le statut 'REFUNDED' n'est posé QU'APRÈS un
+ * transfert FedaPay réussi vers le locataire. Si la clé manque, si la
+ * destination est absente ou si le transfert échoue, l'escrow reste inchangé.
  */
 export async function refundFromEscrow(
   paymentId: string,
@@ -186,7 +324,7 @@ export async function refundFromEscrow(
 
   const { data: payment, error } = await supabase
     .from("payments")
-    .select("id, rental_id")
+    .select("id, rental_id, amount")
     .eq("id", paymentId)
     .single();
 
@@ -196,16 +334,78 @@ export async function refundFromEscrow(
     );
   }
 
-  const { error: escrowErr } = await supabase
+  const { data: escrow, error: escrowFetchErr } = await supabase
     .from("escrow_payments")
-    .update({ status: "REFUNDED" })
-    .eq("rental_id", payment.rental_id);
+    .select("id, tenant_id, amount_paid, total_amount, status")
+    .eq("rental_id", payment.rental_id)
+    .maybeSingle();
 
-  if (escrowErr) {
-    throw new Error(`Escrow refund: mise a jour echouee: ${escrowErr.message}`);
+  if (escrowFetchErr || !escrow) {
+    throw new Error(
+      `Escrow refund: escrow introuvable pour rental ${payment.rental_id}: ${escrowFetchErr?.message ?? "not found"}`
+    );
   }
 
-  // TODO(payments): appeler l'API refund du provider.
+  if (escrow.status === "REFUNDED") {
+    return { paymentId, status: "refunded" };
+  }
+
+  const amount = Number(
+    escrow.amount_paid ?? escrow.total_amount ?? payment.amount ?? 0
+  );
+
+  // 1) Clé FedaPay requise avant toute mutation.
+  if (!process.env.FEDAPAY_SECRET_KEY) {
+    throw new Error(
+      "Escrow refund impossible : FEDAPAY_SECRET_KEY manquante — le remboursement ne peut pas être transféré au locataire."
+    );
+  }
+
+  // 2) Destination de versement du locataire.
+  const destination = await resolvePayoutDestination(supabase, escrow.tenant_id);
+  if (!destination) {
+    throw new Error(
+      `Escrow refund impossible : aucune coordonnée mobile money pour le locataire ${escrow.tenant_id}. Escrow laissé en attente.`
+    );
+  }
+
+  // 3) Transfert réel (refund = payout sortant vers le locataire).
+  let refundId: string;
+  try {
+    const result = await fedapayClient.sendPayout({
+      amount,
+      phoneNumber: destination.phoneNumber,
+      mode: destination.mode,
+      email: destination.email,
+      countryCode: destination.countryCode,
+      description: `KAZA — remboursement escrow location ${payment.rental_id} (${reason})`,
+      merchantReference: `escrow-refund-${escrow.id}`,
+    });
+    refundId = result.payoutId;
+  } catch (err) {
+    console.error(
+      `[escrow] payout refund échoué pour paiement ${paymentId}:`,
+      err instanceof Error ? err.message : err
+    );
+    throw new Error(
+      `Escrow refund : le transfert FedaPay a échoué — remboursement NON effectué. ${err instanceof Error ? err.message : ""}`
+    );
+  }
+
+  // 4) Succès → marquer remboursé + stocker la référence.
+  const { error: escrowErr } = await supabase
+    .from("escrow_payments")
+    .update({ status: "REFUNDED", refund_ref: refundId })
+    .eq("id", escrow.id);
+
+  if (escrowErr) {
+    console.error(
+      `[escrow] refund ${refundId} effectué mais MAJ escrow échouée (${escrow.id}): ${escrowErr.message}`
+    );
+    throw new Error(
+      `Escrow refund : transfert effectué (ref ${refundId}) mais mise à jour du statut échouée — réconciliation requise.`
+    );
+  }
 
   await supabase
     .from("payments")
@@ -213,7 +413,7 @@ export async function refundFromEscrow(
     .eq("id", paymentId);
 
   console.info(
-    `[escrow] paiement ${paymentId} rembourse (motif: ${reason})`
+    `[escrow] paiement ${paymentId} remboursé (ref ${refundId}, motif: ${reason})`
   );
 
   return { paymentId, status: "refunded" };

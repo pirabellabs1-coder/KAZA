@@ -8,6 +8,14 @@ import { Label } from "@/components/ui/label";
 export const metadata: Metadata = {
   title: "À propos",
   description: "Découvrez KAZA, la plateforme immobilière de référence en Afrique.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "À propos de KAZA",
+    description: "Découvrez KAZA, la plateforme immobilière de référence en Afrique.",
+    url: "/about",
+    type: "website",
+    images: ["/images/hero-bg.jpg"],
+  },
 };
 
 const values = [

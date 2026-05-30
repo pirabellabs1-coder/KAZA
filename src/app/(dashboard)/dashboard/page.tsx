@@ -34,14 +34,29 @@ import {
   listTenantMessages,
   listStudentColocations,
 } from "@/lib/queries/tenant-activity";
-import { getTenantFinanceSummary } from "@/lib/queries/tenant-finance";
+import {
+  getTenantFinanceSummary,
+  type TenantFinanceSummary,
+} from "@/lib/queries/tenant-finance";
 import { getAdminStats } from "@/lib/queries/admin";
 import {
   formatFcfa,
   formatFcfaShort,
   formatNumber,
   formatPrice,
+  settleAll,
 } from "@/lib/utils";
+
+// Repli finance (degradation gracieuse) si la requete Supabase echoue.
+const EMPTY_FINANCE: TenantFinanceSummary = {
+  currentRent: 0,
+  totalPaid: 0,
+  totalPaid12m: 0,
+  walletBalance: 0,
+  activeRentals: 0,
+  payments: [],
+  monthlyHistory: [],
+};
 
 // Fallback vide — à brancher quand l'agrégation mensuelle des revenus
 // propriétaire sera connectée à Supabase (table payments).
@@ -910,12 +925,20 @@ async function TenantOverview({
   firstName: string;
   userId: string;
 }) {
-  const [saved, conversations, finance, isVerified] = await Promise.all([
-    listSavedProperties(userId),
-    listTenantMessages(userId),
-    getTenantFinanceSummary(userId),
-    fetchIsVerified(userId),
-  ]);
+  const [saved, conversations, finance, isVerified] = await settleAll(
+    [
+      listSavedProperties(userId),
+      listTenantMessages(userId),
+      getTenantFinanceSummary(userId),
+      fetchIsVerified(userId),
+    ] as const,
+    [
+      [] as Awaited<ReturnType<typeof listSavedProperties>>,
+      [] as Awaited<ReturnType<typeof listTenantMessages>>,
+      EMPTY_FINANCE,
+      false,
+    ] as const,
+  );
 
   const favs = saved.length;
   const unreadMessages = conversations.reduce(
@@ -1011,12 +1034,20 @@ async function StudentOverview({
   firstName: string;
   userId: string;
 }) {
-  const [colocations, saved, conversations, isVerified] = await Promise.all([
-    listStudentColocations(userId),
-    listSavedProperties(userId),
-    listTenantMessages(userId),
-    fetchIsVerified(userId),
-  ]);
+  const [colocations, saved, conversations, isVerified] = await settleAll(
+    [
+      listStudentColocations(userId),
+      listSavedProperties(userId),
+      listTenantMessages(userId),
+      fetchIsVerified(userId),
+    ] as const,
+    [
+      [] as Awaited<ReturnType<typeof listStudentColocations>>,
+      [] as Awaited<ReturnType<typeof listSavedProperties>>,
+      [] as Awaited<ReturnType<typeof listTenantMessages>>,
+      false,
+    ] as const,
+  );
 
   const myColocations = colocations.length;
   const favs = saved.length;

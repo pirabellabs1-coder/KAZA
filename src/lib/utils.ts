@@ -39,6 +39,30 @@ export const formatFcfaShort = (value: number): string => {
 export const formatNumber = (value: number): string =>
   new Intl.NumberFormat("fr-FR").format(value);
 
+/**
+ * Resolution gracieuse de plusieurs promesses pour les pages serveur.
+ *
+ * Contrairement a `Promise.all`, un rejet ne fait PAS planter l'ensemble :
+ * chaque promesse rejetee est remplacee par la valeur de repli fournie a la
+ * meme position dans `fallbacks`. Objectif : afficher la page avec des
+ * sections vides plutot qu'une erreur 500 si une requete Supabase echoue.
+ *
+ * @example
+ *   const [stats, agencies] = await settleAll(
+ *     [getAdminStats(), listAllAgencies()] as const,
+ *     [EMPTY_STATS, []] as const,
+ *   );
+ */
+export async function settleAll<T extends readonly unknown[]>(
+  promises: readonly [...{ [K in keyof T]: Promise<T[K]> }],
+  fallbacks: NoInfer<readonly [...T]>,
+): Promise<T> {
+  const results = await Promise.allSettled(promises);
+  return results.map((res, i) =>
+    res.status === "fulfilled" ? res.value : fallbacks[i],
+  ) as unknown as T;
+}
+
 export const formatBytes = (bytes: number): string => {
   if (bytes < 1024) return bytes + " B";
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";

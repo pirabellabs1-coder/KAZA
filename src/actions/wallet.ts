@@ -199,7 +199,9 @@ export async function approveWithdrawal(
     return { success: false, error: "Demande déjà traitée" };
   }
 
-  const { error: updateError } = await (supabase as any)
+  // Garde atomique anti double-débit : l'UPDATE n'aboutit que si la demande
+  // est ENCORE en PENDING. Deux appels concurrents → un seul met à jour une ligne.
+  const { data: updatedRows, error: updateError } = await (supabase as any)
     .from("withdrawal_requests")
     .update({
       status: "COMPLETED",
@@ -207,8 +209,13 @@ export async function approveWithdrawal(
       processed_by: guard.userId,
       reference: reference ?? null,
     })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("status", "PENDING")
+    .select("id");
   if (updateError) return { success: false, error: updateError.message };
+  if (!updatedRows || updatedRows.length === 0) {
+    return { success: false, error: "Demande déjà traitée (conflit)." };
+  }
 
   // Marque la sortie effective (montant 0 car déjà déduit lors du PAYOUT_REQUESTED)
   await (supabase as any).from("wallet_transactions").insert({
@@ -251,7 +258,8 @@ export async function rejectWithdrawal(
     return { success: false, error: "Demande déjà traitée" };
   }
 
-  const { error: updateError } = await (supabase as any)
+  // Garde atomique : un seul refus possible même en concurrence.
+  const { data: updatedRows, error: updateError } = await (supabase as any)
     .from("withdrawal_requests")
     .update({
       status: "REJECTED",
@@ -259,8 +267,13 @@ export async function rejectWithdrawal(
       processed_by: guard.userId,
       notes: reason.trim(),
     })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("status", "PENDING")
+    .select("id");
   if (updateError) return { success: false, error: updateError.message };
+  if (!updatedRows || updatedRows.length === 0) {
+    return { success: false, error: "Demande déjà traitée (conflit)." };
+  }
 
   // Restitue le montant initialement bloqué (positif)
   await (supabase as any).from("wallet_transactions").insert({
