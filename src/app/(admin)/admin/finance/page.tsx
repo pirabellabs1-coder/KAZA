@@ -22,7 +22,10 @@ import {
 
 import { formatFcfa, formatFcfaShort } from "@/lib/utils";
 import { CountryFlag } from "@/components/shared/country-flag";
+import { listAdminPayouts } from "@/lib/queries/admin-payouts";
 import { PrintReportButton } from "./print-report-button";
+
+export const dynamic = "force-dynamic";
 
 // Fallbacks vides — vues agrégées finance à brancher (revenus 30j, payouts,
 // waterfall, heatmap géo). Les transactions réelles vivent dans `payments`,
@@ -50,7 +53,6 @@ interface Payout {
   paidAt?: string;
   method: string;
 }
-const RECENT_PAYOUTS: Payout[] = [];
 const GEO_HEATMAP: Array<{
   country: string;
   code: string;
@@ -120,7 +122,10 @@ const COUNTRY_FLAGS: Record<string, string> = {
 // =============================================================================
 // PAGE
 // =============================================================================
-export default function AdminFinancePage() {
+export default async function AdminFinancePage() {
+  // Reversements réels (withdrawal_requests) — remplace l'ancien tableau vide.
+  const recentPayouts = await listAdminPayouts();
+
   // GRAPHIQUE 1 — waterfall (empty si pas de data)
   const hasWaterfall = REVENUE_WATERFALL.length > 0;
   const wW = 800;
@@ -488,7 +493,7 @@ export default function AdminFinancePage() {
             Reversements en cours & récents
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            {RECENT_PAYOUTS.length} transactions · Mobile Money / Virement / SWIFT
+            {recentPayouts.length} transactions · Mobile Money / Virement / SWIFT
           </p>
         </CardHeader>
         <CardContent className="p-0">
@@ -506,7 +511,7 @@ export default function AdminFinancePage() {
                 </tr>
               </thead>
               <tbody>
-                {RECENT_PAYOUTS.map((p) => (
+                {recentPayouts.map((p) => (
                   <tr
                     key={p.id}
                     className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50"

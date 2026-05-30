@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Camera, ShieldCheck, CalendarDays, Clock } from "lucide-react";
+import { ShieldCheck, CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,9 +52,21 @@ export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from("users")
-    .select("phone, address, bio, profile_photo_url, created_at")
+    .select(
+      "phone, address, bio, profile_photo_url, created_at, is_verified, verification_status",
+    )
     .eq("id", user.id)
     .maybeSingle();
+
+  const isVerified =
+    profile?.is_verified === true ||
+    profile?.verification_status === "APPROVED";
+  const verificationLabel =
+    profile?.verification_status === "PENDING"
+      ? "Vérification en cours"
+      : isVerified
+        ? "Identité vérifiée"
+        : "Non vérifiée";
 
   const role = ROLE_LABELS[user.role] ?? {
     label: user.role,
@@ -97,13 +109,6 @@ export default async function ProfilePage() {
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <button
-                  type="button"
-                  aria-label="Changer la photo"
-                  className="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full border-2 border-white bg-kaza-blue text-white shadow-md transition-colors hover:bg-kaza-blue/90"
-                >
-                  <Camera className="size-4" />
-                </button>
               </div>
               <div className="space-y-1">
                 <h2 className="text-lg font-semibold text-foreground">
@@ -113,15 +118,21 @@ export default async function ProfilePage() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <Badge className={role.className}>{role.label}</Badge>
-                <Badge className="gap-1 bg-kaza-green text-white hover:bg-kaza-green/90">
-                  <ShieldCheck className="size-3" />
-                  Vérifié
-                </Badge>
+                {isVerified ? (
+                  <Badge className="gap-1 bg-kaza-green text-white hover:bg-kaza-green/90">
+                    <ShieldCheck className="size-3" />
+                    Vérifié
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="gap-1">
+                    <ShieldCheck className="size-3" />
+                    {verificationLabel}
+                  </Badge>
+                )}
               </div>
-              <Button variant="outline" size="sm" className="mt-2 w-full">
-                <Camera className="mr-2 size-4" />
-                Changer la photo
-              </Button>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Modifiez votre photo dans le formulaire ci-dessous.
+              </p>
             </CardContent>
           </Card>
 
@@ -143,25 +154,13 @@ export default async function ProfilePage() {
               </div>
               <Separator />
               <div className="flex items-start gap-3">
-                <Clock className="mt-0.5 size-4 text-kaza-blue" />
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Dernière connexion
-                  </p>
-                  <p className="font-medium text-foreground">
-                    Aujourd&apos;hui à 09:42
-                  </p>
-                </div>
-              </div>
-              <Separator />
-              <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-0.5 size-4 text-kaza-green" />
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Identité
                   </p>
                   <p className="font-medium text-foreground">
-                    Vérifiée le 18 janvier 2025
+                    {verificationLabel}
                   </p>
                 </div>
               </div>

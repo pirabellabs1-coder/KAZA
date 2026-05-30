@@ -29,31 +29,14 @@ import {
   type ContractStatus,
 } from "@/components/contracts/contract-status-badge";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { listUserContracts } from "@/lib/queries/contracts";
 import { formatPrice } from "@/lib/utils";
-
-// Type redéfini localement — à brancher sur la table contracts Supabase
-interface DemoContract {
-  id: string;
-  status: "DRAFT" | "PENDING_TENANT" | "PENDING_OWNER" | "SIGNED" | "CANCELLED";
-  propertyTitle: string;
-  propertyAddress: string;
-  ownerName: string;
-  tenantName: string;
-  monthlyRent: number;
-  deposit: number;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  signedAt?: string;
-  pdfUrl?: string;
-}
-
-// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
-const DEMO_CONTRACTS: DemoContract[] = [];
 
 export const metadata: Metadata = {
   title: "Mes Contrats",
 };
+
+export const dynamic = "force-dynamic";
 
 const TABS: { value: string; label: string; statuses: ContractStatus[] | "ALL" }[] =
   [
@@ -80,7 +63,7 @@ export default async function ContractsListPage({
   const activeTab = params.tab || "all";
   const tabConfig = TABS.find((t) => t.value === activeTab) ?? TABS[0];
 
-  const all = DEMO_CONTRACTS;
+  const all = await listUserContracts(user.id);
   const list =
     tabConfig.statuses === "ALL"
       ? all
