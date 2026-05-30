@@ -32,7 +32,12 @@ const OWNER_ROLES = new Set(["OWNER", "AGENCY", "ADMIN"]);
 
 // Modèles légaux (conformes droit béninois) — ce ne sont pas des données
 // utilisateur ; ils ouvrent l'éditeur de contrat réel (/contracts/templates).
-const CONTRACT_TEMPLATES = [
+const CONTRACT_TEMPLATES: ReadonlyArray<{
+  id: string;
+  title: string;
+  description: string;
+  badge?: string;
+}> = [
   {
     id: "tpl-standard",
     title: "Bail standard",
@@ -52,7 +57,7 @@ const CONTRACT_TEMPLATES = [
     description:
       "Location courte durée (1 à 12 semaines). Adapté aux séjours touristiques.",
   },
-] as const;
+];
 
 const STATUS_LABEL: Record<string, string> = {
   DRAFT: "Brouillon",
