@@ -117,7 +117,7 @@ export async function initiateRentPayment(
             : {}),
         },
       },
-      { provider: input.provider ?? "fedapay" }
+      { provider: input.provider ?? "geniuspay" }
     );
 
     // Insere la ligne payments (admin client car le webhook devra pouvoir

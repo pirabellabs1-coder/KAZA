@@ -134,7 +134,7 @@ export interface TopUpResult {
 
 export async function initiateWalletTopUp(
   amount: number,
-  provider: PaymentProvider = "fedapay",
+  provider: PaymentProvider = "geniuspay",
 ): Promise<TopUpResult> {
   const value = Math.round(Number(amount) || 0);
   if (value < MIN_TOPUP) {

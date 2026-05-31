@@ -168,7 +168,7 @@ export interface ShareCheckoutResult {
 
 export async function initiateExpenseShareCheckout(
   shareId: string,
-  provider: PaymentProvider = "fedapay",
+  provider: PaymentProvider = "geniuspay",
 ): Promise<ShareCheckoutResult> {
   if (!shareId) return { success: false, error: "Part introuvable." };
   const user = await getCurrentDisplayUser();

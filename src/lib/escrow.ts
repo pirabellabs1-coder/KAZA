@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { fedapayClient } from "@/lib/payments/fedapay";
+import { sendPayout } from "@/lib/payments/payout";
 
 // =============================================================================
 // KAZA - Logique Escrow
@@ -262,7 +262,7 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
   //    au statut escrow (reste HELD) et on propage l'erreur.
   let payoutId: string;
   try {
-    const result = await fedapayClient.sendPayout({
+    const result = await sendPayout({
       amount,
       phoneNumber: destination.phoneNumber,
       mode: destination.mode,
@@ -278,7 +278,7 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
       err instanceof Error ? err.message : err
     );
     throw new Error(
-      `Escrow release : le transfert FedaPay a échoué — fonds NON libérés. ${err instanceof Error ? err.message : ""}`
+      `Escrow release : le reversement a échoué — fonds NON libérés. ${err instanceof Error ? err.message : ""}`
     );
   }
 
@@ -372,7 +372,7 @@ export async function refundFromEscrow(
   // 3) Transfert réel (refund = payout sortant vers le locataire).
   let refundId: string;
   try {
-    const result = await fedapayClient.sendPayout({
+    const result = await sendPayout({
       amount,
       phoneNumber: destination.phoneNumber,
       mode: destination.mode,
@@ -388,7 +388,7 @@ export async function refundFromEscrow(
       err instanceof Error ? err.message : err
     );
     throw new Error(
-      `Escrow refund : le transfert FedaPay a échoué — remboursement NON effectué. ${err instanceof Error ? err.message : ""}`
+      `Escrow refund : le reversement a échoué — remboursement NON effectué. ${err instanceof Error ? err.message : ""}`
     );
   }
 

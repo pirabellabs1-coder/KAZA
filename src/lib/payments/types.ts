@@ -10,7 +10,7 @@
 // et dans les webhook handlers.
 // =============================================================================
 
-export type PaymentProvider = "fedapay" | "kkiapay";
+export type PaymentProvider = "geniuspay";
 
 export type PaymentMethod =
   | "mtn_money"

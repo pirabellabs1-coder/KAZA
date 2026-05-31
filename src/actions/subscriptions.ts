@@ -193,7 +193,7 @@ export interface CheckoutResult {
 
 export async function initiateSubscriptionCheckout(
   plan: string,
-  provider: PaymentProvider = "fedapay",
+  provider: PaymentProvider = "geniuspay",
 ): Promise<CheckoutResult> {
   const supabase = await getLooseClient();
   const {

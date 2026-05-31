@@ -105,7 +105,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
       try {
         const result = await initiateRentPayment({
           rentalId,
-          provider: method === "visa" ? "kkiapay" : "fedapay",
+          provider: "geniuspay",
           promoCode: appliedPromo?.code,
         });
 

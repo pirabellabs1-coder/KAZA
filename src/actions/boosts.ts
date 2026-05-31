@@ -168,7 +168,7 @@ export interface BoostCheckoutResult {
 
 export async function initiateBoostCheckout(
   input: ActivateBoostInput,
-  provider: PaymentProvider = "fedapay",
+  provider: PaymentProvider = "geniuspay",
 ): Promise<BoostCheckoutResult> {
   const { propertyId, plan, days } = input;
   const priceFcfa = Math.max(0, Math.round(Number(input.amount) || 0));

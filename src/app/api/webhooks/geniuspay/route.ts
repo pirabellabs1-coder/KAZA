@@ -3,7 +3,7 @@ import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { kkiapayClient } from "@/lib/payments/kkiapay";
+import { geniuspayClient } from "@/lib/payments/geniuspay";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeReleaseDate, holdInEscrow } from "@/lib/escrow";
 import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
@@ -13,11 +13,12 @@ import { creditWalletTopUp } from "@/lib/wallet/credit";
 import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
 
 // =============================================================================
-// Webhook Kkiapay
+// Webhook GeniusPay
 // =============================================================================
-// Securite:
-// - Verifie la signature HMAC SHA-256 (header `x-kkiapay-signature`)
-// - Idempotent
+// Sécurité :
+// - Vérifie la signature HMAC-SHA256 : HMAC(timestamp + "." + body, secret)
+//   via les headers x-webhook-signature / x-webhook-timestamp (+ anti-rejeu 5 min)
+// - Idempotent : si le paiement est déjà dans un état final → 200 sans retraiter
 // - 401 si signature invalide
 // =============================================================================
 
@@ -27,38 +28,33 @@ export const runtime = "nodejs";
 const FINAL_STATUSES = new Set(["COMPLETED", "FAILED", "REFUNDED"]);
 
 export async function POST(req: NextRequest) {
-  const signature = req.headers.get("x-kkiapay-signature") ?? "";
+  const signature = req.headers.get("x-webhook-signature") ?? "";
+  const timestamp = req.headers.get("x-webhook-timestamp") ?? "";
   const rawBody = await req.text();
 
-  if (!kkiapayClient.verifyWebhookSignature(rawBody, signature)) {
-    console.warn("[webhook:kkiapay] signature invalide");
-    return NextResponse.json(
-      { error: "Signature invalide" },
-      { status: 401 }
-    );
+  // 1) Vérification de signature (HMAC sur timestamp + "." + body).
+  if (!geniuspayClient.verifyWebhookSignature(rawBody, signature, timestamp)) {
+    console.warn("[webhook:geniuspay] signature invalide");
+    return NextResponse.json({ error: "Signature invalide" }, { status: 401 });
   }
 
+  // 2) Parsing JSON.
   let parsedBody: unknown;
   try {
     parsedBody = JSON.parse(rawBody);
   } catch {
-    return NextResponse.json(
-      { error: "Corps JSON invalide" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Corps JSON invalide" }, { status: 400 });
   }
 
   let event;
   try {
-    event = kkiapayClient.parseWebhookEvent(parsedBody);
+    event = geniuspayClient.parseWebhookEvent(parsedBody);
   } catch (err) {
-    console.error("[webhook:kkiapay] parse echec:", err);
-    return NextResponse.json(
-      { error: "Evenement invalide" },
-      { status: 400 }
-    );
+    console.error("[webhook:geniuspay] parse echec:", err);
+    return NextResponse.json({ error: "Evenement invalide" }, { status: 400 });
   }
 
+  // 3) Lookup paiement par transaction_id (= reference GeniusPay).
   const admin = createAdminClient();
   const { data: payment, error: lookupErr } = await (
     admin as unknown as SupabaseClient
@@ -72,15 +68,17 @@ export async function POST(req: NextRequest) {
 
   if (lookupErr || !payment) {
     console.warn(
-      `[webhook:kkiapay] paiement introuvable (tx=${event.paymentId})`
+      `[webhook:geniuspay] paiement introuvable (ref=${event.paymentId})`,
     );
     return NextResponse.json({ received: true, ignored: true });
   }
 
+  // 4) Idempotence.
   if (FINAL_STATUSES.has(payment.status)) {
     return NextResponse.json({ received: true, idempotent: true });
   }
 
+  // 5) Mise à jour selon le statut.
   const now = new Date().toISOString();
   let newStatus: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "REFUNDED" =
     "PENDING";
@@ -110,9 +108,6 @@ export async function POST(req: NextRequest) {
     })
     .eq("id", payment.id);
 
-  // Code promo : redemption UNIQUEMENT au passage COMPLETED. Idempotence
-  // garantie par le garde `FINAL_STATUSES` (paiement final = jamais retraite).
-  // Best-effort : un echec ici ne casse pas le traitement du paiement.
   if (newStatus === "COMPLETED") {
     await redeemPromoOnComplete(event, payment.user_id, admin);
 
@@ -122,6 +117,8 @@ export async function POST(req: NextRequest) {
       amount?: number;
       metadata?: Record<string, unknown> | null;
     };
+
+    // Abonnement payé par moyen de paiement.
     if (p.purpose === "SUBSCRIPTION" && p.subscription_plan) {
       try {
         await activatePaidSubscription(admin, {
@@ -131,11 +128,11 @@ export async function POST(req: NextRequest) {
           paymentMethod: "mobile_money",
         });
       } catch (err) {
-        console.error("[webhook:kkiapay] activation abonnement echec:", err);
+        console.error("[webhook:geniuspay] activation abonnement echec:", err);
       }
     }
 
-    // Boost d'annonce payé par moyen de paiement : activation.
+    // Boost d'annonce payé par moyen de paiement.
     if (p.purpose === "BOOST" && p.metadata) {
       const m = p.metadata as {
         property_id?: string;
@@ -153,12 +150,12 @@ export async function POST(req: NextRequest) {
             paymentId: payment.id,
           });
         } catch (err) {
-          console.error("[webhook:kkiapay] activation boost echec:", err);
+          console.error("[webhook:geniuspay] activation boost echec:", err);
         }
       }
     }
 
-    // Recharge wallet payée par Mobile Money : crédit du solde.
+    // Recharge wallet payée par Mobile Money.
     if (p.purpose === "WALLET_TOPUP") {
       try {
         await creditWalletTopUp(admin as unknown as SupabaseClient, {
@@ -167,39 +164,38 @@ export async function POST(req: NextRequest) {
           paymentId: payment.id,
         });
       } catch (err) {
-        console.error("[webhook:kkiapay] credit wallet echec:", err);
+        console.error("[webhook:geniuspay] credit wallet echec:", err);
       }
     }
 
-    // Frais partagés colocation : marque la part réglée + rembourse le payeur.
+    // Frais partagés colocation.
     if (p.purpose === "EXPENSE_SHARE" && p.metadata) {
       const m = p.metadata as { share_id?: string; paid_by?: string | null };
       if (m.share_id) {
         try {
-          await settleExpenseShareFromPayment(admin as unknown as SupabaseClient, {
-            shareId: m.share_id,
-            paidBy: m.paid_by ?? null,
-            amountFcfa: Number(p.amount ?? 0),
-            paymentId: payment.id,
-          });
+          await settleExpenseShareFromPayment(
+            admin as unknown as SupabaseClient,
+            {
+              shareId: m.share_id,
+              paidBy: m.paid_by ?? null,
+              amountFcfa: Number(p.amount ?? 0),
+              paymentId: payment.id,
+            },
+          );
         } catch (err) {
-          console.error("[webhook:kkiapay] settle frais partages echec:", err);
+          console.error("[webhook:geniuspay] settle frais partages echec:", err);
         }
       }
     }
-  }
 
-  // Kkiapay envoie `payment.success` ou similaire en cas d'approbation.
-  if (
-    (event.status === "succeeded" ||
-      event.type.toLowerCase().includes("success")) &&
-    payment.rental_id
-  ) {
-    try {
-      const releaseDate = computeReleaseDate(new Date());
-      await holdInEscrow(payment.id, releaseDate);
-    } catch (err) {
-      console.error("[webhook:kkiapay] escrow echec:", err);
+    // Paiement de loyer / réservation → escrow.
+    if (payment.rental_id) {
+      try {
+        const releaseDate = computeReleaseDate(new Date());
+        await holdInEscrow(payment.id, releaseDate);
+      } catch (err) {
+        console.error("[webhook:geniuspay] escrow echec:", err);
+      }
     }
   }
 

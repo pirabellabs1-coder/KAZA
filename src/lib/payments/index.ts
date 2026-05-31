@@ -1,7 +1,6 @@
 import "server-only";
 
-import { fedapayClient } from "./fedapay";
-import { kkiapayClient } from "./kkiapay";
+import { geniuspayClient } from "./geniuspay";
 import {
   type CreatePaymentInput,
   type PaymentProvider,
@@ -37,8 +36,7 @@ interface PaymentProviderAdapter {
 }
 
 const PROVIDERS: Record<PaymentProvider, PaymentProviderAdapter> = {
-  fedapay: fedapayClient,
-  kkiapay: kkiapayClient,
+  geniuspay: geniuspayClient,
 };
 
 /**
@@ -56,37 +54,21 @@ export function getPaymentProvider(name: PaymentProvider): PaymentProviderAdapte
 }
 
 interface CreatePaymentOptions {
-  /** Provider de paiement preferentiel (defaut: fedapay) */
+  /** Provider de paiement (unique : GeniusPay). */
   provider?: PaymentProvider;
-  /** Activer le fallback automatique sur Kkiapay si FedaPay echoue */
-  fallback?: boolean;
 }
 
 /**
- * Cree un paiement via le provider choisi (FedaPay par defaut).
- * En cas d'echec et si `fallback` est actif (defaut: true), retombe sur
- * Kkiapay automatiquement.
+ * Crée un paiement via GeniusPay (seul provider d'encaissement de la
+ * plateforme). Renvoie l'URL de checkout hébergée à laquelle rediriger le
+ * client.
  */
 export async function createPayment(
   input: CreatePaymentInput,
   opts: CreatePaymentOptions = {}
 ): Promise<PaymentResult> {
-  const provider = opts.provider ?? "fedapay";
-  const fallback = opts.fallback ?? true;
-
-  try {
-    return await getPaymentProvider(provider).createCheckout(input);
-  } catch (err) {
-    if (!fallback || provider === "kkiapay") {
-      throw err;
-    }
-    // Fallback automatique: tenter Kkiapay si FedaPay echoue.
-    console.warn(
-      `[payments] echec ${provider}, basculement vers kkiapay:`,
-      err instanceof Error ? err.message : err
-    );
-    return await getPaymentProvider("kkiapay").createCheckout(input);
-  }
+  const provider = opts.provider ?? "geniuspay";
+  return await getPaymentProvider(provider).createCheckout(input);
 }
 
 /**
