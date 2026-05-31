@@ -144,17 +144,29 @@ export default async function StudentFinancePage() {
         </CardContent>
       </Card>
 
-      {/* Dépenses partagées de colocation — module à venir (pas de backend) */}
-      <Card className="rounded-2xl border-dashed bg-muted/30">
-        <CardContent className="flex items-center gap-3 px-4 py-6 text-sm text-muted-foreground">
-          <PiggyBank className="size-5 shrink-0" />
-          <p>
-            Le suivi des dépenses partagées entre colocataires (courses,
-            factures, répartition) arrive bientôt. Vous pourrez y enregistrer et
-            répartir chaque dépense de votre colocation.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Dépenses partagées de colocation — module réel */}
+      <Link
+        href="/student/expenses"
+        className="group block rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-kaza-green/40"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-kaza-green/10">
+              <PiggyBank className="size-5 text-kaza-green" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-kaza-navy">
+                Frais partagés de colocation
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Enregistrez, répartissez et réglez les dépenses (courses,
+                factures) avec vos colocataires — paiement par Mobile Money.
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="size-4 shrink-0 text-gray-300 group-hover:text-kaza-green" />
+        </div>
+      </Link>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Link

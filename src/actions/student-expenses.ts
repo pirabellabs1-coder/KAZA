@@ -9,9 +9,13 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createPayment } from "@/lib/payments";
+import type { PaymentProvider } from "@/lib/payments/types";
 
 export interface ActionResult {
   success: boolean;
@@ -147,4 +151,98 @@ export async function settleShare(shareId: string): Promise<ActionResult> {
 
   revalidatePath("/student/expenses");
   return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// Règlement d'une part par MOYEN DE PAIEMENT (Mobile Money / FedaPay)
+// — alternative au flag manuel. Initialise un checkout provider ; la part est
+//   marquée réglée + le payeur (paid_by) remboursé par le webhook au passage
+//   du paiement à COMPLETED (purpose = EXPENSE_SHARE).
+// ---------------------------------------------------------------------------
+
+export interface ShareCheckoutResult {
+  success: boolean;
+  error?: string;
+  checkoutUrl?: string;
+}
+
+export async function initiateExpenseShareCheckout(
+  shareId: string,
+  provider: PaymentProvider = "fedapay",
+): Promise<ShareCheckoutResult> {
+  if (!shareId) return { success: false, error: "Part introuvable." };
+  const user = await getCurrentDisplayUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  // Récupère la part + la dépense associée (montant, payeur, titre).
+  const { data: share, error: shareErr } = await admin
+    .from("expense_shares")
+    .select(
+      "id, user_id, share_fcfa, settled, expense:roommate_expenses(paid_by, title)",
+    )
+    .eq("id", shareId)
+    .maybeSingle();
+
+  if (shareErr || !share) {
+    return { success: false, error: "Part introuvable." };
+  }
+  const s = share as unknown as {
+    id: string;
+    user_id: string;
+    share_fcfa: number;
+    settled: boolean;
+    expense: { paid_by?: string | null; title?: string | null } | null;
+  };
+  if (s.user_id !== user.id) {
+    return { success: false, error: "Cette part ne vous appartient pas." };
+  }
+  if (s.settled) {
+    return { success: false, error: "Cette part est déjà réglée." };
+  }
+  const amount = Math.round(Number(s.share_fcfa) || 0);
+  if (amount <= 0) {
+    return { success: false, error: "Montant invalide." };
+  }
+  const paidBy = s.expense?.paid_by ?? null;
+  if (paidBy && paidBy === user.id) {
+    return { success: false, error: "Vous avez avancé cette dépense." };
+  }
+
+  try {
+    const result = await createPayment(
+      {
+        amount,
+        currency: "XOF",
+        description: `Frais partagés — ${s.expense?.title ?? "colocation"}`,
+        customerEmail: user.email ?? "",
+        metadata: { user_id: user.id, kind: "expense_share", share_id: shareId },
+      },
+      { provider },
+    );
+
+    const { error: insertErr } = await admin.from("payments").insert({
+      user_id: user.id,
+      rental_id: null,
+      amount,
+      payment_method: "MOBILE_MONEY",
+      transaction_id: result.providerPaymentId,
+      status: "PENDING",
+      purpose: "EXPENSE_SHARE",
+      metadata: { share_id: shareId, paid_by: paidBy },
+    });
+    if (insertErr) {
+      console.error("[expenses] insert payment echec:", insertErr.message);
+      return { success: false, error: "Impossible d'initier le paiement." };
+    }
+
+    return { success: true, checkoutUrl: result.checkoutUrl };
+  } catch (err) {
+    console.error("[expenses] checkout echec:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Erreur lors du paiement.",
+    };
+  }
 }

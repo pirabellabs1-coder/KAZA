@@ -10,6 +10,7 @@ import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
 import { activatePaidSubscription } from "@/lib/subscriptions/activate";
 import { activatePaidBoost } from "@/lib/boosts/activate";
 import { creditWalletTopUp } from "@/lib/wallet/credit";
+import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
 
 // =============================================================================
 // Webhook FedaPay
@@ -176,6 +177,23 @@ export async function POST(req: NextRequest) {
         });
       } catch (err) {
         console.error("[webhook:fedapay] credit wallet echec:", err);
+      }
+    }
+
+    // 5sexies) Frais partagés colocation : marque la part réglée + rembourse.
+    if (p.purpose === "EXPENSE_SHARE" && p.metadata) {
+      const m = p.metadata as { share_id?: string; paid_by?: string | null };
+      if (m.share_id) {
+        try {
+          await settleExpenseShareFromPayment(admin as unknown as SupabaseClient, {
+            shareId: m.share_id,
+            paidBy: m.paid_by ?? null,
+            amountFcfa: Number(p.amount ?? 0),
+            paymentId: payment.id,
+          });
+        } catch (err) {
+          console.error("[webhook:fedapay] settle frais partages echec:", err);
+        }
       }
     }
   }

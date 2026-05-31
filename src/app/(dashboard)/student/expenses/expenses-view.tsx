@@ -43,7 +43,11 @@ import {
 import { toast } from "@/components/ui/toast-helper";
 import { formatFcfa } from "@/lib/utils";
 
-import { createExpense, settleShare } from "@/actions/student-expenses";
+import {
+  createExpense,
+  settleShare,
+  initiateExpenseShareCheckout,
+} from "@/actions/student-expenses";
 import type {
   StudentGroup,
   GroupExpensesData,
@@ -157,6 +161,18 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
       } else {
         toast.error(res.error ?? "Échec");
       }
+    });
+  };
+
+  const handlePayShare = (shareId: string) => {
+    startTransition(async () => {
+      const res = await initiateExpenseShareCheckout(shareId);
+      if (res.success && res.checkoutUrl) {
+        toast.info("Redirection vers le paiement Mobile Money…");
+        window.location.href = res.checkoutUrl;
+        return;
+      }
+      toast.error(res.error ?? "Impossible d'initier le paiement.");
     });
   };
 
@@ -415,21 +431,31 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
                     </div>
                   </div>
                   {myShare && myShare.userId !== e.paidById && (
-                    <div className="mt-2 flex justify-end">
+                    <div className="mt-2 flex flex-wrap justify-end gap-2">
                       {myShare.settled ? (
                         <Badge className="gap-1 bg-kaza-green/15 text-kaza-green">
                           <CheckCircle2 className="size-3.5" /> Réglé
                         </Badge>
                       ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5"
-                          disabled={isPending}
-                          onClick={() => handleSettle(myShare.id)}
-                        >
-                          <CheckCircle2 className="size-3.5" /> Marquer ma part réglée
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5"
+                            disabled={isPending}
+                            onClick={() => handleSettle(myShare.id)}
+                          >
+                            <CheckCircle2 className="size-3.5" /> Marquer réglé
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="gap-1.5"
+                            disabled={isPending}
+                            onClick={() => handlePayShare(myShare.id)}
+                          >
+                            <Wallet className="size-3.5" /> Payer par Mobile Money
+                          </Button>
+                        </>
                       )}
                     </div>
                   )}
