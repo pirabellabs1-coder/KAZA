@@ -74,8 +74,10 @@ export default async function CheckoutPage({
   const now = new Date();
   const periodLabel = `Loyer de ${MONTHS_FR[now.getMonth()]} ${now.getFullYear()}`;
   const rentalId = rental.id;
-  const serviceFee = Math.round(rental.monthlyRent * 0.03);
-  const total = rental.monthlyRent + serviceFee;
+  // Le serveur facture exactement le loyer mensuel (pas de frais de service) :
+  // le montant AFFICHÉ doit donc être égal au montant DÉBITÉ pour éviter toute
+  // sous-facturation / incohérence avec le code promo (recalculé sur le loyer).
+  const total = rental.monthlyRent;
 
   return (
     <div className="space-y-6">
@@ -118,6 +120,7 @@ export default async function CheckoutPage({
             propertyImageUrl={rental.property.primaryPhotoUrl}
             periodLabel={periodLabel}
             monthlyRent={rental.monthlyRent}
+            serviceFeeRate={0}
           />
         </div>
       </div>

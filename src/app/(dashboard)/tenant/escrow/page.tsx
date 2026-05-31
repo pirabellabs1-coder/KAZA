@@ -99,22 +99,72 @@ export default async function EscrowPage() {
         </Card>
       </div>
 
-      {/* Liste — empty state */}
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center px-6 py-12 text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-kaza-blue/10">
-            <Wallet className="size-7 text-kaza-blue" />
-          </div>
-          <p className="mt-4 font-heading text-base font-semibold text-kaza-navy">
-            Aucun paiement en séquestre
-          </p>
-          <p className="mt-1 max-w-md text-sm text-muted-foreground">
-            Vos paiements de loyer en attente de libération au propriétaire
-            apparaîtront ici, avec leur date de libération automatique et la
-            possibilité de signaler un problème.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Liste des paiements en séquestre (réels) */}
+      {escrowPayments.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center px-6 py-12 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-kaza-blue/10">
+              <Wallet className="size-7 text-kaza-blue" />
+            </div>
+            <p className="mt-4 font-heading text-base font-semibold text-kaza-navy">
+              Aucun paiement en séquestre
+            </p>
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              Vos paiements de loyer en attente de libération au propriétaire
+              apparaîtront ici, avec leur date de libération automatique.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-0">
+            <ul className="divide-y">
+              {escrowPayments.map((p) => {
+                const badge =
+                  p.status === "released"
+                    ? {
+                        label: "Libéré au propriétaire",
+                        cls: "bg-kaza-green/10 text-kaza-green",
+                      }
+                    : p.status === "disputed"
+                      ? {
+                          label: "Litige en cours",
+                          cls: "bg-destructive/10 text-destructive",
+                        }
+                      : {
+                          label: "En séquestre",
+                          cls: "bg-kaza-blue/10 text-kaza-blue",
+                        };
+                return (
+                  <li
+                    key={p.id}
+                    className="flex items-center justify-between gap-3 px-5 py-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 items-center justify-center rounded-lg bg-kaza-blue/10">
+                        <Wallet className="size-5 text-kaza-blue" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">
+                          {formatPrice(p.amount)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Loyer en séquestre
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${badge.cls}`}
+                    >
+                      {badge.label}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

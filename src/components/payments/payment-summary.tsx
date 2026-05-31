@@ -77,10 +77,12 @@ export function PaymentSummary({
             <span>Loyer mensuel</span>
             <span className="text-foreground">{formatPrice(monthlyRent)}</span>
           </div>
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span>Frais de service KAZA (3%)</span>
-            <span className="text-foreground">{formatPrice(serviceFee)}</span>
-          </div>
+          {serviceFee > 0 && (
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>Frais de service KAZA</span>
+              <span className="text-foreground">{formatPrice(serviceFee)}</span>
+            </div>
+          )}
         </div>
 
         <Separator />
