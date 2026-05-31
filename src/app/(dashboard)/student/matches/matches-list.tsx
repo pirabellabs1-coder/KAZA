@@ -1,107 +1,58 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Check, Eye, UserPlus } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { MessageSquare, Sparkles, Users } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "@/components/ui/toast-helper";
 import { CompatibilityScore } from "@/components/student/compatibility-score";
 import { cn, getInitials } from "@/lib/utils";
 
-type MatchStatus = "new" | "viewed" | "requested";
-
-type Match = {
-  id: string;
+export interface MatchItem {
+  userId: string;
   name: string;
-  age: number;
+  avatarUrl: string | null;
   university: string;
   discipline: string;
-  score: number;
-  commonHabits: string[];
-  differences: string[];
   bio: string;
-};
+  score: number;
+  reasons: string[];
+}
 
-// Profils de colocataires compatibles — alimentés par les vrais profils
-// étudiants une fois le matching branché. Vide tant qu'aucun profil réel.
-const MATCHES: Match[] = [];
+export function MatchesList({ matches }: { matches: MatchItem[] }) {
+  const [minScore, setMinScore] = useState(0);
 
-type FilterKey = "new" | "viewed" | "requested" | "all";
-
-const STORAGE_KEY = "kaza-matches-status";
-
-export function MatchesList() {
-  const [statuses, setStatuses] = useState<Record<string, MatchStatus>>({});
-  const [filter, setFilter] = useState<FilterKey>("all");
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        setStatuses(JSON.parse(raw) as Record<string, MatchStatus>);
-      }
-    } catch {
-      // ignore
-    } finally {
-      setLoaded(true);
-    }
-  }, []);
-
-  const persist = (next: Record<string, MatchStatus>) => {
-    setStatuses(next);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // ignore
-    }
-  };
-
-  const getStatus = (id: string): MatchStatus => statuses[id] ?? "new";
-
-  const handleView = (id: string, name: string) => {
-    const current = getStatus(id);
-    if (current === "new") persist({ ...statuses, [id]: "viewed" });
-    toast.info(`Profil de ${name} ouvert.`);
-  };
-
-  const handleRequest = (id: string, name: string) => {
-    if (getStatus(id) === "requested") {
-      toast.info("Demande déjà envoyée.");
-      return;
-    }
-    persist({ ...statuses, [id]: "requested" });
-    toast.success(`Demande envoyée à ${name} ✓`);
-  };
-
-  const counts = useMemo(() => {
-    const c = { new: 0, viewed: 0, requested: 0 };
-    for (const m of MATCHES) {
-      c[getStatus(m.id)]++;
-    }
-    return c;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statuses]);
-
-  const filtered = useMemo(() => {
-    if (filter === "all") return MATCHES;
-    return MATCHES.filter((m) => getStatus(m.id) === filter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, statuses]);
-
-  if (!loaded) {
-    return <div className="h-64 animate-pulse rounded-xl border border-dashed bg-muted/30" />;
-  }
-
-  const filters: { key: FilterKey; label: string; count: number }[] = [
-    { key: "all", label: "Tous", count: MATCHES.length },
-    { key: "new", label: "Nouveau", count: counts.new },
-    { key: "viewed", label: "Vu", count: counts.viewed },
-    { key: "requested", label: "Demandé", count: counts.requested },
+  const filters = [
+    { key: 0, label: "Tous" },
+    { key: 60, label: "60%+" },
+    { key: 80, label: "80%+" },
   ];
+  const filtered = matches.filter((m) => m.score >= minScore);
+
+  if (matches.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed bg-muted/20 p-12 text-center">
+        <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-2xl bg-kaza-blue/10">
+          <Users className="size-7 text-kaza-blue" />
+        </div>
+        <p className="font-heading text-base font-semibold text-kaza-navy">
+          Aucun match pour le moment
+        </p>
+        <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+          Complétez votre{" "}
+          <Link href="/student/profile-coloc" className="text-kaza-blue underline">
+            profil colocataire
+          </Link>{" "}
+          pour que l&apos;algorithme vous propose des colocataires compatibles
+          (les matchs apparaissent dès que d&apos;autres étudiants ont rempli le
+          leur).
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -110,90 +61,63 @@ export function MatchesList() {
           <button
             key={f.key}
             type="button"
-            onClick={() => setFilter(f.key)}
+            onClick={() => setMinScore(f.key)}
             className={cn(
               "rounded-full border px-4 py-1.5 text-sm transition-colors",
-              filter === f.key
+              minScore === f.key
                 ? "border-kaza-blue bg-kaza-blue text-white"
-                : "border-border bg-background hover:bg-muted"
+                : "border-border bg-background hover:bg-muted",
             )}
           >
             {f.label}
-            <span
-              className={cn(
-                "ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums",
-                filter === f.key
-                  ? "bg-white/20 text-white"
-                  : "bg-muted text-muted-foreground"
-              )}
-            >
-              {f.count}
-            </span>
           </button>
         ))}
       </div>
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed bg-muted/20 p-12 text-center text-sm text-muted-foreground">
-          Aucun match dans cette catégorie pour le moment.
+          Aucun match au-dessus de ce seuil de compatibilité.
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {filtered.map((m) => {
-            const status = getStatus(m.id);
             const [first, ...rest] = m.name.split(" ");
             return (
-              <Card key={m.id} className="overflow-hidden">
+              <Card key={m.userId} className="overflow-hidden">
                 <CardContent className="space-y-4 pt-6">
                   <div className="flex gap-4">
                     <Avatar className="size-16 shrink-0">
+                      {m.avatarUrl ? (
+                        <AvatarImage src={m.avatarUrl} alt={m.name} />
+                      ) : null}
                       <AvatarFallback className="bg-kaza-navy text-base text-white">
                         {getInitials(first ?? "", rest.join(" "))}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="truncate font-semibold">
-                            {m.name}, {m.age}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {m.discipline} · {m.university}
-                          </p>
-                        </div>
-                        {status === "requested" && (
-                          <Badge className="bg-kaza-green/10 text-[10px] text-kaza-green">
-                            <Check className="mr-0.5 size-3" />
-                            Demandé
-                          </Badge>
-                        )}
-                        {status === "viewed" && (
-                          <Badge variant="secondary" className="text-[10px]">
-                            Vu
-                          </Badge>
-                        )}
-                        {status === "new" && (
-                          <Badge className="bg-kaza-blue text-[10px] text-white">
-                            Nouveau
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
-                        {m.bio}
+                      <p className="truncate font-semibold">{m.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {[m.discipline, m.university].filter(Boolean).join(" · ") ||
+                          "Profil colocataire"}
                       </p>
+                      {m.bio ? (
+                        <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+                          {m.bio}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="shrink-0">
                       <CompatibilityScore score={m.score} size="sm" />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  {m.reasons.length > 0 && (
                     <div>
-                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-kaza-green">
-                        En commun
+                      <p className="mb-1 flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-kaza-green">
+                        <Sparkles className="size-3" /> Points communs
                       </p>
                       <div className="flex flex-wrap gap-1.5">
-                        {m.commonHabits.map((h) => (
+                        {m.reasons.map((h) => (
                           <Badge
                             key={h}
                             className="bg-kaza-green/10 text-[11px] text-kaza-green hover:bg-kaza-green/15"
@@ -203,44 +127,14 @@ export function MatchesList() {
                         ))}
                       </div>
                     </div>
-
-                    {m.differences.length > 0 && (
-                      <div>
-                        <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-orange-600">
-                          Différences
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {m.differences.map((d) => (
-                            <Badge
-                              key={d}
-                              className="bg-orange-50 text-[11px] text-orange-700 hover:bg-orange-100"
-                            >
-                              {d}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  )}
 
                   <div className="flex gap-2 pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => handleView(m.id, m.name)}
-                    >
-                      <Eye className="mr-1.5 size-4" />
-                      Voir profil
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="flex-1"
-                      disabled={status === "requested"}
-                      onClick={() => handleRequest(m.id, m.name)}
-                    >
-                      <UserPlus className="mr-1.5 size-4" />
-                      {status === "requested" ? "Envoyée" : "Rejoindre"}
+                    <Button asChild className="flex-1" size="sm">
+                      <Link href={`/messages?to=${m.userId}`}>
+                        <MessageSquare className="mr-1.5 size-4" />
+                        Contacter
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>

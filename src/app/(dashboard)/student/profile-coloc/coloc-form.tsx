@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   Camera,
   Heart,
@@ -36,6 +36,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast-helper";
+import { upsertStudentProfile } from "@/actions/student-profile";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "kaza-coloc-profile";
@@ -81,7 +82,7 @@ const FOOD_HABITS = [
   "Omnivore",
 ];
 
-type ColocProfile = {
+export type ColocProfile = {
   age: string;
   gender: string;
   discipline: string;
@@ -153,11 +154,27 @@ function computeCompleteness(p: ColocProfile): number {
   return Math.round((done / checks.length) * 100);
 }
 
-export function ColocForm() {
-  const [profile, setProfile] = useState<ColocProfile>(INITIAL);
+export function ColocForm({
+  initialProfile,
+}: {
+  initialProfile?: Partial<ColocProfile>;
+}) {
+  const hasDbProfile =
+    initialProfile != null && Object.keys(initialProfile).length > 0;
+  const [profile, setProfile] = useState<ColocProfile>({
+    ...INITIAL,
+    ...(initialProfile ?? {}),
+  });
   const [loaded, setLoaded] = useState(false);
+  const [isSaving, startSaving] = useTransition();
 
   useEffect(() => {
+    // Si le profil vient de la base (DB), il fait foi. Sinon on récupère le
+    // brouillon localStorage pour ne pas perdre une saisie en cours.
+    if (hasDbProfile) {
+      setLoaded(true);
+      return;
+    }
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -169,7 +186,7 @@ export function ColocForm() {
     } finally {
       setLoaded(true);
     }
-  }, []);
+  }, [hasDbProfile]);
 
   const completeness = useMemo(() => computeCompleteness(profile), [profile]);
 
@@ -233,12 +250,22 @@ export function ColocForm() {
   };
 
   const handleSave = () => {
+    // Brouillon local immédiat (résilience), puis persistance Supabase réelle.
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-      toast.success("Profil colocataire enregistré ✓");
     } catch {
-      toast.error("Impossible d'enregistrer (stockage indisponible).");
+      // stockage indisponible : non bloquant
     }
+    startSaving(async () => {
+      const res = await upsertStudentProfile(
+        profile as unknown as Record<string, unknown>,
+      );
+      if (res.success) {
+        toast.success("Profil colocataire enregistré ✓");
+      } else {
+        toast.error(res.error ?? "Échec de l'enregistrement.");
+      }
+    });
   };
 
   if (!loaded) {
@@ -646,7 +673,7 @@ export function ColocForm() {
       )}
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} size="lg">
+        <Button onClick={handleSave} size="lg" disabled={isSaving}>
           <Save className="mr-2 size-4" />
           Enregistrer mon profil
         </Button>

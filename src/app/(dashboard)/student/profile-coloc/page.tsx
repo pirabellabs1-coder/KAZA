@@ -1,12 +1,23 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { ColocForm } from "./coloc-form";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getStudentProfile } from "@/lib/queries/student-profile";
+
+import { ColocForm, type ColocProfile } from "./coloc-form";
 
 export const metadata: Metadata = {
   title: "Mon profil colocataire",
 };
 
-export default function ProfileColocPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ProfileColocPage() {
+  const user = await getCurrentDisplayUser();
+  if (!user) redirect("/login?redirect=/student/profile-coloc");
+
+  const dbProfile = await getStudentProfile(user.id);
+
   return (
     <div className="space-y-6">
       <div>
@@ -19,7 +30,11 @@ export default function ProfileColocPage() {
         </p>
       </div>
 
-      <ColocForm />
+      <ColocForm
+        initialProfile={
+          (dbProfile ?? undefined) as Partial<ColocProfile> | undefined
+        }
+      />
     </div>
   );
 }
