@@ -21,7 +21,20 @@ type AuthResult = {
   redirectTo?: string;
   /** true si un second facteur (TOTP) est requis pour finaliser la connexion. */
   mfaRequired?: boolean;
+  /**
+   * false = inscription finalisée sans code (le domaine email n'est pas encore
+   * vérifié → on crée le compte directement). true = un code email est attendu.
+   */
+  codeRequired?: boolean;
 };
+
+/**
+ * Vérification par CODE email activée ? Tant que le domaine d'envoi (Resend)
+ * n'est pas vérifié, les emails ne partent pas : on bascule sur l'inscription
+ * directe (sans code). Mettre EMAIL_OTP_ENABLED=true dans Vercel une fois le
+ * domaine vérifié pour réactiver les codes email — sans changer le code.
+ */
+const EMAIL_OTP_ENABLED = process.env.EMAIL_OTP_ENABLED === "true";
 
 /**
  * Rôles supportés par l'auth KAZA. AGENCY est conservé pour la sélection à
@@ -226,6 +239,12 @@ export async function requestSignupCode(
     };
   }
 
+  // Domaine email pas encore vérifié → inscription DIRECTE (sans code).
+  if (!EMAIL_OTP_ENABLED) {
+    const res = await createAndSignIn(data);
+    return { ...res, codeRequired: false };
+  }
+
   const otp = await createEmailOtp(email, "SIGNUP");
   if (!otp.ok) return { error: otp.error };
 
@@ -238,7 +257,7 @@ export async function requestSignupCode(
     };
   }
 
-  return { success: true, message: "Code envoyé." };
+  return { success: true, codeRequired: true, message: "Code envoyé." };
 }
 
 // =============================================================================
@@ -255,10 +274,18 @@ export async function verifySignupCode(
   const check = await verifyEmailOtp(email, "SIGNUP", code);
   if (!check.ok) return { error: check.error };
 
+  return createAndSignIn(data);
+}
+
+/**
+ * Crée le compte (email confirmé) + parrainage/notif + connexion immédiate.
+ * Partagé par l'inscription par code et l'inscription directe.
+ */
+async function createAndSignIn(data: SignupFormData): Promise<AuthResult> {
+  const email = (data.email ?? "").trim().toLowerCase();
   const role = data.role as AuthRole;
   const admin = adminClient();
 
-  // Création du compte (email déjà confirmé via le code).
   const { data: created, error: createErr } = await admin.auth.admin.createUser({
     email,
     password: data.password,
@@ -283,21 +310,18 @@ export async function verifySignupCode(
 
   const newUserId = created.user?.id;
 
-  // Parrainage + notification interne (best-effort).
   const referralCode = data.referralCode?.trim();
   if (referralCode && newUserId) {
     void applyReferralBonus(admin, newUserId, referralCode);
   }
   void notifyTeamOfSignup(data);
 
-  // Connexion immédiate (pose les cookies de session).
   const supabase = await createClient();
   const { error: signInErr } = await supabase.auth.signInWithPassword({
     email,
     password: data.password,
   });
   if (signInErr) {
-    // Compte créé mais connexion échouée : on renvoie vers la page de login.
     return {
       success: true,
       redirectTo: "/login",
@@ -416,6 +440,14 @@ export async function requestPasswordResetCode(
 ): Promise<AuthResult> {
   const email = rawEmail?.trim().toLowerCase();
   if (!email) return { error: "Adresse email requise." };
+
+  // Domaine email pas encore vérifié → pas d'envoi de code possible.
+  if (!EMAIL_OTP_ENABLED) {
+    return {
+      error:
+        "La réinitialisation par email sera bientôt disponible. En attendant, écrivez à immobilierkaza@gmail.com pour réinitialiser votre mot de passe.",
+    };
+  }
 
   const userId = await findUserIdByEmail(email);
   // Anti-énumération : on renvoie toujours un succès, mais on n'envoie le code

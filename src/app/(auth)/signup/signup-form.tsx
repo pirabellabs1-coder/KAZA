@@ -101,6 +101,12 @@ export function SignupForm() {
           return;
         }
         if (result?.success) {
+          // Inscription directe (code email désactivé) → redirection immédiate.
+          if (result.codeRequired === false) {
+            router.push(result.redirectTo ?? "/dashboard");
+            router.refresh();
+            return;
+          }
           setPending(data);
           setCode("");
           setStep("code");
