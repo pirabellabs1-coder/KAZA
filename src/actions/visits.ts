@@ -158,7 +158,7 @@ export async function requestVisit(
     type: "VISIT_REQUESTED",
     title: "Nouvelle demande de visite",
     body: `Un locataire souhaite visiter "${property.title}" le ${parsed.data.requestedDate}.`,
-    link: `/owner/visits/${data.id}`,
+    link: `/owner/visits`,
   });
 
   // 2) Dispatcher complet (email Resend + push FCM) — best-effort.
@@ -254,7 +254,7 @@ async function transitionVisit(
     type: notification.type,
     title: notification.title,
     body: notification.body,
-    link: `/tenant/visits/${id}`,
+    link: `/tenant/visits`,
   });
 
   revalidatePath("/owner/visits");
@@ -341,7 +341,7 @@ export async function cancelVisit(id: string): Promise<ActionResult<VisitRequest
     type: "VISIT_CANCELLED",
     title: "Visite annulee",
     body: "Une demande de visite a ete annulee.",
-    link: isOwner ? `/tenant/visits/${id}` : `/owner/visits/${id}`,
+    link: isOwner ? `/tenant/visits` : `/owner/visits`,
   });
 
   revalidatePath("/owner/visits");

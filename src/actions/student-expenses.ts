@@ -146,7 +146,7 @@ export async function settleShare(shareId: string): Promise<ActionResult> {
   const user = await getCurrentDisplayUser();
   if (!user) return { success: false, error: "Vous devez être connecté." };
 
-  const supabase = (await createClient()) as unknown as Loose;
+  const supabase = (await createClient()) as unknown as SupabaseClient;
 
   // Sécurité : on ne peut régler QUE sa propre part. (Sans ce contrôle, tout
   // membre du groupe pouvait marquer réglée la part d'un autre.)
