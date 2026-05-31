@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="KAZA">
+  <rect width="64" height="64" rx="14" fill="#1A3A52"/>
+  <path d="M15 31 L32 18 L49 31 L49 35 L44 35 L44 31 L32 22 L20 31 L20 35 L15 35 Z" fill="#4CAF50"/>
+  <text x="32" y="52" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">K</text>
+</svg>
