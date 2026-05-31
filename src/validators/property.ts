@@ -303,9 +303,21 @@ export const createPropertySchema = z.object({
     .number({ message: "La superficie est requise" })
     .positive("La superficie doit etre superieure a 0")
     .max(10_000, "La superficie ne peut pas depasser 10 000 m2"),
-  propertyType: z.enum(["APARTMENT", "HOUSE", "ROOM", "STUDIO"], {
-    message: "Veuillez selectionner un type de bien valide",
-  }),
+  propertyType: z.enum(
+    [
+      "APARTMENT",
+      "HOUSE",
+      "STUDIO",
+      "VILLA",
+      "ROOM",
+      "SHARED_ROOM",
+      "COMMERCIAL",
+      "LAND",
+    ],
+    {
+      message: "Veuillez selectionner un type de bien valide",
+    },
+  ),
   address: z
     .string()
     .min(5, "L'adresse doit contenir au moins 5 caracteres")

@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getPropertyById } from "@/lib/queries/properties";
 import { getPropertyReviews } from "@/lib/queries/reviews";
 import { countPropertyVisitRequests } from "@/lib/queries/owner-activity";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { AnalyticsTab } from "./analytics-tab";
@@ -62,9 +63,18 @@ export default async function PropertyDetailPage({
   params,
 }: PropertyDetailPageProps) {
   const { id } = await params;
-  const property = await getPropertyById(id);
+  const [user, property] = await Promise.all([
+    getCurrentDisplayUser(),
+    getPropertyById(id),
+  ]);
 
   if (!property) {
+    notFound();
+  }
+
+  // Sécurité : seul le propriétaire du bien accède à ce tableau de bord privé.
+  const ownerId = (property as { owner?: { id?: string } }).owner?.id;
+  if (ownerId && (!user || ownerId !== user.id)) {
     notFound();
   }
 

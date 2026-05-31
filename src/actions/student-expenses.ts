@@ -147,10 +147,26 @@ export async function settleShare(shareId: string): Promise<ActionResult> {
   if (!user) return { success: false, error: "Vous devez être connecté." };
 
   const supabase = (await createClient()) as unknown as Loose;
+
+  // Sécurité : on ne peut régler QUE sa propre part. (Sans ce contrôle, tout
+  // membre du groupe pouvait marquer réglée la part d'un autre.)
+  const { data: share } = await supabase
+    .from("expense_shares")
+    .select("user_id, settled")
+    .eq("id", shareId)
+    .maybeSingle();
+  const s = share as { user_id?: string; settled?: boolean } | null;
+  if (!s) return { success: false, error: "Part introuvable." };
+  if (s.user_id !== user.id) {
+    return { success: false, error: "Cette part ne vous appartient pas." };
+  }
+  if (s.settled) return { success: true }; // déjà réglée → idempotent
+
   const { error } = await supabase
     .from("expense_shares")
     .update({ settled: true, settled_at: new Date().toISOString() })
-    .eq("id", shareId);
+    .eq("id", shareId)
+    .eq("settled", false);
   if (error) return { success: false, error: error.message };
 
   revalidatePath("/student/expenses");
