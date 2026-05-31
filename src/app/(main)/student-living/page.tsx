@@ -216,16 +216,16 @@ export default function StudentLivingPage() {
                 className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
               >
                 <input type="hidden" name="targets" value="etudiant" />
-                <div className="relative flex-1">
+                <div className="flex h-12 flex-1 items-center gap-2 rounded-md border border-white/40 bg-white pl-3 focus-within:ring-2 focus-within:ring-amber-300">
                   <GraduationCap
                     aria-hidden
-                    className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-kaza-blue"
+                    className="size-5 shrink-0 text-kaza-blue"
                   />
                   <Input
                     name="q"
                     aria-label="Ville, université ou quartier"
                     placeholder="Ville, université ou quartier…"
-                    className="h-12 border-white/40 bg-white pl-11 text-base text-kaza-navy placeholder:text-slate-500 focus-visible:ring-amber-300"
+                    className="h-full flex-1 border-0 bg-transparent px-0 text-base text-kaza-navy shadow-none placeholder:text-slate-500 focus-visible:ring-0"
                   />
                 </div>
                 <select

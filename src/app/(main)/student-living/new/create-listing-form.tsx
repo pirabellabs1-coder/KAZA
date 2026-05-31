@@ -106,6 +106,20 @@ export function CreateListingForm({
         </div>
       </div>
 
+      {!isAuthenticated && (
+        <div className="mb-6 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Connectez-vous pour publier votre annonce — elle sera associée à
+            votre compte.
+          </p>
+          <Button asChild size="sm" className="shrink-0">
+            <Link href="/login?redirect=/student-living/new">
+              Se connecter
+            </Link>
+          </Button>
+        </div>
+      )}
+
       <div className="space-y-6">
         <Card>
           <CardHeader>
