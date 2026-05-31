@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import {
   Clock,
   CheckCircle,
@@ -14,24 +15,14 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { listStudentRequests } from "@/lib/queries/student-requests";
 
 export const metadata: Metadata = {
   title: "Demandes de Colocation",
 };
 
-// Aucune fausse demande : les demandes de colocation réelles de l'étudiant
-// s'afficheront ici (table roommate_members / colocation_requests). En attendant
-// un branchement complet, on n'injecte AUCUNE donnée fictive — l'EmptyState
-// honnête ci-dessous s'affiche tant qu'il n'y a pas de demande réelle.
-const placeholderRequests: Array<{
-  id: string;
-  listingTitle: string;
-  address: string;
-  price: number;
-  status: "APPROVED" | "PENDING" | "REJECTED";
-  appliedDate: string;
-  responseDate: string | null;
-}> = [];
+export const dynamic = "force-dynamic";
 
 function getRequestStatusBadge(status: string) {
   switch (status) {
@@ -69,8 +60,11 @@ function formatDateShort(dateStr: string): string {
   }).format(new Date(dateStr));
 }
 
-export default function StudentRequestsPage() {
-  const requests = placeholderRequests;
+export default async function StudentRequestsPage() {
+  const user = await getCurrentDisplayUser();
+  if (!user) redirect("/login?redirect=/student/requests");
+
+  const requests = await listStudentRequests(user.id);
 
   return (
     <div className="space-y-6">
@@ -111,13 +105,10 @@ export default function StudentRequestsPage() {
                         {new Intl.NumberFormat("fr-FR").format(request.price)}{" "}
                         XOF/mois
                       </span>
-                      <span className="flex items-center gap-1">
-                        <CalendarDays className="size-3" />
-                        Envoyée le {formatDateShort(request.appliedDate)}
-                      </span>
-                      {request.responseDate && (
-                        <span className="text-xs">
-                          Répondue le {formatDateShort(request.responseDate)}
+                      {request.appliedDate && (
+                        <span className="flex items-center gap-1">
+                          <CalendarDays className="size-3" />
+                          {formatDateShort(request.appliedDate)}
                         </span>
                       )}
                     </div>
