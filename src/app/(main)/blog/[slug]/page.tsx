@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeArticleHtml } from "@/lib/blog/sanitize-html";
 import {
   ArrowLeft,
   ArrowRight,
@@ -172,7 +172,7 @@ export default async function BlogArticlePage({
               <div
                 className="kaza-article-body text-base leading-relaxed text-foreground [&_.lead]:mb-8 [&_.lead]:text-xl [&_.lead]:font-medium [&_.lead]:leading-relaxed [&_.lead]:text-kaza-navy [&_h2]:mt-14 [&_h2]:mb-4 [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-kaza-navy [&_h2]:sm:text-3xl [&_p]:mb-5 [&_p]:leading-[1.8] [&_ul]:my-6 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_li]:leading-relaxed [&_a]:text-kaza-blue [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-kaza-navy [&_strong]:font-semibold [&_strong]:text-kaza-navy"
                 dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(article.content),
+                  __html: sanitizeArticleHtml(article.content),
                 }}
               />
 
