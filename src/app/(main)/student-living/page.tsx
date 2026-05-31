@@ -248,6 +248,15 @@ export default function StudentLivingPage() {
                   Chercher
                 </Button>
               </form>
+              <p className="mt-4 text-center text-sm text-white/80">
+                Vous avez une chambre à partager ?{" "}
+                <Link
+                  href="/student-living/new"
+                  className="font-semibold text-amber-300 underline-offset-2 hover:underline"
+                >
+                  Publier une annonce de colocation
+                </Link>
+              </p>
             </GlassPanel>
           </FadeIn>
 
