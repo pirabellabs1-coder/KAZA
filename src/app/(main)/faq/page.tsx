@@ -379,7 +379,35 @@ const CONTACT_OPTIONS = [
   },
 ];
 
-export default function FaqPage() {
+export default async function FaqPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  // Recherche FAQ (GET ?q=) — filtrage serveur insensible casse/accents.
+  const { q: rawQ } = await searchParams;
+  const query = (rawQ ?? "").trim();
+  const norm = (s: string) =>
+    s
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase();
+  const nq = norm(query);
+
+  const displayCategories = nq
+    ? CATEGORIES.map((cat) => ({
+        ...cat,
+        items: cat.items.filter(
+          (it) => norm(it.q).includes(nq) || norm(it.a).includes(nq),
+        ),
+      })).filter((cat) => cat.items.length > 0)
+    : CATEGORIES;
+
+  const totalMatches = displayCategories.reduce(
+    (n, c) => n + c.items.length,
+    0,
+  );
+
   // JSON-LD FAQPage construit depuis les vraies Q/R des catégories — permet à
   // Google d'afficher les questions en featured snippets / rich results.
   const faqJsonLd = {
@@ -436,6 +464,8 @@ export default function FaqPage() {
               >
                 <form
                   role="search"
+                  method="get"
+                  action="/faq"
                   aria-label="Rechercher dans la FAQ"
                   className="flex items-center gap-2"
                 >
@@ -445,6 +475,8 @@ export default function FaqPage() {
                   />
                   <Input
                     type="search"
+                    name="q"
+                    defaultValue={query}
                     placeholder="Rechercher : caution, escrow, vérification…"
                     className="h-12 flex-1 border-0 bg-transparent text-base shadow-none focus-visible:ring-0"
                   />
@@ -456,6 +488,16 @@ export default function FaqPage() {
                     Rechercher
                   </Button>
                 </form>
+                {query ? (
+                  <p className="mt-3 text-center text-sm text-muted-foreground">
+                    {totalMatches > 0
+                      ? `${totalMatches} résultat${totalMatches > 1 ? "s" : ""} pour « ${query} »`
+                      : `Aucun résultat pour « ${query} ».`}{" "}
+                    <a href="/faq" className="font-medium text-kaza-blue hover:underline">
+                      Réinitialiser
+                    </a>
+                  </p>
+                ) : null}
               </GlassPanel>
             </div>
           </FadeIn>
@@ -477,7 +519,7 @@ export default function FaqPage() {
           </RevealOnScroll>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {CATEGORIES.map((cat, i) => {
+            {displayCategories.map((cat, i) => {
               const Icon = cat.icon;
               return (
                 <RevealOnScroll key={cat.id} delay={i * 60}>
@@ -529,7 +571,21 @@ export default function FaqPage() {
       {/* ===== ACCORDIONS PAR CATÉGORIE ============================= */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-24">
         <div className="mx-auto max-w-4xl px-4 lg:px-8">
-          {CATEGORIES.map((cat, idx) => {
+          {displayCategories.length === 0 && (
+            <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-12 text-center">
+              <p className="font-heading text-lg font-bold text-kaza-navy">
+                Aucune réponse trouvée pour « {query} »
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Essayez d&apos;autres mots-clés, ou{" "}
+                <a href="/contact" className="font-medium text-kaza-blue hover:underline">
+                  contactez notre équipe
+                </a>
+                .
+              </p>
+            </div>
+          )}
+          {displayCategories.map((cat, idx) => {
             const Icon = cat.icon;
             return (
               <RevealOnScroll key={cat.id}>
