@@ -4,19 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getMyKazaPoints } from "@/actions/points";
 
 // =============================================================================
-// Fallbacks locaux : la source réelle des KAZA Points (Supabase via
-// `@/lib/queries/kaza-points`) n'est pas encore branchée côté client.
-// On affiche un solde neutre tant que le branchement n'est pas effectué.
+// Badge KAZA Points : lit le solde réel via la server action `getMyKazaPoints`
+// (table kaza_points_balance). Se rafraîchit sur l'event `kaza-points-updated`.
 // =============================================================================
 function formatPoints(value: number): string {
   return new Intl.NumberFormat("fr-FR").format(value);
-}
-
-function getPointsBalance(): number {
-  // TODO: brancher sur Supabase (kaza_points_ledger) via une route client-safe
-  return 0;
 }
 
 interface PointsBadgeProps {
@@ -44,15 +39,22 @@ export function PointsBadge({
   // Solde lu paresseusement au mount : la source réelle (Supabase) sera
   // branchée plus tard. On garde le pattern d'abonnement aux events custom
   // afin qu'un futur listener (refresh sur mutation) reste compatible.
-  const [balance, setBalance] = useState<number | null>(() => getPointsBalance());
+  const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
-    const handler = () => setBalance(getPointsBalance());
-    window.addEventListener("storage", handler);
-    window.addEventListener("kaza-points-updated", handler);
+    let active = true;
+    const refresh = () => {
+      getMyKazaPoints()
+        .then((v) => active && setBalance(v))
+        .catch(() => {});
+    };
+    refresh();
+    window.addEventListener("storage", refresh);
+    window.addEventListener("kaza-points-updated", refresh);
     return () => {
-      window.removeEventListener("storage", handler);
-      window.removeEventListener("kaza-points-updated", handler);
+      active = false;
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("kaza-points-updated", refresh);
     };
   }, []);
 
