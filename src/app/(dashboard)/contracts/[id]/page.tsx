@@ -10,28 +10,8 @@ import {
   type ContractStatus,
 } from "@/components/contracts/contract-status-badge";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getContractForRental } from "@/lib/queries/contract-view";
 import { formatPrice, formatDate } from "@/lib/utils";
-
-// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
-// Tant que la query n'existe pas, on renvoie undefined → notFound().
-function getDemoContractById(_id: string) {
-  return undefined as
-    | {
-        id: string;
-        status: string;
-        propertyTitle: string;
-        propertyAddress: string;
-        ownerName: string;
-        tenantName: string;
-        monthlyRent: number;
-        deposit: number;
-        startDate: string;
-        endDate: string;
-        createdAt: string;
-        signedAt?: string;
-      }
-    | undefined;
-}
 
 import { SignaturePad } from "./signature-pad";
 
@@ -48,7 +28,7 @@ export default async function ContractDetailPage({
   const user = await getCurrentDisplayUser();
   if (!user) redirect(`/login?redirect=/contracts/${id}`);
 
-  const contract = getDemoContractById(id);
+  const contract = await getContractForRental(id, user.id);
   if (!contract) notFound();
 
   const isOwner = user.role === "OWNER";
