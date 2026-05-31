@@ -21,15 +21,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getOwnerPropertyViews30d } from "@/lib/queries/analytics";
+import { getOwnerMonthlyRevenue } from "@/lib/queries/owner-revenue";
 import { formatFcfaShort, formatNumber } from "@/lib/utils";
-
-// Fallback vide — à brancher quand l'agrégation mensuelle des revenus
-// propriétaire sera connectée à Supabase (table payments).
-const OWNER_MONTHLY_REVENUE: Array<{
-  month: string;
-  revenue: number;
-  occupancy: number;
-}> = [];
 
 export const metadata: Metadata = {
   title: "Analytics propriétaire",
@@ -53,9 +46,8 @@ export default async function OwnerAnalyticsPage() {
     stats.totalFavorites === 0 &&
     stats.viewsByProperty.length === 0;
 
-  // TODO: les courbes 12 mois restent sur les mocks le temps de brancher
-  //       l'agrégation mensuelle des revenus / occupation côté DB.
-  const data = OWNER_MONTHLY_REVENUE;
+  // Revenus & occupation mensuels réels (12 mois) — payments + rentals.
+  const data = await getOwnerMonthlyRevenue(user.id);
   const sparkRev = data.length > 0 ? data.slice(-8).map((d) => d.revenue) : [0];
   const sparkOcc = data.length > 0 ? data.slice(-8).map((d) => d.occupancy) : [0];
 
