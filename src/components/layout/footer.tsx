@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { CountryFlag } from "@/components/shared/country-flag";
+import { FooterNewsletter } from "@/components/layout/footer-newsletter";
 
 const exploreLinks = [
   { href: "/properties", label: "Propriétés" },
@@ -69,25 +70,7 @@ export function Footer() {
                 newsletter par mois, zéro spam.
               </p>
             </div>
-            <form
-              action="/api/newsletter"
-              method="post"
-              className="flex w-full max-w-md flex-col gap-3 sm:flex-row"
-            >
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="votre@email.com"
-                className="flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur transition focus:border-kaza-green"
-              />
-              <button
-                type="submit"
-                className="rounded-full bg-kaza-green px-6 py-3 text-sm font-semibold text-white transition hover:bg-kaza-green/90"
-              >
-                S&apos;abonner
-              </button>
-            </form>
+            <FooterNewsletter />
           </div>
         </div>
       </section>
