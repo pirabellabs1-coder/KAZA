@@ -1,18 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import {
-  Lock,
-  ShieldCheck,
-  Smartphone,
-  Monitor,
-  Globe,
-  LogOut,
-  History,
-} from "lucide-react";
+import { Lock, Monitor, Globe, LogOut, History } from "lucide-react";
 import { z } from "zod";
 
 import { changePassword } from "@/actions/settings";
+import { TwoFactorCard } from "@/components/settings/two-factor-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,9 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -86,7 +77,6 @@ export function SecurityClient() {
   const [pwdErrors, setPwdErrors] = useState<
     Partial<Record<keyof typeof pwd, string>>
   >({});
-  const [twoFa] = useState(false);
   const [sessions, setSessions] = useState(SESSIONS);
   const [isPending, startTransition] = useTransition();
 
@@ -161,37 +151,8 @@ export function SecurityClient() {
         </CardContent>
       </Card>
 
-      {/* 2FA */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="size-5 text-kaza-navy" />
-            Authentification à 2 facteurs (2FA)
-          </CardTitle>
-          <CardDescription>
-            Ajoutez une seconde couche de sécurité en recevant un code par SMS lors
-            de la connexion.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/30 p-4">
-            <div>
-              <p className="text-sm font-medium">2FA par SMS</p>
-              <p className="text-xs text-muted-foreground">
-                Recevez un code à 6 chiffres sur votre téléphone à chaque connexion.
-              </p>
-            </div>
-            <Switch checked={twoFa} disabled aria-label="2FA bientôt disponible" />
-          </div>
-          <Alert variant="info">
-            <Smartphone />
-            <AlertTitle>Bientôt disponible</AlertTitle>
-            <AlertDescription>
-              L&apos;activation 2FA sera disponible dans la prochaine mise à jour.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
+      {/* 2FA — TOTP réel via Supabase MFA */}
+      <TwoFactorCard />
 
       {/* Sessions actives */}
       <Card>

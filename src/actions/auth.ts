@@ -19,6 +19,8 @@ type AuthResult = {
   success?: boolean;
   message?: string;
   redirectTo?: string;
+  /** true si un second facteur (TOTP) est requis pour finaliser la connexion. */
+  mfaRequired?: boolean;
 };
 
 /**
@@ -242,6 +244,23 @@ export async function login(data: LoginFormData): Promise<AuthResult> {
     };
   }
 
+  // 2FA : si l'utilisateur a un facteur TOTP vérifié, sa connexion n'est pas
+  // finalisée tant que le code n'est pas saisi. On ne redirige pas : le
+  // formulaire affichera l'étape de vérification (verifyMfaLogin).
+  try {
+    const { data: aal } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (
+      aal &&
+      aal.nextLevel === "aal2" &&
+      aal.nextLevel !== aal.currentLevel
+    ) {
+      return { success: true, mfaRequired: true };
+    }
+  } catch {
+    // En cas d'indisponibilité de l'API MFA, on ne bloque pas la connexion.
+  }
+
   // Récupère le rôle pour rediriger vers le bon espace
   const role =
     (authData.user?.user_metadata?.role as AuthRole | undefined) ?? "TENANT";
@@ -253,6 +272,52 @@ export async function login(data: LoginFormData): Promise<AuthResult> {
     success: true,
     redirectTo: ROLE_LANDING[role] ?? "/dashboard",
   };
+}
+
+// =============================================================================
+// LOGIN — Vérification du second facteur (TOTP / 2FA)
+// =============================================================================
+/**
+ * Finalise une connexion en attente de 2FA : relève le niveau d'assurance à
+ * AAL2 en validant le code TOTP de l'application d'authentification.
+ */
+export async function verifyMfaLogin(code: string): Promise<AuthResult> {
+  const cleaned = (code ?? "").replace(/\s/g, "");
+  if (!/^\d{6}$/.test(cleaned)) {
+    return { error: "Entrez le code à 6 chiffres." };
+  }
+
+  const supabase = await createClient();
+
+  const { data: factors, error: fErr } = await supabase.auth.mfa.listFactors();
+  if (fErr) return { error: fErr.message };
+
+  const totp = factors?.totp?.[0];
+  if (!totp) return { error: "Aucun facteur 2FA actif sur ce compte." };
+
+  const { data: challenge, error: cErr } = await supabase.auth.mfa.challenge({
+    factorId: totp.id,
+  });
+  if (cErr || !challenge) {
+    return { error: cErr?.message ?? "Échec de la vérification." };
+  }
+
+  const { error: vErr } = await supabase.auth.mfa.verify({
+    factorId: totp.id,
+    challengeId: challenge.id,
+    code: cleaned,
+  });
+  if (vErr) return { error: "Code incorrect ou expiré. Réessayez." };
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const role =
+    (user?.user_metadata?.role as AuthRole | undefined) ?? "TENANT";
+
+  await track({ eventType: "LOGIN" });
+
+  return { success: true, redirectTo: ROLE_LANDING[role] ?? "/dashboard" };
 }
 
 // =============================================================================
