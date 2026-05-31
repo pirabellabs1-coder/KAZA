@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Shield, MapPin, Users, Building2, Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { ContactForm } from "@/app/(main)/contact/contact-form";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -141,39 +138,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border bg-card p-6">
-              <form className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nom complet</Label>
-                    <Input id="name" placeholder="Jean Dupont" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="jean@example.com"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Sujet</Label>
-                  <Input id="subject" placeholder="Votre sujet" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea
-                    id="message"
-                    placeholder="Votre message..."
-                    rows={5}
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  Envoyer le message
-                </Button>
-              </form>
-            </div>
+            <ContactForm />
           </div>
         </div>
       </section>

@@ -210,6 +210,8 @@ export default function HelpPage() {
               >
                 <form
                   role="search"
+                  method="get"
+                  action="/faq"
                   aria-label="Rechercher dans l'aide"
                   className="flex items-center gap-2"
                 >
@@ -219,6 +221,7 @@ export default function HelpPage() {
                   />
                   <Input
                     type="search"
+                    name="q"
                     placeholder="Rechercher un article, un guide…"
                     className="h-12 flex-1 border-0 bg-transparent text-base shadow-none focus-visible:ring-0"
                   />

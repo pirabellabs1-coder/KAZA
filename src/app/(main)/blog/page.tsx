@@ -14,9 +14,8 @@ import {
 } from "lucide-react";
 
 import { BlogPreviewCard } from "@/components/marketing/blog-preview-card";
+import { InlineNewsletter } from "@/components/marketing/inline-newsletter";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FadeIn } from "@/components/shared/fade-in";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import {
@@ -315,26 +314,11 @@ export default function BlogPage() {
             directement dans votre boîte mail. Pas de spam, désabonnement en un
             clic.
           </p>
-          <form
-            className="mx-auto mt-10 flex max-w-md flex-col gap-3 sm:flex-row"
-            action="#"
-          >
-            <Input
-              type="email"
-              required
-              placeholder="votre.email@exemple.com"
-              className="h-12 rounded-full border-white/20 bg-white/95 px-5 text-kaza-navy placeholder:text-muted-foreground"
-              aria-label="Votre adresse email"
-            />
-            <Button
-              type="submit"
-              size="lg"
-              className="h-12 rounded-full bg-kaza-green px-7 font-semibold hover:bg-kaza-green/90"
-            >
-              S&apos;abonner
-              <ArrowRight className="ml-2 size-4" />
-            </Button>
-          </form>
+          <InlineNewsletter
+            source="blog"
+            theme="dark"
+            className="mx-auto mt-10 max-w-md"
+          />
           <p className="mt-5 text-xs text-white/55">
             Données chiffrées, jamais revendues. <Wallet className="ml-1 inline size-3 align-text-bottom" /> Conformité RGPD.
           </p>
