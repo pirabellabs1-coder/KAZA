@@ -1,9 +1,19 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
-import { CreditCard, Plus, Wallet, Building2, Receipt } from "lucide-react";
+import {
+  CreditCard,
+  Wallet,
+  Building2,
+  Receipt,
+  Smartphone,
+  ArrowUpRight,
+} from "lucide-react";
 
 import { updateBillingAddress } from "@/actions/settings";
+import type { UserInvoice } from "@/lib/queries/subscriptions";
+import { InvoiceDownloadButton } from "@/components/billing/invoice-download-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,52 +22,48 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/toast-helper";
 
-interface PaymentMethod {
-  id: string;
-  type: "card" | "wallet";
-  label: string;
-  detail: string;
-  isDefault: boolean;
-}
-
-interface Invoice {
-  id: string;
-  date: string;
-  label: string;
-  amount: number;
-  status: "paid" | "pending" | "failed";
-}
-
-// Tant que la query `listUserPaymentMethods` / `listUserInvoices` n'est pas
-// branchée côté serveur, on initialise tout à vide et on affiche des empty
-// states honnêtes (cartes / factures réelles uniquement).
-const DEFAULT_METHODS: PaymentMethod[] = [];
-
-const INVOICES: Invoice[] = [];
-
-const STATUS_META: Record<
-  Invoice["status"],
-  { label: string; className: string }
-> = {
-  paid: { label: "Payée", className: "bg-green-100 text-green-700" },
-  pending: { label: "En attente", className: "bg-orange-100 text-orange-700" },
-  failed: { label: "Échouée", className: "bg-red-100 text-red-700" },
+// Statuts de facture tels que stockés en DB (majuscules) → libellé + style.
+const STATUS_META: Record<string, { label: string; className: string }> = {
+  PAID: { label: "Payée", className: "bg-green-100 text-green-700" },
+  PENDING: { label: "En attente", className: "bg-orange-100 text-orange-700" },
+  FAILED: { label: "Échouée", className: "bg-red-100 text-red-700" },
+  CANCELLED: { label: "Annulée", className: "bg-muted text-muted-foreground" },
 };
+
+function statusMeta(status: string) {
+  return (
+    STATUS_META[status?.toUpperCase()] ?? {
+      label: status || "—",
+      className: "bg-muted text-muted-foreground",
+    }
+  );
+}
 
 function formatPrice(amount: number): string {
   return new Intl.NumberFormat("fr-FR").format(amount) + " FCFA";
+}
+
+function formatDate(value: string | null): string {
+  if (!value) return "—";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("fr-FR");
 }
 
 function readString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
+interface BillingClientProps {
+  initialAddress?: Record<string, unknown>;
+  invoices?: UserInvoice[];
+  walletBalance?: number;
+}
+
 export function BillingClient({
   initialAddress = {},
-}: {
-  initialAddress?: Record<string, unknown>;
-}) {
-  const [methods, setMethods] = useState<PaymentMethod[]>(DEFAULT_METHODS);
+  invoices = [],
+  walletBalance = 0,
+}: BillingClientProps) {
   const [address, setAddress] = useState({
     name: readString(initialAddress.name),
     line1: readString(initialAddress.line1),
@@ -65,24 +71,6 @@ export function BillingClient({
     country: readString(initialAddress.country),
   });
   const [isSaving, startSaving] = useTransition();
-
-  const setDefault = (id: string) => {
-    setMethods((prev) =>
-      prev.map((m) => ({ ...m, isDefault: m.id === id })),
-    );
-    toast.success("Méthode de paiement par défaut mise à jour.");
-  };
-
-  const remove = (id: string) => {
-    setMethods((prev) => prev.filter((m) => m.id !== id));
-    toast.info("Méthode de paiement supprimée.");
-  };
-
-  const addMethod = () => {
-    toast.info(
-      "L'ajout d'une méthode de paiement sera disponible prochainement.",
-    );
-  };
 
   const saveAddress = () => {
     startSaving(async () => {
@@ -97,75 +85,59 @@ export function BillingClient({
     });
   };
 
-  const downloadInvoice = (id: string) => {
-    toast.info(`Le téléchargement de la facture ${id} sera bientôt disponible.`);
-  };
-
   return (
     <div className="space-y-6">
-      {/* Méthodes de paiement */}
+      {/* Moyens de paiement — KAZA Wallet + Mobile Money (pas de carte stockée) */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <CreditCard className="size-4 text-kaza-blue" />
-            Méthodes de paiement
+            Moyens de paiement
           </CardTitle>
-          <Button size="sm" onClick={addMethod} className="bg-kaza-blue hover:bg-kaza-blue/90">
-            <Plus className="mr-1 size-3.5" />
-            Ajouter
-          </Button>
         </CardHeader>
         <CardContent className="space-y-3">
-          {methods.length === 0 ? (
-            <p className="py-4 text-center text-sm text-muted-foreground">
-              Aucune méthode enregistrée.
-            </p>
-          ) : (
-            methods.map((m) => (
-              <div
-                key={m.id}
-                className="flex items-center gap-3 rounded-lg border bg-card p-3"
-              >
-                <div className="flex size-10 items-center justify-center rounded-md bg-kaza-blue/10 text-kaza-blue">
-                  {m.type === "card" ? (
-                    <CreditCard className="size-5" />
-                  ) : (
-                    <Wallet className="size-5" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">
-                    {m.label}
-                    {m.isDefault ? (
-                      <Badge className="ml-2 bg-kaza-green/10 text-[10px] text-kaza-green">
-                        Par défaut
-                      </Badge>
-                    ) : null}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{m.detail}</p>
-                </div>
-                <div className="flex gap-2">
-                  {!m.isDefault ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setDefault(m.id)}
-                    >
-                      Définir par défaut
-                    </Button>
-                  ) : null}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => remove(m.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    Supprimer
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
+          {/* KAZA Wallet */}
+          <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
+            <div className="flex size-10 items-center justify-center rounded-md bg-kaza-blue/10 text-kaza-blue">
+              <Wallet className="size-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">
+                KAZA Wallet
+                <Badge className="ml-2 bg-kaza-green/10 text-[10px] text-kaza-green">
+                  Solde {formatPrice(walletBalance)}
+                </Badge>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Réglez vos abonnements, boosts et frais directement depuis votre
+                solde.
+              </p>
+            </div>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/wallet">
+                Recharger
+                <ArrowUpRight className="ml-1 size-3.5" />
+              </Link>
+            </Button>
+          </div>
+
+          {/* Mobile Money */}
+          <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
+            <div className="flex size-10 items-center justify-center rounded-md bg-kaza-blue/10 text-kaza-blue">
+              <Smartphone className="size-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">Mobile Money</p>
+              <p className="text-xs text-muted-foreground">
+                MTN, Moov et autres opérateurs. Le numéro est saisi de façon
+                sécurisée au moment du paiement — rien n&apos;est stocké chez
+                KAZA.
+              </p>
+            </div>
+            <Badge variant="outline" className="text-[10px]">
+              Au paiement
+            </Badge>
+          </div>
         </CardContent>
       </Card>
 
@@ -178,7 +150,7 @@ export function BillingClient({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {INVOICES.length === 0 ? (
+          {invoices.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/20 px-6 py-10 text-center">
               <div className="flex size-12 items-center justify-center rounded-2xl bg-kaza-blue/10">
                 <Receipt className="size-6 text-kaza-blue" />
@@ -192,7 +164,7 @@ export function BillingClient({
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-lg border">
+            <div className="overflow-x-auto rounded-lg border">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
                   <tr>
@@ -205,32 +177,31 @@ export function BillingClient({
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {INVOICES.map((inv) => {
-                    const meta = STATUS_META[inv.status];
+                  {invoices.map((inv) => {
+                    const meta = statusMeta(inv.status);
                     return (
                       <tr key={inv.id}>
                         <td className="px-3 py-2 text-xs text-muted-foreground">
-                          {new Date(inv.date).toLocaleDateString("fr-FR")}
+                          {formatDate(inv.issuedAt)}
                         </td>
-                        <td className="px-3 py-2 font-mono text-xs">{inv.id}</td>
-                        <td className="px-3 py-2">{inv.label}</td>
+                        <td className="px-3 py-2 font-mono text-xs">
+                          {inv.number}
+                        </td>
+                        <td className="px-3 py-2">
+                          {inv.description ?? "Service KAZA"}
+                        </td>
                         <td className="px-3 py-2 text-right font-medium">
                           {formatPrice(inv.amount)}
                         </td>
                         <td className="px-3 py-2">
-                          <Badge className={`border-0 text-[10px] ${meta.className}`}>
+                          <Badge
+                            className={`border-0 text-[10px] ${meta.className}`}
+                          >
                             {meta.label}
                           </Badge>
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => downloadInvoice(inv.id)}
-                            className="text-kaza-blue"
-                          >
-                            PDF
-                          </Button>
+                          <InvoiceDownloadButton invoice={inv} />
                         </td>
                       </tr>
                     );

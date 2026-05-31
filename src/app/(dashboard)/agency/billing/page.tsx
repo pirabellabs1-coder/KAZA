@@ -6,8 +6,6 @@ import {
   Calendar,
   Wallet,
   Receipt,
-  Download,
-  Eye,
   Check,
   Building2,
   Users,
@@ -49,6 +47,7 @@ import {
 import { formatFcfa } from "@/lib/utils";
 import { SubscribeButton } from "@/components/subscriptions/subscribe-button";
 import { CancelSubscriptionButton } from "@/components/subscriptions/cancel-subscription-button";
+import { InvoiceDownloadButton } from "@/components/billing/invoice-download-button";
 
 // Fallback vide — à brancher quand la table agency_profiles sera en place.
 const AGENCY_PROFILE = {
@@ -533,34 +532,11 @@ export default async function AgencyBillingPage() {
                           {invoice.paymentMethod ?? "—"}
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 gap-1 text-kaza-blue hover:text-kaza-blue"
-                              disabled={!invoice.pdfUrl}
-                              asChild={Boolean(invoice.pdfUrl)}
-                            >
-                              {invoice.pdfUrl ? (
-                                <a
-                                  href={invoice.pdfUrl}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  <Download className="size-3.5" />
-                                  PDF
-                                </a>
-                              ) : (
-                                <>
-                                  <Download className="size-3.5" />
-                                  PDF
-                                </>
-                              )}
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-8 gap-1">
-                              <Eye className="size-3.5" />
-                              Voir
-                            </Button>
+                          <div className="flex justify-end">
+                            <InvoiceDownloadButton
+                              invoice={invoice}
+                              className="h-8"
+                            />
                           </div>
                         </TableCell>
                       </TableRow>
@@ -678,23 +654,43 @@ export default async function AgencyBillingPage() {
             <div className="flex items-center justify-between rounded-lg border border-kaza-blue/30 bg-kaza-blue/5 p-4">
               <div className="flex items-center gap-3">
                 <span className="flex size-10 items-center justify-center rounded-lg bg-kaza-navy text-white">
-                  <CreditCard className="size-5" />
+                  <Wallet className="size-5" />
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-kaza-navy">
-                    {sub.paymentMethod ?? "Carte bancaire"}
+                    KAZA Wallet
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Moyen actif sur l&apos;abonnement
+                    Réglez vos abonnements depuis votre solde
                   </p>
                 </div>
               </div>
               <Badge className="bg-kaza-blue text-white hover:bg-kaza-blue">
-                Par défaut
+                {sub.paymentMethod
+                  ? sub.paymentMethod === "mobile_money"
+                    ? "Mobile Money"
+                    : sub.paymentMethod
+                  : "Actif"}
               </Badge>
             </div>
-            <Button variant="outline" className="w-full" disabled>
-              + Ajouter un moyen de paiement (bientôt)
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+              <span className="flex size-10 items-center justify-center rounded-lg bg-kaza-blue/10 text-kaza-blue">
+                <CreditCard className="size-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-kaza-navy">
+                  Mobile Money
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  MTN, Moov… saisi de façon sécurisée au moment du paiement.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full gap-1" asChild>
+              <Link href="/wallet">
+                <Wallet className="size-4" />
+                Gérer mon wallet
+              </Link>
             </Button>
           </CardContent>
         </Card>

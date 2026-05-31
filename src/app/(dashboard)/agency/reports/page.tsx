@@ -18,11 +18,6 @@ import {
 } from "@/components/ui/card";
 import { ReportGenerator } from "@/components/reports/report-generator";
 
-// Fallback vide — à brancher quand la table agency_profiles sera en place.
-const AGENCY_PROFILE = {
-  email: "",
-};
-
 export const metadata: Metadata = {
   title: "Rapports — KAZA Pro Agence",
   description:
@@ -171,10 +166,10 @@ export default function AgencyReportsPage() {
               exports publics. Conservation 10 ans conformément au Code Général
               des Impôts. Pour exercer vos droits RGPD, contactez{" "}
               <a
-                href={`mailto:dpo@${AGENCY_PROFILE.email.split("@")[1] ?? "kaza.africa"}`}
+                href="mailto:immobilierkaza@gmail.com"
                 className="font-medium text-kaza-blue underline-offset-2 hover:underline"
               >
-                dpo@{AGENCY_PROFILE.email.split("@")[1] ?? "kaza.africa"}
+                immobilierkaza@gmail.com
               </a>
               .
             </p>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   TrendingUp,
   Download,
@@ -95,11 +96,15 @@ export default function AgencyAnalyticsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" disabled>
-            <FileText className="size-4" /> Exporter PDF
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/agency/reports">
+              <FileSpreadsheet className="size-4" /> Exporter (Excel/CSV)
+            </Link>
           </Button>
-          <Button variant="outline" size="sm" disabled>
-            <FileSpreadsheet className="size-4" /> Exporter Excel
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/agency/reports">
+              <FileText className="size-4" /> Rapports
+            </Link>
           </Button>
         </div>
       </div>
@@ -235,8 +240,10 @@ export default function AgencyAnalyticsPage() {
               Classement trié par CA généré (année en cours).
             </CardDescription>
           </div>
-          <Button variant="ghost" size="sm" disabled>
-            <Download className="size-4" /> Exporter
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/agency/reports">
+              <Download className="size-4" /> Exporter
+            </Link>
           </Button>
         </CardHeader>
         <CardContent>
