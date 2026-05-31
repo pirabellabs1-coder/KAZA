@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/toast-helper";
 import { formatDate, getInitials } from "@/lib/utils";
 import type { OwnerTenant } from "@/lib/queries/owner-activity";
 
@@ -52,12 +51,6 @@ export function OwnerTenantsView({
     const totalPaid = tenants.reduce((sum, t) => sum + t.totalPaidFcfa, 0);
     return { totalPaid, count: tenants.length };
   }, [tenants]);
-
-  const handleMessage = (t: OwnerTenant) => {
-    toast.success(
-      `Message à ${t.firstName} ${t.lastName} — bientôt disponible.`,
-    );
-  };
 
   return (
     <div className="space-y-6">
@@ -101,7 +94,6 @@ export function OwnerTenantsView({
               key={t.id}
               tenant={t}
               detailHrefBase={detailHrefBase}
-              onMessage={() => handleMessage(t)}
             />
           ))}
         </div>
@@ -112,11 +104,10 @@ export function OwnerTenantsView({
 
 interface TenantCardProps {
   tenant: OwnerTenant;
-  onMessage: () => void;
   detailHrefBase?: string;
 }
 
-function TenantCard({ tenant, onMessage, detailHrefBase }: TenantCardProps) {
+function TenantCard({ tenant, detailHrefBase }: TenantCardProps) {
   const initials =
     getInitials(tenant.firstName || tenant.email, tenant.lastName || " ") ||
     "?";
@@ -184,20 +175,11 @@ function TenantCard({ tenant, onMessage, detailHrefBase }: TenantCardProps) {
               Message
             </Link>
           </Button>
-          {detailHrefBase ? (
-            <Button asChild variant="outline" size="sm" className="flex-1">
-              <Link href={`${detailHrefBase}/${tenant.id}`}>Voir profil</Link>
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={onMessage}
-            >
+          <Button asChild variant="outline" size="sm" className="flex-1">
+            <Link href={`${detailHrefBase ?? "/owner/tenants"}/${tenant.id}`}>
               Voir profil
-            </Button>
-          )}
+            </Link>
+          </Button>
         </div>
       </CardContent>
     </Card>

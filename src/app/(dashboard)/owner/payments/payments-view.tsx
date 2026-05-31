@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowDownRight,
@@ -21,6 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { toast } from "@/components/ui/toast-helper";
 import { formatDate } from "@/lib/utils";
@@ -151,12 +158,14 @@ export function OwnerPaymentsView({ payments }: OwnerPaymentsViewProps) {
     };
   }, [payments]);
 
+  const [selected, setSelected] = useState<OwnerPayment | null>(null);
+
   const handleRemind = (p: OwnerPayment) => {
     toast.info(`Relance envoyée à ${p.tenantName}.`);
   };
 
   const handleView = (p: OwnerPayment) => {
-    toast.info(`Détail du paiement ${p.id.slice(0, 8)} — bientôt disponible.`);
+    setSelected(p);
   };
 
   return (
@@ -333,6 +342,75 @@ export function OwnerPaymentsView({ payments }: OwnerPaymentsViewProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Détail d'un paiement */}
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Détail du paiement</DialogTitle>
+            <DialogDescription>
+              Référence {selected?.id.slice(0, 8).toUpperCase()}
+            </DialogDescription>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-3 text-sm">
+              <DetailRow label="Locataire" value={selected.tenantName} />
+              <DetailRow label="Bien" value={selected.propertyTitle} />
+              <DetailRow
+                label="Montant"
+                value={formatFcfa(selected.amount)}
+                strong
+              />
+              <DetailRow label="Moyen" value={methodLabel(selected.method)} />
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Statut</span>
+                {paymentStatusBadge(selected)}
+              </div>
+              {selected.dueDate && (
+                <DetailRow
+                  label="Échéance"
+                  value={formatDate(selected.dueDate)}
+                />
+              )}
+              <DetailRow
+                label={selected.paidAt ? "Payé le" : "Créé le"}
+                value={formatDate(selected.paidAt ?? selected.createdAt)}
+              />
+              {selected.rentalId && (
+                <DetailRow
+                  label="Location"
+                  value={selected.rentalId.slice(0, 8).toUpperCase()}
+                />
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  strong,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-muted-foreground">{label}</span>
+      <span
+        className={
+          strong
+            ? "font-semibold text-kaza-navy"
+            : "font-medium text-foreground"
+        }
+      >
+        {value}
+      </span>
     </div>
   );
 }
