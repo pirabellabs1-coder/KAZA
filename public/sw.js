@@ -8,7 +8,7 @@
 // - Les reponses HTML reussies sont mises en cache au passage.
 // =============================================================================
 
-const CACHE_NAME = 'kaza-v1';
+const CACHE_NAME = 'kaza-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/search',
