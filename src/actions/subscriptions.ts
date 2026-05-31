@@ -13,8 +13,12 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createPayment } from "@/lib/payments";
+import type { PaymentProvider } from "@/lib/payments/types";
 import { PLAN_DETAILS } from "@/lib/queries/subscriptions";
 import { getPlan } from "@/lib/queries/plans";
+import { activatePaidSubscription } from "@/lib/subscriptions/activate";
 
 // Les tables `subscriptions` / `invoices` ne sont pas encore typées dans
 // `src/types/supabase.ts` — fallback sur le client générique.
@@ -171,6 +175,100 @@ export async function subscribeToPlan(
   revalidatePath("/settings/billing");
 
   return { success: true, subscriptionId: sub.id };
+}
+
+// ---------------------------------------------------------------------------
+// Paiement d'un abonnement par MOYEN DE PAIEMENT (Mobile Money / FedaPay)
+// — alternative au débit du solde wallet. Initialise un checkout provider ;
+//   l'abonnement est activé par le webhook au passage du paiement à COMPLETED.
+// ---------------------------------------------------------------------------
+
+export interface CheckoutResult {
+  success: boolean;
+  error?: string;
+  checkoutUrl?: string;
+  /** true si plan gratuit : aucun paiement, abonnement activé directement. */
+  activated?: boolean;
+}
+
+export async function initiateSubscriptionCheckout(
+  plan: string,
+  provider: PaymentProvider = "fedapay",
+): Promise<CheckoutResult> {
+  const supabase = await getLooseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "NOT_AUTHENTICATED" };
+
+  const planDetails = (await getPlan(plan)) ?? PLAN_DETAILS[plan];
+  if (!planDetails) return { success: false, error: "INTERNAL" };
+
+  // Déjà abonné ?
+  const { data: existing } = await supabase
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", user.id)
+    .in("status", ["TRIAL", "ACTIVE"])
+    .maybeSingle();
+  if (existing) return { success: false, error: "ALREADY_SUBSCRIBED" };
+
+  const priceFcfa = Number(planDetails.priceMonthly);
+
+  // Plan gratuit → activation directe, sans paiement.
+  if (priceFcfa <= 0) {
+    const admin = createAdminClient() as unknown as SupabaseClient;
+    const res = await activatePaidSubscription(admin, {
+      userId: user.id,
+      plan,
+      amountFcfa: 0,
+      paymentMethod: "free",
+    });
+    if (!res.ok) return { success: false, error: res.error ?? "INTERNAL" };
+    revalidatePath("/settings/billing");
+    return { success: true, activated: true };
+  }
+
+  // Plan payant → checkout provider (Mobile Money).
+  try {
+    const result = await createPayment(
+      {
+        amount: priceFcfa,
+        currency: "XOF",
+        description: `Abonnement ${planDetails.name}`,
+        customerEmail: user.email ?? "",
+        customerPhone:
+          (user.user_metadata?.phone as string | undefined) ?? undefined,
+        metadata: { user_id: user.id, kind: "subscription", plan },
+      },
+      { provider },
+    );
+
+    const admin = createAdminClient() as unknown as SupabaseClient;
+    const { error: insertErr } = await admin.from("payments").insert({
+      user_id: user.id,
+      rental_id: null,
+      amount: priceFcfa,
+      payment_method: "MOBILE_MONEY",
+      transaction_id: result.providerPaymentId,
+      status: "PENDING",
+      purpose: "SUBSCRIPTION",
+      subscription_plan: plan,
+    });
+    if (insertErr) {
+      console.error("[subscriptions] insert payment echec:", insertErr.message);
+      return { success: false, error: "Impossible d'initier le paiement." };
+    }
+
+    return { success: true, checkoutUrl: result.checkoutUrl };
+  } catch (err) {
+    console.error("[subscriptions] checkout echec:", err);
+    return {
+      success: false,
+      error:
+        err instanceof Error ? err.message : "Erreur lors du paiement.",
+    };
+  }
 }
 
 // ---------------------------------------------------------------------------

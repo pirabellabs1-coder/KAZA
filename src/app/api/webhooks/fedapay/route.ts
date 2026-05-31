@@ -1,11 +1,13 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { fedapayClient } from "@/lib/payments/fedapay";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeReleaseDate, holdInEscrow } from "@/lib/escrow";
 import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
+import { activatePaidSubscription } from "@/lib/subscriptions/activate";
 
 // =============================================================================
 // Webhook FedaPay
@@ -59,9 +61,11 @@ export async function POST(req: NextRequest) {
 
   // 3) Lookup payment par transaction_id (fedapay providerPaymentId).
   const admin = createAdminClient();
-  const { data: payment, error: lookupErr } = await admin
+  const { data: payment, error: lookupErr } = await (
+    admin as unknown as SupabaseClient
+  )
     .from("payments")
-    .select("id, rental_id, status, user_id")
+    .select("id, rental_id, status, user_id, amount, purpose, subscription_plan")
     .eq("transaction_id", event.paymentId)
     .single();
 
@@ -114,6 +118,25 @@ export async function POST(req: NextRequest) {
   // ne casse pas le traitement du paiement.
   if (newStatus === "COMPLETED") {
     await redeemPromoOnComplete(event, payment.user_id, admin);
+
+    // 5ter) Abonnement payé par moyen de paiement : activation (best-effort).
+    const p = payment as unknown as {
+      purpose?: string;
+      subscription_plan?: string | null;
+      amount?: number;
+    };
+    if (p.purpose === "SUBSCRIPTION" && p.subscription_plan) {
+      try {
+        await activatePaidSubscription(admin, {
+          userId: payment.user_id,
+          plan: p.subscription_plan,
+          amountFcfa: Number(p.amount ?? 0),
+          paymentMethod: "mobile_money",
+        });
+      } catch (err) {
+        console.error("[webhook:fedapay] activation abonnement echec:", err);
+      }
+    }
   }
 
   // 6) Si paiement approuve + rental_id present -> escrow.

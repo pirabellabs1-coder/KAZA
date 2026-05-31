@@ -1,11 +1,13 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { kkiapayClient } from "@/lib/payments/kkiapay";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeReleaseDate, holdInEscrow } from "@/lib/escrow";
 import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
+import { activatePaidSubscription } from "@/lib/subscriptions/activate";
 
 // =============================================================================
 // Webhook Kkiapay
@@ -55,9 +57,13 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
-  const { data: payment, error: lookupErr } = await admin
+  const { data: payment, error: lookupErr } = await (
+    admin as unknown as SupabaseClient
+  )
     .from("payments")
-    .select("id, rental_id, status, user_id")
+    .select(
+      "id, rental_id, status, user_id, amount, purpose, subscription_plan",
+    )
     .eq("transaction_id", event.paymentId)
     .single();
 
@@ -106,6 +112,24 @@ export async function POST(req: NextRequest) {
   // Best-effort : un echec ici ne casse pas le traitement du paiement.
   if (newStatus === "COMPLETED") {
     await redeemPromoOnComplete(event, payment.user_id, admin);
+
+    const p = payment as unknown as {
+      purpose?: string;
+      subscription_plan?: string | null;
+      amount?: number;
+    };
+    if (p.purpose === "SUBSCRIPTION" && p.subscription_plan) {
+      try {
+        await activatePaidSubscription(admin, {
+          userId: payment.user_id,
+          plan: p.subscription_plan,
+          amountFcfa: Number(p.amount ?? 0),
+          paymentMethod: "mobile_money",
+        });
+      } catch (err) {
+        console.error("[webhook:kkiapay] activation abonnement echec:", err);
+      }
+    }
   }
 
   // Kkiapay envoie `payment.success` ou similaire en cas d'approbation.

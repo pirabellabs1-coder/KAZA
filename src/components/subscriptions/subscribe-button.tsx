@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast-helper";
-import { subscribeToPlan } from "@/actions/subscriptions";
+import { initiateSubscriptionCheckout } from "@/actions/subscriptions";
 import { cn } from "@/lib/utils";
 
 // =============================================================================
@@ -74,8 +74,16 @@ export function SubscribeButton({
     }
 
     startTransition(async () => {
-      const result = await subscribeToPlan(plan);
+      // Paiement par moyen de paiement (Mobile Money / FedaPay) — pas besoin
+      // de solde wallet. Le webhook active l'abonnement après confirmation.
+      const result = await initiateSubscriptionCheckout(plan);
       if (result.success) {
+        if (result.checkoutUrl) {
+          toast.info("Redirection vers le paiement Mobile Money…");
+          window.location.href = result.checkoutUrl;
+          return;
+        }
+        // Plan gratuit : activé directement.
         toast.success("Abonnement activé. Bienvenue !");
         if (redirectAfterSuccess) {
           router.push(redirectAfterSuccess);
@@ -85,7 +93,6 @@ export function SubscribeButton({
         return;
       }
 
-      // Mapping des codes d'erreur vers des messages utilisateur
       switch (result.error) {
         case "NOT_AUTHENTICATED":
           router.push(
@@ -95,17 +102,11 @@ export function SubscribeButton({
         case "ALREADY_SUBSCRIBED":
           toast.error("Vous avez déjà un abonnement actif.");
           return;
-        case "INSUFFICIENT_FUNDS":
-          toast.error(
-            "Solde wallet insuffisant. Redirection vers votre wallet...",
-          );
-          router.push("/owner/wallet");
-          return;
         case "INTERNAL":
           toast.error("Une erreur interne est survenue. Réessayez.");
           return;
         default:
-          toast.error(result.error ?? "Impossible d'activer l'abonnement.");
+          toast.error(result.error ?? "Impossible d'initier le paiement.");
       }
     });
   };
