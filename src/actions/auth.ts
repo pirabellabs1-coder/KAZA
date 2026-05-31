@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 import { track } from "@/lib/analytics/track";
 import { DEMO_SESSION_COOKIE } from "@/lib/auth/demo-session";
 import type {
@@ -46,15 +47,6 @@ const ROLE_LANDING: Record<AuthRole, string> = {
   ADMIN: "/admin",
 };
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 /**
  * Best-effort clear du cookie démo legacy pour les utilisateurs qui avaient
  * encore une session avant la bascule prod. Ne fait rien si déjà absent.
@@ -72,22 +64,17 @@ async function notifyTeamOfSignup(data: SignupFormData) {
   const recipient = process.env.NOTIFICATIONS_CONTACT_EMAIL;
   if (!recipient) return;
   try {
-    const html = `
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1A3A52;">
-        <div style="background:#1A3A52;color:white;padding:24px;border-radius:8px 8px 0 0;">
-          <h1 style="margin:0;font-size:20px;">Nouvelle inscription KAZA</h1>
-        </div>
-        <div style="background:white;padding:24px;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 8px 8px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:6px 0;color:#6b7280;width:120px;">Nom :</td><td style="padding:6px 0;font-weight:600;">${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}</td></tr>
-            <tr><td style="padding:6px 0;color:#6b7280;">Email :</td><td style="padding:6px 0;"><a href="mailto:${escapeHtml(data.email)}" style="color:#1976D2;">${escapeHtml(data.email)}</a></td></tr>
-            <tr><td style="padding:6px 0;color:#6b7280;">Téléphone :</td><td style="padding:6px 0;">${escapeHtml(data.phone)}</td></tr>
-            <tr><td style="padding:6px 0;color:#6b7280;">Profil :</td><td style="padding:6px 0;">${ROLE_LABELS[data.role as AuthRole]}</td></tr>
-          </table>
-          <p style="margin-top:16px;font-size:12px;color:#9ca3af;">Compte créé via Supabase Auth.</p>
-        </div>
-      </div>
-    `;
+    const html = buildEmail({
+      preheader: `Nouvelle inscription : ${data.firstName} ${data.lastName}`,
+      heading: "Nouvelle inscription KAZA",
+      rows: [
+        { label: "Nom", value: `${data.firstName} ${data.lastName}` },
+        { label: "Email", value: data.email },
+        { label: "Téléphone", value: data.phone },
+        { label: "Profil", value: ROLE_LABELS[data.role as AuthRole] },
+      ],
+      outro: "Compte créé via Supabase Auth.",
+    });
     await sendEmail(
       recipient,
       `[KAZA] Nouvelle inscription : ${data.firstName} ${data.lastName}`,

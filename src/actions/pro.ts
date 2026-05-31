@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 
 // =============================================================================
 // KAZA - Server Action : demande de démo Espace Pro (agences)
@@ -28,15 +29,6 @@ const ProDemoSchema = z.object({
 
 export type ProDemoInput = z.infer<typeof ProDemoSchema>;
 
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 function buildAdminHtml(args: {
   agencyName: string;
   contactName: string;
@@ -45,57 +37,36 @@ function buildAdminHtml(args: {
   size?: string | null;
   message: string;
 }): string {
-  const messageHtml = escapeHtml(args.message).replace(/\n/g, "<br />");
-  const phoneRow = args.phone
-    ? `<tr><td style="padding:8px 0;color:#6b7280;">Téléphone :</td><td style="padding:8px 0;">${escapeHtml(
-        args.phone,
-      )}</td></tr>`
-    : "";
-  const sizeRow = args.size
-    ? `<tr><td style="padding:8px 0;color:#6b7280;">Taille agence :</td><td style="padding:8px 0;">${escapeHtml(
-        args.size,
-      )}</td></tr>`
-    : "";
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; color: #1A3A52;">
-      <div style="background: #1A3A52; color: white; padding: 24px; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0; font-size: 20px;">Nouvelle demande de démo Pro</h1>
-      </div>
-      <div style="background: white; padding: 24px; border: 1px solid #e5e7eb; border-top: 0; border-radius: 0 0 8px 8px;">
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; color: #6b7280; width: 120px;">Agence :</td><td style="padding: 8px 0; font-weight: 600;">${escapeHtml(args.agencyName)}</td></tr>
-          <tr><td style="padding: 8px 0; color: #6b7280;">Contact :</td><td style="padding: 8px 0; font-weight: 600;">${escapeHtml(args.contactName)}</td></tr>
-          <tr><td style="padding: 8px 0; color: #6b7280;">Email :</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(args.email)}" style="color: #1976D2;">${escapeHtml(args.email)}</a></td></tr>
-          ${phoneRow}
-          ${sizeRow}
-        </table>
-        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-        <div style="color: #374151; line-height: 1.6;">${messageHtml || "<em>Aucun message.</em>"}</div>
-        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-        <p style="font-size: 12px; color: #9ca3af; margin: 0;">
-          Reçu via le formulaire de démo Espace Pro KAZA.
-          Répondez directement à cet email pour contacter ${escapeHtml(args.contactName)}.
-        </p>
-      </div>
-    </div>
-  `;
+  const msgParas = (args.message ?? "")
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return buildEmail({
+    preheader: `Demande de démo Pro — ${args.agencyName}`,
+    heading: "Nouvelle demande de démo Pro",
+    paragraphs: msgParas.length ? msgParas : ["Aucun message."],
+    rows: [
+      { label: "Agence", value: args.agencyName },
+      { label: "Contact", value: args.contactName },
+      { label: "Email", value: args.email },
+      ...(args.phone ? [{ label: "Téléphone", value: args.phone }] : []),
+      ...(args.size ? [{ label: "Taille agence", value: args.size }] : []),
+    ],
+    outro: `Répondez directement à ${args.email} pour contacter ${args.contactName}.`,
+  });
 }
 
 function buildConfirmationHtml(name: string, agencyName: string): string {
-  return `
-    <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1A3A52;">
-      <div style="background:#1A3A52;color:white;padding:24px;border-radius:8px 8px 0 0;">
-        <h1 style="margin:0;font-size:20px;">Votre demande de démo a bien été reçue</h1>
-      </div>
-      <div style="background:white;padding:24px;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 8px 8px;">
-        <p>Bonjour ${escapeHtml(name)},</p>
-        <p>Merci de votre intérêt pour l'Espace Pro KAZA. Notre équipe Pro revient vers vous sous <strong>24h ouvrées</strong> pour planifier votre démonstration.</p>
-        <p style="margin-top:16px;"><strong>Agence&nbsp;:</strong> ${escapeHtml(agencyName)}</p>
-        <hr style="border:0;border-top:1px solid #e5e7eb;margin:24px 0;" />
-        <p style="font-size:12px;color:#9ca3af;">L'équipe KAZA — Cotonou, Bénin.</p>
-      </div>
-    </div>
-  `;
+  return buildEmail({
+    preheader: "Votre demande de démo Pro a bien été reçue.",
+    heading: "Votre demande de démo a bien été reçue",
+    intro: `Bonjour ${name},`,
+    paragraphs: [
+      "Merci de votre intérêt pour l'Espace Pro KAZA. Notre équipe Pro revient vers vous sous 24h ouvrées pour planifier votre démonstration.",
+    ],
+    rows: [{ label: "Agence", value: agencyName }],
+    outro: "L'équipe KAZA",
+  });
 }
 
 /**

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 
 // =============================================================================
 // KAZA - Server Action : messages de contact public
@@ -61,15 +62,6 @@ export type SubmitContactInput = z.infer<typeof SubmitContactSchema>;
 
 // ----- Helpers ---------------------------------------------------------------
 
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 function buildAdminHtml(args: {
   name: string;
   email: string;
@@ -77,51 +69,31 @@ function buildAdminHtml(args: {
   subjectLabel: string;
   message: string;
 }): string {
-  const messageHtml = escapeHtml(args.message).replace(/\n/g, "<br />");
-  const phoneRow = args.phone
-    ? `<tr><td style="padding:8px 0;color:#6b7280;">Téléphone :</td><td style="padding:8px 0;">${escapeHtml(
-        args.phone,
-      )}</td></tr>`
-    : "";
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; color: #1A3A52;">
-      <div style="background: #1A3A52; color: white; padding: 24px; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0; font-size: 20px;">Nouveau message de contact</h1>
-      </div>
-      <div style="background: white; padding: 24px; border: 1px solid #e5e7eb; border-top: 0; border-radius: 0 0 8px 8px;">
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; color: #6b7280; width: 100px;">De :</td><td style="padding: 8px 0; font-weight: 600;">${escapeHtml(args.name)}</td></tr>
-          <tr><td style="padding: 8px 0; color: #6b7280;">Email :</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(args.email)}" style="color: #1976D2;">${escapeHtml(args.email)}</a></td></tr>
-          ${phoneRow}
-          <tr><td style="padding: 8px 0; color: #6b7280;">Sujet :</td><td style="padding: 8px 0;">${escapeHtml(args.subjectLabel)}</td></tr>
-        </table>
-        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-        <div style="color: #374151; line-height: 1.6;">${messageHtml}</div>
-        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-        <p style="font-size: 12px; color: #9ca3af; margin: 0;">
-          Reçu via le formulaire de contact KAZA.
-          Répondez directement à cet email pour contacter ${escapeHtml(args.name)}.
-        </p>
-      </div>
-    </div>
-  `;
+  return buildEmail({
+    preheader: `Nouveau message de ${args.name}`,
+    heading: "Nouveau message de contact",
+    paragraphs: args.message.split(/\n+/).map((l) => l.trim()).filter(Boolean),
+    rows: [
+      { label: "De", value: args.name },
+      { label: "Email", value: args.email },
+      ...(args.phone ? [{ label: "Téléphone", value: args.phone }] : []),
+      { label: "Sujet", value: args.subjectLabel },
+    ],
+    outro: `Répondez directement à ${args.email} pour recontacter ${args.name}.`,
+  });
 }
 
 function buildConfirmationHtml(name: string, subject: string): string {
-  return `
-    <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1A3A52;">
-      <div style="background:#1A3A52;color:white;padding:24px;border-radius:8px 8px 0 0;">
-        <h1 style="margin:0;font-size:20px;">Votre message a bien été reçu</h1>
-      </div>
-      <div style="background:white;padding:24px;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 8px 8px;">
-        <p>Bonjour ${escapeHtml(name)},</p>
-        <p>Merci de nous avoir contactés. Notre équipe revient vers vous sous <strong>24 à 48h ouvrées</strong>.</p>
-        <p style="margin-top:16px;"><strong>Sujet&nbsp;:</strong> ${escapeHtml(subject)}</p>
-        <hr style="border:0;border-top:1px solid #e5e7eb;margin:24px 0;" />
-        <p style="font-size:12px;color:#9ca3af;">L'équipe KAZA — Cotonou, Bénin.</p>
-      </div>
-    </div>
-  `;
+  return buildEmail({
+    preheader: "Votre message KAZA a bien été reçu",
+    heading: "Votre message a bien été reçu",
+    intro: `Bonjour ${name},`,
+    paragraphs: [
+      "Merci de nous avoir contactés. Notre équipe revient vers vous sous 24 à 48h ouvrées.",
+    ],
+    rows: [{ label: "Sujet", value: subject }],
+    outro: "L'équipe KAZA",
+  });
 }
 
 async function persistContactMessage(args: {

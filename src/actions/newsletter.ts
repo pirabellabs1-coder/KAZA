@@ -5,6 +5,11 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
+
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kaza-jade.vercel.app"
+).replace(/\/$/, "");
 
 // =============================================================================
 // KAZA - Server Action : inscription newsletter
@@ -74,18 +79,16 @@ export async function subscribeNewsletter(
       await sendEmail(
         normalizedEmail,
         "Bienvenue dans la newsletter KAZA",
-        `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;">
-        <div style="background:#1A3A52;color:white;padding:24px;border-radius:8px 8px 0 0;">
-          <h1 style="margin:0;">Bienvenue chez KAZA 🏠</h1>
-        </div>
-        <div style="background:white;padding:24px;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 8px 8px;">
-          <p>Bonjour,</p>
-          <p>Merci de vous être inscrit à la newsletter KAZA ! Vous recevrez nos meilleures annonces et analyses du marché immobilier ouest-africain.</p>
-          <p>À très vite,<br><strong>L'équipe KAZA</strong></p>
-          <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0;" />
-          <p style="font-size:11px;color:#9ca3af;">Vous recevez ce message car vous avez demandé à être inscrit. <a href="https://kaza-jade.vercel.app/unsubscribe?email=${encodeURIComponent(normalizedEmail)}">Se désabonner</a>.</p>
-        </div>
-      </div>`,
+        buildEmail({
+          preheader: "Merci pour votre inscription à la newsletter KAZA.",
+          heading: "Bienvenue chez KAZA 🏠",
+          intro: "Bonjour,",
+          paragraphs: [
+            "Merci de vous être inscrit à la newsletter KAZA ! Vous recevrez chaque mois nos meilleures annonces et nos analyses du marché immobilier africain.",
+            "À très vite, l'équipe KAZA.",
+          ],
+          button: { label: "Découvrir les annonces", url: `${SITE_URL}/search` },
+        }),
       );
     }
 
@@ -95,7 +98,15 @@ export async function subscribeNewsletter(
     await sendEmail(
       adminEmail,
       `[KAZA] ${alreadySubscribed ? "Tentative ré-inscription" : "Nouvel abonné"} newsletter (source: ${finalSource})`,
-      `<p><strong>${normalizedEmail}</strong> ${alreadySubscribed ? "était déjà inscrit" : "vient de s'abonner"} à la newsletter.</p><p>Source : ${finalSource}</p>`,
+      buildEmail({
+        heading: alreadySubscribed
+          ? "Tentative de ré-inscription newsletter"
+          : "Nouvel abonné à la newsletter",
+        paragraphs: [
+          `${normalizedEmail} ${alreadySubscribed ? "était déjà inscrit" : "vient de s'abonner"} à la newsletter KAZA.`,
+        ],
+        rows: [{ label: "Source", value: finalSource }],
+      }),
     );
   } catch (err) {
     console.error("[newsletter] email failed:", err);

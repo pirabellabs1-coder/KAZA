@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 import {
   PARTNER_TYPES,
   PARTNER_TYPE_LABELS,
@@ -42,63 +43,43 @@ const PartnerApplicationSchema = z.object({
 
 export type PartnerApplicationInput = z.infer<typeof PartnerApplicationSchema>;
 
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 function buildAdminHtml(input: PartnerApplicationInput): string {
   const typeLabel = PARTNER_TYPE_LABELS[input.partnerType];
-  const desc = escapeHtml(input.description).replace(/\n/g, "<br />");
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 640px; margin: 0 auto; color: #1A3A52;">
-      <div style="background: linear-gradient(135deg,#1A3A52,#1976D2); color: white; padding: 24px; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0; font-size: 20px;">Nouvelle candidature partenaire</h1>
-        <p style="margin: 4px 0 0; font-size: 13px; opacity: .85;">Type : ${escapeHtml(typeLabel)}</p>
-      </div>
-      <div style="background: white; padding: 24px; border: 1px solid #e5e7eb; border-top: 0; border-radius: 0 0 8px 8px;">
-        <table style="width:100%;border-collapse:collapse;font-size:14px;">
-          <tr><td style="padding:6px 0;color:#6b7280;width:140px;">Société :</td><td style="padding:6px 0;font-weight:600;">${escapeHtml(input.companyName)}</td></tr>
-          <tr><td style="padding:6px 0;color:#6b7280;">Contact :</td><td style="padding:6px 0;">${escapeHtml(input.contactName)}</td></tr>
-          <tr><td style="padding:6px 0;color:#6b7280;">Email :</td><td style="padding:6px 0;"><a href="mailto:${escapeHtml(input.email)}" style="color:#1976D2;">${escapeHtml(input.email)}</a></td></tr>
-          ${input.phone ? `<tr><td style="padding:6px 0;color:#6b7280;">Téléphone :</td><td style="padding:6px 0;">${escapeHtml(input.phone)}</td></tr>` : ""}
-          <tr><td style="padding:6px 0;color:#6b7280;">Ville :</td><td style="padding:6px 0;">${escapeHtml(input.city)} (${escapeHtml(input.countryCode)})</td></tr>
-          ${input.rccm ? `<tr><td style="padding:6px 0;color:#6b7280;">RCCM :</td><td style="padding:6px 0;">${escapeHtml(input.rccm)}</td></tr>` : ""}
-          ${input.website ? `<tr><td style="padding:6px 0;color:#6b7280;">Site web :</td><td style="padding:6px 0;"><a href="${escapeHtml(input.website)}" style="color:#1976D2;">${escapeHtml(input.website)}</a></td></tr>` : ""}
-        </table>
-        <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0;" />
-        <p style="color:#6b7280;font-size:12px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.05em;">Description de l'activité</p>
-        <div style="color:#374151;line-height:1.6;font-size:14px;">${desc}</div>
-        <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0;" />
-        <p style="font-size:12px;color:#9ca3af;margin:0;">
-          Candidature soumise via kaza.africa/partners. À traiter depuis l'espace admin.
-        </p>
-      </div>
-    </div>
-  `;
+  const descParas = input.description
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return buildEmail({
+    preheader: `Candidature partenaire — ${input.companyName}`,
+    heading: "Nouvelle candidature partenaire",
+    paragraphs: descParas.length ? descParas : ["(Aucune description)"],
+    rows: [
+      { label: "Type", value: typeLabel },
+      { label: "Société", value: input.companyName },
+      { label: "Contact", value: input.contactName },
+      { label: "Email", value: input.email },
+      ...(input.phone ? [{ label: "Téléphone", value: input.phone }] : []),
+      { label: "Ville", value: `${input.city} (${input.countryCode})` },
+      ...(input.rccm ? [{ label: "RCCM", value: input.rccm }] : []),
+      ...(input.website ? [{ label: "Site web", value: input.website }] : []),
+    ],
+    outro: "Candidature à traiter depuis l'espace admin (Demandes partenariat).",
+  });
 }
 
 function buildConfirmationHtml(input: PartnerApplicationInput): string {
   const typeLabel = PARTNER_TYPE_LABELS[input.partnerType];
-  return `
-    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1A3A52;">
-      <div style="background:#1A3A52;color:white;padding:24px;border-radius:8px 8px 0 0;">
-        <h1 style="margin:0;font-size:20px;">Candidature reçue 🎉</h1>
-      </div>
-      <div style="background:white;padding:24px;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 8px 8px;">
-        <p>Bonjour ${escapeHtml(input.contactName)},</p>
-        <p>Nous avons bien reçu la candidature de <strong>${escapeHtml(input.companyName)}</strong> au programme partenaires KAZA.</p>
-        <p><strong>Catégorie :</strong> ${escapeHtml(typeLabel)}</p>
-        <p>Notre équipe partenariats examine votre dossier et reviendra vers vous sous <strong>5 jours ouvrés</strong>.</p>
-        <hr style="border:0;border-top:1px solid #e5e7eb;margin:24px 0;" />
-        <p style="font-size:12px;color:#9ca3af;">L'équipe Partenariats KAZA — immobilierkaza@gmail.com</p>
-      </div>
-    </div>
-  `;
+  return buildEmail({
+    preheader: "Votre candidature partenaire KAZA a bien été reçue.",
+    heading: "Candidature reçue 🎉",
+    intro: `Bonjour ${input.contactName},`,
+    paragraphs: [
+      `Nous avons bien reçu la candidature de ${input.companyName} au programme partenaires KAZA.`,
+      "Notre équipe partenariats examine votre dossier et reviendra vers vous sous 5 jours ouvrés.",
+    ],
+    rows: [{ label: "Catégorie", value: typeLabel }],
+    outro: "L'équipe Partenariats KAZA",
+  });
 }
 
 export async function submitPartnerApplication(
