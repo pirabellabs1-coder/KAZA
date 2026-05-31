@@ -83,6 +83,7 @@ const studentNav: NavItem[] = [
   { href: "/student/courses", label: "Université", icon: GraduationCap },
   { href: "/student/requests", label: "Demandes", icon: ClipboardList },
   { href: "/student/expenses", label: "Frais Partagés", icon: Receipt },
+  { href: "/student/reports", label: "Rapports", icon: ClipboardList },
   { href: "/student/chat", label: "Chat Colocataires", icon: MessagesSquare },
 ];
 

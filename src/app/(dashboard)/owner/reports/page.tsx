@@ -3,10 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   BarChart3,
-  Download,
   Eye,
-  FileSpreadsheet,
-  FileText,
   Inbox,
   TrendingUp,
 } from "lucide-react";
@@ -19,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ReportGenerator } from "@/components/reports/report-generator";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getOwnerPropertyViews30d } from "@/lib/queries/analytics";
@@ -231,42 +229,23 @@ export default async function OwnerReportsPage() {
         )}
       </section>
 
-      {/* Export comptable */}
+      {/* Export comptable — générateur réel (CSV/Excel) */}
       <section className="space-y-4">
         <div>
           <h2 className="font-heading text-lg font-semibold text-foreground">
             Export comptable
           </h2>
           <p className="text-xs text-muted-foreground">
-            Téléchargez vos revenus pour votre comptable (à venir).
+            Téléchargez vos revenus et votre activité pour votre comptable.
           </p>
         </div>
-        <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-10 text-center sm:flex-row sm:justify-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
-              <FileSpreadsheet className="size-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Export PDF / Excel en préparation
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Bientôt : synthèse mensuelle, trimestrielle et annuelle prête
-                pour votre comptable.
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled>
-                <FileText className="mr-2 size-4" />
-                PDF
-              </Button>
-              <Button variant="outline" size="sm" disabled>
-                <Download className="mr-2 size-4" />
-                Excel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ReportGenerator
+          space="owner"
+          types={[
+            { value: "financial", label: "Revenus (loyers encaissés)" },
+            { value: "activity", label: "Activité (visites)" },
+          ]}
+        />
       </section>
 
       {/* Insights — branche quand on aura un moteur de recommandations */}

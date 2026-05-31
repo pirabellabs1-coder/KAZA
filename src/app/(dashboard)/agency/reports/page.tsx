@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import {
-  Calendar as CalendarIcon,
   Mail,
   ShieldCheck,
-  Sparkles,
   Plus,
   Archive,
   Newspaper,
@@ -18,8 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { ReportGenerator } from "@/components/reports/report-generator";
 
 // Fallback vide — à brancher quand la table agency_profiles sera en place.
 const AGENCY_PROFILE = {
@@ -31,31 +28,6 @@ export const metadata: Metadata = {
   description:
     "Générez et téléchargez vos rapports d'activité, financiers et de performance.",
 };
-
-// ---------------------------------------------------------------------------
-// Options statiques (formulaire de génération)
-// ---------------------------------------------------------------------------
-
-const REPORT_TYPES = [
-  { value: "financial", label: "Financier" },
-  { value: "activity", label: "Activité" },
-  { value: "performance", label: "Performance" },
-  { value: "commissions", label: "Commissions" },
-  { value: "custom", label: "Personnalisé" },
-];
-
-const FORMAT_OPTIONS = [
-  { value: "pdf", label: "PDF", desc: "Pour partage et impression" },
-  { value: "excel", label: "Excel", desc: "Pour analyse et retraitement" },
-  { value: "csv", label: "CSV", desc: "Pour import dans d'autres outils" },
-];
-
-const INCLUDE_OPTIONS = [
-  { id: "charts", label: "Graphiques", default: true },
-  { id: "tables", label: "Tableaux détaillés", default: true },
-  { id: "annexes", label: "Annexes", default: false },
-  { id: "branding", label: "Logo agence", default: true },
-];
 
 // ---------------------------------------------------------------------------
 // Page
@@ -116,132 +88,15 @@ export default function AgencyReportsPage() {
         </Card>
       </section>
 
-      {/* GÉNÉRER UN RAPPORT PERSONNALISÉ */}
-      <Card className="rounded-2xl border-kaza-blue/20 bg-gradient-to-br from-kaza-blue/5 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-heading">
-            <Sparkles className="size-5 text-kaza-blue" /> Générer un rapport
-            personnalisé
-          </CardTitle>
-          <CardDescription>
-            Choisissez le type, la période et le format. Le rapport sera
-            disponible sous 60 secondes.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="grid gap-6 lg:grid-cols-2">
-            {/* Type de rapport */}
-            <div className="space-y-2">
-              <label
-                htmlFor="report-type"
-                className="text-sm font-semibold text-kaza-navy"
-              >
-                Type de rapport
-              </label>
-              <select
-                id="report-type"
-                name="type"
-                defaultValue="activity"
-                className="flex h-10 w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm focus:border-kaza-blue focus:outline-none focus:ring-2 focus:ring-kaza-blue/20"
-              >
-                {REPORT_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Période */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-kaza-navy">
-                Période
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="date"
-                    name="from"
-                    className="pl-9"
-                    aria-label="Date de début"
-                  />
-                </div>
-                <div className="relative">
-                  <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="date"
-                    name="to"
-                    className="pl-9"
-                    aria-label="Date de fin"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Format */}
-            <div className="space-y-2 lg:col-span-1">
-              <p className="text-sm font-semibold text-kaza-navy">Format</p>
-              <div className="space-y-2">
-                {FORMAT_OPTIONS.map((opt, idx) => (
-                  <label
-                    key={opt.value}
-                    className={cn(
-                      "flex cursor-pointer items-start gap-3 rounded-lg border bg-white p-3 transition-colors hover:border-kaza-blue/40",
-                      idx === 0 && "border-kaza-blue ring-1 ring-kaza-blue/20",
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name="format"
-                      value={opt.value}
-                      defaultChecked={idx === 0}
-                      className="mt-0.5 accent-kaza-blue"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        {opt.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Inclure */}
-            <div className="space-y-2 lg:col-span-1">
-              <p className="text-sm font-semibold text-kaza-navy">Inclure</p>
-              <div className="grid grid-cols-2 gap-2">
-                {INCLUDE_OPTIONS.map((opt) => (
-                  <label
-                    key={opt.id}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg border bg-white p-3 hover:border-kaza-blue/40"
-                  >
-                    <input
-                      type="checkbox"
-                      name={opt.id}
-                      defaultChecked={opt.default}
-                      className="size-4 accent-kaza-blue"
-                    />
-                    <span className="text-sm text-foreground">{opt.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Action */}
-            <div className="flex items-center justify-end gap-2 lg:col-span-2">
-              <Button type="button" variant="outline">
-                Réinitialiser
-              </Button>
-              <Button type="submit" className="bg-kaza-blue hover:bg-kaza-blue/90">
-                <Sparkles className="size-4" /> Générer le rapport
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      {/* GÉNÉRER UN RAPPORT — générateur réel (CSV/Excel) */}
+      <ReportGenerator
+        space="agency"
+        types={[
+          { value: "financial", label: "Financier (loyers)" },
+          { value: "activity", label: "Activité (visites)" },
+          { value: "commissions", label: "Commissions" },
+        ]}
+      />
 
       {/* RAPPORTS PLANIFIÉS — empty state */}
       <Card className="rounded-2xl">
