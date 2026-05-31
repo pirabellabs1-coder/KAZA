@@ -18,6 +18,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { writeAuditLog } from "@/lib/audit/write-log";
+import { refundFromEscrow } from "@/lib/escrow";
 
 export interface RefundDecisionResult {
   success: boolean;
@@ -109,6 +110,31 @@ async function decideRefund(
       success: false,
       error: "Impossible d'enregistrer la decision.",
     };
+  }
+
+  // Si APPROUVÉ : déclenche le remboursement réel depuis l'escrow (renvoi des
+  // fonds au locataire). refundFromEscrow gère le payout 2-étapes FedaPay et ne
+  // touche l'escrow que s'il est encore HELD. Best-effort : on logue l'échec
+  // sans invalider la décision (un retry manuel reste possible).
+  const paymentId = (request.payment_id as string | null) ?? null;
+  if (status === "APPROVED" && paymentId) {
+    try {
+      const res = await refundFromEscrow(
+        paymentId,
+        decisionNote ?? "Remboursement approuvé par l'administration.",
+      );
+      if (res.status !== "refunded") {
+        console.error(
+          "[refunds] refundFromEscrow statut inattendu:",
+          res.status,
+        );
+      }
+    } catch (e) {
+      console.error(
+        "[refunds] refundFromEscrow exception:",
+        e instanceof Error ? e.message : e,
+      );
+    }
   }
 
   // Journalise l'action admin (best-effort : un echec ne casse pas la decision).

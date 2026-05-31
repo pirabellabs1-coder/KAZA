@@ -14,6 +14,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
 import { track } from "@/lib/analytics/track";
+import { getActiveSubscription } from "@/lib/queries/subscriptions";
+import { getPlanQuotas } from "@/lib/subscriptions/quotas";
 import type { Property } from "@/types/properties";
 import {
   createPropertySchema,
@@ -119,6 +121,31 @@ export async function createProperty(
 
   if (!user) {
     return { success: false, error: "Vous devez etre connecte." };
+  }
+
+  // -------------------------------------------------------------------------
+  // Enforcement du quota d'annonces actives selon l'abonnement.
+  // Fail-open : en cas d'erreur de lecture, on n'empêche PAS la création
+  // (mieux vaut laisser passer qu'imputer à tort un quota à un client payant).
+  // -------------------------------------------------------------------------
+  try {
+    const sub = await getActiveSubscription(user.id);
+    const quotas = getPlanQuotas(sub?.plan ?? null);
+    if (Number.isFinite(quotas.maxListings)) {
+      const { count } = await supabase
+        .from("properties")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id)
+        .neq("status", "ARCHIVED");
+      if ((count ?? 0) >= quotas.maxListings) {
+        return {
+          success: false,
+          error: `Quota d'annonces atteint (${quotas.maxListings} sur le plan ${quotas.label}). Passez à un plan supérieur pour publier davantage d'annonces.`,
+        };
+      }
+    }
+  } catch {
+    // Ignore — on laisse la création se poursuivre (fail-open).
   }
 
   // Statut initial selon le réglage de modération (platform_settings.moderation).
