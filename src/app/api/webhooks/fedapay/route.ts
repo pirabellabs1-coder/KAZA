@@ -9,6 +9,7 @@ import { computeReleaseDate, holdInEscrow } from "@/lib/escrow";
 import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
 import { activatePaidSubscription } from "@/lib/subscriptions/activate";
 import { activatePaidBoost } from "@/lib/boosts/activate";
+import { creditWalletTopUp } from "@/lib/wallet/credit";
 
 // =============================================================================
 // Webhook FedaPay
@@ -162,6 +163,19 @@ export async function POST(req: NextRequest) {
         } catch (err) {
           console.error("[webhook:fedapay] activation boost echec:", err);
         }
+      }
+    }
+
+    // 5quinquies) Recharge wallet payée par Mobile Money : crédit du solde.
+    if (p.purpose === "WALLET_TOPUP") {
+      try {
+        await creditWalletTopUp(admin as unknown as SupabaseClient, {
+          userId: payment.user_id,
+          amountFcfa: Number(p.amount ?? 0),
+          paymentId: payment.id,
+        });
+      } catch (err) {
+        console.error("[webhook:fedapay] credit wallet echec:", err);
       }
     }
   }

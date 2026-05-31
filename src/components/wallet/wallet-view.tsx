@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { BankDetailsDialog } from "@/components/wallet/bank-details-dialog";
+import { RechargeWalletDialog } from "@/components/wallet/recharge-wallet-dialog";
 import { RequestWithdrawalDialog } from "@/components/wallet/request-withdrawal-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,6 +69,18 @@ const TX_TYPE_META: Record<
   RENT_RECEIVED: {
     label: "Loyer reçu",
     className: "bg-emerald-100 text-emerald-700",
+  },
+  TOPUP: {
+    label: "Recharge",
+    className: "bg-emerald-100 text-emerald-700",
+  },
+  BOOST_DEBIT: {
+    label: "Boost annonce",
+    className: "bg-purple-100 text-purple-700",
+  },
+  SUBSCRIPTION_DEBIT: {
+    label: "Abonnement",
+    className: "bg-blue-100 text-blue-700",
   },
   BOOKING_DEPOSIT: {
     label: "Caution reçue",
@@ -189,6 +202,7 @@ export function WalletView({
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <RechargeWalletDialog triggerClassName="bg-kaza-green text-white hover:bg-kaza-green/90" />
               <RequestWithdrawalDialog
                 availableBalance={wallet.balance}
                 isFrozen={wallet.isFrozen}

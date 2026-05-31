@@ -11,12 +11,20 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createPayment } from "@/lib/payments";
+import type { PaymentProvider } from "@/lib/payments/types";
 
 // Commission KAZA prélevée sur chaque retrait
 const WITHDRAWAL_FEE_RATE = 0.01; // 1%
 const MIN_WITHDRAWAL = 5000;
+
+// Recharge wallet
+const MIN_TOPUP = 500;
+const MAX_TOPUP = 5_000_000;
 
 // =============================================================================
 // REQUEST WITHDRAWAL — utilisateur authentifié
@@ -110,6 +118,78 @@ export async function requestWithdrawal(
   revalidatePath("/agency/wallet");
   revalidatePath("/admin/payouts");
   return { success: true };
+}
+
+// =============================================================================
+// RECHARGE WALLET (TOP-UP) par Mobile Money / FedaPay
+// — initialise un checkout provider ; le wallet est crédité par le webhook
+//   au passage du paiement à COMPLETED (purpose = WALLET_TOPUP).
+// =============================================================================
+
+export interface TopUpResult {
+  success: boolean;
+  error?: string;
+  checkoutUrl?: string;
+}
+
+export async function initiateWalletTopUp(
+  amount: number,
+  provider: PaymentProvider = "fedapay",
+): Promise<TopUpResult> {
+  const value = Math.round(Number(amount) || 0);
+  if (value < MIN_TOPUP) {
+    return {
+      success: false,
+      error: `Montant minimum : ${MIN_TOPUP.toLocaleString("fr-FR")} FCFA`,
+    };
+  }
+  if (value > MAX_TOPUP) {
+    return { success: false, error: "Montant trop élevé." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  try {
+    const result = await createPayment(
+      {
+        amount: value,
+        currency: "XOF",
+        description: `Recharge KAZA Wallet — ${value.toLocaleString("fr-FR")} FCFA`,
+        customerEmail: user.email ?? "",
+        customerPhone:
+          (user.user_metadata?.phone as string | undefined) ?? undefined,
+        metadata: { user_id: user.id, kind: "wallet_topup" },
+      },
+      { provider },
+    );
+
+    const admin = createAdminClient() as unknown as SupabaseClient;
+    const { error: insertErr } = await admin.from("payments").insert({
+      user_id: user.id,
+      rental_id: null,
+      amount: value,
+      payment_method: "MOBILE_MONEY",
+      transaction_id: result.providerPaymentId,
+      status: "PENDING",
+      purpose: "WALLET_TOPUP",
+    });
+    if (insertErr) {
+      console.error("[wallet] insert payment topup echec:", insertErr.message);
+      return { success: false, error: "Impossible d'initier la recharge." };
+    }
+
+    return { success: true, checkoutUrl: result.checkoutUrl };
+  } catch (err) {
+    console.error("[wallet] topup checkout echec:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Erreur lors de la recharge.",
+    };
+  }
 }
 
 // =============================================================================
