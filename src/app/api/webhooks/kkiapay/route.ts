@@ -8,6 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { computeReleaseDate, holdInEscrow } from "@/lib/escrow";
 import { redeemPromoOnComplete } from "@/lib/payments/redeem-on-complete";
 import { activatePaidSubscription } from "@/lib/subscriptions/activate";
+import { activatePaidBoost } from "@/lib/boosts/activate";
 
 // =============================================================================
 // Webhook Kkiapay
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
   )
     .from("payments")
     .select(
-      "id, rental_id, status, user_id, amount, purpose, subscription_plan",
+      "id, rental_id, status, user_id, amount, purpose, subscription_plan, metadata",
     )
     .eq("transaction_id", event.paymentId)
     .single();
@@ -117,6 +118,7 @@ export async function POST(req: NextRequest) {
       purpose?: string;
       subscription_plan?: string | null;
       amount?: number;
+      metadata?: Record<string, unknown> | null;
     };
     if (p.purpose === "SUBSCRIPTION" && p.subscription_plan) {
       try {
@@ -128,6 +130,29 @@ export async function POST(req: NextRequest) {
         });
       } catch (err) {
         console.error("[webhook:kkiapay] activation abonnement echec:", err);
+      }
+    }
+
+    // Boost d'annonce payé par moyen de paiement : activation.
+    if (p.purpose === "BOOST" && p.metadata) {
+      const m = p.metadata as {
+        property_id?: string;
+        plan?: string;
+        days?: number;
+      };
+      if (m.property_id && m.plan) {
+        try {
+          await activatePaidBoost(admin as unknown as SupabaseClient, {
+            userId: payment.user_id,
+            propertyId: m.property_id,
+            plan: m.plan,
+            days: Number(m.days ?? 7),
+            amountFcfa: Number(p.amount ?? 0),
+            paymentId: payment.id,
+          });
+        } catch (err) {
+          console.error("[webhook:kkiapay] activation boost echec:", err);
+        }
       }
     }
   }

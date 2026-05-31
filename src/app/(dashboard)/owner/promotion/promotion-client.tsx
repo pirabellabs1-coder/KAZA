@@ -37,8 +37,11 @@ import { cn } from "@/lib/utils";
 import {
   activateBoost,
   cancelBoost,
+  initiateBoostCheckout,
   type ActiveBoostDTO,
 } from "@/actions/boosts";
+
+type PayMethod = "wallet" | "mobile_money";
 
 interface BoostPlan {
   id: "boost7" | "boost30" | "premium";
@@ -152,6 +155,7 @@ export function PromotionClient({
     hasProperties ? properties[0]!.id : "",
   );
   const [selectedPlan, setSelectedPlan] = useState<BoostPlan["id"]>("boost30");
+  const [payMethod, setPayMethod] = useState<PayMethod>("mobile_money");
   const [boosts, setBoosts] = useState<ActiveBoostDTO[]>(initialBoosts);
   const [isPending, startTransition] = useTransition();
 
@@ -166,9 +170,33 @@ export function PromotionClient({
       toast.error("Sélectionnez d'abord une annonce à booster.");
       return;
     }
+    const target = property;
+
     startTransition(async () => {
+      // --- Paiement par Mobile Money (FedaPay) : redirection checkout -------
+      if (payMethod === "mobile_money") {
+        const res = await initiateBoostCheckout({
+          propertyId: target.id,
+          plan: plan.dbPlan,
+          days: plan.duration,
+          amount: plan.price,
+        });
+        if (res.success && res.checkoutUrl) {
+          toast.info("Redirection vers le paiement Mobile Money…");
+          window.location.href = res.checkoutUrl;
+          return;
+        }
+        toast.error(
+          ERROR_MESSAGES[res.error ?? ""] ??
+            res.error ??
+            "Impossible d'initier le paiement.",
+        );
+        return;
+      }
+
+      // --- Paiement par solde KAZA Wallet ----------------------------------
       const res = await activateBoost({
-        propertyId: property.id,
+        propertyId: target.id,
         plan: plan.dbPlan,
         days: plan.duration,
         amount: plan.price,
@@ -185,8 +213,8 @@ export function PromotionClient({
       const now = new Date();
       const newBoost: ActiveBoostDTO = {
         id: res.boostId ?? `boost-${now.getTime()}`,
-        propertyId: property.id,
-        propertyTitle: property.title,
+        propertyId: target.id,
+        propertyTitle: target.title,
         plan: plan.dbPlan,
         amount: plan.price,
         startedAt: now.toISOString(),
@@ -196,7 +224,7 @@ export function PromotionClient({
         status: "ACTIVE",
       };
       setBoosts((prev) => [newBoost, ...prev]);
-      toast.success(`Boost activé pour « ${property.title} ».`);
+      toast.success(`Boost activé pour « ${target.title} ».`);
     });
   }
 
@@ -226,7 +254,7 @@ export function PromotionClient({
           </p>
         </div>
         <Badge variant="outline" className="w-fit text-xs">
-          Paiement via KAZA Wallet
+          Wallet ou Mobile Money
         </Badge>
       </div>
 
@@ -356,19 +384,50 @@ export function PromotionClient({
               {formatPrice(plan.price)}
             </p>
           </div>
-          <Button
-            size="lg"
-            className="bg-kaza-blue hover:bg-kaza-blue/90"
-            onClick={handleActivate}
-            disabled={isPending || !property}
-          >
-            {isPending ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Sparkles className="mr-2 size-4" />
-            )}
-            Payer et activer
-          </Button>
+          <div className="flex flex-col gap-3 sm:items-end">
+            {/* Choix du moyen de paiement */}
+            <div className="inline-flex rounded-lg border border-border bg-background p-1">
+              <button
+                type="button"
+                onClick={() => setPayMethod("mobile_money")}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs font-medium transition",
+                  payMethod === "mobile_money"
+                    ? "bg-kaza-blue text-white"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Mobile Money
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayMethod("wallet")}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs font-medium transition",
+                  payMethod === "wallet"
+                    ? "bg-kaza-blue text-white"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                KAZA Wallet
+              </button>
+            </div>
+            <Button
+              size="lg"
+              className="bg-kaza-blue hover:bg-kaza-blue/90"
+              onClick={handleActivate}
+              disabled={isPending || !property}
+            >
+              {isPending ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 size-4" />
+              )}
+              {payMethod === "mobile_money"
+                ? "Payer par Mobile Money"
+                : "Payer et activer"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

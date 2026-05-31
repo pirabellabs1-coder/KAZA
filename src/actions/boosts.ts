@@ -20,6 +20,9 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createPayment } from "@/lib/payments";
+import type { PaymentProvider } from "@/lib/payments/types";
 
 // La table `property_boosts` et les tables wallet ne sont pas typées dans
 // `src/types/supabase.ts` — fallback sur le client générique.
@@ -148,6 +151,101 @@ export async function activateBoost(
   revalidatePath("/owner/promotion");
 
   return { success: true, boostId: boost.id as string };
+}
+
+// ---------------------------------------------------------------------------
+// Paiement d'un boost par MOYEN DE PAIEMENT (Mobile Money / FedaPay)
+// — alternative au débit du solde wallet. Initialise un checkout provider ;
+//   le boost est activé par le webhook au passage du paiement à COMPLETED
+//   (purpose = BOOST, contexte lu depuis payments.metadata).
+// ---------------------------------------------------------------------------
+
+export interface BoostCheckoutResult {
+  success: boolean;
+  error?: string;
+  checkoutUrl?: string;
+}
+
+export async function initiateBoostCheckout(
+  input: ActivateBoostInput,
+  provider: PaymentProvider = "fedapay",
+): Promise<BoostCheckoutResult> {
+  const { propertyId, plan, days } = input;
+  const priceFcfa = Math.max(0, Math.round(Number(input.amount) || 0));
+
+  if (!propertyId || !plan || days <= 0) {
+    return { success: false, error: "INVALID_INPUT" };
+  }
+  if (priceFcfa <= 0) {
+    return { success: false, error: "INVALID_AMOUNT" };
+  }
+
+  const supabase = await getLooseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "NOT_AUTHENTICATED" };
+
+  // Vérifie la propriété du bien avant d'initier un paiement.
+  const { data: property, error: propErr } = await supabase
+    .from("properties")
+    .select("id, owner_id, title")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  if (propErr || !property) return { success: false, error: "NOT_FOUND" };
+  if (property.owner_id !== user.id) {
+    return { success: false, error: "NOT_OWNER" };
+  }
+
+  try {
+    const result = await createPayment(
+      {
+        amount: priceFcfa,
+        currency: "XOF",
+        description: `Boost annonce « ${property.title ?? "—"} » — ${plan} (${days} j)`,
+        customerEmail: user.email ?? "",
+        customerPhone:
+          (user.user_metadata?.phone as string | undefined) ?? undefined,
+        metadata: {
+          user_id: user.id,
+          kind: "boost",
+          property_id: propertyId,
+          plan,
+          days: String(days),
+        },
+      },
+      { provider },
+    );
+
+    const admin = createAdminClient() as unknown as SupabaseClient;
+    const { error: insertErr } = await admin.from("payments").insert({
+      user_id: user.id,
+      rental_id: null,
+      amount: priceFcfa,
+      payment_method: "MOBILE_MONEY",
+      transaction_id: result.providerPaymentId,
+      status: "PENDING",
+      purpose: "BOOST",
+      metadata: {
+        property_id: propertyId,
+        plan,
+        days,
+      },
+    });
+    if (insertErr) {
+      console.error("[boosts] insert payment echec:", insertErr.message);
+      return { success: false, error: "Impossible d'initier le paiement." };
+    }
+
+    return { success: true, checkoutUrl: result.checkoutUrl };
+  } catch (err) {
+    console.error("[boosts] checkout echec:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Erreur lors du paiement.",
+    };
+  }
 }
 
 /**
