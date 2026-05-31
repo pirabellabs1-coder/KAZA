@@ -21,6 +21,7 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 import { writeAuditLog } from "@/lib/audit/write-log";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -55,45 +56,9 @@ function esc(input: unknown): string {
 }
 
 function layout(bodyHtml: string, preheader?: string): string {
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KAZA</title>
-</head>
-<body style="margin:0; padding:0; background-color:#f5f7fa; font-family:'Inter','Helvetica Neue',Arial,sans-serif; color:#1f2937;">
-  ${preheader ? `<div style="display:none; max-height:0; overflow:hidden;">${esc(preheader)}</div>` : ""}
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:#f5f7fa;">
-    <tr>
-      <td align="center" style="padding:32px 16px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px; background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-          <tr>
-            <td style="background-color:${BRAND_NAVY}; padding:24px 32px;">
-              <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:700; letter-spacing:-0.02em;">KAZA</h1>
-              <p style="margin:4px 0 0; color:#cbd5e1; font-size:13px;">Service de modération</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:32px;">${bodyHtml}</td>
-          </tr>
-          <tr>
-            <td style="background-color:#f9fafb; padding:20px 32px; border-top:1px solid #e5e7eb;">
-              <p style="margin:0 0 8px; color:#6b7280; font-size:12px; line-height:1.5;">
-                Cet email vous a été envoyé par l'équipe de modération KAZA.
-                <br />Pour toute question : <a href="mailto:immobilierkaza@gmail.com" style="color:${BRAND_BLUE}; text-decoration:none;">immobilierkaza@gmail.com</a>
-              </p>
-              <p style="margin:0; color:#9ca3af; font-size:11px;">
-                © ${new Date().getFullYear()} KAZA · Cotonou, Bénin
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  // Délègue au gabarit email unifié KAZA. Le `bodyHtml` (titre <h2> + contenu)
+  // est inséré tel quel dans la carte.
+  return buildEmail({ preheader, rawHtml: bodyHtml });
 }
 
 function ctaButton(label: string, href: string, color = BRAND_BLUE): string {

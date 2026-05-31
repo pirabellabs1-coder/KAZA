@@ -37,8 +37,9 @@ export interface EmailRow {
 export interface BuildEmailParams {
   /** Texte d'aperçu masqué (preview boîte de réception). */
   preheader?: string;
-  /** Titre principal dans la carte. */
-  heading: string;
+  /** Titre principal dans la carte (optionnel si le bloc `rawHtml` porte
+   *  déjà son propre titre). */
+  heading?: string;
   /** Ligne d'accroche / salutation (ex. « Bonjour Awa, »). */
   intro?: string;
   /** Paragraphes de corps (texte brut, échappé automatiquement). */
@@ -135,10 +136,10 @@ export function buildEmail(params: BuildEmailParams): string {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>${esc(heading)}</title>
+  <title>${esc(heading ?? preheader ?? "KAZA")}</title>
 </head>
 <body style="margin:0;padding:0;background:${BG};">
-  <span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;">${esc(preheader ?? heading)}</span>
+  <span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;">${esc(preheader ?? heading ?? "")}</span>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BG};padding:24px 12px;">
     <tr>
       <td align="center">
@@ -153,7 +154,7 @@ export function buildEmail(params: BuildEmailParams): string {
           <!-- Card -->
           <tr>
             <td style="background:#ffffff;border:1px solid ${BORDER};border-radius:16px;padding:36px 34px;">
-              <h1 style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:22px;line-height:1.3;font-weight:800;color:${NAVY};">${esc(heading)}</h1>
+              ${heading ? `<h1 style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:22px;line-height:1.3;font-weight:800;color:${NAVY};">${esc(heading)}</h1>` : ""}
               ${introHtml}
               ${highlightHtml}
               ${paragraphsHtml}

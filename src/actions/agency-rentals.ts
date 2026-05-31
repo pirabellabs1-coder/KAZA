@@ -15,6 +15,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 import { sendSms } from "@/lib/sms/twilio";
 import { formatFcfa } from "@/lib/utils";
 
@@ -195,16 +196,16 @@ export async function remindLatePayment(
 
   // Email
   if (tenant?.email) {
-    const html = `
-      <div style="font-family:Inter,Arial,sans-serif;color:#1A3A52">
-        <h2 style="color:#1A3A52">Rappel de loyer</h2>
-        <p>Bonjour ${prenom},</p>
-        <p>Nous vous rappelons qu'un loyer de <strong>${amount}</strong> reste à régler
-        pour votre logement géré via KAZA.</p>
-        <p>Merci de procéder au règlement dans les meilleurs délais depuis votre
-        espace locataire.</p>
-        <p style="color:#64748b;font-size:13px">— Votre agence, via KAZA</p>
-      </div>`;
+    const html = buildEmail({
+      preheader: "Un loyer reste à régler pour votre logement KAZA.",
+      heading: "Rappel de loyer",
+      intro: `Bonjour ${prenom},`,
+      paragraphs: [
+        `Nous vous rappelons qu'un loyer de ${amount} reste à régler pour votre logement géré via KAZA.`,
+        "Merci de procéder au règlement dans les meilleurs délais depuis votre espace locataire.",
+      ],
+      outro: "Votre agence, via KAZA",
+    });
     await sendEmail(tenant.email, "Rappel : loyer en attente de règlement", html);
   }
 
