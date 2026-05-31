@@ -16,6 +16,7 @@ import { PropertyCard } from "@/components/property/property-card";
 import { VirtualTour } from "@/components/property/virtual-tour";
 import { PanoramaSection } from "@/components/property/panorama-section";
 import { PropertyActions } from "@/components/property/property-actions";
+import { PropertyLocationMap } from "@/components/property/property-location-map";
 import { VisitRequestButton } from "@/components/property/visit-request-button";
 import { ApplyButton } from "@/components/property/apply-button";
 import { VerificationBadge } from "@/components/shared/verification-badge";
@@ -244,20 +245,12 @@ export default async function PropertyDetailPage({
               </>
             )}
 
-            {/* Location placeholder */}
+            {/* Emplacement — carte interactive réelle */}
             <div>
               <h2 className="mb-4 text-lg font-semibold">
-                Location / Emplacement
+                Localisation / Emplacement
               </h2>
-              <div className="flex h-[300px] items-center justify-center rounded-xl bg-muted">
-                <div className="text-center text-muted-foreground">
-                  <MapPin className="mx-auto mb-2 size-8" />
-                  <p>{property.address}</p>
-                  <p className="mt-1 text-xs">
-                    Carte interactive (Mapbox) - à venir
-                  </p>
-                </div>
-              </div>
+              <PropertyLocationMap address={property.address} />
             </div>
           </div>
 
