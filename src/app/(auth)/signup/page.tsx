@@ -5,7 +5,6 @@ import {
   Building2,
   GraduationCap,
   Home,
-  Zap,
 } from "lucide-react";
 
 import { FadeIn } from "@/components/shared/fade-in";
@@ -44,10 +43,6 @@ export default function SignupPage() {
     <div className="space-y-8">
       <FadeIn delay={0}>
         <div className="space-y-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-kaza-green/10 px-3 py-1 text-xs font-medium text-kaza-green">
-            <Zap className="size-3" />
-            Accès instantané — sans validation admin
-          </span>
           <h1 className="font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
             Créez votre compte KAZA en 30 secondes
           </h1>

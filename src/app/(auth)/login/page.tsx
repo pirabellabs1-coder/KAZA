@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 
 import { FadeIn } from "@/components/shared/fade-in";
 
@@ -26,15 +25,6 @@ export default function LoginPage() {
       </FadeIn>
 
       <FadeIn delay={100}>
-        <div className="rounded-2xl border border-kaza-blue/15 bg-kaza-blue/5 p-3 text-[11px] text-muted-foreground">
-          <p className="inline-flex items-center gap-1.5 font-medium text-kaza-navy">
-            <ShieldCheck className="size-3.5 text-kaza-blue" />
-            Connexion sécurisée via Supabase Auth · Aucun accès démo
-          </p>
-        </div>
-      </FadeIn>
-
-      <FadeIn delay={200}>
         <LoginForm />
       </FadeIn>
 
