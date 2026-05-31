@@ -74,7 +74,7 @@ export function SubscribeButton({
     }
 
     startTransition(async () => {
-      // Paiement par moyen de paiement (Mobile Money / FedaPay) — pas besoin
+      // Paiement par moyen de paiement (Mobile Money / GeniusPay) — pas besoin
       // de solde wallet. Le webhook active l'abonnement après confirmation.
       const result = await initiateSubscriptionCheckout(plan);
       if (result.success) {

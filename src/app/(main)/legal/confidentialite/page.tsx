@@ -145,8 +145,8 @@ export default function ConfidentialitePage() {
               </li>
               <li>
                 <strong>Paiement (tokenisé)</strong> : références Mobile Money
-                ou cartes bancaires tokenisées par notre prestataire (FedaPay /
-                Kkiapay). PIRABEL LABS ne stocke <em>aucun</em> numéro en
+                ou cartes bancaires tokenisées par notre prestataire
+                (GeniusPay). PIRABEL LABS ne stocke <em>aucun</em> numéro en
                 clair.
               </li>
               <li>
@@ -242,8 +242,8 @@ export default function ConfidentialitePage() {
                 Sous-traitants techniques liés par contrat de sous-traitance
                 conforme au CdN : <strong>Vercel Inc.</strong> (hébergement
                 web, USA/UE), <strong>Supabase Inc.</strong> (base de données +
-                authentification, UE), <strong>FedaPay / Kkiapay</strong>{" "}
-                (paiements, Bénin), <strong>Twilio</strong> (SMS, USA),{" "}
+                authentification, UE), <strong>GeniusPay</strong>{" "}
+                (paiements, Afrique), <strong>Twilio</strong> (SMS, USA),{" "}
                 <strong>Resend</strong> (e-mails transactionnels, USA/UE),{" "}
                 <strong>Firebase Cloud Messaging</strong> (notifications push,
                 USA).
@@ -426,7 +426,7 @@ export default function ConfidentialitePage() {
                   </li>
                   <li>
                     Signatures <strong>HMAC</strong> sur tous les webhooks de
-                    paiement (FedaPay, Kkiapay, Twilio).
+                    paiement (GeniusPay, Twilio).
                   </li>
                   <li>
                     Accès cloisonné par rôle, authentification renforcée pour

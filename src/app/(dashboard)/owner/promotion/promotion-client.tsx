@@ -173,7 +173,7 @@ export function PromotionClient({
     const target = property;
 
     startTransition(async () => {
-      // --- Paiement par Mobile Money (FedaPay) : redirection checkout -------
+      // --- Paiement par Mobile Money (GeniusPay) : redirection checkout -------
       if (payMethod === "mobile_money") {
         const res = await initiateBoostCheckout({
           propertyId: target.id,

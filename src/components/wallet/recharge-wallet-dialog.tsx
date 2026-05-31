@@ -1,6 +1,6 @@
 // =============================================================================
 // KAZA — Dialog : recharge du wallet par Mobile Money (client)
-// Initialise un checkout FedaPay/Kkiapay ; le solde est crédité par le webhook
+// Initialise un checkout GeniusPay ; le solde est crédité par le webhook
 // après confirmation du paiement (purpose = WALLET_TOPUP).
 // =============================================================================
 
