@@ -5,7 +5,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, CreditCard, Wallet, Smartphone } from "lucide-react";
+import { Eye, CreditCard, Wallet, Smartphone, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -90,6 +90,47 @@ export function PaymentsTable({ rows }: PaymentsTableProps) {
     }
     return true;
   });
+
+  // Export CSV (compatible Excel via BOM) des transactions filtrées — données
+  // déjà chargées côté client, aucune route serveur nécessaire.
+  const exportCsv = () => {
+    const headers = [
+      "ID",
+      "Date",
+      "Utilisateur",
+      "Email",
+      "Bien",
+      "Montant (FCFA)",
+      "Statut",
+      "Methode",
+    ];
+    const esc = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
+    const lines = [headers.map(esc).join(",")];
+    for (const p of filtered) {
+      lines.push(
+        [
+          p.id,
+          new Date(p.date).toLocaleString("fr-FR"),
+          p.userName,
+          p.userEmail,
+          p.propertyTitle,
+          String(p.amount),
+          statusConfig[p.status].label,
+          methodConfig[p.method].label,
+        ]
+          .map(esc)
+          .join(","),
+      );
+    }
+    const csv = "﻿" + lines.join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kaza-transactions-${filtered.length}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const columns: DataTableColumn<PaymentRow>[] = [
     {
@@ -236,6 +277,16 @@ export function PaymentsTable({ rows }: PaymentsTableProps) {
                 <SelectItem value="all">Tout</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={exportCsv}
+              disabled={filtered.length === 0}
+            >
+              <Download className="size-4" />
+              Exporter CSV
+            </Button>
           </>
         }
         emptyTitle="Aucune transaction"
