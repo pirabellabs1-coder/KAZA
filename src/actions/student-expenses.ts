@@ -96,6 +96,11 @@ export async function createExpense(input: ExpenseInput): Promise<ActionResult> 
   if (memberIds.length === 0) {
     return { success: false, error: "Aucun colocataire dans ce groupe." };
   }
+  // Sécurité : le payeur doit être membre du groupe (sinon sa part — avec le
+  // reliquat, marquée réglée — sort des soldes affichés et fausse le total dû).
+  if (!memberIds.includes(d.paidBy)) {
+    return { success: false, error: "Le payeur doit être un membre du groupe." };
+  }
 
   // Insère la dépense
   const { data: expense, error } = await supabase
