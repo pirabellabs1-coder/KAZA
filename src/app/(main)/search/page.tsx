@@ -359,7 +359,13 @@ export default async function SearchPage({
   const AVG_PRICE_BY_CITY = geoStats.cityAvgPrice;
 
   // Recherches populaires réelles : villes ayant le plus d'annonces publiées.
-  const cityNameBySlug = new Map(getAllCities().map((c) => [c.slug, c.name]));
+  const allCitiesRef = getAllCities();
+  const cityNameBySlug = new Map(allCitiesRef.map((c) => [c.slug, c.name]));
+  // Map nom de ville → code pays, pour afficher le drapeau du pays (et non une
+  // couleur) à côté de chaque recherche populaire.
+  const cityCountryByName = new Map(
+    allCitiesRef.map((c) => [c.name.toLowerCase(), c.countryCode]),
+  );
   const realPopular = Object.entries(geoStats.cityCounts)
     .filter(([, n]) => n > 0)
     .sort((a, b) => b[1] - a[1])
@@ -700,7 +706,7 @@ export default async function SearchPage({
             </div>
 
             <div className="flex gap-4 overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {selectedCountry.cities.map((city, idx) => (
+              {selectedCountry.cities.map((city) => (
                 <Link
                   key={city.slug}
                   href={buildSearchUrl(
@@ -711,17 +717,26 @@ export default async function SearchPage({
                     citySlug === city.slug ? "ring-2 ring-kaza-green" : ""
                   }`}
                 >
-                  {/* Image placeholder gradient */}
-                  <div
-                    className={`relative flex h-28 items-end justify-between p-3 ${cityGradient(idx)}`}
-                  >
+                  {/* Bandeau = drapeau du pays (et non une couleur aléatoire) */}
+                  <div className="relative flex h-28 items-end justify-between overflow-hidden p-3">
+                    <CountryFlag
+                      code={selectedCountry.code}
+                      shape="rect"
+                      title={selectedCountry.name}
+                      className="absolute inset-0 size-full rounded-none ring-0"
+                    />
+                    {/* Voile sombre pour garder le nom de ville lisible */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10"
+                    />
                     {city.isCapital && (
-                      <Badge className="absolute right-2 top-2 border-amber-200 bg-amber-100 px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wider text-amber-800">
+                      <Badge className="absolute right-2 top-2 z-10 border-amber-200 bg-amber-100 px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wider text-amber-800">
                         <Crown className="mr-1 size-2.5" />
                         Capitale
                       </Badge>
                     )}
-                    <div className="text-white drop-shadow">
+                    <div className="relative z-10 text-white drop-shadow-lg">
                       <div className="text-2xl font-bold">{city.name}</div>
                     </div>
                   </div>
@@ -1404,16 +1419,27 @@ export default async function SearchPage({
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
-            {popularSearches.map((city) => (
-              <Link
-                key={city}
-                href={`/search?q=${encodeURIComponent(city)}`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-kaza-blue hover:bg-kaza-blue/5 hover:text-kaza-blue hover:shadow-md"
-              >
-                <Search className="size-3.5" />
-                {city}
-              </Link>
-            ))}
+            {popularSearches.map((city) => {
+              const countryCode = cityCountryByName.get(city.toLowerCase());
+              return (
+                <Link
+                  key={city}
+                  href={`/search?q=${encodeURIComponent(city)}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-kaza-blue hover:bg-kaza-blue/5 hover:text-kaza-blue hover:shadow-md"
+                >
+                  {countryCode ? (
+                    <CountryFlag
+                      code={countryCode}
+                      className="h-3.5 w-5"
+                      title={city}
+                    />
+                  ) : (
+                    <Search className="size-3.5" />
+                  )}
+                  {city}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1946,16 +1972,3 @@ function PropertyMapMiniCard({ property }: { property: PublicProperty }) {
   );
 }
 
-function cityGradient(idx: number): string {
-  const gradients = [
-    "bg-gradient-to-br from-kaza-navy via-kaza-blue to-cyan-500",
-    "bg-gradient-to-br from-emerald-600 via-kaza-green to-teal-500",
-    "bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500",
-    "bg-gradient-to-br from-purple-600 via-fuchsia-500 to-pink-500",
-    "bg-gradient-to-br from-indigo-600 via-blue-500 to-sky-500",
-    "bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-500",
-    "bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500",
-    "bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500",
-  ];
-  return gradients[idx % gradients.length];
-}

@@ -166,8 +166,13 @@ export function CountryFlag({
   shape = "rounded",
   title,
 }: CountryFlagProps) {
-  const upper = code.toUpperCase();
-  const Component = FLAG_COMPONENTS[upper] ?? FlagFallback;
+  const upper = (code ?? "").toUpperCase();
+  // 1) Drapeau dessiné à la main (marchés ouest-africains live) — vectoriel,
+  //    offline-friendly. 2) Sinon, pour tout code ISO alpha-2 valide, on charge
+  //    le drapeau officiel depuis flagcdn.com (couvre les 54 pays africains et
+  //    au-delà). 3) Fallback globe gris si le code est invalide.
+  const Component = FLAG_COMPONENTS[upper];
+  const isIsoAlpha2 = /^[A-Z]{2}$/.test(upper);
 
   return (
     <span
@@ -180,7 +185,19 @@ export function CountryFlag({
       role="img"
       aria-label={`Drapeau ${upper}`}
     >
-      <Component />
+      {Component ? (
+        <Component />
+      ) : isIsoAlpha2 ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`https://flagcdn.com/${upper.toLowerCase()}.svg`}
+          alt={`Drapeau ${upper}`}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <FlagFallback />
+      )}
     </span>
   );
 }
