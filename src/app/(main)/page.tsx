@@ -20,6 +20,7 @@ import {
 } from "@/lib/queries/properties";
 import { StatCounter } from "@/components/marketing/stat-counter";
 import { GradientCard } from "@/components/marketing/gradient-card";
+import { InlineNewsletter } from "@/components/marketing/inline-newsletter";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
 import { GlassPanel } from "@/components/shared/glass-panel";
@@ -771,24 +772,12 @@ export default async function HomePage() {
                 local directement par e-mail.
               </p>
             </div>
-            <form
-              className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto lg:min-w-[420px]"
-              aria-label="Inscription à la newsletter KAZA"
-            >
-              <input
-                type="email"
-                required
-                placeholder="Votre adresse e-mail"
-                aria-label="Adresse e-mail"
-                className="flex-1 rounded-full border border-gray-200 bg-white px-5 py-3 text-sm outline-none transition-colors focus:border-kaza-blue focus:ring-2 focus:ring-kaza-blue/20"
-              />
-              <Button
-                type="submit"
-                className="rounded-full bg-kaza-navy px-6 hover:bg-kaza-navy/90"
-              >
-                Rejoindre KAZA
-              </Button>
-            </form>
+            <InlineNewsletter
+              source="homepage"
+              theme="light"
+              cta="Rejoindre KAZA"
+              className="lg:w-auto lg:min-w-[420px]"
+            />
           </div>
         </div>
       </section>

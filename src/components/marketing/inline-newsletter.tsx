@@ -5,18 +5,51 @@ import { Loader2 } from "lucide-react";
 
 import { subscribeNewsletter } from "@/actions/newsletter";
 import { toast } from "@/components/ui/toast-helper";
+import { cn } from "@/lib/utils";
 
 // =============================================================================
-// FooterNewsletter — formulaire newsletter du pied de page (thème sombre).
-// Câblé sur la server action `subscribeNewsletter` avec retour toast, sans
-// rechargement de page. Remplace l'ancien <form action="/api/newsletter">
-// (route inexistante → soumission cassée).
+// InlineNewsletter — formulaire newsletter en ligne (pilule), thémable.
+// Câblé sur la server action `subscribeNewsletter` (insert + emails Resend)
+// avec retour toast, sans rechargement. Utilisé partout où une barre
+// d'inscription compacte est présente (footer, landing, CTA marketing).
+//
+// Remplace les anciens formulaires bruts non câblés (landing) ou postant vers
+// une route inexistante (footer /api/newsletter).
 // =============================================================================
 
-export function FooterNewsletter() {
+type Theme = "light" | "dark";
+
+const THEME = {
+  light: {
+    input:
+      "border-gray-200 bg-white text-kaza-navy placeholder:text-slate-400 focus:border-kaza-blue focus:ring-2 focus:ring-kaza-blue/20",
+    button: "bg-kaza-navy text-white hover:bg-kaza-navy/90",
+  },
+  dark: {
+    input:
+      "border-white/20 bg-white/10 text-white placeholder:text-white/50 backdrop-blur focus:border-kaza-green",
+    button: "bg-kaza-green text-white hover:bg-kaza-green/90",
+  },
+} satisfies Record<Theme, { input: string; button: string }>;
+
+interface InlineNewsletterProps {
+  source: string;
+  theme?: Theme;
+  className?: string;
+  /** Libellé du bouton (défaut : « S'abonner »). */
+  cta?: string;
+}
+
+export function InlineNewsletter({
+  source,
+  theme = "light",
+  className,
+  cta = "S'abonner",
+}: InlineNewsletterProps) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const styles = THEME[theme];
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,7 +60,7 @@ export function FooterNewsletter() {
     }
     setSubmitting(true);
     try {
-      const res = await subscribeNewsletter({ email: value, source: "footer" });
+      const res = await subscribeNewsletter({ email: value, source });
       if (res.success) {
         toast.success(
           res.message ??
@@ -48,7 +81,7 @@ export function FooterNewsletter() {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex w-full max-w-md flex-col gap-3 sm:flex-row"
+      className={cn("flex w-full flex-col gap-3 sm:flex-row", className)}
       aria-label="Inscription à la newsletter KAZA"
     >
       <input
@@ -59,12 +92,19 @@ export function FooterNewsletter() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         disabled={submitting || done}
-        className="flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/50 outline-none backdrop-blur transition focus:border-kaza-green disabled:opacity-60"
+        aria-label="Adresse email"
+        className={cn(
+          "flex-1 rounded-full border px-5 py-3 text-sm outline-none transition disabled:opacity-60",
+          styles.input,
+        )}
       />
       <button
         type="submit"
         disabled={submitting || done}
-        className="inline-flex items-center justify-center rounded-full bg-kaza-green px-6 py-3 text-sm font-semibold text-white transition hover:bg-kaza-green/90 disabled:opacity-70"
+        className={cn(
+          "inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition disabled:opacity-70",
+          styles.button,
+        )}
       >
         {submitting ? (
           <>
@@ -74,7 +114,7 @@ export function FooterNewsletter() {
         ) : done ? (
           "Inscrit ✓"
         ) : (
-          "S'abonner"
+          cta
         )}
       </button>
     </form>

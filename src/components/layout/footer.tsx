@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import { CountryFlag } from "@/components/shared/country-flag";
-import { FooterNewsletter } from "@/components/layout/footer-newsletter";
+import { InlineNewsletter } from "@/components/marketing/inline-newsletter";
 
 const exploreLinks = [
   { href: "/properties", label: "Propriétés" },
@@ -70,7 +70,7 @@ export function Footer() {
                 newsletter par mois, zéro spam.
               </p>
             </div>
-            <FooterNewsletter />
+            <InlineNewsletter source="footer" theme="dark" />
           </div>
         </div>
       </section>

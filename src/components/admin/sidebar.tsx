@@ -31,6 +31,7 @@ import {
   TicketPercent,
   Flag,
   BadgeDollarSign,
+  Send,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -116,6 +117,7 @@ const adminNavSections: NavSection[] = [
     items: [
       { href: "/admin/notifications", label: "Campagnes", icon: Megaphone },
       { href: "/admin/email-templates", label: "Templates Email", icon: Mail },
+      { href: "/admin/newsletter", label: "Abonnés newsletter", icon: Send },
       { href: "/admin/messages", label: "Messages de contact", icon: Inbox },
       { href: "/admin/partners", label: "Demandes partenariat", icon: Handshake },
     ],
