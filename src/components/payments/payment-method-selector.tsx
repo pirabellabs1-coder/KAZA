@@ -1,122 +1,138 @@
 "use client";
 
-import { Check, Smartphone, CreditCard } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { Check, Smartphone, Wallet } from "lucide-react";
+import { cn, formatPrice } from "@/lib/utils";
 
 // =============================================================================
-// KAZA - Sélecteur de moyen de paiement (paiement intégré + Carte)
+// KAZA — Sélecteur de moyen de paiement : Solde KAZA (wallet) ou Mobile Money.
 // =============================================================================
 
-export type PaymentMethod = "KAZA Pay" | "KAZA Wallet" | "visa";
-
-interface PaymentMethodOption {
-  id: PaymentMethod;
-  name: string;
-  description: string;
-  fees: string;
-  icon: typeof Smartphone;
-  logoBg: string;
-  logoText: string;
-}
-
-const PAYMENT_METHODS: PaymentMethodOption[] = [
-  {
-    id: "KAZA Pay",
-    name: "KAZA Pay",
-    description: "Paiement instantané via votre compte KAZA Pay",
-    fees: "Frais 1,5%",
-    icon: Smartphone,
-    logoBg: "bg-yellow-400",
-    logoText: "KAZA Pay",
-  },
-  {
-    id: "KAZA Wallet",
-    name: "KAZA Wallet",
-    description: "Paiement instantané via votre compte KAZA Wallet",
-    fees: "Frais 1,5%",
-    icon: Smartphone,
-    logoBg: "bg-sky-500",
-    logoText: "KAZA Wallet",
-  },
-  {
-    id: "visa",
-    name: "Carte Visa / Mastercard",
-    description: "Paiement sécurisé par carte bancaire",
-    fees: "Frais 2,9% + 100 FCFA",
-    icon: CreditCard,
-    logoBg: "bg-kaza-navy",
-    logoText: "VISA",
-  },
-];
+export type PaymentMethod = "wallet" | "mobile_money";
 
 interface PaymentMethodSelectorProps {
   value: PaymentMethod;
   onChange: (value: PaymentMethod) => void;
+  /** Solde KAZA disponible (FCFA). */
+  walletBalance?: number;
+  /** Wallet gelé ? */
+  walletFrozen?: boolean;
+  /** Montant à payer (pour vérifier la suffisance du solde). */
+  payable: number;
+  /** Lien de rechargement du solde. */
+  topUpHref?: string;
 }
 
 export function PaymentMethodSelector({
   value,
   onChange,
+  walletBalance = 0,
+  walletFrozen = false,
+  payable,
+  topUpHref = "/tenant/wallet",
 }: PaymentMethodSelectorProps) {
+  const walletSufficient = !walletFrozen && walletBalance >= payable;
+
+  return (
+    <div role="radiogroup" aria-label="Moyen de paiement" className="grid gap-3">
+      {/* ---- Solde KAZA ---- */}
+      <button
+        type="button"
+        role="radio"
+        aria-checked={value === "wallet"}
+        disabled={!walletSufficient}
+        onClick={() => walletSufficient && onChange("wallet")}
+        className={cn(
+          "group relative flex items-center gap-4 rounded-xl border-2 bg-card p-4 text-left transition-all",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kaza-blue/40",
+          !walletSufficient && "cursor-not-allowed opacity-60",
+          walletSufficient && "hover:border-kaza-blue/60 hover:shadow-sm",
+          value === "wallet"
+            ? "border-kaza-blue bg-kaza-blue/5 shadow-sm"
+            : "border-border",
+        )}
+      >
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-kaza-green/15 text-kaza-green">
+          <Wallet className="size-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-foreground">Solde KAZA</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Paiement instantané depuis votre solde — sans frais.
+          </p>
+          <p className="mt-1 text-xs font-medium text-kaza-navy">
+            Disponible :{" "}
+            <span
+              className={cn(
+                "font-semibold",
+                walletSufficient ? "text-kaza-green" : "text-destructive",
+              )}
+            >
+              {formatPrice(walletBalance)}
+            </span>
+            {walletFrozen && " (gelé)"}
+          </p>
+          {!walletSufficient && !walletFrozen && (
+            <p className="mt-1 text-xs text-destructive">
+              Solde insuffisant.{" "}
+              <Link
+                href={topUpHref}
+                className="font-medium underline underline-offset-2"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Recharger
+              </Link>
+            </p>
+          )}
+        </div>
+        <RadioDot checked={value === "wallet"} />
+      </button>
+
+      {/* ---- Mobile Money ---- */}
+      <button
+        type="button"
+        role="radio"
+        aria-checked={value === "mobile_money"}
+        onClick={() => onChange("mobile_money")}
+        className={cn(
+          "group relative flex items-center gap-4 rounded-xl border-2 bg-card p-4 text-left transition-all",
+          "hover:border-kaza-blue/60 hover:shadow-sm",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kaza-blue/40",
+          value === "mobile_money"
+            ? "border-kaza-blue bg-kaza-blue/5 shadow-sm"
+            : "border-border",
+        )}
+      >
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-kaza-blue/15 text-kaza-blue">
+          <Smartphone className="size-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-foreground">Mobile Money</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            MTN MoMo, Moov Money, Celtiis… via paiement sécurisé.
+          </p>
+          <p className="mt-1 text-xs font-medium text-kaza-blue">
+            Redirection vers la page de paiement sécurisée.
+          </p>
+        </div>
+        <RadioDot checked={value === "mobile_money"} />
+      </button>
+    </div>
+  );
+}
+
+function RadioDot({ checked }: { checked: boolean }) {
   return (
     <div
-      role="radiogroup"
-      aria-label="Moyen de paiement"
-      className="grid gap-3"
+      className={cn(
+        "flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+        checked
+          ? "border-kaza-blue bg-kaza-blue text-white"
+          : "border-muted-foreground/30",
+      )}
+      aria-hidden="true"
     >
-      {PAYMENT_METHODS.map((method) => {
-        const isSelected = value === method.id;
-        const Icon = method.icon;
-        return (
-          <button
-            type="button"
-            role="radio"
-            aria-checked={isSelected}
-            key={method.id}
-            onClick={() => onChange(method.id)}
-            className={cn(
-              "group relative flex items-center gap-4 rounded-xl border-2 bg-card p-4 text-left transition-all",
-              "hover:border-kaza-blue/60 hover:shadow-sm",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kaza-blue/40",
-              isSelected
-                ? "border-kaza-blue bg-kaza-blue/5 shadow-sm"
-                : "border-border"
-            )}
-          >
-            <div
-              className={cn(
-                "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white",
-                method.logoBg
-              )}
-            >
-              <span className="hidden sm:inline">{method.logoText}</span>
-              <Icon className="size-5 sm:hidden" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-foreground">
-                {method.name}
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {method.description}
-              </p>
-              <p className="mt-1 text-xs font-medium text-kaza-blue">
-                {method.fees}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-                isSelected
-                  ? "border-kaza-blue bg-kaza-blue text-white"
-                  : "border-muted-foreground/30"
-              )}
-              aria-hidden="true"
-            >
-              {isSelected && <Check className="size-3.5" />}
-            </div>
-          </button>
-        );
-      })}
+      {checked && <Check className="size-3.5" />}
     </div>
   );
 }

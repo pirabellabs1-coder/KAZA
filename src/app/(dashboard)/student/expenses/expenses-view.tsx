@@ -9,6 +9,7 @@ import {
   Receipt,
   Users,
   Wallet,
+  Smartphone,
   ArrowDownCircle,
   ArrowUpCircle,
   CheckCircle2,
@@ -47,6 +48,7 @@ import {
   createExpense,
   settleShare,
   initiateExpenseShareCheckout,
+  payExpenseShareFromWallet,
 } from "@/actions/student-expenses";
 import type {
   StudentGroup,
@@ -173,6 +175,18 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
         return;
       }
       toast.error(res.error ?? "Impossible d'initier le paiement.");
+    });
+  };
+
+  const handlePayShareWallet = (shareId: string) => {
+    startTransition(async () => {
+      const res = await payExpenseShareFromWallet(shareId);
+      if (res.success) {
+        toast.success("Part réglée depuis votre solde KAZA.");
+        router.refresh();
+        return;
+      }
+      toast.error(res.error ?? "Impossible de régler depuis le solde.");
     });
   };
 
@@ -440,7 +454,7 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
                         <>
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="ghost"
                             className="gap-1.5"
                             disabled={isPending}
                             onClick={() => handleSettle(myShare.id)}
@@ -449,11 +463,20 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
                           </Button>
                           <Button
                             size="sm"
+                            variant="outline"
+                            className="gap-1.5"
+                            disabled={isPending}
+                            onClick={() => handlePayShareWallet(myShare.id)}
+                          >
+                            <Wallet className="size-3.5" /> Payer (solde)
+                          </Button>
+                          <Button
+                            size="sm"
                             className="gap-1.5"
                             disabled={isPending}
                             onClick={() => handlePayShare(myShare.id)}
                           >
-                            <Wallet className="size-3.5" /> Payer par Mobile Money
+                            <Smartphone className="size-3.5" /> Mobile Money
                           </Button>
                         </>
                       )}

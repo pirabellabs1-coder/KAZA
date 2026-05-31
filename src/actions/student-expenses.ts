@@ -11,11 +11,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { randomUUID } from "node:crypto";
+
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
 import type { PaymentProvider } from "@/lib/payments/types";
+import { walletDebit, walletRefund } from "@/lib/wallet/spend";
+import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
 
 export interface ActionResult {
   success: boolean;
@@ -245,4 +249,110 @@ export async function initiateExpenseShareCheckout(
       error: err instanceof Error ? err.message : "Erreur lors du paiement.",
     };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Règlement d'une part DEPUIS le solde KAZA (wallet) — alternative à GeniusPay.
+// Débit atomique, marque la part réglée + rembourse le payeur. Idempotent et
+// recrédite le solde si une étape échoue.
+// ---------------------------------------------------------------------------
+
+export async function payExpenseShareFromWallet(
+  shareId: string,
+): Promise<ShareCheckoutResult> {
+  if (!shareId) return { success: false, error: "Part introuvable." };
+  const user = await getCurrentDisplayUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  const { data: share, error: shareErr } = await admin
+    .from("expense_shares")
+    .select(
+      "id, user_id, share_fcfa, settled, expense:roommate_expenses(paid_by, title)",
+    )
+    .eq("id", shareId)
+    .maybeSingle();
+  if (shareErr || !share) return { success: false, error: "Part introuvable." };
+
+  const s = share as unknown as {
+    id: string;
+    user_id: string;
+    share_fcfa: number;
+    settled: boolean;
+    expense: { paid_by?: string | null; title?: string | null } | null;
+  };
+  if (s.user_id !== user.id) {
+    return { success: false, error: "Cette part ne vous appartient pas." };
+  }
+  if (s.settled) return { success: false, error: "Cette part est déjà réglée." };
+  const amount = Math.round(Number(s.share_fcfa) || 0);
+  if (amount <= 0) return { success: false, error: "Montant invalide." };
+  const paidBy = s.expense?.paid_by ?? null;
+  if (paidBy && paidBy === user.id) {
+    return { success: false, error: "Vous avez avancé cette dépense." };
+  }
+
+  // 1) Ligne payments (WALLET, PENDING).
+  const { data: payment, error: insErr } = await admin
+    .from("payments")
+    .insert({
+      user_id: user.id,
+      rental_id: null,
+      amount,
+      payment_method: "WALLET",
+      transaction_id: `WALLET-${randomUUID()}`,
+      status: "PENDING",
+      purpose: "EXPENSE_SHARE",
+      metadata: { share_id: shareId, paid_by: paidBy, paid_from: "wallet" },
+    })
+    .select("id")
+    .single();
+  if (insErr || !payment) {
+    return { success: false, error: "Impossible d'enregistrer le paiement." };
+  }
+
+  // 2) Débit atomique du solde.
+  const debit = await walletDebit({
+    userId: user.id,
+    amountFcfa: amount,
+    type: "EXPENSE_DEBIT",
+    description: `Frais partagés — ${s.expense?.title ?? "colocation"}`,
+    referenceId: payment.id,
+    metadata: { share_id: shareId },
+  });
+  if (!debit.ok) {
+    await admin.from("payments").update({ status: "FAILED" }).eq("id", payment.id);
+    return { success: false, error: debit.error };
+  }
+
+  // 3) Règlement (part réglée + remboursement du payeur). Sinon → remboursement.
+  const settle = await settleExpenseShareFromPayment(admin, {
+    shareId,
+    paidBy,
+    amountFcfa: amount,
+    paymentId: payment.id,
+  });
+  if (!settle.ok) {
+    await walletRefund(
+      user.id,
+      amount,
+      "Remboursement — échec règlement frais partagés",
+      payment.id,
+    );
+    await admin.from("payments").update({ status: "REFUNDED" }).eq("id", payment.id);
+    return {
+      success: false,
+      error: "Le paiement n'a pas pu aboutir, votre solde a été recrédité.",
+    };
+  }
+
+  await admin
+    .from("payments")
+    .update({ status: "COMPLETED", payment_date: new Date().toISOString() })
+    .eq("id", payment.id);
+
+  revalidatePath("/student/expenses");
+  revalidatePath("/student/finance");
+  return { success: true };
 }

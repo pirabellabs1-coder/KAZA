@@ -1,10 +1,18 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
 import type { PaymentProvider } from "@/lib/payments/types";
 import { validatePromoCode, computeDiscount } from "@/lib/queries/promo";
+import {
+  walletDebit,
+  walletRefund,
+  getWalletBalanceFor,
+} from "@/lib/wallet/spend";
+import { holdInEscrow, computeReleaseDate } from "@/lib/escrow";
 
 // =============================================================================
 // KAZA - Server Actions Paiements
@@ -168,6 +176,123 @@ export async function initiateRentPayment(
           : "Erreur lors de l'initiation du paiement.",
     };
   }
+}
+
+/** Solde KAZA de l'utilisateur courant (pour le tunnel de paiement). */
+export async function getMyWalletBalance(): Promise<{
+  balance: number;
+  frozen: boolean;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { balance: 0, frozen: false };
+  return getWalletBalanceFor(user.id);
+}
+
+/**
+ * Paie le loyer DEPUIS le solde KAZA (wallet) — alternative à GeniusPay.
+ * Débit atomique (pas de double-débit), puis mise en séquestre. Si la mise en
+ * séquestre échoue, le solde est recrédité automatiquement.
+ */
+export async function payRentFromWallet(
+  input: { rentalId: string; promoCode?: string },
+): Promise<InitiateRentPaymentResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr || !user) return { success: false, error: "Authentification requise." };
+
+  const { data: rental, error: rentalErr } = await supabase
+    .from("rentals")
+    .select("id, tenant_id, monthly_rent, property_id")
+    .eq("id", input.rentalId)
+    .single();
+  if (rentalErr || !rental) return { success: false, error: "Location introuvable." };
+  if (rental.tenant_id !== user.id) {
+    return { success: false, error: "Vous n'êtes pas autorisé à payer pour cette location." };
+  }
+  if (!rental.monthly_rent || rental.monthly_rent <= 0) {
+    return { success: false, error: "Montant de loyer invalide." };
+  }
+
+  // Promo : revalidée côté serveur (jamais déduite d'une valeur client).
+  const baseAmount = rental.monthly_rent;
+  let discount = 0;
+  let appliedPromoCode: string | null = null;
+  if (input.promoCode && input.promoCode.trim()) {
+    const validation = await validatePromoCode(input.promoCode, "RESERVATION", user.id);
+    if (validation.valid && validation.discountType && validation.discountValue != null) {
+      discount = computeDiscount(baseAmount, validation.discountType, validation.discountValue);
+      if (discount > 0) appliedPromoCode = input.promoCode.trim().toUpperCase();
+    }
+  }
+  const amountToCharge = Math.max(0, baseAmount - discount);
+  if (amountToCharge <= 0) return { success: false, error: "Montant invalide." };
+
+  const admin = createAdminClient();
+
+  // 1) Ligne payments (WALLET, PENDING).
+  const { data: payment, error: insertErr } = await admin
+    .from("payments")
+    .insert({
+      rental_id: rental.id,
+      user_id: user.id,
+      amount: amountToCharge,
+      payment_method: "WALLET",
+      transaction_id: `WALLET-${randomUUID()}`,
+      status: "PENDING",
+      metadata: {
+        user_id: user.id,
+        paid_from: "wallet",
+        ...(appliedPromoCode
+          ? { promo_code: appliedPromoCode, promo_discount: String(discount) }
+          : {}),
+      },
+    })
+    .select("id")
+    .single();
+  if (insertErr || !payment) {
+    console.error("[payments] wallet rent insert echec:", insertErr);
+    return { success: false, error: "Impossible d'enregistrer le paiement." };
+  }
+
+  // 2) Débit atomique du solde.
+  const debit = await walletDebit({
+    userId: user.id,
+    amountFcfa: amountToCharge,
+    type: "RENT_DEBIT",
+    description: `Loyer — location ${rental.id}`,
+    referenceId: payment.id,
+    metadata: { rental_id: rental.id },
+  });
+  if (!debit.ok) {
+    await admin.from("payments").update({ status: "FAILED" }).eq("id", payment.id);
+    return { success: false, error: debit.error };
+  }
+
+  // 3) Mise en séquestre (état PROCESSING). En cas d'échec → remboursement.
+  try {
+    await holdInEscrow(payment.id, computeReleaseDate(new Date()));
+  } catch (e) {
+    console.error("[payments] wallet rent escrow echec:", e);
+    await walletRefund(
+      user.id,
+      amountToCharge,
+      "Remboursement — échec de la mise en séquestre du loyer",
+      payment.id,
+    );
+    await admin.from("payments").update({ status: "REFUNDED" }).eq("id", payment.id);
+    return {
+      success: false,
+      error: "Le paiement n'a pas pu aboutir, votre solde a été recrédité.",
+    };
+  }
+
+  return { success: true, paymentId: payment.id };
 }
 
 export interface GetPaymentHistoryInput {

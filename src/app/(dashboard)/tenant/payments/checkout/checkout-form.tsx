@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { CheckCircle2, Loader2, Lock, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,11 @@ import {
   PaymentMethodSelector,
   type PaymentMethod,
 } from "@/components/payments/payment-method-selector";
-import { initiateRentPayment } from "@/actions/payments";
+import {
+  initiateRentPayment,
+  payRentFromWallet,
+  getMyWalletBalance,
+} from "@/actions/payments";
 import { applyPromoToReservation } from "@/actions/promo";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "@/components/ui/toast-helper";
@@ -30,11 +34,25 @@ interface AppliedPromo {
 }
 
 export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
-  const [method, setMethod] = useState<PaymentMethod>("KAZA Pay");
-  const [phone, setPhone] = useState("");
+  const [method, setMethod] = useState<PaymentMethod>("mobile_money");
   const [acceptCgu, setAcceptCgu] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  // Solde KAZA (wallet) de l'utilisateur courant.
+  const [wallet, setWallet] = useState<{ balance: number; frozen: boolean }>({
+    balance: 0,
+    frozen: false,
+  });
+  useEffect(() => {
+    let active = true;
+    getMyWalletBalance()
+      .then((w) => active && setWallet(w))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Code promo
   const [promoInput, setPromoInput] = useState("");
@@ -45,11 +63,11 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
   // Montant réellement dû après remise éventuelle.
   const payableAmount = appliedPromo ? appliedPromo.total : amountTotal;
 
-  const isMobileMoney = method === "KAZA Pay" || method === "KAZA Wallet";
-  const phoneValid =
-    !isMobileMoney ||
-    /^(\+229)?\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, ""));
-  const canSubmit = acceptCgu && phoneValid && !isPending;
+  const walletSufficient = !wallet.frozen && wallet.balance >= payableAmount;
+  const canSubmit =
+    acceptCgu &&
+    !isPending &&
+    (method === "wallet" ? walletSufficient : true);
 
   function handleApplyPromo() {
     const code = promoInput.trim();
@@ -94,8 +112,8 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
       toast.error(msg);
       return;
     }
-    if (isMobileMoney && !phoneValid) {
-      const msg = "Veuillez saisir un numéro de téléphone valide (+229).";
+    if (method === "wallet" && !walletSufficient) {
+      const msg = "Solde KAZA insuffisant pour ce paiement.";
       setError(msg);
       toast.error(msg);
       return;
@@ -103,12 +121,29 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
 
     startTransition(async () => {
       try {
+        // --- Paiement depuis le solde KAZA ---
+        if (method === "wallet") {
+          const result = await payRentFromWallet({
+            rentalId,
+            promoCode: appliedPromo?.code,
+          });
+          if (!result.success) {
+            const msg = result.error ?? "Le paiement a échoué. Réessayez.";
+            setError(msg);
+            toast.error(msg);
+            return;
+          }
+          toast.success("Loyer payé depuis votre solde KAZA.");
+          window.location.href = "/payments/success?method=wallet";
+          return;
+        }
+
+        // --- Paiement Mobile Money (GeniusPay) ---
         const result = await initiateRentPayment({
           rentalId,
           provider: "geniuspay",
           promoCode: appliedPromo?.code,
         });
-
         if (!result.success || !result.checkoutUrl) {
           const msg =
             result.error ??
@@ -117,7 +152,6 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
           toast.error(msg);
           return;
         }
-
         toast.info("Redirection vers la page de paiement…");
         window.location.href = result.checkoutUrl;
       } catch (err) {
@@ -143,50 +177,20 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
             Sélectionnez l&apos;option qui vous convient le mieux.
           </p>
         </div>
-        <PaymentMethodSelector value={method} onChange={setMethod} />
+        <PaymentMethodSelector
+          value={method}
+          onChange={setMethod}
+          walletBalance={wallet.balance}
+          walletFrozen={wallet.frozen}
+          payable={payableAmount}
+        />
       </section>
 
-      {/* Étape 2 : informations */}
-      {isMobileMoney && (
-        <section className="space-y-3">
-          <div>
-            <h2 className="font-heading text-lg font-semibold text-foreground">
-              2. Numéro paiement intégré
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Le numéro associé à votre compte{" "}
-              {method === "KAZA Pay" ? "KAZA Pay" : "KAZA Wallet"}.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Numéro de téléphone</Label>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-medium text-foreground">
-                +229
-              </div>
-              <Input
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                placeholder="01 23 45 67"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                autoComplete="tel-national"
-                required
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Vous recevrez un code de confirmation par SMS sur ce numéro.
-            </p>
-          </div>
-        </section>
-      )}
-
-      {/* Étape 3 : code promo */}
+      {/* Étape 2 : code promo */}
       <section className="space-y-3">
         <div>
           <h2 className="font-heading text-lg font-semibold text-foreground">
-            {isMobileMoney ? "3" : "2"}. Code promo (optionnel)
+            2. Code promo (optionnel)
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Vous avez un code de réduction ? Saisissez-le ci-dessous.
