@@ -18,11 +18,7 @@ import { InlineNewsletter } from "@/components/marketing/inline-newsletter";
 import { Badge } from "@/components/ui/badge";
 import { FadeIn } from "@/components/shared/fade-in";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
-import {
-  BLOG_ARTICLES,
-  getAllCategories,
-  getFeaturedArticle,
-} from "@/lib/blog-data";
+import { getBlogList } from "@/lib/blog/articles";
 
 export const metadata: Metadata = {
   title: "Le journal KAZA — Magazine immobilier africain",
@@ -71,10 +67,29 @@ const POPULAR_CATEGORIES = [
   },
 ];
 
-export default function BlogPage() {
-  const featured = getFeaturedArticle();
-  const others = BLOG_ARTICLES.filter((a) => a.slug !== featured.slug);
-  const categories = ["Tout", ...getAllCategories()];
+export const dynamic = "force-dynamic";
+
+export default async function BlogPage() {
+  const all = await getBlogList();
+  const featured = all[0];
+  const others = all.slice(1);
+  const categories = [
+    "Tout",
+    ...Array.from(new Set(all.map((a) => a.category))),
+  ];
+
+  if (!featured) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-32 text-center">
+        <h1 className="font-heading text-3xl font-bold text-kaza-navy">
+          Le journal KAZA
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          Nos premiers articles arrivent très bientôt. Revenez d&apos;ici peu !
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white">

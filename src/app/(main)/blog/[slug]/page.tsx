@@ -20,11 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/fade-in";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
-import {
-  BLOG_ARTICLES,
-  getArticleBySlug,
-  getRelatedArticles,
-} from "@/lib/blog-data";
+import { BLOG_ARTICLES, getRelatedArticles } from "@/lib/blog-data";
+import { getBlogArticle } from "@/lib/blog/articles";
 
 // =============================================================================
 // SEO & static params
@@ -40,7 +37,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getBlogArticle(slug);
   if (!article) return { title: "Article introuvable | KAZA" };
   const canonical = `/blog/${slug}`;
   return {
@@ -83,7 +80,7 @@ export default async function BlogArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getBlogArticle(slug);
   if (!article) notFound();
 
   const related = getRelatedArticles(slug, 3);

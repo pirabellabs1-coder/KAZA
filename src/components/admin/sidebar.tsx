@@ -32,6 +32,7 @@ import {
   Flag,
   BadgeDollarSign,
   Send,
+  Newspaper,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -91,6 +92,7 @@ const adminNavSections: NavSection[] = [
       { href: "/admin/contracts", label: "Contrats", icon: FileText },
       { href: "/admin/documents", label: "Documents", icon: FolderArchive },
       { href: "/admin/careers", label: "Carrières", icon: Briefcase },
+      { href: "/admin/articles", label: "Articles & blog", icon: Newspaper },
       { href: "/admin/content", label: "Modération", icon: ShieldAlert },
       { href: "/admin/reports", label: "Signalements", icon: Flag },
       {
