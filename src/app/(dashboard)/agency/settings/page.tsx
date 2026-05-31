@@ -295,40 +295,38 @@ export default async function AgencySettingsPage() {
             <div>
               <p className="font-semibold">Bientôt disponible</p>
               <p className="text-amber-800">
-                La double authentification, les clés API, les webhooks et la
-                gestion des sessions sont en cours de mise en place. Ces options
-                sont désactivées tant qu&apos;elles ne sont pas opérationnelles,
-                afin de ne pas laisser croire à un enregistrement.
+                Les clés API, les webhooks et la gestion des sessions sont en
+                cours de mise en place. Ces options sont désactivées tant
+                qu&apos;elles ne sont pas opérationnelles, afin de ne pas laisser
+                croire à un enregistrement. (La double authentification, elle,
+                est déjà disponible — voir ci-dessous.)
               </p>
             </div>
           </div>
 
-          {/* 2FA */}
-          <Card className="opacity-60">
+          {/* 2FA — réelle (TOTP via Supabase MFA), gérée dans /settings/security */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="size-5 text-kaza-green" aria-hidden="true" />
                 Double authentification (2FA)
-                <Badge variant="outline" className="ml-1 text-[10px]">
-                  Bientôt
+                <Badge className="ml-1 bg-kaza-green/10 text-[10px] text-kaza-green">
+                  Disponible
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between rounded-lg border border-border/70 bg-muted/30 p-4">
-                <div className="flex items-center gap-3">
-                  <Badge
-                    variant="outline"
-                    className="border-muted-foreground/40 text-muted-foreground"
-                  >
-                    Désactivée
-                  </Badge>
-                  <p className="text-sm text-muted-foreground">
-                    Activez la 2FA pour sécuriser l&apos;accès à votre espace agence.
-                  </p>
-                </div>
-                <Button variant="outline" size="sm" disabled>
-                  Activer
+              <div className="flex flex-col items-start justify-between gap-3 rounded-lg border border-border/70 bg-muted/30 p-4 sm:flex-row sm:items-center">
+                <p className="text-sm text-muted-foreground">
+                  Protégez l&apos;accès à votre espace agence avec une
+                  application d&apos;authentification (code à 6 chiffres à chaque
+                  connexion).
+                </p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/settings/security">
+                    <Shield className="mr-1.5 size-3.5" />
+                    Gérer la 2FA
+                  </Link>
                 </Button>
               </div>
             </CardContent>
