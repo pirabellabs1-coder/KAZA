@@ -38,12 +38,21 @@ function getConfig() {
   return { apiKey, apiSecret, webhookSecret };
 }
 
+// User-Agent de navigateur : l'API GeniusPay est derrière Cloudflare Bot
+// Management, qui renvoie un challenge HTTP 403 (« Just a moment… ») aux
+// requêtes serveur sans User-Agent de navigateur. Avec cet en-tête, la requête
+// passe le challenge et l'API répond normalement.
+const BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+  "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
 function buildHeaders(apiKey: string, apiSecret: string): HeadersInit {
   return {
     "X-API-Key": apiKey,
     "X-API-Secret": apiSecret,
     Accept: "application/json",
     "Content-Type": "application/json",
+    "User-Agent": BROWSER_UA,
   };
 }
 
@@ -107,6 +116,7 @@ async function createCheckout(
   const body = {
     amount: Math.round(input.amount),
     currency: "XOF",
+    description: input.description || "Paiement KAZA",
     customer: {
       email: input.customerEmail || undefined,
       phone: input.customerPhone || undefined,
