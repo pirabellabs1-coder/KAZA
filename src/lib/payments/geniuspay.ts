@@ -56,6 +56,45 @@ function buildHeaders(apiKey: string, apiSecret: string): HeadersInit {
   };
 }
 
+// Relais Supabase Edge Function : l'API GeniusPay (Cloudflare) est injoignable
+// depuis les IP serveur de Vercel. L'egress des Edge Functions Supabase passe
+// le challenge ; on route donc les appels via la fonction `geniuspay-relay`
+// quand `GENIUSPAY_RELAY_SECRET` est défini (prod). Sinon appel direct (dev
+// local depuis une IP non bloquée).
+const RELAY_SECRET = process.env.GENIUSPAY_RELAY_SECRET;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
+const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+async function geniuspayFetch(
+  path: string,
+  method: string,
+  apiKey: string,
+  apiSecret: string,
+  body?: unknown,
+): Promise<Response> {
+  if (RELAY_SECRET && SUPABASE_URL) {
+    return fetch(`${SUPABASE_URL}/functions/v1/geniuspay-relay`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-relay-secret": RELAY_SECRET,
+        ...(SUPABASE_ANON
+          ? {
+              apikey: SUPABASE_ANON,
+              Authorization: `Bearer ${SUPABASE_ANON}`,
+            }
+          : {}),
+      },
+      body: JSON.stringify({ path, method, body }),
+    });
+  }
+  const init: RequestInit = { method, headers: buildHeaders(apiKey, apiSecret) };
+  if (method !== "GET" && body !== undefined) {
+    init.body = JSON.stringify(body);
+  }
+  return fetch(`${BASE_URL}${path}`, init);
+}
+
 /**
  * Mappe un statut brut GeniusPay vers notre statut interne.
  * Statuts GeniusPay : pending, processing, completed, failed, cancelled, refunded.
@@ -133,11 +172,7 @@ async function createCheckout(
     },
   };
 
-  const res = await fetch(`${BASE_URL}/payments`, {
-    method: "POST",
-    headers: buildHeaders(apiKey, apiSecret),
-    body: JSON.stringify(body),
-  });
+  const res = await geniuspayFetch("/payments", "POST", apiKey, apiSecret, body);
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
