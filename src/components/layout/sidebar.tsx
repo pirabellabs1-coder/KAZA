@@ -41,6 +41,7 @@ interface NavItem {
 const ownerNav: NavItem[] = [
   { href: "/owner/properties", label: "Mes Propriétés", icon: Building2 },
   { href: "/owner/visits", label: "Demandes de Visite", icon: CalendarCheck },
+  { href: "/owner/applications", label: "Candidatures", icon: ClipboardList },
   { href: "/owner/calendar", label: "Calendrier", icon: CalendarCheck },
   { href: "/owner/rentals", label: "Locations en Cours", icon: HandCoins },
   { href: "/owner/tenants", label: "Mes Locataires", icon: Users },
@@ -92,6 +93,7 @@ const agencyNav: NavItem[] = [
   { href: "/agency/portfolio", label: "Portefeuille", icon: Building2 },
   { href: "/owner/properties", label: "Mes annonces", icon: Home },
   { href: "/agency/tenants", label: "Locataires", icon: Users },
+  { href: "/owner/applications", label: "Candidatures", icon: ClipboardList },
   { href: "/agency/rentals", label: "Baux & locations", icon: HandCoins },
   { href: "/agency/visits", label: "Visites", icon: CalendarCheck },
   { href: "/agency/payments", label: "Loyers & encaissements", icon: Receipt },

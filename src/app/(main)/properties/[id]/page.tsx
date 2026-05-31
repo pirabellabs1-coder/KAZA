@@ -17,6 +17,7 @@ import { VirtualTour } from "@/components/property/virtual-tour";
 import { PanoramaSection } from "@/components/property/panorama-section";
 import { PropertyActions } from "@/components/property/property-actions";
 import { VisitRequestButton } from "@/components/property/visit-request-button";
+import { ApplyButton } from "@/components/property/apply-button";
 import { VerificationBadge } from "@/components/shared/verification-badge";
 import { PropertyViewTracker } from "@/components/analytics/page-tracker";
 import { formatPrice, formatDate, getInitials } from "@/lib/utils";
@@ -312,7 +313,7 @@ export default async function PropertyDetailPage({
                   Vous êtes le propriétaire de ce bien.
                 </div>
               ) : (
-                <div className="mb-3">
+                <div className="mb-3 space-y-2">
                   <VisitRequestButton
                     propertyId={property.id}
                     propertyTitle={property.title}
@@ -320,6 +321,11 @@ export default async function PropertyDetailPage({
                     ownerName={ownerFullName}
                     isAuthenticated={isAuthenticated}
                     variant="large"
+                  />
+                  <ApplyButton
+                    propertyId={property.id}
+                    propertyTitle={property.title}
+                    isAuthenticated={isAuthenticated}
                   />
                 </div>
               )}
