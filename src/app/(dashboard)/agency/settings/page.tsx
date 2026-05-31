@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Key,
   Webhook,
-  Download,
   Trash2,
   PauseCircle,
   Monitor,
@@ -39,6 +38,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
 import type { AgencySettings } from "@/actions/agency-settings";
 
+import { DataExportButton } from "@/components/settings/data-export-button";
 import { SettingsProfileForm } from "./settings-profile-form";
 import { SettingsPublicForm } from "./settings-public-form";
 import { SettingsNotificationsForm } from "./settings-notifications-form";
@@ -411,25 +411,20 @@ export default async function AgencySettingsPage() {
             </CardContent>
           </Card>
 
-          {/* RGPD */}
-          <Card className="opacity-60">
+          {/* RGPD — export réel des données au format JSON */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 Export RGPD
-                <Badge variant="outline" className="ml-1 text-[10px]">
-                  Bientôt
-                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
               <p className="text-sm text-muted-foreground">
-                L&apos;export des données de votre agence au format JSON sera bientôt
-                disponible.
+                Téléchargez l&apos;ensemble des données de votre compte au format
+                JSON (profil, annonces, abonnements, factures, paiements…),
+                conformément au RGPD et à l&apos;APDP Bénin.
               </p>
-              <Button variant="outline" className="gap-2" disabled>
-                <Download className="size-4" aria-hidden="true" />
-                Télécharger toutes vos données
-              </Button>
+              <DataExportButton />
             </CardContent>
           </Card>
 
