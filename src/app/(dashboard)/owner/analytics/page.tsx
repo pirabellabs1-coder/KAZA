@@ -189,30 +189,28 @@ export default async function OwnerAnalyticsPage() {
         </CardContent>
       </Card>
 
-      {/* GRAPHIQUE — Revenus mensuels (TODO : à brancher sur la DB) */}
+      {/* GRAPHIQUE — Revenus mensuels réels (payments + rentals) */}
       <Card className="rounded-2xl shadow-sm">
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2 font-heading text-lg">
                 <TrendingUp className="size-5 text-kaza-blue" />
-                Revenus mensuels — projection 12 mois
+                Revenus mensuels — 12 derniers mois
               </CardTitle>
               <p className="mt-1 text-sm text-muted-foreground">
-                {/* TODO: brancher l'agrégation mensuelle des paiements */}
-                Courbe projetée — branchement DB à venir
+                Loyers encaissés par mois sur vos biens.
               </p>
             </div>
-            <Badge variant="outline" className="border-amber-500 text-amber-600">
-              Projection
+            <Badge variant="outline" className="border-kaza-green text-kaza-green">
+              Données réelles
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
           {data.length === 0 ? (
             <div className="rounded-lg border border-dashed bg-slate-50/40 px-4 py-10 text-center text-sm text-muted-foreground">
-              Projection indisponible — aucune donnée mensuelle agrégée pour le
-              moment.
+              Aucun revenu encaissé sur les 12 derniers mois pour le moment.
             </div>
           ) : (
           <div className="overflow-x-auto">
