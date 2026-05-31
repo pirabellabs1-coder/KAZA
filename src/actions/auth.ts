@@ -3,17 +3,16 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/notifications/resend";
 import { buildEmail } from "@/lib/notifications/email-template";
+import { createEmailOtp, verifyEmailOtp, type OtpPurpose } from "@/lib/auth/otp";
 import { track } from "@/lib/analytics/track";
 import { DEMO_SESSION_COOKIE } from "@/lib/auth/demo-session";
-import type {
-  LoginFormData,
-  SignupFormData,
-  ForgotPasswordFormData,
-} from "@/validators/auth";
+import type { LoginFormData, SignupFormData } from "@/validators/auth";
 
 type AuthResult = {
   error?: string;
@@ -47,6 +46,10 @@ const ROLE_LANDING: Record<AuthRole, string> = {
   ADMIN: "/admin",
 };
 
+function adminClient(): SupabaseClient {
+  return createAdminClient() as unknown as SupabaseClient;
+}
+
 /**
  * Best-effort clear du cookie démo legacy pour les utilisateurs qui avaient
  * encore une session avant la bascule prod. Ne fait rien si déjà absent.
@@ -56,9 +59,68 @@ async function clearDemoSessionCookie() {
   store.delete(DEMO_SESSION_COOKIE);
 }
 
+/** Retourne l'id du compte associé à un email (ou null s'il n'existe pas). */
+async function findUserIdByEmail(email: string): Promise<string | null> {
+  const { data } = await adminClient()
+    .from("users")
+    .select("id")
+    .ilike("email", email.trim())
+    .maybeSingle();
+  return (data as { id?: string } | null)?.id ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Email — code de vérification (gabarit KAZA)
+// ---------------------------------------------------------------------------
+
+function otpCodeBlock(code: string): string {
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 18px;">
+    <tr>
+      <td align="center" style="background:#F4F7FB;border:1px solid #E5E7EB;border-radius:12px;padding:22px;">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#6B7280;margin-bottom:10px;">Votre code de vérification</div>
+        <div style="font-family:'Courier New',Courier,monospace;font-size:38px;font-weight:800;letter-spacing:10px;color:#1A3A52;">${code}</div>
+      </td>
+    </tr>
+  </table>
+  <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#6B7280;text-align:center;">
+    Ce code expire dans 10 minutes. Ne le partagez avec personne — l'équipe KAZA ne vous le demandera jamais.
+  </p>`;
+}
+
+async function sendOtpEmail(
+  email: string,
+  code: string,
+  purpose: OtpPurpose,
+  firstName?: string,
+): Promise<void> {
+  const isSignup = purpose === "SIGNUP";
+  const html = buildEmail({
+    preheader: `Votre code de vérification KAZA : ${code}`,
+    heading: isSignup
+      ? "Confirmez votre inscription"
+      : "Réinitialisation de votre mot de passe",
+    intro: firstName ? `Bonjour ${firstName},` : "Bonjour,",
+    paragraphs: [
+      isSignup
+        ? "Bienvenue sur KAZA ! Saisissez le code ci-dessous dans la page d'inscription pour activer votre compte."
+        : "Vous avez demandé à réinitialiser votre mot de passe. Saisissez le code ci-dessous, puis choisissez un nouveau mot de passe.",
+    ],
+    rawHtml: otpCodeBlock(code),
+    outro:
+      "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.\n— L'équipe KAZA",
+  });
+  await sendEmail(
+    email,
+    isSignup
+      ? "Votre code de confirmation KAZA"
+      : "Votre code de réinitialisation KAZA",
+    html,
+  );
+}
+
 /**
  * Notification interne (best-effort) à l'équipe KAZA pour chaque inscription.
- * N'attend pas la réponse pour ne pas bloquer la redirection.
  */
 async function notifyTeamOfSignup(data: SignupFormData) {
   const recipient = process.env.NOTIFICATIONS_CONTACT_EMAIL;
@@ -73,7 +135,7 @@ async function notifyTeamOfSignup(data: SignupFormData) {
         { label: "Téléphone", value: data.phone },
         { label: "Profil", value: ROLE_LABELS[data.role as AuthRole] },
       ],
-      outro: "Compte créé via Supabase Auth.",
+      outro: "Compte confirmé par code email.",
     });
     await sendEmail(
       recipient,
@@ -86,25 +148,13 @@ async function notifyTeamOfSignup(data: SignupFormData) {
 }
 
 // =============================================================================
-// SIGNUP — Supabase Auth (autoconfirm activé côté projet)
+// PARRAINAGE
 // =============================================================================
 
 const REFERRED_SIGNUP_BONUS = 500;
 
-/**
- * Best-effort : si l'inscription contient un `referralCode` valide,
- *   1) cree la ligne `referrals(referrer, referred, code, PENDING)`,
- *   2) credite 500 pts SIGNUP_BONUS supplementaires au filleul.
- *
- * Le credit de 1000 pts REFERRAL au parrain sera fait plus tard (quand
- * le filleul aura signe son premier contrat — workflow contracts).
- *
- * En cas d'erreur, on logge et on continue : on ne veut pas casser un
- * signup pour un bonus.
- */
 async function applyReferralBonus(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: SupabaseClient,
   referredUserId: string,
   rawCode: string,
 ): Promise<void> {
@@ -128,7 +178,6 @@ async function applyReferralBonus(
       return;
     }
 
-    // Lien parrain ↔ filleul (idempotent grace au unique (referred_id))
     const { error: refErr } = await supabase.from("referrals").insert({
       referrer_id: referrerId,
       referred_id: referredUserId,
@@ -136,12 +185,11 @@ async function applyReferralBonus(
       status: "PENDING",
       points_awarded: 0,
     });
-    if (refErr && refErr.code !== "23505") {
+    if (refErr && (refErr as { code?: string }).code !== "23505") {
       console.error("[auth] referrals insert failed:", refErr);
       return;
     }
 
-    // Bonus filleul (500 pts en plus des 100 du trigger d'inscription)
     const { error: txErr } = await supabase
       .from("kaza_points_transactions")
       .insert({
@@ -159,57 +207,107 @@ async function applyReferralBonus(
   }
 }
 
-export async function signup(data: SignupFormData): Promise<AuthResult> {
-  const role = data.role as AuthRole;
+// =============================================================================
+// SIGNUP — Étape 1 : envoi d'un code de vérification par email
+// =============================================================================
 
-  const supabase = await createClient();
-  const { data: signupData, error: signupError } = await supabase.auth.signUp({
-    email: data.email,
+export async function requestSignupCode(
+  data: SignupFormData,
+): Promise<AuthResult> {
+  const email = data.email?.trim().toLowerCase();
+  if (!email) return { error: "Adresse email requise." };
+
+  // Compte déjà existant ?
+  const existingId = await findUserIdByEmail(email);
+  if (existingId) {
+    return {
+      error:
+        "Un compte avec cette adresse email existe déjà. Connectez-vous ou utilisez « Mot de passe oublié ».",
+    };
+  }
+
+  const otp = await createEmailOtp(email, "SIGNUP");
+  if (!otp.ok) return { error: otp.error };
+
+  try {
+    await sendOtpEmail(email, otp.code, "SIGNUP", data.firstName);
+  } catch (err) {
+    console.error("[auth] sendOtpEmail signup failed:", err);
+    return {
+      error: "Impossible d'envoyer le code par email. Réessayez dans un instant.",
+    };
+  }
+
+  return { success: true, message: "Code envoyé." };
+}
+
+// =============================================================================
+// SIGNUP — Étape 2 : vérification du code + création définitive du compte
+// =============================================================================
+
+export async function verifySignupCode(
+  data: SignupFormData,
+  code: string,
+): Promise<AuthResult> {
+  const email = data.email?.trim().toLowerCase();
+  if (!email) return { error: "Adresse email requise." };
+
+  const check = await verifyEmailOtp(email, "SIGNUP", code);
+  if (!check.ok) return { error: check.error };
+
+  const role = data.role as AuthRole;
+  const admin = adminClient();
+
+  // Création du compte (email déjà confirmé via le code).
+  const { data: created, error: createErr } = await admin.auth.admin.createUser({
+    email,
     password: data.password,
-    options: {
-      data: {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        role: data.role,
-        phone: data.phone,
-      },
+    email_confirm: true,
+    user_metadata: {
+      first_name: data.firstName,
+      last_name: data.lastName,
+      role: data.role,
+      phone: data.phone,
     },
   });
 
-  if (signupError) {
-    if (
-      signupError.message.includes("already registered") ||
-      signupError.message.toLowerCase().includes("already exists")
-    ) {
+  if (createErr) {
+    if (/already|exist|registered/i.test(createErr.message)) {
       return {
         error:
-          "Un compte avec cette adresse email existe déjà. Connectez-vous ou utilisez « Mot de passe oublié ».",
+          "Un compte avec cette adresse email existe déjà. Connectez-vous.",
       };
     }
-    return { error: signupError.message };
+    return { error: createErr.message };
   }
 
-  // Notification interne best-effort
+  const newUserId = created.user?.id;
+
+  // Parrainage + notification interne (best-effort).
+  const referralCode = data.referralCode?.trim();
+  if (referralCode && newUserId) {
+    void applyReferralBonus(admin, newUserId, referralCode);
+  }
   void notifyTeamOfSignup(data);
 
-  // Bonus parrainage best-effort (n'interrompt pas la redirection)
-  const referralCode = data.referralCode?.trim();
-  const newUserId = signupData.user?.id;
-  if (referralCode && newUserId) {
-    void applyReferralBonus(supabase, newUserId, referralCode);
+  // Connexion immédiate (pose les cookies de session).
+  const supabase = await createClient();
+  const { error: signInErr } = await supabase.auth.signInWithPassword({
+    email,
+    password: data.password,
+  });
+  if (signInErr) {
+    // Compte créé mais connexion échouée : on renvoie vers la page de login.
+    return {
+      success: true,
+      redirectTo: "/login",
+      message: "Compte créé. Connectez-vous.",
+    };
   }
 
-  // Tracking analytics — best-effort.
-  await track({
-    eventType: "SIGNUP_COMPLETED",
-    metadata: { role: data.role },
-  });
+  await track({ eventType: "SIGNUP_COMPLETED", metadata: { role: data.role } });
 
-  // Redirection vers l'espace métier du rôle (ou /dashboard par défaut)
-  return {
-    success: true,
-    redirectTo: ROLE_LANDING[role] ?? "/dashboard",
-  };
+  return { success: true, redirectTo: ROLE_LANDING[role] ?? "/dashboard" };
 }
 
 // =============================================================================
@@ -232,8 +330,7 @@ export async function login(data: LoginFormData): Promise<AuthResult> {
   }
 
   // 2FA : si l'utilisateur a un facteur TOTP vérifié, sa connexion n'est pas
-  // finalisée tant que le code n'est pas saisi. On ne redirige pas : le
-  // formulaire affichera l'étape de vérification (verifyMfaLogin).
+  // finalisée tant que le code n'est pas saisi.
   try {
     const { data: aal } =
       await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -248,11 +345,9 @@ export async function login(data: LoginFormData): Promise<AuthResult> {
     // En cas d'indisponibilité de l'API MFA, on ne bloque pas la connexion.
   }
 
-  // Récupère le rôle pour rediriger vers le bon espace
   const role =
     (authData.user?.user_metadata?.role as AuthRole | undefined) ?? "TENANT";
 
-  // Tracking analytics — best-effort.
   await track({ eventType: "LOGIN" });
 
   return {
@@ -264,10 +359,6 @@ export async function login(data: LoginFormData): Promise<AuthResult> {
 // =============================================================================
 // LOGIN — Vérification du second facteur (TOTP / 2FA)
 // =============================================================================
-/**
- * Finalise une connexion en attente de 2FA : relève le niveau d'assurance à
- * AAL2 en validant le code TOTP de l'application d'authentification.
- */
 export async function verifyMfaLogin(code: string): Promise<AuthResult> {
   const cleaned = (code ?? "").replace(/\s/g, "");
   if (!/^\d{6}$/.test(cleaned)) {
@@ -313,22 +404,76 @@ export async function verifyMfaLogin(code: string): Promise<AuthResult> {
 export async function logout(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  // Clear cookie démo legacy au cas où des utilisateurs ont encore
-  // un vieux cookie de session avant la bascule prod.
   await clearDemoSessionCookie();
   redirect("/");
 }
 
 // =============================================================================
-// FORGOT PASSWORD — Supabase Auth
+// MOT DE PASSE OUBLIÉ — Étape 1 : envoi d'un code par email
 // =============================================================================
-export async function forgotPassword(
-  data: ForgotPasswordFormData,
+export async function requestPasswordResetCode(
+  rawEmail: string,
 ): Promise<AuthResult> {
-  const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
-  });
-  if (error) return { error: error.message };
+  const email = rawEmail?.trim().toLowerCase();
+  if (!email) return { error: "Adresse email requise." };
+
+  const userId = await findUserIdByEmail(email);
+  // Anti-énumération : on renvoie toujours un succès, mais on n'envoie le code
+  // que si le compte existe réellement.
+  if (!userId) {
+    return { success: true };
+  }
+
+  const otp = await createEmailOtp(email, "RESET");
+  if (!otp.ok) return { error: otp.error };
+
+  try {
+    await sendOtpEmail(email, otp.code, "RESET");
+  } catch (err) {
+    console.error("[auth] sendOtpEmail reset failed:", err);
+    return {
+      error: "Impossible d'envoyer le code par email. Réessayez dans un instant.",
+    };
+  }
+
   return { success: true };
+}
+
+// =============================================================================
+// MOT DE PASSE OUBLIÉ — Étape 2 : vérification du code + nouveau mot de passe
+// =============================================================================
+export async function verifyPasswordResetCode(
+  rawEmail: string,
+  code: string,
+  newPassword: string,
+): Promise<AuthResult> {
+  const email = rawEmail?.trim().toLowerCase();
+  if (!email) return { error: "Adresse email requise." };
+  if (!newPassword || newPassword.length < 8) {
+    return { error: "Le mot de passe doit contenir au moins 8 caractères." };
+  }
+
+  const check = await verifyEmailOtp(email, "RESET", code);
+  if (!check.ok) return { error: check.error };
+
+  const userId = await findUserIdByEmail(email);
+  if (!userId) return { error: "Compte introuvable." };
+
+  const admin = adminClient();
+  const { error: updErr } = await admin.auth.admin.updateUserById(userId, {
+    password: newPassword,
+  });
+  if (updErr) return { error: updErr.message };
+
+  // Connexion immédiate avec le nouveau mot de passe.
+  const supabase = await createClient();
+  const { data: authData, error: signInErr } =
+    await supabase.auth.signInWithPassword({ email, password: newPassword });
+  if (signInErr) {
+    return { success: true, redirectTo: "/login" };
+  }
+
+  const role =
+    (authData.user?.user_metadata?.role as AuthRole | undefined) ?? "TENANT";
+  return { success: true, redirectTo: ROLE_LANDING[role] ?? "/dashboard" };
 }

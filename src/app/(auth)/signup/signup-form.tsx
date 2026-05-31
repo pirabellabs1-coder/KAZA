@@ -11,6 +11,8 @@ import {
   Loader2,
   Briefcase,
   Gift,
+  MailCheck,
+  ArrowLeft,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { signupSchema, type SignupFormData } from "@/validators/auth";
-import { signup } from "@/actions/auth";
+import { requestSignupCode, verifySignupCode } from "@/actions/auth";
 
 const roles = [
   {
@@ -53,6 +55,12 @@ export function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Étape « code » : on conserve les données validées et le code saisi.
+  const [step, setStep] = useState<"form" | "code">("form");
+  const [pending, setPending] = useState<SignupFormData | null>(null);
+  const [code, setCode] = useState("");
+  const [resent, setResent] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -75,8 +83,6 @@ export function SignupForm() {
 
   const selectedRole = watch("role");
 
-  // Pre-remplit le code parrainage depuis ?ref=ABC123 (lien partage par
-  // un ambassadeur). Normalise en majuscules.
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
@@ -84,33 +90,149 @@ export function SignupForm() {
     }
   }, [searchParams, setValue]);
 
+  // Étape 1 — envoi du code de vérification.
   function onSubmit(data: SignupFormData) {
     setError(null);
     startTransition(async () => {
       try {
-        const result = await signup(data);
+        const result = await requestSignupCode(data);
         if (result?.error) {
           setError(result.error);
           return;
         }
         if (result?.success) {
-          // Compte créé → redirection immédiate vers l'espace
-          router.push(result.redirectTo ?? "/dashboard");
-          router.refresh();
+          setPending(data);
+          setCode("");
+          setStep("code");
         }
-      } catch (err) {
-        setError(
-          err instanceof Error && err.message
-            ? `Impossible de joindre le serveur d'inscription : ${err.message}`
-            : "Impossible de joindre le serveur. Réessayez dans un instant.",
-        );
+      } catch {
+        setError("Impossible de joindre le serveur. Réessayez dans un instant.");
       }
     });
   }
 
+  // Étape 2 — vérification du code + création du compte.
+  function onVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (!pending) return;
+    setError(null);
+    if (!/^\d{6}$/.test(code.trim())) {
+      setError("Entrez le code à 6 chiffres reçu par email.");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        const result = await verifySignupCode(pending, code.trim());
+        if (result?.error) {
+          setError(result.error);
+          return;
+        }
+        if (result?.success) {
+          router.push(result.redirectTo ?? "/dashboard");
+          router.refresh();
+        }
+      } catch {
+        setError("Impossible de joindre le serveur. Réessayez dans un instant.");
+      }
+    });
+  }
+
+  function resendCode() {
+    if (!pending) return;
+    setError(null);
+    setResent(false);
+    startTransition(async () => {
+      const result = await requestSignupCode(pending);
+      if (result?.error) setError(result.error);
+      else setResent(true);
+    });
+  }
+
+  // ---- Étape « code » ----
+  if (step === "code" && pending) {
+    return (
+      <form onSubmit={onVerify} className="space-y-5">
+        <button
+          type="button"
+          onClick={() => {
+            setStep("form");
+            setError(null);
+          }}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> Modifier mes informations
+        </button>
+
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-kaza-blue/20 bg-kaza-blue/5 p-5 text-center">
+          <MailCheck className="size-9 text-kaza-blue" />
+          <div className="space-y-1">
+            <p className="font-medium text-kaza-navy">Vérifiez votre email</p>
+            <p className="text-sm text-muted-foreground">
+              Nous avons envoyé un code à 6 chiffres à{" "}
+              <span className="font-medium text-kaza-navy">
+                {pending.email}
+              </span>
+              . Saisissez-le pour activer votre compte.
+            </p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+        {resent && !error && (
+          <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            Un nouveau code vient d&apos;être envoyé.
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="signup-code">Code de vérification</Label>
+          <Input
+            id="signup-code"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            placeholder="123456"
+            value={code}
+            onChange={(e) =>
+              setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+            }
+            className="text-center text-2xl font-bold tracking-[0.5em]"
+          />
+        </div>
+
+        <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Vérification...
+            </>
+          ) : (
+            "Activer mon compte"
+          )}
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Vous n&apos;avez rien reçu ?{" "}
+          <button
+            type="button"
+            onClick={resendCode}
+            disabled={isPending}
+            className="font-medium text-kaza-blue hover:underline disabled:opacity-50"
+          >
+            Renvoyer le code
+          </button>
+        </p>
+      </form>
+    );
+  }
+
+  // ---- Étape « formulaire » ----
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* Error Banner */}
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
@@ -283,13 +405,12 @@ export function SignupForm() {
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
-            Creation en cours...
+            Envoi du code...
           </>
         ) : (
-          "Creer mon compte"
+          "Créer mon compte"
         )}
       </Button>
-
     </form>
   );
 }
