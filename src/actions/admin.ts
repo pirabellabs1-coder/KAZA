@@ -31,8 +31,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // ---------------------------------------------------------------------------
 
 export interface AdminActionResult {
-  success: true;
-  emailSent: boolean;
+  success: boolean;
+  emailSent?: boolean;
+  error?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +111,9 @@ export interface SuspendUserInput {
 export async function suspendUser(
   input: SuspendUserInput,
 ): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   const subject = "Votre compte KAZA a été suspendu";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Suspension de votre compte</h2>
@@ -157,6 +161,20 @@ export interface ApprovePropertyInput {
 export async function approveProperty(
   input: ApprovePropertyInput,
 ): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  // Publie RÉELLEMENT l'annonce (statut AVAILABLE) — sans ça l'annonce
+  // restait en attente malgré l'« approbation ».
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  const { error: statusErr } = await adminDb
+    .from("properties")
+    .update({ status: "AVAILABLE" })
+    .eq("id", input.propertyId);
+  if (statusErr) {
+    return { success: false, error: "Impossible de publier l'annonce." };
+  }
+
   const subject = `Annonce publiée : ${input.propertyTitle}`;
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre annonce est en ligne !</h2>
@@ -203,6 +221,16 @@ export interface RejectPropertyInput {
 export async function rejectProperty(
   input: RejectPropertyInput,
 ): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
+  // Repasse l'annonce en brouillon (le propriétaire pourra corriger + resoumettre).
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  await adminDb
+    .from("properties")
+    .update({ status: "DRAFT" })
+    .eq("id", input.propertyId);
+
   const subject = `Annonce rejetée : ${input.propertyTitle}`;
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre annonce n'a pas été publiée</h2>
@@ -248,6 +276,9 @@ export interface ApproveIdentityInput {
 export async function approveIdentity(
   input: ApproveIdentityInput,
 ): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   const subject = "Identité vérifiée — badge de confiance KAZA";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre identité est vérifiée</h2>
@@ -287,6 +318,9 @@ export interface RejectIdentityInput {
 export async function rejectIdentity(
   input: RejectIdentityInput,
 ): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   const subject = "Pièce d'identité non conforme — KAZA";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre pièce d'identité n'a pas été validée</h2>
@@ -324,6 +358,9 @@ export interface ResolveDisputeInput {
 export async function resolveDispute(
   input: ResolveDisputeInput,
 ): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   if (!input.plaintiffEmail) {
     return { success: true, emailSent: false };
   }
