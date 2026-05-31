@@ -25,7 +25,7 @@ function toBlogArticle(a: Article): BlogArticle {
     excerpt: a.excerpt || "",
     category: a.category || "Actualités",
     author,
-    authorRole: "Rédaction KAZA",
+    authorRole: a.authorRole || "Rédaction KAZA",
     authorAvatarSeed: author.replace(/\s+/g, "+"),
     publishedAt: a.publishedAt || a.createdAt,
     readingTime: a.readMinutes || 3,

@@ -29,6 +29,12 @@ export interface ArticleInput {
   content: string; // HTML enrichi (Tiptap)
   coverImageUrl?: string;
   category?: string;
+  /** Compte rédacteur propriétaire (admin uniquement peut le choisir). */
+  authorId?: string;
+  /** Signature affichée (byline). Si vide, on retombe sur le nom du compte. */
+  authorName?: string;
+  /** Fonction affichée sous la signature. */
+  authorRole?: string;
 }
 
 function slugify(input: string): string {
@@ -83,6 +89,10 @@ export async function createArticle(
   const supabase = (await createClient()) as unknown as SupabaseClient;
   const baseSlug = slugify(title);
 
+  // Seul un admin peut attribuer l'article à un autre rédacteur.
+  const authorId =
+    guard.isAdmin && input.authorId?.trim() ? input.authorId.trim() : guard.userId;
+
   const row = {
     title,
     slug: baseSlug,
@@ -91,7 +101,9 @@ export async function createArticle(
     cover_image_url: input.coverImageUrl?.trim() || null,
     category: input.category?.trim() || null,
     status: "DRAFT",
-    author_id: guard.userId,
+    author_id: authorId,
+    author_name: input.authorName?.trim() || null,
+    author_role: input.authorRole?.trim() || null,
     read_minutes: readMinutes(input.content ?? ""),
   };
 
@@ -131,18 +143,23 @@ export async function updateArticle(
   if (!title) return { success: false, error: "Le titre est requis." };
 
   const supabase = (await createClient()) as unknown as SupabaseClient;
-  const { error } = await supabase
-    .from("articles")
-    .update({
-      title,
-      excerpt: input.excerpt?.trim() || null,
-      content: input.content ?? "",
-      cover_image_url: input.coverImageUrl?.trim() || null,
-      category: input.category?.trim() || null,
-      read_minutes: readMinutes(input.content ?? ""),
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id);
+  const patch: Record<string, unknown> = {
+    title,
+    excerpt: input.excerpt?.trim() || null,
+    content: input.content ?? "",
+    cover_image_url: input.coverImageUrl?.trim() || null,
+    category: input.category?.trim() || null,
+    author_name: input.authorName?.trim() || null,
+    author_role: input.authorRole?.trim() || null,
+    read_minutes: readMinutes(input.content ?? ""),
+    updated_at: new Date().toISOString(),
+  };
+  // Seul un admin peut réattribuer l'article à un autre rédacteur.
+  if (guard.isAdmin && input.authorId?.trim()) {
+    patch.author_id = input.authorId.trim();
+  }
+
+  const { error } = await supabase.from("articles").update(patch).eq("id", id);
 
   if (error) return { success: false, error: error.message };
 

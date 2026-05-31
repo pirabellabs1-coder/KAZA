@@ -19,7 +19,8 @@ export interface Article {
   category: string | null;
   status: "DRAFT" | "PUBLISHED";
   authorId: string | null;
-  authorName: string | null;
+  authorName: string | null; // signature affichée (byline) ou nom du compte
+  authorRole: string | null; // fonction affichée sous la signature
   readMinutes: number | null;
   publishedAt: string | null;
   createdAt: string;
@@ -36,6 +37,8 @@ interface ArticleRow {
   category: string | null;
   status: "DRAFT" | "PUBLISHED";
   author_id: string | null;
+  author_name: string | null;
+  author_role: string | null;
   read_minutes: number | null;
   published_at: string | null;
   created_at: string;
@@ -45,9 +48,11 @@ interface ArticleRow {
 
 function mapRow(row: ArticleRow): Article {
   const a = row.author;
-  const authorName = a
+  const accountName = a
     ? `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || null
     : null;
+  // La signature personnalisée (author_name) prime sur le nom du compte.
+  const authorName = row.author_name?.trim() || accountName;
   return {
     id: row.id,
     slug: row.slug,
@@ -59,6 +64,7 @@ function mapRow(row: ArticleRow): Article {
     status: row.status,
     authorId: row.author_id,
     authorName,
+    authorRole: row.author_role?.trim() || null,
     readMinutes: row.read_minutes,
     publishedAt: row.published_at,
     createdAt: row.created_at,

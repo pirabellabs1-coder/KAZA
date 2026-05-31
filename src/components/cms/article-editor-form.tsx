@@ -19,6 +19,12 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toast-helper";
 import { RichTextEditor } from "./rich-text-editor";
 
+export interface WriterChoice {
+  id: string;
+  name: string;
+  role: string;
+}
+
 export interface EditorArticle {
   id: string;
   title: string;
@@ -28,6 +34,9 @@ export interface EditorArticle {
   category: string | null;
   status: "DRAFT" | "PUBLISHED";
   slug: string;
+  authorId: string | null;
+  authorName: string | null;
+  authorRole: string | null;
 }
 
 interface ArticleEditorFormProps {
@@ -35,9 +44,18 @@ interface ArticleEditorFormProps {
   article?: EditorArticle;
   /** Base de redirection : "/admin/articles" ou "/redaction". */
   basePath: string;
+  /** Rédacteurs sélectionnables (admins + contributeurs). */
+  writers?: WriterChoice[];
+  /** L'utilisateur courant peut-il choisir le rédacteur (admin) ? */
+  canChooseAuthor?: boolean;
 }
 
-export function ArticleEditorForm({ article, basePath }: ArticleEditorFormProps) {
+export function ArticleEditorForm({
+  article,
+  basePath,
+  writers = [],
+  canChooseAuthor = false,
+}: ArticleEditorFormProps) {
   const router = useRouter();
   const [id, setId] = useState<string | undefined>(article?.id);
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(
@@ -50,7 +68,17 @@ export function ArticleEditorForm({ article, basePath }: ArticleEditorFormProps)
     article?.coverImageUrl ?? "",
   );
   const [content, setContent] = useState(article?.content ?? "");
+  const [authorId, setAuthorId] = useState(article?.authorId ?? "");
+  const [authorName, setAuthorName] = useState(article?.authorName ?? "");
+  const [authorRole, setAuthorRole] = useState(article?.authorRole ?? "");
   const [isPending, startTransition] = useTransition();
+
+  function handleAuthorSelect(value: string) {
+    setAuthorId(value);
+    // Pré-remplit la signature affichée si elle est vide.
+    const w = writers.find((x) => x.id === value);
+    if (w && !authorName.trim()) setAuthorName(w.name);
+  }
 
   function payload(): ArticleInput {
     return {
@@ -59,6 +87,9 @@ export function ArticleEditorForm({ article, basePath }: ArticleEditorFormProps)
       category: category || undefined,
       coverImageUrl: coverImageUrl || undefined,
       content,
+      authorId: canChooseAuthor && authorId ? authorId : undefined,
+      authorName: authorName || undefined,
+      authorRole: authorRole || undefined,
     };
   }
 
@@ -210,6 +241,53 @@ export function ArticleEditorForm({ article, basePath }: ArticleEditorFormProps)
           onChange={(e) => setCoverImageUrl(e.target.value)}
           placeholder="https://…"
         />
+      </div>
+
+      {/* ---- Rédacteur / signature ---- */}
+      <div className="rounded-xl border border-border bg-muted/20 p-4">
+        <p className="mb-3 text-sm font-semibold text-kaza-navy">Rédacteur</p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {canChooseAuthor && writers.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="art-author">Compte rédacteur</Label>
+              <select
+                id="art-author"
+                value={authorId}
+                onChange={(e) => handleAuthorSelect(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="">— Sélectionner —</option>
+                {writers.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name} ({w.role})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="art-author-name">Signature affichée</Label>
+            <Input
+              id="art-author-name"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
+              placeholder="Ex. Aïcha Adjovi"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="art-author-role">Fonction affichée</Label>
+            <Input
+              id="art-author-role"
+              value={authorRole}
+              onChange={(e) => setAuthorRole(e.target.value)}
+              placeholder="Ex. Conseillère KAZA"
+            />
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          La signature s&apos;affiche sur l&apos;article public. Si elle est
+          vide, le nom du compte rédacteur est utilisé.
+        </p>
       </div>
 
       <div className="space-y-2">

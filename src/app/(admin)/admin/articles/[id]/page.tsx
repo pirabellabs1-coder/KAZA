@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { getArticleById } from "@/lib/queries/articles";
+import { listWriters } from "@/lib/queries/contributors";
 import { ArticleEditorForm } from "@/components/cms/article-editor-form";
 
 export const metadata: Metadata = { title: "Éditer l'article — Admin KAZA" };
@@ -13,7 +14,10 @@ export default async function EditArticlePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const article = await getArticleById(id);
+  const [article, writers] = await Promise.all([
+    getArticleById(id),
+    listWriters(),
+  ]);
   if (!article) notFound();
 
   return (
@@ -23,6 +27,8 @@ export default async function EditArticlePage({
       </h1>
       <ArticleEditorForm
         basePath="/admin/articles"
+        writers={writers}
+        canChooseAuthor
         article={{
           id: article.id,
           title: article.title,
@@ -32,6 +38,9 @@ export default async function EditArticlePage({
           category: article.category,
           status: article.status,
           slug: article.slug,
+          authorId: article.authorId,
+          authorName: article.authorName,
+          authorRole: article.authorRole,
         }}
       />
     </div>
