@@ -484,6 +484,75 @@ L'équipe KAZA`,
   };
 }
 
+export function offerDepositPaidTemplate(params: {
+  propertyTitle: string;
+  buyerName: string;
+  depositAmount: number;
+}): EmailTemplate {
+  const { propertyTitle, buyerName, depositAmount } = params;
+  const subject = `Acompte reçu : ${propertyTitle} est réservé`;
+  return {
+    subject,
+    text: `Bonjour,
+
+${buyerName} a versé l'acompte de réservation de ${formatXof(depositAmount)} pour "${propertyTitle}". Le bien est désormais RÉSERVÉ. Organisez la signature finale chez le notaire avec l'acheteur, puis marquez le bien comme vendu.
+
+Détails : ${APP_URL}/owner/offers
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Acompte reçu — ${propertyTitle} réservé`,
+      heading: "Acompte reçu — bien réservé",
+      paragraphs: [
+        `${buyerName} a versé l'acompte de réservation pour « ${propertyTitle} ». Le bien est marqué RÉSERVÉ. Finalisez la vente chez le notaire, puis marquez le bien comme vendu depuis votre espace.`,
+      ],
+      rows: [
+        { label: "Bien", value: propertyTitle },
+        { label: "Acheteur", value: buyerName },
+        { label: "Acompte versé", value: formatXof(depositAmount) },
+      ],
+      button: { label: "Voir l'offre", url: `${APP_URL}/owner/offers` },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
+export function saleClosedTemplate(params: {
+  propertyTitle: string;
+  forOwner: boolean;
+}): EmailTemplate {
+  const { propertyTitle, forOwner } = params;
+  const subject = `Vente finalisée : ${propertyTitle}`;
+  return {
+    subject,
+    text: forOwner
+      ? `Bonjour,
+
+La vente de "${propertyTitle}" est finalisée. Le bien est marqué comme VENDU. Merci d'avoir utilisé KAZA.
+
+L'équipe KAZA`
+      : `Bonjour,
+
+Félicitations ! La vente de "${propertyTitle}" est finalisée. Le bien est désormais à vous. Merci de votre confiance.
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Vente finalisée : ${propertyTitle}`,
+      heading: forOwner ? "Vente finalisée" : "Félicitations, c'est à vous 🎉",
+      paragraphs: [
+        forOwner
+          ? `La vente de « ${propertyTitle} » est finalisée. Le bien est marqué comme vendu. Merci d'avoir fait confiance à KAZA.`
+          : `La vente de « ${propertyTitle} » est finalisée. Le bien est désormais à vous — félicitations et merci de votre confiance !`,
+      ],
+      rows: [{ label: "Bien", value: propertyTitle }],
+      button: forOwner
+        ? { label: "Mes biens", url: `${APP_URL}/owner/properties` }
+        : { label: "Mes offres", url: `${APP_URL}/buyer/offers` },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
 export function referralInviteTemplate(params: {
   inviterName: string;
   code: string;

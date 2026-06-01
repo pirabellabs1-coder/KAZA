@@ -14,7 +14,9 @@ export type WalletDebitType =
   | "RENT_DEBIT"
   | "EXPENSE_DEBIT"
   | "SUBSCRIPTION_DEBIT"
-  | "BOOST_DEBIT";
+  | "BOOST_DEBIT"
+  // Acompte de réservation pour l'achat d'un bien (vente).
+  | "BOOKING_DEPOSIT";
 
 export interface WalletDebitInput {
   userId: string;

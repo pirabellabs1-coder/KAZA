@@ -13,6 +13,7 @@ import { creditWalletTopUp } from "@/lib/wallet/credit";
 import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
 import { activateRentalAfterPayment } from "@/lib/rentals/lifecycle";
 import { notifyRentPayment } from "@/lib/rentals/notify-payment";
+import { markOfferDepositPaid } from "@/lib/offers/deposit";
 
 // =============================================================================
 // Webhook GeniusPay
@@ -186,6 +187,20 @@ export async function POST(req: NextRequest) {
           );
         } catch (err) {
           console.error("[webhook:geniuspay] settle frais partages echec:", err);
+        }
+      }
+    }
+
+    // Acompte de réservation d'achat (vente) → offre DEPOSIT_PAID + bien RESERVED.
+    if (p.purpose === "SALE_DEPOSIT" && p.metadata) {
+      const m = p.metadata as { offer_id?: string };
+      if (m.offer_id) {
+        try {
+          await markOfferDepositPaid(admin as unknown as SupabaseClient, {
+            offerId: m.offer_id,
+          });
+        } catch (err) {
+          console.error("[webhook:geniuspay] acompte vente echec:", err);
         }
       }
     }

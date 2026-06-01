@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Tag, MapPin, Search } from "lucide-react";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { createClient } from "@/lib/supabase/server";
 import { listOffersForBuyer } from "@/lib/queries/offers";
 import { formatPrice, formatDate } from "@/lib/utils";
+
+import { DepositPaymentButton } from "./deposit-payment";
 
 export const metadata: Metadata = { title: "Mes offres d'achat — KAZA" };
 export const dynamic = "force-dynamic";
@@ -28,6 +32,22 @@ export default async function BuyerOffersPage() {
   if (!user) redirect("/login?redirect=/buyer/offers");
 
   const offers = await listOffersForBuyer(user.id);
+
+  // Solde wallet (pour proposer le paiement immédiat de l'acompte).
+  let walletBalance = 0;
+  try {
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
+      .from("user_wallets")
+      .select("balance_fcfa")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    walletBalance = Number(
+      (data as { balance_fcfa?: number } | null)?.balance_fcfa ?? 0,
+    );
+  } catch {
+    walletBalance = 0;
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -110,22 +130,35 @@ export default async function BuyerOffersPage() {
                     <div className="rounded-lg bg-kaza-green/10 px-3 py-2 text-xs text-kaza-green">
                       Offre acceptée ✓ — versez l&apos;acompte de réservation de{" "}
                       <strong>{formatPrice(o.deposit)}</strong> pour bloquer le
-                      bien, puis finalisez la vente chez le notaire. Contactez le
-                      vendeur via la messagerie pour organiser le versement.
+                      bien. La vente est ensuite finalisée chez le notaire.
+                    </div>
+                  )}
+                  {o.status === "DEPOSIT_PAID" && (
+                    <div className="rounded-lg bg-kaza-blue/10 px-3 py-2 text-xs text-kaza-blue">
+                      Acompte versé ✓ — le bien est <strong>réservé</strong> à
+                      votre nom. Finalisez la signature chez le notaire avec le
+                      vendeur.
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-[11px] text-muted-foreground">
                       Envoyée le {formatDate(o.createdAt)}
                     </span>
-                    {o.status === "ACCEPTED" && (
+                    <div className="flex items-center gap-2">
+                      {o.status === "ACCEPTED" && (
+                        <DepositPaymentButton
+                          offerId={o.id}
+                          deposit={o.deposit}
+                          walletBalance={walletBalance}
+                        />
+                      )}
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/properties/${o.propertyId}`}>
                           Voir le bien
                         </Link>
                       </Button>
-                    )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

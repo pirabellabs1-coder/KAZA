@@ -18,9 +18,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { randomUUID } from "node:crypto";
+
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
+import { walletDebit } from "@/lib/wallet/spend";
+import { createPayment } from "@/lib/payments";
+import { markOfferDepositPaid } from "@/lib/offers/deposit";
+import type { PaymentProvider } from "@/lib/payments/types";
 
 import type { ActionResult } from "./notifications";
 
@@ -208,5 +214,262 @@ export async function decideOffer(
 
   revalidatePath("/owner/offers");
   revalidatePath("/buyer/offers");
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// Acompte de réservation — chargement d'une offre ACCEPTED (acheteur)
+// ---------------------------------------------------------------------------
+
+/**
+ * Charge l'offre + le bien et vérifie que l'utilisateur courant (acheteur) peut
+ * verser l'acompte (offre ACCEPTED lui appartenant). Renvoie les infos utiles.
+ */
+async function loadPayableOffer(
+  admin: SupabaseClient,
+  offerId: string,
+  buyerId: string,
+): Promise<
+  | { ok: true; deposit: number; propertyTitle: string }
+  | { ok: false; error: string }
+> {
+  const { data } = await admin
+    .from("property_offers")
+    .select(
+      `id, status, buyer_id, deposit_fcfa,
+       property:properties!property_id(title, status)`,
+    )
+    .eq("id", offerId)
+    .maybeSingle();
+  if (!data) return { ok: false, error: "Offre introuvable." };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const o: any = data;
+  if (o.buyer_id !== buyerId) {
+    return { ok: false, error: "Cette offre ne vous appartient pas." };
+  }
+  if (o.status !== "ACCEPTED") {
+    if (o.status === "DEPOSIT_PAID") {
+      return { ok: false, error: "L'acompte a déjà été versé." };
+    }
+    return { ok: false, error: "L'offre n'est pas en attente d'acompte." };
+  }
+  const deposit = Number(o.deposit_fcfa ?? 0);
+  if (deposit <= 0) return { ok: false, error: "Montant d'acompte invalide." };
+  return {
+    ok: true,
+    deposit,
+    propertyTitle: (o.property?.title as string | undefined) ?? "le bien",
+  };
+}
+
+/**
+ * Verse l'acompte de réservation depuis le solde KAZA (wallet). Succès →
+ * offre DEPOSIT_PAID + bien RESERVED + notif vendeur.
+ */
+export async function payOfferDepositFromWallet(
+  offerId: string,
+): Promise<ActionResult> {
+  if (!offerId) return { success: false, error: "Offre introuvable." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const loaded = await loadPayableOffer(admin, offerId, user.id);
+  if (!loaded.ok) return { success: false, error: loaded.error };
+
+  // 1) Ligne payments (WALLET, PENDING) — purpose SALE_DEPOSIT, lié à l'offre.
+  const { data: payment, error: insErr } = await admin
+    .from("payments")
+    .insert({
+      user_id: user.id,
+      amount: loaded.deposit,
+      payment_method: "WALLET",
+      transaction_id: `WALLET-${randomUUID()}`,
+      status: "PENDING",
+      purpose: "SALE_DEPOSIT",
+      metadata: { offer_id: offerId, paid_from: "wallet" },
+    })
+    .select("id")
+    .single();
+  if (insErr || !payment) {
+    console.error("[property-offers] wallet deposit insert:", insErr);
+    return { success: false, error: "Impossible d'enregistrer le paiement." };
+  }
+
+  // 2) Débit atomique du solde.
+  const debit = await walletDebit({
+    userId: user.id,
+    amountFcfa: loaded.deposit,
+    type: "BOOKING_DEPOSIT",
+    description: `Acompte de réservation — ${loaded.propertyTitle}`,
+    referenceId: payment.id,
+    metadata: { offer_id: offerId },
+  });
+  if (!debit.ok) {
+    await admin.from("payments").update({ status: "FAILED" }).eq("id", payment.id);
+    return { success: false, error: debit.error };
+  }
+
+  // 3) Paiement réglé + réservation du bien + notif vendeur.
+  await admin
+    .from("payments")
+    .update({ status: "COMPLETED", payment_date: new Date().toISOString() })
+    .eq("id", payment.id);
+
+  try {
+    await markOfferDepositPaid(admin, { offerId });
+  } catch (err) {
+    console.error("[property-offers] markOfferDepositPaid:", err);
+  }
+
+  revalidatePath("/buyer/offers");
+  revalidatePath("/owner/offers");
+  return { success: true };
+}
+
+/**
+ * Initie le versement de l'acompte par Mobile Money (GeniusPay). Renvoie l'URL
+ * de checkout. La réservation est confirmée par le webhook au succès.
+ */
+export async function initiateOfferDepositPayment(
+  offerId: string,
+  provider?: PaymentProvider,
+): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {
+  if (!offerId) return { success: false, error: "Offre introuvable." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const loaded = await loadPayableOffer(admin, offerId, user.id);
+  if (!loaded.ok) return { success: false, error: loaded.error };
+
+  try {
+    const result = await createPayment(
+      {
+        amount: loaded.deposit,
+        currency: "XOF",
+        description: `Acompte de réservation — ${loaded.propertyTitle}`,
+        customerEmail: user.email ?? "",
+        customerPhone:
+          (user.user_metadata?.phone as string | undefined) ?? undefined,
+        metadata: { user_id: user.id, offer_id: offerId },
+      },
+      { provider: provider ?? "geniuspay" },
+    );
+
+    const { error: insErr } = await admin.from("payments").insert({
+      user_id: user.id,
+      amount: loaded.deposit,
+      payment_method: "MOBILE_MONEY",
+      transaction_id: result.providerPaymentId,
+      status: "PENDING",
+      purpose: "SALE_DEPOSIT",
+      metadata: { offer_id: offerId },
+    });
+    if (insErr) {
+      console.error("[property-offers] momo deposit insert:", insErr.message);
+      return { success: false, error: "Impossible d'enregistrer le paiement." };
+    }
+
+    return { success: true, checkoutUrl: result.checkoutUrl };
+  } catch (err) {
+    console.error("[property-offers] initiate deposit:", err);
+    return {
+      success: false,
+      error: "Le paiement Mobile Money n'a pas pu être initié.",
+    };
+  }
+}
+
+/**
+ * Le vendeur finalise la vente après signature chez le notaire :
+ * offre DEPOSIT_PAID → CLOSED, bien → SOLD, autres offres annulées, notifs.
+ */
+export async function markPropertySold(offerId: string): Promise<ActionResult> {
+  if (!offerId) return { success: false, error: "Offre introuvable." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: offerRow } = await admin
+    .from("property_offers")
+    .select(
+      `id, status, buyer_id, property_id,
+       property:properties!property_id(owner_id, title)`,
+    )
+    .eq("id", offerId)
+    .maybeSingle();
+  if (!offerRow) return { success: false, error: "Offre introuvable." };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const o: any = offerRow;
+  const ownerId = o.property?.owner_id as string | undefined;
+  const propertyId = o.property_id as string | undefined;
+  const propertyTitle = (o.property?.title as string | undefined) ?? "le bien";
+  const buyerId = o.buyer_id as string | undefined;
+
+  if (ownerId !== user.id) {
+    return { success: false, error: "Action réservée au vendeur du bien." };
+  }
+  if (o.status !== "DEPOSIT_PAID") {
+    return {
+      success: false,
+      error: "Le bien doit d'abord être réservé (acompte versé).",
+    };
+  }
+
+  // Offre → CLOSED.
+  await admin
+    .from("property_offers")
+    .update({ status: "CLOSED", closed_at: new Date().toISOString() })
+    .eq("id", offerId)
+    .eq("status", "DEPOSIT_PAID");
+
+  // Bien → SOLD.
+  if (propertyId) {
+    await admin
+      .from("properties")
+      .update({ status: "SOLD" })
+      .eq("id", propertyId);
+
+    // Annule les autres offres encore actives sur ce bien.
+    await admin
+      .from("property_offers")
+      .update({ status: "CANCELLED" })
+      .eq("property_id", propertyId)
+      .neq("id", offerId)
+      .in("status", ["PENDING", "ACCEPTED", "DEPOSIT_PAID"]);
+  }
+
+  // Notifie les 2 parties.
+  try {
+    if (buyerId) {
+      await dispatchNotification({
+        userId: buyerId,
+        type: "sale_closed",
+        data: { propertyTitle, forOwner: false },
+      });
+    }
+    await dispatchNotification({
+      userId: user.id,
+      type: "sale_closed",
+      data: { propertyTitle, forOwner: true },
+    });
+  } catch (err) {
+    console.error("[property-offers] notify sale closed:", err);
+  }
+
+  revalidatePath("/owner/offers");
+  revalidatePath("/buyer/offers");
+  revalidatePath("/owner/properties");
   return { success: true };
 }

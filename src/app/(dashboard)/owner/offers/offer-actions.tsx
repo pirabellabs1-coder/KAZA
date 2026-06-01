@@ -2,12 +2,12 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, X, BadgeCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast-helper";
 
-import { decideOffer } from "@/actions/property-offers";
+import { decideOffer, markPropertySold } from "@/actions/property-offers";
 
 export function OfferDecisionButtons({ offerId }: { offerId: string }) {
   const router = useRouter();
@@ -53,5 +53,38 @@ export function OfferDecisionButtons({ offerId }: { offerId: string }) {
         Refuser
       </Button>
     </div>
+  );
+}
+
+export function MarkSoldButton({ offerId }: { offerId: string }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handle = () => {
+    startTransition(async () => {
+      const res = await markPropertySold(offerId);
+      if (res.success) {
+        toast.success("Bien marqué comme vendu");
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Échec");
+      }
+    });
+  };
+
+  return (
+    <Button
+      size="sm"
+      className="gap-1.5 bg-kaza-navy hover:bg-kaza-navy/90"
+      disabled={isPending}
+      onClick={handle}
+    >
+      {isPending ? (
+        <Loader2 className="size-3.5 animate-spin" />
+      ) : (
+        <BadgeCheck className="size-3.5" />
+      )}
+      Marquer comme vendu
+    </Button>
   );
 }
