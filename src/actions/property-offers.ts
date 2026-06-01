@@ -255,6 +255,22 @@ async function loadPayableOffer(
   }
   const deposit = Number(o.deposit_fcfa ?? 0);
   if (deposit <= 0) return { ok: false, error: "Montant d'acompte invalide." };
+
+  // Garde d'idempotence : refuse si un versement d'acompte est déjà en cours
+  // ou abouti pour cette offre (évite un double-débit sur double-soumission).
+  const { count } = await admin
+    .from("payments")
+    .select("id", { count: "exact", head: true })
+    .eq("purpose", "SALE_DEPOSIT")
+    .eq("metadata->>offer_id", offerId)
+    .in("status", ["PENDING", "PROCESSING", "COMPLETED"]);
+  if ((count ?? 0) > 0) {
+    return {
+      ok: false,
+      error: "Un versement d'acompte est déjà en cours ou a été effectué.",
+    };
+  }
+
   return {
     ok: true,
     deposit,
