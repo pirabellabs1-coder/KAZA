@@ -12,6 +12,7 @@ import {
   Bed,
   Bell,
   Building2,
+  Tag,
   Camera,
   ChevronRight,
   Compass,
@@ -540,6 +541,25 @@ export default async function SearchPage({
                 </div>
               </label>
 
+              {/* Transaction louer/acheter */}
+              <label className="group flex items-center gap-3 rounded-2xl border border-transparent bg-gray-50 px-4 py-3 transition-colors hover:border-kaza-blue/30 hover:bg-white">
+                <Tag className="size-5 shrink-0 text-kaza-blue" />
+                <div className="flex-1">
+                  <span className="block text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Transaction
+                  </span>
+                  <select
+                    name="listingType"
+                    defaultValue={params.listingType ?? "all"}
+                    className="w-full appearance-none bg-transparent text-sm font-medium text-foreground outline-none"
+                  >
+                    <option value="all">Louer ou acheter</option>
+                    <option value="RENT">À louer</option>
+                    <option value="SALE">À vendre</option>
+                  </select>
+                </div>
+              </label>
+
               {/* Type bien */}
               <label className="group flex items-center gap-3 rounded-2xl border border-transparent bg-gray-50 px-4 py-3 transition-colors hover:border-kaza-blue/30 hover:bg-white">
                 <Building2 className="size-5 shrink-0 text-kaza-blue" />
@@ -896,6 +916,33 @@ export default async function SearchPage({
                           className="w-full accent-kaza-blue"
                         />
                       </label>
+                    </div>
+                  </FilterSection>
+
+                  {/* Transaction louer/acheter */}
+                  <FilterSection title="Transaction" icon={Tag}>
+                    <div className="space-y-1.5">
+                      {[
+                        { value: "all", label: "Louer ou acheter" },
+                        { value: "RENT", label: "À louer" },
+                        { value: "SALE", label: "À vendre" },
+                      ].map((opt) => (
+                        <label
+                          key={opt.value}
+                          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 hover:bg-gray-50"
+                        >
+                          <input
+                            type="radio"
+                            name="listingType"
+                            value={opt.value}
+                            defaultChecked={
+                              (params.listingType ?? "all") === opt.value
+                            }
+                            className="border-gray-300 text-kaza-blue focus:ring-kaza-blue"
+                          />
+                          <span className="text-sm">{opt.label}</span>
+                        </label>
+                      ))}
                     </div>
                   </FilterSection>
 
