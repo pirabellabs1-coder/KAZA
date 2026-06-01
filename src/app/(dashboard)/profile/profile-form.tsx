@@ -92,6 +92,9 @@ const profileSchema = z.object({
     .regex(/^[+0-9\s-]+$/, "Caractères invalides")
     .or(z.literal("")),
   address: z.string().max(255, "Adresse trop longue").or(z.literal("")),
+  idNumber: z.string().max(60, "Numéro trop long").or(z.literal("")),
+  profession: z.string().max(120, "Profession trop longue").or(z.literal("")),
+  employer: z.string().max(120, "Employeur trop long").or(z.literal("")),
   birthDate: z.string().optional().or(z.literal("")),
   language: z.string(),
   country: z.string(),
@@ -112,6 +115,9 @@ interface ProfileFormProps {
   initialEmail: string;
   initialPhone?: string;
   initialAddress?: string;
+  initialIdNumber?: string;
+  initialProfession?: string;
+  initialEmployer?: string;
   initialBio?: string;
   userId: string;
   currentPhotoUrl?: string | null;
@@ -153,6 +159,9 @@ export function ProfileForm({
   initialEmail,
   initialPhone = "",
   initialAddress = "",
+  initialIdNumber = "",
+  initialProfession = "",
+  initialEmployer = "",
   initialBio = "",
   userId,
   currentPhotoUrl,
@@ -166,6 +175,9 @@ export function ProfileForm({
         lastName: initialLastName,
         phone: initialPhone,
         address: initialAddress,
+        idNumber: initialIdNumber,
+        profession: initialProfession,
+        employer: initialEmployer,
         birthDate: "",
         language: "fr",
         country: "BJ",
@@ -262,6 +274,9 @@ export function ProfileForm({
         lastName: result.data.lastName,
         phone: result.data.phone || undefined,
         address: result.data.address || undefined,
+        idNumber: result.data.idNumber || undefined,
+        profession: result.data.profession || undefined,
+        employer: result.data.employer || undefined,
         bio: result.data.bio || undefined,
       });
 
@@ -396,6 +411,54 @@ export function ProfileForm({
                 onChange={(e) => update("address", e.target.value)}
               />
             </Field>
+
+            {/* Informations pour le contrat de bail */}
+            <div className="rounded-lg border border-dashed border-border bg-muted/20 p-3">
+              <p className="mb-3 text-xs font-medium text-muted-foreground">
+                Informations utilisées pour pré-remplir vos contrats de bail
+                (facultatif mais recommandé).
+              </p>
+              <div className="space-y-4">
+                <Field
+                  label="N° pièce d'identité (CNI / passeport)"
+                  error={errors.idNumber}
+                  htmlFor="idNumber"
+                >
+                  <Input
+                    id="idNumber"
+                    value={data.idNumber}
+                    placeholder="Ex : 1234 5678 9012"
+                    onChange={(e) => update("idNumber", e.target.value)}
+                  />
+                </Field>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field
+                    label="Profession"
+                    error={errors.profession}
+                    htmlFor="profession"
+                  >
+                    <Input
+                      id="profession"
+                      value={data.profession}
+                      placeholder="Ex : Comptable"
+                      onChange={(e) => update("profession", e.target.value)}
+                    />
+                  </Field>
+                  <Field
+                    label="Employeur"
+                    error={errors.employer}
+                    htmlFor="employer"
+                  >
+                    <Input
+                      id="employer"
+                      value={data.employer}
+                      placeholder="Ex : Société XYZ"
+                      onChange={(e) => update("employer", e.target.value)}
+                    />
+                  </Field>
+                </div>
+              </div>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Langue préférée" htmlFor="language">
                 <Select

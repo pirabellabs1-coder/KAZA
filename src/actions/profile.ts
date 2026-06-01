@@ -42,6 +42,24 @@ const updateProfileSchema = z.object({
     .max(255, "Adresse trop longue.")
     .optional()
     .or(z.literal("")),
+  idNumber: z
+    .string()
+    .trim()
+    .max(60, "Numero de piece trop long.")
+    .optional()
+    .or(z.literal("")),
+  profession: z
+    .string()
+    .trim()
+    .max(120, "Profession trop longue.")
+    .optional()
+    .or(z.literal("")),
+  employer: z
+    .string()
+    .trim()
+    .max(120, "Employeur trop long.")
+    .optional()
+    .or(z.literal("")),
   bio: z
     .string()
     .max(500, "Bio limitee a 500 caracteres.")
@@ -93,6 +111,9 @@ export async function updateProfile(
       last_name: parsed.data.lastName,
       phone: normalize(parsed.data.phone),
       address: normalize(parsed.data.address),
+      id_number: normalize(parsed.data.idNumber),
+      profession: normalize(parsed.data.profession),
+      employer: normalize(parsed.data.employer),
       bio: normalize(parsed.data.bio),
       updated_at: new Date().toISOString(),
     })

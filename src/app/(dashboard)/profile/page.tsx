@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ShieldCheck, CalendarDays } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -49,14 +50,28 @@ export default async function ProfilePage() {
 
   // Charge les colonnes etendues (telephone, adresse, bio, photo) qui
   // ne sont pas exposees par `getCurrentDisplayUser`.
-  const supabase = await createClient();
-  const { data: profile } = await supabase
+  // Loose cast : id_number/profession/employer ne sont pas encore dans les
+  // types générés Supabase (colonnes ajoutées par la migration 00052).
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data: profileRaw } = await supabase
     .from("users")
     .select(
-      "phone, address, bio, profile_photo_url, created_at, is_verified, verification_status",
+      "phone, address, id_number, profession, employer, bio, profile_photo_url, created_at, is_verified, verification_status",
     )
     .eq("id", user.id)
     .maybeSingle();
+  const profile = profileRaw as {
+    phone: string | null;
+    address: string | null;
+    id_number: string | null;
+    profession: string | null;
+    employer: string | null;
+    bio: string | null;
+    profile_photo_url: string | null;
+    created_at: string | null;
+    is_verified: boolean | null;
+    verification_status: string | null;
+  } | null;
 
   const isVerified =
     profile?.is_verified === true ||
@@ -176,6 +191,9 @@ export default async function ProfilePage() {
             initialEmail={user.email}
             initialPhone={profile?.phone ?? ""}
             initialAddress={profile?.address ?? ""}
+            initialIdNumber={profile?.id_number ?? ""}
+            initialProfession={profile?.profession ?? ""}
+            initialEmployer={profile?.employer ?? ""}
             initialBio={profile?.bio ?? ""}
             userId={user.id}
             currentPhotoUrl={profile?.profile_photo_url ?? null}
