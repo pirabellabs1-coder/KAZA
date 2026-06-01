@@ -12,11 +12,24 @@ import {
   Coins,
   CalendarDays,
   Eye,
+  FolderOpen,
+  FileText,
+  ShieldCheck,
+  ShieldAlert,
+  Loader2,
+  Download,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Tabs,
   TabsContent,
@@ -28,6 +41,10 @@ import { toast } from "@/components/ui/toast-helper";
 import { formatFcfa } from "@/lib/utils";
 
 import { decideApplication } from "@/actions/applications";
+import {
+  getApplicantDossier,
+  type ApplicantDossier,
+} from "@/actions/applicant-dossier";
 import type { OwnerApplication } from "@/lib/queries/applications";
 
 const STATUS_META: Record<string, { label: string; className: string }> = {
@@ -105,11 +122,14 @@ export function OwnerApplicationsView({
           ) : null}
 
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <Button asChild variant="outline" size="sm" className="gap-1.5">
-              <Link href={`/properties/${a.propertyId}`}>
-                <Eye className="size-3.5" /> Voir le bien
-              </Link>
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" size="sm" className="gap-1.5">
+                <Link href={`/properties/${a.propertyId}`}>
+                  <Eye className="size-3.5" /> Voir le bien
+                </Link>
+              </Button>
+              <DossierButton applicationId={a.id} candidateName={a.tenantName} />
+            </div>
             {withActions && a.status === "PENDING" && (
               <div className="flex gap-2">
                 <Button
@@ -185,5 +205,144 @@ export function OwnerApplicationsView({
         </Tabs>
       )}
     </div>
+  );
+}
+
+function DossierButton({
+  applicationId,
+  candidateName,
+}: {
+  applicationId: string;
+  candidateName: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [dossier, setDossier] = useState<ApplicantDossier | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = () => {
+    setLoading(true);
+    setError(null);
+    getApplicantDossier(applicationId)
+      .then((res) => {
+        if (res.success && res.dossier) setDossier(res.dossier);
+        else setError(res.error ?? "Dossier indisponible.");
+      })
+      .catch(() => setError("Dossier indisponible."))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (o && !dossier && !loading) load();
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-1.5">
+          <FolderOpen className="size-3.5" /> Dossier du candidat
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Dossier de {candidateName}</DialogTitle>
+        </DialogHeader>
+
+        {loading && (
+          <div className="flex items-center justify-center py-10 text-muted-foreground">
+            <Loader2 className="size-5 animate-spin" />
+          </div>
+        )}
+
+        {error && !loading && (
+          <p className="py-6 text-center text-sm text-rose-600">{error}</p>
+        )}
+
+        {dossier && !loading && (
+          <div className="space-y-4">
+            {/* Identité / vérification KYC */}
+            <div className="rounded-lg border border-border/70 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  {dossier.tenant.name}
+                </span>
+                {dossier.tenant.verified ? (
+                  <Badge className="gap-1 bg-kaza-green/15 text-kaza-green">
+                    <ShieldCheck className="size-3.5" /> Identité vérifiée
+                  </Badge>
+                ) : (
+                  <Badge className="gap-1 bg-amber-100 text-amber-800">
+                    <ShieldAlert className="size-3.5" /> Non vérifiée
+                  </Badge>
+                )}
+              </div>
+              <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
+                {dossier.tenant.email && <p>Email : {dossier.tenant.email}</p>}
+                {dossier.tenant.phone && (
+                  <p>Téléphone : {dossier.tenant.phone}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Pièces du dossier locatif */}
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Pièces fournies ({dossier.documents.length})
+              </p>
+              {dossier.documents.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-border/70 py-6 text-center text-sm text-muted-foreground">
+                  Le candidat n&apos;a pas encore déposé de pièces
+                  justificatives.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {dossier.documents.map((d) => (
+                    <li
+                      key={d.id}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-border/70 p-2.5"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="size-4 shrink-0 text-kaza-blue" />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {d.label}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {d.docTypeLabel}
+                            {d.amount ? ` · ${d.amount}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                      {d.signedUrl ? (
+                        <Button
+                          asChild
+                          size="sm"
+                          variant="ghost"
+                          className="shrink-0 gap-1"
+                        >
+                          <a
+                            href={d.signedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Download className="size-3.5" /> Ouvrir
+                          </a>
+                        </Button>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground">
+                          indisponible
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
