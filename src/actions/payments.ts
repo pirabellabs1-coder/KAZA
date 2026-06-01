@@ -17,6 +17,7 @@ import {
   activateRentalAfterPayment,
   getRentalContractStatus,
 } from "@/lib/rentals/lifecycle";
+import { notifyRentPayment } from "@/lib/rentals/notify-payment";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // =============================================================================
@@ -326,10 +327,16 @@ export async function payRentFromWallet(
   // Le 1er loyer payé active le bail : location ACTIVE, bien RENTED, visites /
   // candidatures concurrentes annulées. Best-effort, idempotent.
   try {
-    await activateRentalAfterPayment(
+    const { activated } = await activateRentalAfterPayment(
       admin as unknown as SupabaseClient,
       rental.id,
     );
+    // Notifie bailleur + locataire (et bail actif au 1er loyer).
+    await notifyRentPayment(admin as unknown as SupabaseClient, {
+      rentalId: rental.id,
+      amount: amountToCharge,
+      activated,
+    });
   } catch (e) {
     console.error("[payments] wallet rent activation echec:", e);
   }

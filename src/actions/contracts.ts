@@ -5,8 +5,11 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { dispatchNotification } from "@/lib/notifications/dispatch";
 
 // =============================================================================
 // KAZA - Server Actions Contrats (génération + signature électronique)
@@ -74,17 +77,16 @@ export async function createContract(
   }
 
   // Insert via admin client (RLS sur INSERT est bloquante côté contracts).
-  const admin = createAdminClient();
+  const admin = createAdminClient() as unknown as SupabaseClient;
   const { data: contract, error: insertErr } = await admin
     .from("contracts")
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .insert({
       rental_id: input.rentalId,
       contract_type: "RENTAL",
       status: "DRAFT",
       signed_by_owner: false,
       signed_by_tenant: false,
-    } as any)
+    })
     .select("id")
     .single();
 
@@ -170,7 +172,7 @@ export async function signContract(
       `id, status, tenant_signature_hash, owner_signature_hash,
        rental:rentals!contracts_rental_id_fkey(
          tenant_id,
-         property:properties!rentals_property_id_fkey(owner_id)
+         property:properties!rentals_property_id_fkey(owner_id, title)
        )`
     )
     .eq("id", input.contractId)
@@ -243,6 +245,37 @@ export async function signContract(
 
   revalidatePath(`/contracts/${input.contractId}`);
   revalidatePath("/contracts");
+
+  // Notifie l'autre partie (et les deux au SIGNED). Best-effort.
+  try {
+    const propertyTitle = (r.property?.title as string | undefined) ?? "le bien";
+    const contractUrl = `/contracts/${input.contractId}`;
+    const newStatus = patch.status ?? contract.status;
+    if (newStatus === "PENDING_OWNER" && ownerId) {
+      // Le locataire vient de signer → on prévient le bailleur.
+      await dispatchNotification({
+        userId: ownerId,
+        type: "contract_signed",
+        data: { propertyTitle, contractUrl, fullySigned: false },
+      });
+    } else if (newStatus === "PENDING_TENANT" && tenantId) {
+      await dispatchNotification({
+        userId: tenantId,
+        type: "contract_signed",
+        data: { propertyTitle, contractUrl, fullySigned: false },
+      });
+    } else if (newStatus === "SIGNED") {
+      for (const uid of [tenantId, ownerId].filter(Boolean) as string[]) {
+        await dispatchNotification({
+          userId: uid,
+          type: "contract_signed",
+          data: { propertyTitle, contractUrl, fullySigned: true },
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("[contracts] notif signature échec:", err);
+  }
 
   return { success: true, status: patch.status ?? contract.status };
 }

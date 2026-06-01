@@ -217,8 +217,8 @@ export async function getContractsForRentals(
 export async function activateRentalAfterPayment(
   admin: SupabaseClient,
   rentalId: string,
-): Promise<void> {
-  if (!rentalId) return;
+): Promise<{ activated: boolean }> {
+  if (!rentalId) return { activated: false };
 
   const { data: rental } = await admin
     .from("rentals")
@@ -228,7 +228,7 @@ export async function activateRentalAfterPayment(
   const r = rental as
     | { id: string; property_id: string; tenant_id: string; status: string }
     | null;
-  if (!r) return;
+  if (!r) return { activated: false };
 
   // Sécurité anti double-réservation : si cette location a déjà été annulée
   // (le bien a été pris par un autre candidat qui a payé en premier), on ne la
@@ -237,9 +237,12 @@ export async function activateRentalAfterPayment(
     console.warn(
       `[rentals] activation ignorée: location ${rentalId} déjà ${r.status}`,
     );
-    return;
+    return { activated: false };
   }
 
+  // Le bail passe ACTIF (1er loyer) UNIQUEMENT si la location était PENDING.
+  // Les loyers mensuels suivants (déjà ACTIVE) → activated=false (pas de spam).
+  const wasActivated = r.status === "PENDING";
   const propertyId = r.property_id;
 
   // 1) Location → ACTIVE
@@ -299,4 +302,6 @@ export async function activateRentalAfterPayment(
   } catch (err) {
     console.error("[rentals] activate: annulation locations échouée:", err);
   }
+
+  return { activated: wasActivated };
 }

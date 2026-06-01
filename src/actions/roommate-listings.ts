@@ -224,6 +224,41 @@ export async function decideColocationVisit(
     .eq("status", "PENDING");
   if (error) return { success: false, error: error.message };
 
+  // Notifie le DEMANDEUR de la décision (confirmée / déclinée). Best-effort.
+  try {
+    const admin = createAdminClient() as unknown as SupabaseClient;
+    const { data: vr } = await admin
+      .from("roommate_visit_requests")
+      .select("requester_id, listing_id")
+      .eq("id", id)
+      .maybeSingle();
+    const req = vr as { requester_id: string; listing_id: string } | null;
+    if (req?.requester_id) {
+      const { data: listing } = await admin
+        .from("roommate_listings")
+        .select("title")
+        .eq("id", req.listing_id)
+        .maybeSingle();
+      const title =
+        (listing as { title?: string } | null)?.title ?? "la colocation";
+      await admin.from("notifications").insert({
+        user_id: req.requester_id,
+        type: status === "CONFIRMED" ? "visit_accepted" : "visit_rejected",
+        title:
+          status === "CONFIRMED"
+            ? "Visite de colocation confirmée"
+            : "Visite de colocation déclinée",
+        body:
+          status === "CONFIRMED"
+            ? `Votre demande de visite pour « ${title} » a été confirmée.`
+            : `Votre demande de visite pour « ${title} » a été déclinée.`,
+        link: `/student-living/${req.listing_id}`,
+      });
+    }
+  } catch (err) {
+    console.warn("[coloc] notif visite décidée échec:", err);
+  }
+
   revalidatePath("/student-living");
   return { success: true };
 }

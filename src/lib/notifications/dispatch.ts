@@ -28,6 +28,11 @@ import {
   verificationRejectedTemplate,
   visitRequestTemplate,
   welcomeTemplate,
+  applicationReceivedTemplate,
+  applicationAcceptedTemplate,
+  applicationRejectedTemplate,
+  contractSignedTemplate,
+  rentalActivatedTemplate,
   type EmailTemplate,
 } from './templates';
 
@@ -41,6 +46,11 @@ export type NotificationType =
   | 'visit_request'
   | 'payment_received'
   | 'contract_ready'
+  | 'contract_signed'
+  | 'application_received'
+  | 'application_accepted'
+  | 'application_rejected'
+  | 'rental_activated'
   | 'verification_approved'
   | 'verification_rejected'
   | 'welcome';
@@ -66,6 +76,11 @@ const DEFAULT_CHANNELS: Record<NotificationType, NotificationChannel[]> = {
   visit_request: ['in_app', 'push', 'email'],
   payment_received: ['in_app', 'push', 'email'],
   contract_ready: ['in_app', 'push', 'email'],
+  contract_signed: ['in_app', 'push', 'email'],
+  application_received: ['in_app', 'push', 'email'],
+  application_accepted: ['in_app', 'push', 'email'],
+  application_rejected: ['in_app', 'push', 'email'],
+  rental_activated: ['in_app', 'push', 'email'],
   verification_approved: ['in_app', 'push', 'email'],
   verification_rejected: ['in_app', 'push', 'email'],
   welcome: ['in_app', 'email'],
@@ -78,6 +93,12 @@ const IN_APP_TYPE: Record<NotificationType, Enums<'notification_type'>> = {
   visit_request: 'visit_request',
   payment_received: 'payment_received',
   contract_ready: 'contract_ready',
+  contract_signed: 'contract_signed',
+  // Pas de valeur d'enum dédiée : on mappe sur des valeurs existantes.
+  application_received: 'system',
+  application_accepted: 'contract_ready',
+  application_rejected: 'system',
+  rental_activated: 'payment_received',
   verification_approved: 'identity_approved',
   verification_rejected: 'identity_rejected',
   welcome: 'system',
@@ -105,16 +126,54 @@ function buildPushPayload(type: NotificationType, data: Record<string, unknown>)
         link: '/owner/visits',
       };
     case 'payment_received':
-      return {
-        title: 'Paiement reçu',
-        body: `Vous avez reçu ${new Intl.NumberFormat('fr-FR').format(asNumber(data.amount))} FCFA pour "${asString(data.propertyTitle, 'votre bien')}".`,
-        link: '/owner/payments',
-      };
+      return data.forPayer === true
+        ? {
+            title: 'Paiement confirmé ✅',
+            body: `Votre paiement de ${new Intl.NumberFormat('fr-FR').format(asNumber(data.amount))} FCFA a bien été reçu.`,
+            link: '/tenant/payments',
+          }
+        : {
+            title: 'Paiement reçu',
+            body: `Vous avez reçu ${new Intl.NumberFormat('fr-FR').format(asNumber(data.amount))} FCFA pour "${asString(data.propertyTitle, 'votre bien')}".`,
+            link: '/owner/payments',
+          };
     case 'contract_ready':
       return {
         title: 'Contrat prêt',
         body: `Votre contrat pour "${asString(data.propertyTitle, 'le bien')}" est disponible.`,
         link: asString(data.contractUrl, '/contracts'),
+      };
+    case 'contract_signed':
+      return {
+        title: data.fullySigned ? 'Bail signé ✅' : 'Signature reçue',
+        body: data.fullySigned
+          ? `Le bail pour "${asString(data.propertyTitle, 'le bien')}" est signé par les deux parties.`
+          : `Le bail pour "${asString(data.propertyTitle, 'le bien')}" attend votre signature.`,
+        link: asString(data.contractUrl, '/contracts'),
+      };
+    case 'application_received':
+      return {
+        title: 'Nouvelle candidature',
+        body: `${asString(data.requesterName, 'Un candidat')} a postulé pour "${asString(data.propertyTitle, 'votre bien')}".`,
+        link: '/owner/applications',
+      };
+    case 'application_accepted':
+      return {
+        title: 'Candidature acceptée 🎉',
+        body: `Votre candidature pour "${asString(data.propertyTitle, 'le bien')}" est acceptée.`,
+        link: asString(data.contractUrl, '/tenant/rentals'),
+      };
+    case 'application_rejected':
+      return {
+        title: 'Réponse à votre candidature',
+        body: `Votre candidature pour "${asString(data.propertyTitle, 'le bien')}" n'a pas été retenue.`,
+        link: '/search',
+      };
+    case 'rental_activated':
+      return {
+        title: 'Location active 🎉',
+        body: `La location de "${asString(data.propertyTitle, 'le bien')}" est désormais active.`,
+        link: data.forOwner === true ? '/owner/rentals' : '/tenant/rentals',
       };
     case 'verification_approved':
       return {
@@ -153,11 +212,39 @@ function buildEmailTemplate(
       return paymentReceivedTemplate({
         propertyTitle: asString(data.propertyTitle, 'Votre bien'),
         amount: asNumber(data.amount, 0),
+        forPayer: data.forPayer === true,
       });
     case 'contract_ready':
       return contractReadyTemplate({
         propertyTitle: asString(data.propertyTitle, 'Votre bien'),
         contractUrl: asString(data.contractUrl, ''),
+      });
+    case 'contract_signed':
+      return contractSignedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        contractUrl: asString(data.contractUrl, ''),
+        fullySigned: data.fullySigned === true,
+      });
+    case 'application_received':
+      return applicationReceivedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        requesterName: asString(data.requesterName, 'Un candidat'),
+      });
+    case 'application_accepted':
+      return applicationAcceptedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        contractUrl: asString(data.contractUrl, ''),
+      });
+    case 'application_rejected':
+      return applicationRejectedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        reason: asString(data.reason, ''),
+      });
+    case 'rental_activated':
+      return rentalActivatedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        monthlyRent: asNumber(data.monthlyRent, 0),
+        forOwner: data.forOwner === true,
       });
     case 'verification_approved':
       return verificationApprovedTemplate({

@@ -12,6 +12,7 @@ import { activatePaidBoost } from "@/lib/boosts/activate";
 import { creditWalletTopUp } from "@/lib/wallet/credit";
 import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
 import { activateRentalAfterPayment } from "@/lib/rentals/lifecycle";
+import { notifyRentPayment } from "@/lib/rentals/notify-payment";
 
 // =============================================================================
 // Webhook GeniusPay
@@ -200,10 +201,16 @@ export async function POST(req: NextRequest) {
       // Le 1er loyer payé active le bail : location ACTIVE, bien RENTED,
       // visites/candidatures concurrentes annulées. Idempotent.
       try {
-        await activateRentalAfterPayment(
+        const { activated } = await activateRentalAfterPayment(
           admin as unknown as SupabaseClient,
           payment.rental_id,
         );
+        // Notifie bailleur + locataire du paiement (et du bail actif si 1er loyer).
+        await notifyRentPayment(admin as unknown as SupabaseClient, {
+          rentalId: payment.rental_id,
+          amount: Number(payment.amount ?? 0),
+          activated,
+        });
       } catch (err) {
         console.error("[webhook:geniuspay] activation location echec:", err);
       }

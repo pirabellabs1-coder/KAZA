@@ -97,17 +97,44 @@ L'équipe KAZA`,
 export function paymentReceivedTemplate(params: {
   amount: number;
   propertyTitle: string;
+  /** true = email au PAYEUR (locataire) ; sinon au BÉNÉFICIAIRE (bailleur). */
+  forPayer?: boolean;
 }): EmailTemplate {
-  const { amount, propertyTitle } = params;
-  const subject = `Paiement reçu : ${formatXof(amount)}`;
+  const { amount, propertyTitle, forPayer } = params;
+  if (forPayer) {
+    const subject = `Paiement confirmé : ${formatXof(amount)}`;
+    return {
+      subject,
+      text: `Bonjour,
 
+Votre paiement de ${formatXof(amount)} pour le bien "${propertyTitle}" a bien été reçu et placé en séquestre KAZA. Vous recevrez votre reçu dès la confirmation.
+
+Détails : ${APP_URL}/tenant/payments
+
+L'équipe KAZA`,
+      html: buildEmail({
+        preheader: `Paiement de ${formatXof(amount)} confirmé`,
+        heading: "Paiement confirmé ✅",
+        paragraphs: ["Votre paiement a bien été pris en compte."],
+        rows: [
+          { label: "Bien", value: propertyTitle },
+          { label: "Montant", value: formatXof(amount) },
+        ],
+        highlight:
+          "Vos fonds sont protégés en séquestre KAZA jusqu'au respect des conditions de la location.",
+        button: { label: "Voir mes paiements", url: `${APP_URL}/tenant/payments` },
+        outro: "L'équipe KAZA",
+      }),
+    };
+  }
+  const subject = `Paiement reçu : ${formatXof(amount)}`;
   return {
     subject,
     text: `Bonjour,
 
 Vous venez de recevoir un paiement de ${formatXof(amount)} pour le bien "${propertyTitle}". Le montant est en séquestre et sera libéré selon les conditions de la location.
 
-Détails : ${APP_URL}/dashboard
+Détails : ${APP_URL}/owner/payments
 
 L'équipe KAZA`,
     html: buildEmail({
@@ -120,7 +147,7 @@ L'équipe KAZA`,
       ],
       highlight:
         "Le montant est actuellement détenu en séquestre KAZA. Il sera versé sur votre compte selon les conditions du contrat de location.",
-      button: { label: "Voir mes paiements", url: `${APP_URL}/dashboard` },
+      button: { label: "Voir mes paiements", url: `${APP_URL}/owner/payments` },
       outro: "L'équipe KAZA",
     }),
   };
@@ -149,6 +176,172 @@ L'équipe KAZA`,
       ],
       button: { label: "Consulter et signer le contrat", url },
       outro: "Une question sur le contrat ? Contactez votre interlocuteur depuis la messagerie KAZA.",
+    }),
+  };
+}
+
+export function applicationReceivedTemplate(params: {
+  propertyTitle: string;
+  requesterName: string;
+}): EmailTemplate {
+  const { propertyTitle, requesterName } = params;
+  const subject = `Nouvelle candidature : ${propertyTitle}`;
+  return {
+    subject,
+    text: `Bonjour,
+
+${requesterName} a postulé pour louer votre bien "${propertyTitle}". Consultez son dossier et acceptez ou refusez : ${APP_URL}/owner/applications
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `${requesterName} a postulé pour ${propertyTitle}`,
+      heading: "Nouvelle candidature reçue",
+      paragraphs: [`${requesterName} souhaite louer votre bien.`],
+      rows: [
+        { label: "Bien", value: propertyTitle },
+        { label: "Candidat", value: requesterName },
+      ],
+      button: { label: "Voir la candidature", url: `${APP_URL}/owner/applications`, color: "navy" },
+      outro: "Consultez le dossier du candidat (identité, pièces) avant de décider.",
+    }),
+  };
+}
+
+export function applicationAcceptedTemplate(params: {
+  propertyTitle: string;
+  contractUrl: string;
+}): EmailTemplate {
+  const { propertyTitle, contractUrl } = params;
+  const subject = `Candidature acceptée : ${propertyTitle} 🎉`;
+  const url = contractUrl || `${APP_URL}/tenant/rentals`;
+  return {
+    subject,
+    text: `Bonjour,
+
+Bonne nouvelle ! Votre candidature pour "${propertyTitle}" a été acceptée. Le bailleur prépare votre bail. Vous pourrez le signer puis régler le 1er loyer : ${url}
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Candidature acceptée pour ${propertyTitle}`,
+      heading: "Votre candidature est acceptée 🎉",
+      paragraphs: [
+        `Félicitations ! Le bailleur a retenu votre candidature pour « ${propertyTitle} ». Le bail va vous être transmis pour signature.`,
+      ],
+      highlight: "Prochaine étape : signez le bail, puis réglez le 1er loyer pour finaliser votre location.",
+      button: { label: "Suivre ma location", url },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
+export function applicationRejectedTemplate(params: {
+  propertyTitle: string;
+  reason?: string;
+}): EmailTemplate {
+  const { propertyTitle, reason } = params;
+  const subject = `Réponse à votre candidature : ${propertyTitle}`;
+  return {
+    subject,
+    text: `Bonjour,
+
+Votre candidature pour le bien "${propertyTitle}" n'a pas été retenue${reason ? ` : ${reason}` : "."}. D'autres biens vous attendent sur KAZA : ${APP_URL}/search
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Réponse à votre candidature pour ${propertyTitle}`,
+      heading: "Votre candidature n'a pas été retenue",
+      paragraphs: [
+        `Nous vous remercions de l'intérêt porté à « ${propertyTitle} ». Malheureusement, votre candidature n'a pas été retenue${reason ? ` (${reason})` : ""}.`,
+      ],
+      button: { label: "Découvrir d'autres biens", url: `${APP_URL}/search`, color: "navy" },
+      outro: "Ne baissez pas les bras — de nombreux logements sont disponibles sur KAZA.",
+    }),
+  };
+}
+
+export function contractSignedTemplate(params: {
+  propertyTitle: string;
+  contractUrl: string;
+  fullySigned: boolean;
+}): EmailTemplate {
+  const { propertyTitle, contractUrl, fullySigned } = params;
+  const url = contractUrl || `${APP_URL}/contracts`;
+  const subject = fullySigned
+    ? `Bail signé par les deux parties : ${propertyTitle}`
+    : `Signature reçue : ${propertyTitle}`;
+  return {
+    subject,
+    text: fullySigned
+      ? `Bonjour,
+
+Le bail pour "${propertyTitle}" est signé par les deux parties. Vous pouvez désormais finaliser via le paiement du 1er loyer : ${url}
+
+L'équipe KAZA`
+      : `Bonjour,
+
+Le bail pour "${propertyTitle}" vient d'être signé par l'autre partie. À vous de le signer pour le finaliser : ${url}
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: fullySigned
+        ? `Bail entièrement signé pour ${propertyTitle}`
+        : `Signature reçue pour ${propertyTitle}`,
+      heading: fullySigned ? "Bail signé par les deux parties ✅" : "Une signature a été apposée",
+      paragraphs: [
+        fullySigned
+          ? `Le contrat de bail pour « ${propertyTitle} » est désormais signé par le bailleur et le locataire.`
+          : `Le contrat de bail pour « ${propertyTitle} » vient d'être signé par l'autre partie. Votre signature est attendue pour finaliser.`,
+      ],
+      highlight: fullySigned
+        ? "Prochaine étape : le règlement du 1er loyer active la location."
+        : undefined,
+      button: { label: fullySigned ? "Voir le contrat" : "Signer le contrat", url },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
+export function rentalActivatedTemplate(params: {
+  propertyTitle: string;
+  monthlyRent: number;
+  forOwner: boolean;
+}): EmailTemplate {
+  const { propertyTitle, monthlyRent, forOwner } = params;
+  const subject = `Location active : ${propertyTitle} 🎉`;
+  return {
+    subject,
+    text: forOwner
+      ? `Bonjour,
+
+Le 1er loyer a été réglé : la location de "${propertyTitle}" (${formatXof(monthlyRent)}/mois) est désormais ACTIVE. Votre bien est marqué comme loué.
+
+Détails : ${APP_URL}/owner/rentals
+
+L'équipe KAZA`
+      : `Bonjour,
+
+Félicitations ! Votre location de "${propertyTitle}" (${formatXof(monthlyRent)}/mois) est désormais ACTIVE. Bienvenue chez vous !
+
+Détails : ${APP_URL}/tenant/rentals
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Location active : ${propertyTitle}`,
+      heading: "Votre location est active 🎉",
+      paragraphs: [
+        forOwner
+          ? `Le 1er loyer a été réglé. La location de « ${propertyTitle} » est désormais active et votre bien est marqué comme loué.`
+          : `Félicitations ! Votre location de « ${propertyTitle} » est désormais active. Bienvenue dans votre nouveau logement !`,
+      ],
+      rows: [
+        { label: "Bien", value: propertyTitle },
+        { label: "Loyer mensuel", value: formatXof(monthlyRent) },
+      ],
+      button: {
+        label: "Voir ma location",
+        url: forOwner ? `${APP_URL}/owner/rentals` : `${APP_URL}/tenant/rentals`,
+      },
+      outro: "L'équipe KAZA",
     }),
   };
 }

@@ -13,14 +13,13 @@ import { z } from "zod";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
   createPendingRental,
   ensureContractForRental,
 } from "@/lib/rentals/lifecycle";
-import { createNotification } from "./notifications";
+import { dispatchNotification } from "@/lib/notifications/dispatch";
 
 export interface ActionResult {
   success: boolean;
@@ -64,14 +63,15 @@ export async function applyToProperty(input: ApplyInput): Promise<ActionResult> 
   // Le bien doit exister et être disponible
   const { data: property } = await supabase
     .from("properties")
-    .select("id, status, owner_id")
+    .select("id, status, owner_id, title")
     .eq("id", d.propertyId)
     .maybeSingle();
   if (!property) return { success: false, error: "Annonce introuvable." };
-  if ((property as { owner_id: string }).owner_id === user.id) {
+  const prop = property as { owner_id: string; status: string; title: string };
+  if (prop.owner_id === user.id) {
     return { success: false, error: "Vous ne pouvez pas postuler à votre bien." };
   }
-  if ((property as { status: string }).status !== "AVAILABLE") {
+  if (prop.status !== "AVAILABLE") {
     return {
       success: false,
       error: "Ce bien n'est plus disponible à la location.",
@@ -100,6 +100,19 @@ export async function applyToProperty(input: ApplyInput): Promise<ActionResult> 
       };
     }
     return { success: false, error: error.message };
+  }
+
+  // Notifie le PROPRIÉTAIRE de la nouvelle candidature (in-app + email + push).
+  try {
+    const requesterName =
+      `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "Un candidat";
+    await dispatchNotification({
+      userId: prop.owner_id,
+      type: "application_received",
+      data: { propertyTitle: prop.title, requesterName },
+    });
+  } catch (err) {
+    console.warn("[applications] notif candidature échec:", err);
   }
 
   revalidatePath("/tenant/applications");
@@ -194,24 +207,36 @@ export async function decideApplication(
       // que le propriétaire/agence complète et que les deux parties signent.
       const contractId = await ensureContractForRental(rentalId);
 
-      // Notification au locataire (client admin : on écrit pour un autre user).
-      const admin = createAdminClient() as unknown as SupabaseClient;
-      await createNotification(admin, {
+      // Notification au locataire (in-app + email + push).
+      await dispatchNotification({
         userId: app.tenant_id,
-        type: "contract_ready",
-        title: "Candidature acceptée 🎉",
-        body: `Votre candidature pour "${property.title}" est acceptée. Signez le bail, puis réglez le 1er loyer pour finaliser.`,
-        link: contractId ? `/contracts/${contractId}` : `/tenant/rentals`,
-        metadata: {
-          rental_id: rentalId,
-          property_id: app.property_id,
-          contract_id: contractId,
+        type: "application_accepted",
+        data: {
+          propertyTitle: property.title,
+          contractUrl: contractId
+            ? `/contracts/${contractId}`
+            : `/tenant/rentals`,
         },
       });
     }
     revalidatePath("/tenant/rentals");
     revalidatePath("/tenant/applications");
     revalidatePath("/contracts");
+  } else if (status === "REJECTED") {
+    // Candidature refusée → on prévient le candidat.
+    try {
+      await dispatchNotification({
+        userId: app.tenant_id,
+        type: "application_rejected",
+        data: {
+          propertyTitle: property.title,
+          reason: "Votre candidature n'a pas été retenue pour ce bien.",
+        },
+      });
+    } catch (err) {
+      console.warn("[applications] notif rejet échec:", err);
+    }
+    revalidatePath("/tenant/applications");
   }
 
   revalidatePath("/owner/applications");
