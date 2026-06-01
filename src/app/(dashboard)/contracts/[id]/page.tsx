@@ -1,6 +1,17 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Calendar, FileText, Home, ShieldCheck, User } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  FileText,
+  Home,
+  Pencil,
+  ShieldCheck,
+  User,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +25,7 @@ import { getContractForRental } from "@/lib/queries/contract-view";
 import { formatPrice, formatDate } from "@/lib/utils";
 
 import { SignaturePad } from "./signature-pad";
+import { SendContractButton } from "./send-contract-button";
 
 export const metadata = {
   title: "Contrat de location",
@@ -31,9 +43,9 @@ export default async function ContractDetailPage({
   const contract = await getContractForRental(id, user.id);
   if (!contract) notFound();
 
-  const isOwner = user.role === "OWNER";
-  const isTenant = user.role === "TENANT" || user.role === "STUDENT";
-  const isSigned = contract.status === "SIGNED";
+  const isOwner = user.id === contract.ownerId;
+  const isTenant = user.id === contract.tenantId;
+  const { status } = contract;
 
   return (
     <div className="space-y-6">
@@ -52,11 +64,11 @@ export default async function ContractDetailPage({
             Contrat de location
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            N° {contract.id.slice(-6).toUpperCase()} — Créé le{" "}
+            N° {contract.contractId.slice(-6).toUpperCase()} — Créé le{" "}
             {formatDate(contract.createdAt)}
           </p>
         </div>
-        <ContractStatusBadge status={contract.status as ContractStatus} />
+        <ContractStatusBadge status={status as ContractStatus} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -113,17 +125,17 @@ export default async function ContractDetailPage({
 
               <Article num="4" title="Dépôt de garantie">
                 Un dépôt de garantie de{" "}
-                <strong>{formatPrice(contract.deposit)}</strong> (équivalent à
-                2 mois de loyer) est versé à la signature et conservé sur le
-                compte escrow KAZA. Il sera restitué dans les 30 jours suivant
-                la fin du bail, déduction faite des éventuelles dégradations.
+                <strong>{formatPrice(contract.deposit)}</strong> est versé à la
+                signature et conservé sur le compte escrow KAZA. Il sera
+                restitué dans les délais légaux suivant la fin du bail, déduction
+                faite des éventuelles dégradations.
               </Article>
 
               <Article num="5" title="Obligations">
-                Le locataire s&apos;engage à user paisiblement des lieux loués
-                et à les rendre en bon état. Le bailleur garantit la jouissance
-                paisible du bien et son entretien conformément à l&apos;Acte
-                uniforme OHADA portant droit commercial général.
+                Le locataire s&apos;engage à user paisiblement des lieux loués et
+                à les rendre en bon état. Le bailleur garantit la jouissance
+                paisible du bien et son entretien, conformément à la Loi n°
+                2018-12 (baux d&apos;habitation, Bénin) et à l&apos;OHADA.
               </Article>
 
               <Article num="6" title="Droit applicable">
@@ -135,7 +147,7 @@ export default async function ContractDetailPage({
           </CardContent>
         </Card>
 
-        {/* Détails + signatures */}
+        {/* Détails + statut + signatures */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -175,31 +187,85 @@ export default async function ContractDetailPage({
             </CardContent>
           </Card>
 
+          {/* Étape en cours + action contextuelle */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <ShieldCheck className="size-4 text-kaza-blue" />
-                Signatures
+                {status === "SIGNED"
+                  ? "Bail signé"
+                  : status === "DRAFT"
+                    ? "Contrat en cours de rédaction"
+                    : "Signatures"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
-              <SignatureBlock
-                label="Propriétaire"
-                name={contract.ownerName}
-                signedAt={isSigned ? contract.signedAt ?? null : null}
-                canSign={isOwner && !isSigned}
-                contractId={contract.id}
-                role="owner"
-              />
-              <Separator />
-              <SignatureBlock
-                label="Locataire"
-                name={contract.tenantName}
-                signedAt={isSigned ? contract.signedAt ?? null : null}
-                canSign={isTenant && !isSigned}
-                contractId={contract.id}
-                role="tenant"
-              />
+              {/* --- ÉTAPE : DRAFT (en cours de rédaction) --- */}
+              {status === "DRAFT" && isOwner && (
+                <div className="space-y-3">
+                  <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700">
+                    Complétez le bail puis envoyez-le au locataire. Il pourra
+                    alors le signer, avant votre propre signature.
+                  </p>
+                  <Button variant="outline" size="sm" asChild className="w-full gap-1.5">
+                    <Link href={`/contracts/${contract.contractId}/edit`}>
+                      <Pencil className="size-3.5" /> Modifier le bail
+                    </Link>
+                  </Button>
+                  <SendContractButton contractId={contract.contractId} />
+                </div>
+              )}
+              {status === "DRAFT" && isTenant && (
+                <p className="rounded-lg bg-muted/50 px-3 py-3 text-xs text-muted-foreground">
+                  <Clock className="mr-1 inline size-3.5" /> Le bailleur prépare
+                  votre bail. Vous serez notifié dès qu&apos;il vous l&apos;aura
+                  envoyé pour signature.
+                </p>
+              )}
+
+              {/* --- ÉTAPE : signatures (PENDING_TENANT / PENDING_OWNER / SIGNED) --- */}
+              {status !== "DRAFT" && (
+                <>
+                  <SignatureBlock
+                    label="Locataire"
+                    name={contract.tenantName}
+                    signed={contract.signedByTenant}
+                    signedAt={contract.tenantSignedAt}
+                    canSign={isTenant && status === "PENDING_TENANT"}
+                    waiting={!contract.signedByTenant}
+                    contractId={contract.contractId}
+                    role="tenant"
+                  />
+                  <Separator />
+                  <SignatureBlock
+                    label="Propriétaire"
+                    name={contract.ownerName}
+                    signed={contract.signedByOwner}
+                    signedAt={contract.ownerSignedAt}
+                    canSign={isOwner && status === "PENDING_OWNER"}
+                    waiting={status !== "SIGNED" && !contract.signedByOwner}
+                    contractId={contract.contractId}
+                    role="owner"
+                  />
+                </>
+              )}
+
+              {/* --- ÉTAPE : SIGNED → payer le 1er loyer --- */}
+              {status === "SIGNED" && isTenant && (
+                <div className="rounded-lg bg-kaza-green/10 p-3">
+                  <p className="text-xs text-kaza-green">
+                    Bail signé par les deux parties. Réglez le 1<sup>er</sup>{" "}
+                    loyer pour activer votre location.
+                  </p>
+                  <Button asChild size="sm" className="mt-2 w-full gap-1.5">
+                    <Link
+                      href={`/tenant/payments/checkout?rentalId=${contract.rentalId}`}
+                    >
+                      <CreditCard className="size-3.5" /> Payer le 1er loyer
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -230,15 +296,19 @@ function Article({
 function SignatureBlock({
   label,
   name,
+  signed,
   signedAt,
   canSign,
+  waiting,
   contractId,
   role,
 }: {
   label: string;
   name: string;
+  signed: boolean;
   signedAt: string | null;
   canSign: boolean;
+  waiting: boolean;
   contractId: string;
   role: "owner" | "tenant";
 }) {
@@ -250,19 +320,20 @@ function SignatureBlock({
       </div>
       <p className="ml-6 text-xs text-muted-foreground">{name}</p>
 
-      {signedAt ? (
-        <p className="ml-6 mt-1 text-xs text-kaza-green">
-          ✓ Signé le {formatDate(signedAt)}
+      {signed ? (
+        <p className="ml-6 mt-1 flex items-center gap-1 text-xs text-kaza-green">
+          <CheckCircle2 className="size-3.5" /> Signé
+          {signedAt ? ` le ${formatDate(signedAt)}` : ""}
         </p>
       ) : canSign ? (
         <div className="mt-3">
           <SignaturePad contractId={contractId} role={role} />
         </div>
-      ) : (
+      ) : waiting ? (
         <p className="ml-6 mt-1 text-xs text-muted-foreground">
           En attente de signature
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

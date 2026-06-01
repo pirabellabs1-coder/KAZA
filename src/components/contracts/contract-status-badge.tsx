@@ -22,8 +22,8 @@ interface StatusConfig {
 
 const STATUS_MAP: Record<ContractStatus, StatusConfig> = {
   DRAFT: {
-    label: "Brouillon",
-    className: "bg-muted text-muted-foreground hover:bg-muted",
+    label: "En cours de rédaction",
+    className: "bg-amber-100 text-amber-800 hover:bg-amber-100",
   },
   PENDING_TENANT: {
     label: "En attente du locataire",

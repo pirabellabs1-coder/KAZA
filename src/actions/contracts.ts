@@ -120,6 +120,89 @@ export async function createContract(
 }
 
 // -----------------------------------------------------------------------------
+// sendContractToTenant — le bailleur a fini de rédiger, il envoie au locataire
+// -----------------------------------------------------------------------------
+
+export interface SendContractResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Transition « contrat en cours » → « envoyé au locataire ».
+ * DRAFT → PENDING_TENANT (le bailleur a complété le bail) + notification au
+ * locataire pour qu'il signe. Réservé au bailleur (owner_id du bien).
+ */
+export async function sendContractToTenant(
+  contractId: string,
+): Promise<SendContractResult> {
+  if (!contractId) return { success: false, error: "Contrat introuvable." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr || !user) return { success: false, error: "Authentification requise." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: contract } = await admin
+    .from("contracts")
+    .select(
+      `id, status,
+       rental:rentals!contracts_rental_id_fkey(
+         tenant_id,
+         property:properties!rentals_property_id_fkey(owner_id, title)
+       )`,
+    )
+    .eq("id", contractId)
+    .maybeSingle();
+  if (!contract) return { success: false, error: "Contrat introuvable." };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const r: any = (contract as any).rental;
+  const tenantId = r?.tenant_id as string | undefined;
+  const ownerId = r?.property?.owner_id as string | undefined;
+  const propertyTitle = (r?.property?.title as string | undefined) ?? "le bien";
+
+  // Le bailleur (propriétaire/agence) est l'owner_id du bien.
+  if (ownerId !== user.id) {
+    return { success: false, error: "Action réservée au bailleur." };
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((contract as any).status !== "DRAFT") {
+    return {
+      success: false,
+      error: "Le bail a déjà été envoyé au locataire.",
+    };
+  }
+
+  const { error: updErr } = await admin
+    .from("contracts")
+    .update({ status: "PENDING_TENANT" })
+    .eq("id", contractId)
+    .eq("status", "DRAFT");
+  if (updErr) {
+    return { success: false, error: "Impossible d'envoyer le bail." };
+  }
+
+  if (tenantId) {
+    try {
+      await dispatchNotification({
+        userId: tenantId,
+        type: "contract_ready",
+        data: { propertyTitle, contractUrl: `/contracts/${contractId}` },
+      });
+    } catch (err) {
+      console.warn("[contracts] notif envoi bail échec:", err);
+    }
+  }
+
+  revalidatePath(`/contracts/${contractId}`);
+  revalidatePath("/contracts");
+  return { success: true };
+}
+
+// -----------------------------------------------------------------------------
 // signContract
 // -----------------------------------------------------------------------------
 
@@ -191,6 +274,28 @@ export async function signContract(
   if (user.id === tenantId) role = "tenant";
   else if (user.id === ownerId) role = "owner";
   else return { success: false, error: "Vous n'êtes pas partie à ce contrat." };
+
+  // Ordre de signature STRICT : le bailleur prépare le bail (DRAFT) puis
+  // l'« envoie au locataire » (PENDING_TENANT) ; le locataire signe en 1er
+  // (→ PENDING_OWNER) ; le bailleur signe en dernier (→ SIGNED).
+  if (role === "tenant" && contract.status !== "PENDING_TENANT") {
+    return {
+      success: false,
+      error:
+        contract.status === "DRAFT"
+          ? "Le bail est en cours de rédaction par le bailleur. Vous pourrez le signer dès qu'il vous l'aura envoyé."
+          : "Ce bail n'est pas en attente de votre signature.",
+    };
+  }
+  if (role === "owner" && contract.status !== "PENDING_OWNER") {
+    return {
+      success: false,
+      error:
+        contract.status === "DRAFT" || contract.status === "PENDING_TENANT"
+          ? "Le locataire doit d'abord signer le bail."
+          : "Ce bail n'est pas en attente de votre signature.",
+    };
+  }
 
   // Hash SHA-256 du dataURL (on ne stocke jamais le PNG en clair).
   const signatureHash = createHash("sha256")
