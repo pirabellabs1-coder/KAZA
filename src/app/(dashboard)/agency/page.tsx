@@ -34,6 +34,7 @@ import {
 } from "@/lib/queries/owner-properties";
 import { getTeamStats, listTeamMembers } from "@/lib/queries/agency-team";
 import { countOwnerVisitsThisMonth } from "@/lib/queries/owner-visits";
+import { countPendingOffersForSeller } from "@/lib/queries/offers";
 
 export const metadata: Metadata = {
   title: "Dashboard Agence — KAZA Pro",
@@ -102,14 +103,21 @@ export default async function AgencyDashboardPage() {
     redirect("/login");
   }
 
-  const [allProperties, stats, teamMembers, teamStats, visitsThisMonth] =
-    await Promise.all([
-      listPropertiesByOwner(user.id),
-      getOwnerPortfolioStats(user.id),
-      listTeamMembers(user.id),
-      getTeamStats(user.id),
-      countOwnerVisitsThisMonth(user.id),
-    ]);
+  const [
+    allProperties,
+    stats,
+    teamMembers,
+    teamStats,
+    visitsThisMonth,
+    pendingOffers,
+  ] = await Promise.all([
+    listPropertiesByOwner(user.id),
+    getOwnerPortfolioStats(user.id),
+    listTeamMembers(user.id),
+    getTeamStats(user.id),
+    countOwnerVisitsThisMonth(user.id),
+    countPendingOffersForSeller(user.id),
+  ]);
 
   const topProps = allProperties.slice(0, 5);
   const hasProperties = stats.total > 0;
@@ -179,6 +187,23 @@ export default async function AgencyDashboardPage() {
           </div>
         </div>
       </section>
+
+      {/* Alerte : offres d'achat en attente */}
+      {pendingOffers > 0 && (
+        <Link
+          href="/owner/offers"
+          className="flex items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 transition hover:bg-amber-100"
+        >
+          <span className="flex items-center gap-2 text-sm font-medium text-amber-800">
+            <ClipboardList className="size-4" />
+            {pendingOffers} offre{pendingOffers > 1 ? "s" : ""} d&apos;achat en
+            attente de votre réponse
+          </span>
+          <span className="text-xs font-semibold text-amber-700">
+            Voir les offres →
+          </span>
+        </Link>
+      )}
 
       {/* StatsCards */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

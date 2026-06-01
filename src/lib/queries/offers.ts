@@ -92,6 +92,31 @@ export async function listOffersForBuyer(userId: string): Promise<OfferItem[]> {
   }));
 }
 
+/**
+ * Nombre d'offres d'achat EN ATTENTE (PENDING) sur les biens du vendeur.
+ * Sert d'alerte sur le dashboard propriétaire/agence.
+ */
+export async function countPendingOffersForSeller(
+  userId: string,
+): Promise<number> {
+  if (!userId) return 0;
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+
+  const { data: props } = await supabase
+    .from("properties")
+    .select("id")
+    .eq("owner_id", userId);
+  const propIds = ((props ?? []) as Array<{ id: string }>).map((p) => p.id);
+  if (propIds.length === 0) return 0;
+
+  const { count } = await supabase
+    .from("property_offers")
+    .select("id", { count: "exact", head: true })
+    .in("property_id", propIds)
+    .eq("status", "PENDING");
+  return count ?? 0;
+}
+
 // ---------------------------------------------------------------------------
 // Admin — toutes les offres + stats (supervision)
 // ---------------------------------------------------------------------------
