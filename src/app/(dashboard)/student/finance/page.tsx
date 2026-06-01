@@ -156,11 +156,12 @@ export default async function StudentFinancePage() {
             </div>
             <div>
               <p className="text-sm font-semibold text-kaza-navy">
-                Frais partagés de colocation
+                Loyer & frais partagés de colocation
               </p>
               <p className="text-xs text-muted-foreground">
-                Enregistrez, répartissez et réglez les dépenses (courses,
-                factures) avec vos colocataires — paiement par Mobile Money.
+                Réglez votre part de loyer et les dépenses (courses, factures)
+                avec vos colocataires — depuis votre solde KAZA ou par Mobile
+                Money, en une fois ou en plusieurs tranches.
               </p>
             </div>
           </div>

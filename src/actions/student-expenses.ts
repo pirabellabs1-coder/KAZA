@@ -377,3 +377,162 @@ export async function payExpenseShareFromWallet(
   revalidatePath("/student/finance");
   return { success: true };
 }
+
+// ---------------------------------------------------------------------------
+// Paiement par TRANCHES depuis le solde KAZA (« payer doucement »).
+// Règle une PARTIE d'une part ; cumule jusqu'au règlement total. Rembourse le
+// payeur (paid_by) au fur et à mesure des tranches encaissées.
+// ---------------------------------------------------------------------------
+
+export async function payExpenseShareInstallmentFromWallet(
+  shareId: string,
+  amountFcfa: number,
+): Promise<ShareCheckoutResult> {
+  if (!shareId) return { success: false, error: "Part introuvable." };
+  const amt = Math.round(Number(amountFcfa) || 0);
+  if (amt <= 0) return { success: false, error: "Montant invalide." };
+
+  const user = await getCurrentDisplayUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: share } = await admin
+    .from("expense_shares")
+    .select(
+      "id, user_id, share_fcfa, paid_fcfa, settled, expense:roommate_expenses(paid_by, title)",
+    )
+    .eq("id", shareId)
+    .maybeSingle();
+  const s = share as unknown as {
+    id: string;
+    user_id: string;
+    share_fcfa: number;
+    paid_fcfa: number | null;
+    settled: boolean;
+    expense: { paid_by?: string | null; title?: string | null } | null;
+  } | null;
+  if (!s) return { success: false, error: "Part introuvable." };
+  if (s.user_id !== user.id) {
+    return { success: false, error: "Cette part ne vous appartient pas." };
+  }
+  if (s.settled) return { success: false, error: "Cette part est déjà réglée." };
+  const paidBy = s.expense?.paid_by ?? null;
+  if (paidBy && paidBy === user.id) {
+    return { success: false, error: "Vous avez avancé cette dépense." };
+  }
+
+  const total = Math.round(Number(s.share_fcfa) || 0);
+  const already = Math.round(Number(s.paid_fcfa ?? 0));
+  const remaining = Math.max(0, total - already);
+  if (remaining <= 0) return { success: false, error: "Cette part est déjà réglée." };
+  const pay = Math.min(amt, remaining); // ne jamais dépasser le reste dû
+
+  // 1) Débit atomique du solde (la tranche).
+  const debit = await walletDebit({
+    userId: user.id,
+    amountFcfa: pay,
+    type: "EXPENSE_DEBIT",
+    description: `Frais partagés (tranche) — ${s.expense?.title ?? "colocation"}`,
+    referenceId: shareId,
+    metadata: { share_id: shareId, installment: true },
+  });
+  if (!debit.ok) return { success: false, error: debit.error };
+
+  // 2) Cumule le montant payé ; règle la part si totalement payée.
+  const newPaid = already + pay;
+  const fullySettled = newPaid >= total;
+  await admin
+    .from("expense_shares")
+    .update({
+      paid_fcfa: newPaid,
+      ...(fullySettled
+        ? { settled: true, settled_at: new Date().toISOString() }
+        : {}),
+    })
+    .eq("id", shareId)
+    .eq("settled", false);
+
+  // 3) Rembourse le payeur de la tranche encaissée (best-effort).
+  if (paidBy) {
+    await admin.from("wallet_transactions").insert({
+      user_id: paidBy,
+      type: "ADJUSTMENT",
+      amount_fcfa: pay,
+      description: `Remboursement frais partagés (tranche) — ${pay.toLocaleString("fr-FR")} FCFA`,
+      reference_id: shareId,
+    });
+  }
+
+  // 4) Trace le paiement (historique) — best-effort.
+  await admin.from("payments").insert({
+    user_id: user.id,
+    rental_id: null,
+    amount: pay,
+    payment_method: "WALLET",
+    transaction_id: `WALLET-${randomUUID()}`,
+    status: "COMPLETED",
+    payment_date: new Date().toISOString(),
+    purpose: "EXPENSE_SHARE",
+    metadata: { share_id: shareId, paid_by: paidBy, installment: true },
+  });
+
+  revalidatePath("/student/expenses");
+  revalidatePath("/student/finance");
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// Désigne le COLOCATAIRE PRINCIPAL d'un groupe (un seul à la fois).
+// ---------------------------------------------------------------------------
+
+export async function setGroupLead(
+  groupId: string,
+  newLeadUserId: string,
+): Promise<ActionResult> {
+  if (!groupId || !newLeadUserId) {
+    return { success: false, error: "Paramètres manquants." };
+  }
+  const user = await getCurrentDisplayUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: members } = await admin
+    .from("roommate_members")
+    .select("user_id, is_lead")
+    .eq("group_id", groupId)
+    .eq("status", "ACCEPTED");
+  const rows = (members ?? []) as Array<{
+    user_id: string;
+    is_lead: boolean | null;
+  }>;
+
+  if (!rows.some((m) => m.user_id === user.id)) {
+    return { success: false, error: "Vous n'êtes pas membre de ce groupe." };
+  }
+  const currentLead = rows.find((m) => m.is_lead === true);
+  if (currentLead && currentLead.user_id !== user.id) {
+    return {
+      success: false,
+      error: "Seul le colocataire principal actuel peut transférer ce rôle.",
+    };
+  }
+  if (!rows.some((m) => m.user_id === newLeadUserId)) {
+    return { success: false, error: "Ce colocataire n'est pas membre du groupe." };
+  }
+
+  // Un seul principal : on réinitialise puis on désigne le nouveau.
+  await admin
+    .from("roommate_members")
+    .update({ is_lead: false })
+    .eq("group_id", groupId);
+  const { error } = await admin
+    .from("roommate_members")
+    .update({ is_lead: true })
+    .eq("group_id", groupId)
+    .eq("user_id", newLeadUserId);
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/student/expenses");
+  revalidatePath("/student/colocations");
+  return { success: true };
+}

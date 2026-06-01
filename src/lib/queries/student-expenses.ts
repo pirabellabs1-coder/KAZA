@@ -22,12 +22,15 @@ function fullName(first?: string | null, last?: string | null): string {
 export interface GroupMember {
   userId: string;
   name: string;
+  isLead: boolean;
 }
 
 export interface StudentGroup {
   id: string;
   name: string;
   members: GroupMember[];
+  /** Colocataire principal (titulaire/responsable) — null si non désigné. */
+  leadUserId: string | null;
 }
 
 export async function listStudentGroups(
@@ -55,12 +58,13 @@ export async function listStudentGroups(
 
     const { data: members } = await supabase
       .from("roommate_members")
-      .select("group_id, user_id")
+      .select("group_id, user_id, is_lead")
       .in("group_id", groupIds)
       .eq("status", "ACCEPTED");
     const memberRows = (members ?? []) as Array<{
       group_id: string;
       user_id: string;
+      is_lead: boolean | null;
     }>;
 
     const allUserIds = [...new Set(memberRows.map((m) => m.user_id))];
@@ -77,13 +81,20 @@ export async function listStudentGroups(
     );
 
     return ((groups ?? []) as Array<{ id: string; group_name: string }>).map(
-      (g) => ({
-        id: g.id,
-        name: g.group_name,
-        members: memberRows
-          .filter((m) => m.group_id === g.id)
-          .map((m) => ({ userId: m.user_id, name: nameMap.get(m.user_id) ?? "Colocataire" })),
-      }),
+      (g) => {
+        const groupMembers = memberRows.filter((m) => m.group_id === g.id);
+        const lead = groupMembers.find((m) => m.is_lead === true);
+        return {
+          id: g.id,
+          name: g.group_name,
+          leadUserId: lead?.user_id ?? null,
+          members: groupMembers.map((m) => ({
+            userId: m.user_id,
+            name: nameMap.get(m.user_id) ?? "Colocataire",
+            isLead: m.is_lead === true,
+          })),
+        };
+      },
     );
   } catch {
     return [];
@@ -95,6 +106,8 @@ export interface ExpenseShare {
   userId: string;
   userName: string;
   shareFcfa: number;
+  /** Montant déjà réglé sur la part (paiement par tranches). */
+  paidFcfa: number;
   settled: boolean;
 }
 
@@ -165,7 +178,7 @@ export async function getGroupExpenses(
 
     const { data: shares } = await supabase
       .from("expense_shares")
-      .select("id, expense_id, user_id, share_fcfa, settled")
+      .select("id, expense_id, user_id, share_fcfa, paid_fcfa, settled")
       .in(
         "expense_id",
         expRows.map((e) => e.id),
@@ -175,6 +188,7 @@ export async function getGroupExpenses(
       expense_id: string;
       user_id: string;
       share_fcfa: number;
+      paid_fcfa: number | null;
       settled: boolean;
     }>;
 
@@ -186,6 +200,7 @@ export async function getGroupExpenses(
         userId: s.user_id,
         userName: nameOf.get(s.user_id) ?? "Colocataire",
         shareFcfa: Number(s.share_fcfa),
+        paidFcfa: Number(s.paid_fcfa ?? 0),
         settled: s.settled,
       });
       sharesByExpense.set(s.expense_id, arr);
@@ -210,7 +225,11 @@ export async function getGroupExpenses(
     }
     for (const s of shareRows) {
       if (!s.settled) {
-        owedBy.set(s.user_id, (owedBy.get(s.user_id) ?? 0) + Number(s.share_fcfa));
+        const remaining = Math.max(
+          0,
+          Number(s.share_fcfa) - Number(s.paid_fcfa ?? 0),
+        );
+        owedBy.set(s.user_id, (owedBy.get(s.user_id) ?? 0) + remaining);
       }
     }
 

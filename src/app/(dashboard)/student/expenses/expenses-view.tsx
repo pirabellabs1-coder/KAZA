@@ -13,6 +13,7 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   CheckCircle2,
+  Crown,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,8 @@ import {
   settleShare,
   initiateExpenseShareCheckout,
   payExpenseShareFromWallet,
+  payExpenseShareInstallmentFromWallet,
+  setGroupLead,
 } from "@/actions/student-expenses";
 import type {
   StudentGroup,
@@ -97,6 +100,11 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
   });
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
+
+  // Montants de tranche saisis par part (paiement « doucement »).
+  const [installments, setInstallments] = useState<Record<string, string>>({});
+  const setInstallment = (shareId: string, v: string) =>
+    setInstallments((p) => ({ ...p, [shareId]: v }));
 
   if (groups.length === 0) {
     return (
@@ -190,6 +198,44 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
     });
   };
 
+  const handleInstallment = (shareId: string, remaining: number) => {
+    const raw = installments[shareId] ?? "";
+    const amount = Number(raw);
+    if (Number.isNaN(amount) || amount <= 0) {
+      toast.error("Saisissez un montant à payer.");
+      return;
+    }
+    if (amount > remaining) {
+      toast.error(
+        `Le montant dépasse le reste à payer (${formatFcfa(remaining)}).`,
+      );
+      return;
+    }
+    startTransition(async () => {
+      const res = await payExpenseShareInstallmentFromWallet(shareId, amount);
+      if (res.success) {
+        toast.success("Tranche payée depuis votre solde KAZA.");
+        setInstallment(shareId, "");
+        router.refresh();
+        return;
+      }
+      toast.error(res.error ?? "Impossible de payer cette tranche.");
+    });
+  };
+
+  const handleSetLead = (newLeadUserId: string) => {
+    if (!group) return;
+    startTransition(async () => {
+      const res = await setGroupLead(group.id, newLeadUserId);
+      if (res.success) {
+        toast.success("Colocataire principal mis à jour.");
+        router.refresh();
+        return;
+      }
+      toast.error(res.error ?? "Impossible de désigner le principal.");
+    });
+  };
+
   const d = data ?? {
     expenses: [],
     balances: [],
@@ -197,6 +243,11 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
     myBalance: 0,
     myShareUnsettled: 0,
   };
+
+  // Seul le principal actuel (ou n'importe qui si aucun principal) peut désigner.
+  const canManageLead =
+    !!group &&
+    (group.leadUserId === null || group.leadUserId === userId);
 
   return (
     <div className="space-y-6">
@@ -374,34 +425,61 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
         </Card>
       </div>
 
-      {/* Soldes par colocataire */}
+      {/* Soldes par colocataire + colocataire principal */}
       {d.balances.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Soldes des colocataires</CardTitle>
+            <CardTitle className="text-base">Colocataires & soldes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {d.balances.map((b) => (
-              <div
-                key={b.userId}
-                className="flex items-center justify-between rounded-lg border border-border/70 p-3 text-sm"
-              >
-                <span className="font-medium text-foreground">
-                  {b.userId === userId ? "Moi" : b.name}
-                </span>
-                <span
-                  className={
-                    b.balance >= 0
-                      ? "font-semibold text-kaza-green"
-                      : "font-semibold text-rose-600"
-                  }
+            {group?.leadUserId === null && (
+              <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                Aucun colocataire principal désigné. Le principal est le
+                titulaire/responsable du bail.
+              </p>
+            )}
+            {d.balances.map((b) => {
+              const isLead = group?.leadUserId === b.userId;
+              return (
+                <div
+                  key={b.userId}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/70 p-3 text-sm"
                 >
-                  {b.balance >= 0
-                    ? `+${formatFcfa(b.balance)}`
-                    : `-${formatFcfa(Math.abs(b.balance))}`}
-                </span>
-              </div>
-            ))}
+                  <span className="flex items-center gap-2 font-medium text-foreground">
+                    {b.userId === userId ? "Moi" : b.name}
+                    {isLead && (
+                      <Badge className="gap-1 bg-kaza-navy/10 text-kaza-navy">
+                        <Crown className="size-3.5" /> Principal
+                      </Badge>
+                    )}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    {canManageLead && !isLead && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 gap-1 px-2 text-xs"
+                        disabled={isPending}
+                        onClick={() => handleSetLead(b.userId)}
+                      >
+                        <Crown className="size-3.5" /> Désigner principal
+                      </Button>
+                    )}
+                    <span
+                      className={
+                        b.balance >= 0
+                          ? "font-semibold text-kaza-green"
+                          : "font-semibold text-rose-600"
+                      }
+                    >
+                      {b.balance >= 0
+                        ? `+${formatFcfa(b.balance)}`
+                        : `-${formatFcfa(Math.abs(b.balance))}`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}
@@ -444,44 +522,110 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
                       )}
                     </div>
                   </div>
-                  {myShare && myShare.userId !== e.paidById && (
-                    <div className="mt-2 flex flex-wrap justify-end gap-2">
-                      {myShare.settled ? (
-                        <Badge className="gap-1 bg-kaza-green/15 text-kaza-green">
-                          <CheckCircle2 className="size-3.5" /> Réglé
-                        </Badge>
-                      ) : (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="gap-1.5"
-                            disabled={isPending}
-                            onClick={() => handleSettle(myShare.id)}
-                          >
-                            <CheckCircle2 className="size-3.5" /> Marquer réglé
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="gap-1.5"
-                            disabled={isPending}
-                            onClick={() => handlePayShareWallet(myShare.id)}
-                          >
-                            <Wallet className="size-3.5" /> Payer (solde)
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="gap-1.5"
-                            disabled={isPending}
-                            onClick={() => handlePayShare(myShare.id)}
-                          >
-                            <Smartphone className="size-3.5" /> Mobile Money
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  )}
+                  {myShare &&
+                    myShare.userId !== e.paidById &&
+                    (() => {
+                      const remaining = Math.max(
+                        0,
+                        myShare.shareFcfa - myShare.paidFcfa,
+                      );
+                      const progress =
+                        myShare.shareFcfa > 0
+                          ? Math.min(
+                              100,
+                              Math.round(
+                                (myShare.paidFcfa / myShare.shareFcfa) * 100,
+                              ),
+                            )
+                          : 0;
+                      return (
+                        <div className="mt-2 space-y-2">
+                          {myShare.settled ? (
+                            <div className="flex justify-end">
+                              <Badge className="gap-1 bg-kaza-green/15 text-kaza-green">
+                                <CheckCircle2 className="size-3.5" /> Réglé
+                              </Badge>
+                            </div>
+                          ) : (
+                            <>
+                              {myShare.paidFcfa > 0 && (
+                                <div className="space-y-1">
+                                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                                    <div
+                                      className="h-full rounded-full bg-kaza-green transition-all"
+                                      style={{ width: `${progress}%` }}
+                                    />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Payé {formatFcfa(myShare.paidFcfa)} /{" "}
+                                    {formatFcfa(myShare.shareFcfa)} · reste{" "}
+                                    <span className="font-medium text-foreground">
+                                      {formatFcfa(remaining)}
+                                    </span>
+                                  </p>
+                                </div>
+                              )}
+
+                              {/* Payer « doucement » : une tranche depuis le solde */}
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Input
+                                  type="number"
+                                  min={0}
+                                  max={remaining}
+                                  inputMode="numeric"
+                                  placeholder={`Montant (max ${formatFcfa(remaining)})`}
+                                  value={installments[myShare.id] ?? ""}
+                                  onChange={(ev) =>
+                                    setInstallment(myShare.id, ev.target.value)
+                                  }
+                                  className="h-9 w-44"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1.5"
+                                  disabled={isPending}
+                                  onClick={() =>
+                                    handleInstallment(myShare.id, remaining)
+                                  }
+                                >
+                                  <Wallet className="size-3.5" /> Payer une tranche
+                                </Button>
+                              </div>
+
+                              <div className="flex flex-wrap justify-end gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="gap-1.5"
+                                  disabled={isPending}
+                                  onClick={() => handleSettle(myShare.id)}
+                                >
+                                  <CheckCircle2 className="size-3.5" /> Marquer réglé
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1.5"
+                                  disabled={isPending}
+                                  onClick={() => handlePayShareWallet(myShare.id)}
+                                >
+                                  <Wallet className="size-3.5" /> Tout payer (solde)
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="gap-1.5"
+                                  disabled={isPending}
+                                  onClick={() => handlePayShare(myShare.id)}
+                                >
+                                  <Smartphone className="size-3.5" /> Mobile Money
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
                 </div>
               );
             })
