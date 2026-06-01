@@ -108,14 +108,23 @@ export default async function PaymentSuccessPage({
         </Button>
       </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mt-4 gap-1.5 text-muted-foreground"
-      >
-        <Download className="size-4" />
-        Télécharger le reçu PDF
-      </Button>
+      {paymentId && (
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mt-4 gap-1.5 text-muted-foreground"
+        >
+          <a
+            href={`/tenant/payments/${paymentId}/receipt`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Download className="size-4" />
+            Télécharger le reçu PDF
+          </a>
+        </Button>
+      )}
     </div>
   );
 }

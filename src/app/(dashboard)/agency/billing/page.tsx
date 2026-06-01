@@ -687,7 +687,7 @@ export default async function AgencyBillingPage() {
               </div>
             </div>
             <Button variant="outline" className="w-full gap-1" asChild>
-              <Link href="/wallet">
+              <Link href="/agency/wallet">
                 <Wallet className="size-4" />
                 Gérer mon wallet
               </Link>

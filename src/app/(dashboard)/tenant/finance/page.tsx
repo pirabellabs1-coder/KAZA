@@ -157,7 +157,7 @@ export default async function TenantFinancePage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Historique des paiements</CardTitle>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/tenant/payments">Effectuer un paiement</Link>
+            <Link href="/tenant/payments/checkout">Effectuer un paiement</Link>
           </Button>
         </CardHeader>
         <CardContent>
