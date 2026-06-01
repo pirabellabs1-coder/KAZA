@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Home,
   Building2,
+  Tag,
   Hotel,
   Castle,
   Users,
@@ -80,6 +81,13 @@ const MEGA_MENU: MegaSection[] = [
             label: "Toutes les propriétés",
             description: "Catalogue complet vérifié",
             icon: Building2,
+          },
+          {
+            href: "/search?listingType=SALE",
+            label: "Acheter un bien",
+            description: "Biens à vendre — devenez propriétaire",
+            icon: Tag,
+            badge: "Vente",
           },
           {
             href: "/maisons",
