@@ -256,6 +256,16 @@ async function loadPayableOffer(
   const deposit = Number(o.deposit_fcfa ?? 0);
   if (deposit <= 0) return { ok: false, error: "Montant d'acompte invalide." };
 
+  // Le bien doit toujours être disponible : si un autre acheteur a déjà versé
+  // son acompte (bien RESERVED) ou si la vente est conclue (SOLD), on refuse.
+  const propStatus = o.property?.status as string | undefined;
+  if (propStatus && propStatus !== "AVAILABLE" && propStatus !== "PENDING_REVIEW") {
+    return {
+      ok: false,
+      error: "Ce bien n'est plus disponible (déjà réservé ou vendu).",
+    };
+  }
+
   // Garde d'idempotence : refuse si un versement d'acompte est déjà en cours
   // ou abouti pour cette offre (évite un double-débit sur double-soumission).
   const { count } = await admin
