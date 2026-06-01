@@ -33,6 +33,7 @@ import {
   BadgeDollarSign,
   Send,
   Newspaper,
+  CalendarCheck,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -89,6 +90,7 @@ const adminNavSections: NavSection[] = [
         icon: Building2,
         badgeKey: "properties",
       },
+      { href: "/admin/visits", label: "Demandes de visite", icon: CalendarCheck },
       { href: "/admin/contracts", label: "Contrats", icon: FileText },
       { href: "/admin/documents", label: "Documents", icon: FolderArchive },
       { href: "/admin/careers", label: "Carrières", icon: Briefcase },
