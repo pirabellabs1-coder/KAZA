@@ -21,7 +21,10 @@ import {
   type ContractStatus,
 } from "@/components/contracts/contract-status-badge";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
-import { getContractForRental } from "@/lib/queries/contract-view";
+import {
+  getContractForRental,
+  type ContractParty,
+} from "@/lib/queries/contract-view";
 import { formatPrice, formatDate } from "@/lib/utils";
 
 import { SignaturePad } from "./signature-pad";
@@ -85,63 +88,107 @@ export default async function ContractDetailPage({
               <h2 className="font-heading text-lg font-bold text-kaza-navy">
                 Bail à usage d&apos;habitation
               </h2>
-              <p className="text-muted-foreground">Entre les soussignés :</p>
+              <p className="text-muted-foreground">
+                Régi par la Loi n° 2018-12 du 2 juillet 2018 (baux
+                d&apos;habitation, Bénin) et les Actes uniformes OHADA. Entre les
+                soussignés :
+              </p>
               <div className="grid gap-2 sm:grid-cols-2">
-                <div className="rounded-lg bg-white p-3">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Bailleur
-                  </p>
-                  <p className="mt-1 font-semibold">{contract.ownerName}</p>
-                </div>
-                <div className="rounded-lg bg-white p-3">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Locataire
-                  </p>
-                  <p className="mt-1 font-semibold">{contract.tenantName}</p>
-                </div>
+                <PartyCard label="Bailleur" party={contract.owner} />
+                <PartyCard label="Locataire" party={contract.tenant} />
               </div>
 
               <Separator />
 
-              <Article num="1" title="Objet">
-                Le bailleur loue au locataire, qui accepte, le bien suivant :{" "}
-                <strong>{contract.propertyTitle}</strong>, sis à{" "}
-                <strong>{contract.propertyAddress}</strong>.
+              <Article num="1" title="Désignation du bien loué">
+                Le bailleur loue au locataire, qui accepte, à usage exclusif
+                d&apos;habitation, le bien suivant :{" "}
+                <strong>{contract.propertyTitle}</strong>
+                {contract.propertyType ? ` (${contract.propertyType})` : ""}, sis
+                à <strong>{contract.propertyAddress || "[adresse]"}</strong>
+                {contract.propertySurface
+                  ? `, d'une superficie d'environ ${contract.propertySurface} m²`
+                  : ""}
+                {contract.propertyBedrooms
+                  ? `, comprenant ${contract.propertyBedrooms} chambre(s)`
+                  : ""}
+                .
               </Article>
 
               <Article num="2" title="Durée">
                 Le présent bail est conclu pour une durée d&apos;un an, du{" "}
                 {formatDate(contract.startDate)} au{" "}
                 {formatDate(contract.endDate)}, renouvelable par tacite
-                reconduction.
+                reconduction sauf congé donné dans les conditions légales.
               </Article>
 
               <Article num="3" title="Loyer">
                 Le loyer mensuel est fixé à{" "}
                 <strong>{formatPrice(contract.monthlyRent)}</strong>, payable
-                d&apos;avance le 1er de chaque mois via la plateforme KAZA
-                (escrow sécurisé).
+                d&apos;avance au plus tard le 5 de chaque mois via la plateforme
+                KAZA (séquestre sécurisé — Mobile Money ou solde KAZA).
               </Article>
 
-              <Article num="4" title="Dépôt de garantie">
+              <Article num="4" title="Charges">
+                {contract.monthlyCharges > 0 ? (
+                  <>
+                    Une provision mensuelle pour charges récupérables de{" "}
+                    <strong>{formatPrice(contract.monthlyCharges)}</strong> est
+                    versée avec le loyer, régularisée annuellement sur
+                    justificatifs.
+                  </>
+                ) : (
+                  <>
+                    Le loyer est convenu charges comprises, sauf charges
+                    individuelles (eau, électricité) restant à la charge du
+                    locataire selon les compteurs.
+                  </>
+                )}
+              </Article>
+
+              <Article num="5" title="Dépôt de garantie">
                 Un dépôt de garantie de{" "}
                 <strong>{formatPrice(contract.deposit)}</strong> est versé à la
-                signature et conservé sur le compte escrow KAZA. Il sera
-                restitué dans les délais légaux suivant la fin du bail, déduction
-                faite des éventuelles dégradations.
+                signature et conservé sur le compte séquestre KAZA. Il sera
+                restitué dans les délais légaux suivant la remise des clés,
+                déduction faite des éventuelles dégradations dûment constatées.
               </Article>
 
-              <Article num="5" title="Obligations">
-                Le locataire s&apos;engage à user paisiblement des lieux loués et
-                à les rendre en bon état. Le bailleur garantit la jouissance
-                paisible du bien et son entretien, conformément à la Loi n°
-                2018-12 (baux d&apos;habitation, Bénin) et à l&apos;OHADA.
+              <Article num="6" title="État des lieux">
+                Un état des lieux contradictoire est établi à la remise des clés
+                et annexé au présent contrat. À défaut, le locataire est présumé
+                avoir reçu le bien en bon état de réparations locatives.
               </Article>
 
-              <Article num="6" title="Droit applicable">
-                Le présent contrat est régi par le droit béninois. Tout litige
-                sera soumis à la médiation KAZA puis, à défaut, aux tribunaux
-                compétents de Cotonou.
+              <Article num="7" title="Obligations du locataire">
+                Le locataire s&apos;engage à : payer le loyer et les charges aux
+                échéances ; user paisiblement des lieux conformément à leur
+                destination ; en assurer l&apos;entretien courant ; souscrire une
+                assurance habitation et en justifier annuellement ; ne pas
+                transformer les lieux sans accord écrit du bailleur ; restituer le
+                bien en bon état en fin de bail.
+              </Article>
+
+              <Article num="8" title="Obligations du bailleur">
+                Le bailleur s&apos;engage à : délivrer le bien en bon état ;
+                assurer au locataire la jouissance paisible des lieux ; effectuer
+                les grosses réparations ; délivrer gratuitement quittance ;
+                respecter les durées de préavis légales.
+              </Article>
+
+              <Article num="9" title="Résiliation">
+                Le bail pourra être résilié de plein droit deux (2) mois après un
+                commandement de payer demeuré infructueux, ou en cas de défaut
+                d&apos;assurance, d&apos;usage non conforme, de troubles graves de
+                voisinage ou de sous-location non autorisée.
+              </Article>
+
+              <Article num="10" title="Droit applicable et litiges">
+                Le présent contrat est régi par le droit béninois (Loi n° 2018-12)
+                et l&apos;OHADA. Tout litige sera soumis à la médiation gratuite
+                KAZA puis, à défaut d&apos;accord sous 30 jours, aux tribunaux
+                compétents de Cotonou. La signature électronique apposée via KAZA
+                a valeur probante (Loi n° 2017-20, Code du numérique).
               </Article>
             </div>
           </CardContent>
@@ -270,6 +317,50 @@ export default async function ContractDetailPage({
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+function PartyCard({
+  label,
+  party,
+}: {
+  label: string;
+  party: ContractParty;
+}) {
+  const todo = (
+    <span className="italic text-amber-600">[à compléter au profil]</span>
+  );
+  return (
+    <div className="rounded-lg bg-white p-3">
+      <p className="text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 font-semibold">{party.name}</p>
+      <dl className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+        <div>
+          <span className="font-medium">Pièce d&apos;identité : </span>
+          {party.idNumber ?? todo}
+        </div>
+        <div>
+          <span className="font-medium">Profession : </span>
+          {party.profession ?? todo}
+        </div>
+        {party.employer && (
+          <div>
+            <span className="font-medium">Employeur : </span>
+            {party.employer}
+          </div>
+        )}
+        <div>
+          <span className="font-medium">Adresse : </span>
+          {party.address ?? todo}
+        </div>
+        <div>
+          <span className="font-medium">Téléphone : </span>
+          {party.phone ?? todo}
+        </div>
+      </dl>
     </div>
   );
 }

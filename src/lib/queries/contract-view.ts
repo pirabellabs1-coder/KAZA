@@ -20,6 +20,15 @@ export type RealContractStatus =
   | "SIGNED"
   | "CANCELLED";
 
+export interface ContractParty {
+  name: string;
+  idNumber: string | null;
+  profession: string | null;
+  employer: string | null;
+  address: string | null;
+  phone: string | null;
+}
+
 export interface ContractView {
   /** id RÉEL de la table contracts (pour signContract / sendContractToTenant). */
   contractId: string;
@@ -31,15 +40,27 @@ export interface ContractView {
   tenantSignedAt: string | null;
   ownerId: string;
   tenantId: string;
-  propertyTitle: string;
-  propertyAddress: string;
+  owner: ContractParty;
+  tenant: ContractParty;
+  /** Pratique (= owner.name / tenant.name). */
   ownerName: string;
   tenantName: string;
+  propertyTitle: string;
+  propertyAddress: string;
+  propertyType: string | null;
+  propertySurface: number | null;
+  propertyBedrooms: number | null;
   monthlyRent: number;
+  monthlyCharges: number;
   deposit: number;
   startDate: string;
   endDate: string;
   createdAt: string;
+}
+
+function fullName(first?: string | null, last?: string | null, fallback = "—") {
+  const v = `${first ?? ""} ${last ?? ""}`.trim();
+  return v.length > 0 ? v : fallback;
 }
 
 export async function getContractForRental(
@@ -49,10 +70,12 @@ export async function getContractForRental(
   if (!idOrRentalId || !userId) return null;
   const admin = createAdminClient() as unknown as SupabaseClient;
 
+  const partyFields =
+    "first_name, last_name, id_number, profession, employer, address, phone";
   const rentalSelect =
-    "id, monthly_rent, security_deposit, start_date, end_date, status, created_at, tenant_id, " +
-    "property:properties!property_id(title, address, owner_id, owner:users!owner_id(first_name, last_name)), " +
-    "tenant:users!tenant_id(first_name, last_name)";
+    "id, monthly_rent, monthly_charges, security_deposit, start_date, end_date, status, created_at, tenant_id, " +
+    `property:properties!property_id(title, address, property_type, square_meters, bedrooms, owner_id, owner:users!owner_id(${partyFields})), ` +
+    `tenant:users!tenant_id(${partyFields})`;
 
   // 1) Tente comme rental_id.
   let { data } = await admin
@@ -80,9 +103,20 @@ export async function getContractForRental(
   }
   if (!data) return null;
 
+  type PartyRow = {
+    first_name?: string | null;
+    last_name?: string | null;
+    id_number?: string | null;
+    profession?: string | null;
+    employer?: string | null;
+    address?: string | null;
+    phone?: string | null;
+  } | null;
+
   const r = data as unknown as {
     id: string;
     monthly_rent: number | string | null;
+    monthly_charges: number | string | null;
     security_deposit: number | string | null;
     start_date: string;
     end_date: string;
@@ -92,18 +126,19 @@ export async function getContractForRental(
     property?: {
       title?: string | null;
       address?: string | null;
+      property_type?: string | null;
+      square_meters?: number | null;
+      bedrooms?: number | null;
       owner_id?: string | null;
-      owner?: { first_name?: string | null; last_name?: string | null } | null;
+      owner?: PartyRow;
     } | null;
-    tenant?: { first_name?: string | null; last_name?: string | null } | null;
+    tenant?: PartyRow;
   };
 
   const ownerId = r.property?.owner_id ?? null;
-  // Autorisation : uniquement le locataire ou le propriétaire du bail.
   if (r.tenant_id !== userId && ownerId !== userId) return null;
 
-  // Le VRAI contrat de ce bail (créé en DRAFT à l'acceptation). Fallback : on
-  // le crée si absent (locations héritées).
+  // Le VRAI contrat de ce bail (créé en DRAFT à l'acceptation). Fallback création.
   let { data: contractRow } = await admin
     .from("contracts")
     .select(
@@ -137,12 +172,24 @@ export async function getContractForRental(
     tenant_signed_at: string | null;
   };
 
-  const ownerName =
-    `${r.property?.owner?.first_name ?? ""} ${r.property?.owner?.last_name ?? ""}`.trim() ||
-    "Propriétaire";
-  const tenantName =
-    `${r.tenant?.first_name ?? ""} ${r.tenant?.last_name ?? ""}`.trim() ||
-    "Locataire";
+  const o = r.property?.owner ?? null;
+  const t = r.tenant ?? null;
+  const owner: ContractParty = {
+    name: fullName(o?.first_name, o?.last_name, "Propriétaire"),
+    idNumber: o?.id_number ?? null,
+    profession: o?.profession ?? null,
+    employer: o?.employer ?? null,
+    address: o?.address ?? null,
+    phone: o?.phone ?? null,
+  };
+  const tenant: ContractParty = {
+    name: fullName(t?.first_name, t?.last_name, "Locataire"),
+    idNumber: t?.id_number ?? null,
+    profession: t?.profession ?? null,
+    employer: t?.employer ?? null,
+    address: t?.address ?? null,
+    phone: t?.phone ?? null,
+  };
 
   return {
     contractId: c.id,
@@ -154,11 +201,17 @@ export async function getContractForRental(
     tenantSignedAt: c.tenant_signed_at,
     ownerId: ownerId ?? "",
     tenantId: r.tenant_id,
+    owner,
+    tenant,
+    ownerName: owner.name,
+    tenantName: tenant.name,
     propertyTitle: r.property?.title ?? "Bien loué",
     propertyAddress: r.property?.address ?? "",
-    ownerName,
-    tenantName,
+    propertyType: r.property?.property_type ?? null,
+    propertySurface: r.property?.square_meters ?? null,
+    propertyBedrooms: r.property?.bedrooms ?? null,
     monthlyRent: Number(r.monthly_rent ?? 0),
+    monthlyCharges: Number(r.monthly_charges ?? 0),
     deposit: Number(r.security_deposit ?? 0),
     startDate: r.start_date,
     endDate: r.end_date,
