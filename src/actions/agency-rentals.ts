@@ -10,6 +10,7 @@ import "server-only";
 // =============================================================================
 
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
@@ -104,23 +105,36 @@ export async function terminateRental(
   const supabase = await createClient();
   const end = endDate || new Date().toISOString().slice(0, 10);
 
-  const { error } = await (supabase as unknown as {
-    from: (t: string) => {
-      update: (v: Record<string, unknown>) => {
-        eq: (k: string, val: string) => Promise<{
-          error: { message: string } | null;
-        }>;
-      };
-    };
-  })
+  const loose = supabase as unknown as SupabaseClient;
+
+  // Récupère le bien lié avant de terminer, pour pouvoir le libérer.
+  const { data: rentalRow } = await loose
+    .from("rentals")
+    .select("property_id")
+    .eq("id", rentalId)
+    .maybeSingle();
+  const propertyId = (rentalRow as { property_id?: string } | null)
+    ?.property_id;
+
+  const { error } = await loose
     .from("rentals")
     .update({ status: "TERMINATED", end_date: end })
     .eq("id", rentalId);
 
   if (error) return { success: false, error: error.message };
 
+  // Libère le bien : RENTED -> AVAILABLE pour qu'il puisse être reloué.
+  if (propertyId) {
+    await loose
+      .from("properties")
+      .update({ status: "AVAILABLE" })
+      .eq("id", propertyId)
+      .eq("status", "RENTED");
+  }
+
   revalidatePath("/agency/rentals");
   revalidatePath(`/agency/rentals/${rentalId}`);
+  revalidatePath("/agency/properties");
   return { success: true };
 }
 

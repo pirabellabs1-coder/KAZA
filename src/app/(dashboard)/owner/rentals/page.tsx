@@ -23,5 +23,7 @@ export default async function OwnerRentalsPage() {
   }
 
   const rentals = await listOwnerRentals(user.id);
-  return <OwnerRentalsView rentals={rentals} />;
+  // Le propriétaire peut résilier directement ses baux actifs (l'agence passe
+  // par sa fiche détail dédiée /agency/rentals/[id]).
+  return <OwnerRentalsView rentals={rentals} showTerminate={user.role === "OWNER"} />;
 }

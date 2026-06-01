@@ -18,6 +18,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate, getInitials } from "@/lib/utils";
 import type { OwnerRental } from "@/lib/queries/owner-activity";
 
+import { OwnerTerminateRentalButton } from "./terminate-button";
+
 type Filter = "ACTIVE" | "PENDING" | "PAST";
 
 function formatFcfa(value: number): string {
@@ -79,11 +81,17 @@ interface OwnerRentalsViewProps {
    * carte affiche un lien « Voir le détail » vers `${detailHrefBase}/${id}`.
    */
   detailHrefBase?: string;
+  /**
+   * Affiche le bouton « Résilier le bail » sur les locations actives
+   * (espace propriétaire uniquement — l'agence gère via sa fiche détail).
+   */
+  showTerminate?: boolean;
 }
 
 export function OwnerRentalsView({
   rentals,
   detailHrefBase,
+  showTerminate,
 }: OwnerRentalsViewProps) {
   const [filter, setFilter] = useState<Filter>("ACTIVE");
 
@@ -236,6 +244,10 @@ export function OwnerRentalsView({
                       Voir le détail
                     </Link>
                   </Button>
+                )}
+
+                {showTerminate && rental.status === "ACTIVE" && (
+                  <OwnerTerminateRentalButton rentalId={rental.id} />
                 )}
               </CardContent>
             </Card>

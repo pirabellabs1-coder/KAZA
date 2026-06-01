@@ -346,6 +346,58 @@ L'équipe KAZA`,
   };
 }
 
+export function rentalTerminatedTemplate(params: {
+  propertyTitle: string;
+  endDate: string;
+  forOwner: boolean;
+}): EmailTemplate {
+  const { propertyTitle, endDate, forOwner } = params;
+  const subject = `Bail résilié : ${propertyTitle}`;
+  const endLabel = endDate
+    ? new Date(endDate).toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "ce jour";
+  return {
+    subject,
+    text: forOwner
+      ? `Bonjour,
+
+La location de "${propertyTitle}" a été résiliée (fin au ${endLabel}). Votre bien est de nouveau disponible à la location.
+
+Détails : ${APP_URL}/owner/rentals
+
+L'équipe KAZA`
+      : `Bonjour,
+
+Votre location de "${propertyTitle}" a pris fin le ${endLabel}. Nous vous remercions de votre confiance.
+
+Détails : ${APP_URL}/tenant/rentals
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Bail résilié : ${propertyTitle}`,
+      heading: "Fin de votre bail",
+      paragraphs: [
+        forOwner
+          ? `La location de « ${propertyTitle} » a été résiliée. Votre bien est de nouveau disponible à la location et peut être proposé à de nouveaux candidats.`
+          : `Votre location de « ${propertyTitle} » a pris fin. Nous vous remercions de votre confiance et restons à votre disposition pour votre prochain logement.`,
+      ],
+      rows: [
+        { label: "Bien", value: propertyTitle },
+        { label: "Date de fin", value: endLabel },
+      ],
+      button: {
+        label: forOwner ? "Voir mes locations" : "Trouver un logement",
+        url: forOwner ? `${APP_URL}/owner/rentals` : `${APP_URL}/search`,
+      },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
 export function referralInviteTemplate(params: {
   inviterName: string;
   code: string;

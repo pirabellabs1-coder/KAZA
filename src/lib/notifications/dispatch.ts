@@ -33,6 +33,7 @@ import {
   applicationRejectedTemplate,
   contractSignedTemplate,
   rentalActivatedTemplate,
+  rentalTerminatedTemplate,
   type EmailTemplate,
 } from './templates';
 
@@ -51,6 +52,7 @@ export type NotificationType =
   | 'application_accepted'
   | 'application_rejected'
   | 'rental_activated'
+  | 'rental_terminated'
   | 'verification_approved'
   | 'verification_rejected'
   | 'welcome';
@@ -81,6 +83,7 @@ const DEFAULT_CHANNELS: Record<NotificationType, NotificationChannel[]> = {
   application_accepted: ['in_app', 'push', 'email'],
   application_rejected: ['in_app', 'push', 'email'],
   rental_activated: ['in_app', 'push', 'email'],
+  rental_terminated: ['in_app', 'push', 'email'],
   verification_approved: ['in_app', 'push', 'email'],
   verification_rejected: ['in_app', 'push', 'email'],
   welcome: ['in_app', 'email'],
@@ -99,6 +102,7 @@ const IN_APP_TYPE: Record<NotificationType, Enums<'notification_type'>> = {
   application_accepted: 'contract_ready',
   application_rejected: 'system',
   rental_activated: 'payment_received',
+  rental_terminated: 'system',
   verification_approved: 'identity_approved',
   verification_rejected: 'identity_rejected',
   welcome: 'system',
@@ -175,6 +179,12 @@ function buildPushPayload(type: NotificationType, data: Record<string, unknown>)
         body: `La location de "${asString(data.propertyTitle, 'le bien')}" est désormais active.`,
         link: data.forOwner === true ? '/owner/rentals' : '/tenant/rentals',
       };
+    case 'rental_terminated':
+      return {
+        title: 'Bail résilié',
+        body: `La location de "${asString(data.propertyTitle, 'le bien')}" a pris fin.`,
+        link: data.forOwner === true ? '/owner/rentals' : '/tenant/rentals',
+      };
     case 'verification_approved':
       return {
         title: 'Identité vérifiée',
@@ -244,6 +254,12 @@ function buildEmailTemplate(
       return rentalActivatedTemplate({
         propertyTitle: asString(data.propertyTitle, 'Votre bien'),
         monthlyRent: asNumber(data.monthlyRent, 0),
+        forOwner: data.forOwner === true,
+      });
+    case 'rental_terminated':
+      return rentalTerminatedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        endDate: asString(data.endDate, ''),
         forOwner: data.forOwner === true,
       });
     case 'verification_approved':
