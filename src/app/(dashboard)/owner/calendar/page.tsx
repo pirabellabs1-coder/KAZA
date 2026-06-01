@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getOwnerVisitCalendar } from "@/lib/queries/owner-visits";
 
 import { CalendarView } from "./calendar-view";
 
@@ -6,7 +10,14 @@ export const metadata: Metadata = {
   title: "Calendrier des visites",
 };
 
-export default function OwnerCalendarPage() {
+export const dynamic = "force-dynamic";
+
+export default async function OwnerCalendarPage() {
+  const user = await getCurrentDisplayUser();
+  if (!user) redirect("/login?redirect=/owner/calendar");
+
+  const visits = await getOwnerVisitCalendar(user.id);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -20,7 +31,7 @@ export default function OwnerCalendarPage() {
         </p>
       </div>
 
-      <CalendarView />
+      <CalendarView visits={visits} />
     </div>
   );
 }

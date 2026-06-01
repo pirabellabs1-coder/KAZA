@@ -14,7 +14,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RatingStars } from "@/components/shared/rating-stars";
 import { PropertyCard } from "@/components/property/property-card";
 import { VirtualTour } from "@/components/property/virtual-tour";
-import { PanoramaSection } from "@/components/property/panorama-section";
 import { PropertyActions } from "@/components/property/property-actions";
 import { PropertyLocationMap } from "@/components/property/property-location-map";
 import { VisitRequestButton } from "@/components/property/visit-request-button";
@@ -128,9 +127,6 @@ export default async function PropertyDetailPage({
           embedUrl={undefined}
         />
       </div>
-
-      {/* Vue 360° immersive */}
-      <PanoramaSection propertyTitle={property.title} />
 
       {/* Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">

@@ -74,6 +74,13 @@ const tenantNav: NavItem[] = [
 ];
 
 const studentNav: NavItem[] = [
+  // — Louer un logement (tous les étudiants ne cherchent pas une coloc) —
+  { href: "/search", label: "Rechercher un logement", icon: Building2 },
+  { href: "/tenant/saved", label: "Logements sauvegardés", icon: Heart },
+  { href: "/tenant/visits", label: "Mes visites", icon: CalendarCheck },
+  { href: "/tenant/applications", label: "Mes candidatures", icon: ClipboardList },
+  { href: "/tenant/rentals", label: "Mes locations", icon: Home },
+  // — Colocation —
   { href: "/student/colocations", label: "Mes Colocations", icon: Users },
   { href: "/student/roommate-matching", label: "Trouver un coloc", icon: Search },
   { href: "/student/matches", label: "Mes Matchs", icon: Heart },

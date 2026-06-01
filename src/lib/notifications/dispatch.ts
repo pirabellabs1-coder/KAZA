@@ -102,31 +102,31 @@ function buildPushPayload(type: NotificationType, data: Record<string, unknown>)
       return {
         title: 'Nouvelle demande de visite',
         body: `${asString(data.requesterName, 'Un utilisateur')} veut visiter "${asString(data.propertyTitle, 'votre bien')}".`,
-        link: '/dashboard/visites',
+        link: '/owner/visits',
       };
     case 'payment_received':
       return {
         title: 'Paiement reçu',
         body: `Vous avez reçu ${new Intl.NumberFormat('fr-FR').format(asNumber(data.amount))} FCFA pour "${asString(data.propertyTitle, 'votre bien')}".`,
-        link: '/dashboard/paiements',
+        link: '/owner/payments',
       };
     case 'contract_ready':
       return {
         title: 'Contrat prêt',
         body: `Votre contrat pour "${asString(data.propertyTitle, 'le bien')}" est disponible.`,
-        link: asString(data.contractUrl, '/dashboard/contrats'),
+        link: asString(data.contractUrl, '/contracts'),
       };
     case 'verification_approved':
       return {
         title: 'Identité vérifiée',
         body: 'Votre profil affiche désormais le badge Vérifié.',
-        link: '/dashboard/profil',
+        link: '/profile',
       };
     case 'verification_rejected':
       return {
         title: 'Vérification à recommencer',
         body: asString(data.reason, 'Merci de soumettre à nouveau vos documents.'),
-        link: '/dashboard/verification',
+        link: '/verify-identity',
       };
     case 'welcome':
       return {

@@ -152,6 +152,7 @@ function RentalGrid({
 function RentalCard({ rental }: { rental: TenantRentalItem }) {
   const badge = statusBadge(rental.status);
   const isActive = rental.status === "ACTIVE";
+  const isPending = rental.status === "PENDING";
 
   return (
     <Card className="overflow-hidden rounded-2xl transition-shadow hover:shadow-lg">
@@ -216,6 +217,13 @@ function RentalCard({ rental }: { rental: TenantRentalItem }) {
               </div>
             )}
 
+            {isPending && (
+              <div className="mt-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700">
+                Candidature acceptée. Réglez le 1<sup>er</sup> loyer pour
+                finaliser votre location et devenir locataire en titre.
+              </div>
+            )}
+
             <div className="mt-3 flex flex-wrap gap-2">
               <Button variant="outline" size="sm" asChild>
                 <Link href={`/contracts/${rental.id}`}>
@@ -223,7 +231,7 @@ function RentalCard({ rental }: { rental: TenantRentalItem }) {
                   Contrat
                 </Link>
               </Button>
-              {isActive && (
+              {(isActive || isPending) && (
                 <Button
                   size="sm"
                   className="bg-kaza-blue hover:bg-kaza-blue/90"
@@ -232,7 +240,7 @@ function RentalCard({ rental }: { rental: TenantRentalItem }) {
                   <Link
                     href={`/tenant/payments/checkout?rentalId=${rental.id}`}
                   >
-                    Payer le loyer
+                    {isPending ? "Payer pour finaliser" : "Payer le loyer"}
                   </Link>
                 </Button>
               )}

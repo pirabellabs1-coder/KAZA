@@ -13,6 +13,8 @@ import {
   getWalletBalanceFor,
 } from "@/lib/wallet/spend";
 import { holdInEscrow, computeReleaseDate } from "@/lib/escrow";
+import { activateRentalAfterPayment } from "@/lib/rentals/lifecycle";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // =============================================================================
 // KAZA - Server Actions Paiements
@@ -290,6 +292,17 @@ export async function payRentFromWallet(
       success: false,
       error: "Le paiement n'a pas pu aboutir, votre solde a été recrédité.",
     };
+  }
+
+  // Le 1er loyer payé active le bail : location ACTIVE, bien RENTED, visites /
+  // candidatures concurrentes annulées. Best-effort, idempotent.
+  try {
+    await activateRentalAfterPayment(
+      admin as unknown as SupabaseClient,
+      rental.id,
+    );
+  } catch (e) {
+    console.error("[payments] wallet rent activation echec:", e);
   }
 
   return { success: true, paymentId: payment.id };

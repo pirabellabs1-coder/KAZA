@@ -11,6 +11,7 @@ import { activatePaidSubscription } from "@/lib/subscriptions/activate";
 import { activatePaidBoost } from "@/lib/boosts/activate";
 import { creditWalletTopUp } from "@/lib/wallet/credit";
 import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
+import { activateRentalAfterPayment } from "@/lib/rentals/lifecycle";
 
 // =============================================================================
 // Webhook GeniusPay
@@ -188,13 +189,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Paiement de loyer / réservation → escrow.
+    // Paiement de loyer / réservation → escrow + activation de la location.
     if (payment.rental_id) {
       try {
         const releaseDate = computeReleaseDate(new Date());
         await holdInEscrow(payment.id, releaseDate);
       } catch (err) {
         console.error("[webhook:geniuspay] escrow echec:", err);
+      }
+      // Le 1er loyer payé active le bail : location ACTIVE, bien RENTED,
+      // visites/candidatures concurrentes annulées. Idempotent.
+      try {
+        await activateRentalAfterPayment(
+          admin as unknown as SupabaseClient,
+          payment.rental_id,
+        );
+      } catch (err) {
+        console.error("[webhook:geniuspay] activation location echec:", err);
       }
     }
   }

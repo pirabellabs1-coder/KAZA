@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   CalendarDays,
   ChevronLeft,
@@ -9,38 +9,24 @@ import {
   LayoutGrid,
   List,
   MapPin,
+  User,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { OwnerCalendarVisit } from "@/lib/queries/owner-visits";
 
-// Types redéfinis localement — à brancher sur la table visits Supabase
+// Statuts réels de la table visit_requests (enum visit_status).
 type DemoVisitStatus =
   | "PENDING"
   | "CONFIRMED"
-  | "REJECTED"
+  | "CANCELLED"
   | "COMPLETED"
-  | "CANCELLED";
+  | "NO_SHOW";
 
-interface DemoVisit {
-  id: string;
-  propertyId: string;
-  propertyTitle: string;
-  propertyAddress: string;
-  ownerName: string;
-  date: string; // YYYY-MM-DD
-  time: string; // HH:MM
-  message?: string;
-  status: DemoVisitStatus;
-  createdAt: string;
-}
-
-// Fallback vide — à brancher quand la table visits Supabase sera connectée.
-function getOwnerCalendarVisits(): DemoVisit[] {
-  return [];
-}
+type DemoVisit = OwnerCalendarVisit;
 
 function formatVisitTimeSlot(time: string): string {
   const [h] = time.split(":");
@@ -121,20 +107,20 @@ function buildMonthGrid(year: number, month: number, today: Date): CalendarDay[]
 const STATUS_DOT: Record<DemoVisitStatus, string> = {
   PENDING: "bg-amber-500",
   CONFIRMED: "bg-kaza-green",
-  REJECTED: "bg-destructive",
-  COMPLETED: "bg-gray-400",
   CANCELLED: "bg-gray-300",
+  COMPLETED: "bg-gray-400",
+  NO_SHOW: "bg-destructive",
 };
 
 const STATUS_LABEL: Record<DemoVisitStatus, string> = {
   PENDING: "En attente",
   CONFIRMED: "Confirmée",
-  REJECTED: "Rejetée",
-  COMPLETED: "Effectuée",
   CANCELLED: "Annulée",
+  COMPLETED: "Effectuée",
+  NO_SHOW: "Absent",
 };
 
-export function CalendarView() {
+export function CalendarView({ visits = [] }: { visits?: DemoVisit[] }) {
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -144,11 +130,6 @@ export function CalendarView() {
   const [cursor, setCursor] = useState<Date>(today);
   const [selectedIso, setSelectedIso] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>("grid");
-  const [visits, setVisits] = useState<DemoVisit[]>([]);
-
-  useEffect(() => {
-    setVisits(getOwnerCalendarVisits());
-  }, []);
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -452,9 +433,15 @@ function VisitRow({ visit }: { visit: DemoVisit }) {
             {visit.propertyTitle}
           </p>
           <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="size-3 shrink-0" />
-            <span className="line-clamp-1">{visit.propertyAddress}</span>
+            <User className="size-3 shrink-0" />
+            <span className="line-clamp-1">{visit.visitorName}</span>
           </div>
+          {visit.propertyAddress && (
+            <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="size-3 shrink-0" />
+              <span className="line-clamp-1">{visit.propertyAddress}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -471,7 +458,7 @@ function VisitRow({ visit }: { visit: DemoVisit }) {
               "border-amber-500 bg-amber-500/10 text-amber-700",
             visit.status === "COMPLETED" && "bg-muted text-muted-foreground",
             visit.status === "CANCELLED" && "bg-gray-100 text-gray-600",
-            visit.status === "REJECTED" &&
+            visit.status === "NO_SHOW" &&
               "bg-destructive text-destructive-foreground",
           )}
         >

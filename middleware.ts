@@ -30,7 +30,10 @@ const ROLE_RULES: Record<string, Role[]> = {
   // Une agence gère un portefeuille de biens : elle a les mêmes droits qu'un
   // propriétaire sur la gestion des annonces, visites, locataires, paiements.
   "/owner": ["OWNER", "AGENCY", "ADMIN"],
-  "/tenant": ["TENANT", "ADMIN"],
+  // Un étudiant peut aussi louer un logement classique (pas seulement une
+  // colocation) : il accède donc aux pages locataire (favoris, visites,
+  // candidatures, locations, paiement du loyer).
+  "/tenant": ["TENANT", "STUDENT", "ADMIN"],
   "/student": ["STUDENT", "ADMIN"],
   "/agency": ["AGENCY", "ADMIN"],
   "/admin": ["ADMIN"],

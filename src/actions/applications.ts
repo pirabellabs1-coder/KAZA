@@ -13,7 +13,11 @@ import { z } from "zod";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
+
+import { createPendingRental } from "@/lib/rentals/lifecycle";
+import { createNotification } from "./notifications";
 
 export interface ActionResult {
   success: boolean;
@@ -63,6 +67,12 @@ export async function applyToProperty(input: ApplyInput): Promise<ActionResult> 
   if (!property) return { success: false, error: "Annonce introuvable." };
   if ((property as { owner_id: string }).owner_id === user.id) {
     return { success: false, error: "Vous ne pouvez pas postuler à votre bien." };
+  }
+  if ((property as { status: string }).status !== "AVAILABLE") {
+    return {
+      success: false,
+      error: "Ce bien n'est plus disponible à la location.",
+    };
   }
 
   const { data, error } = await supabase
@@ -129,18 +139,34 @@ export async function decideApplication(
   // Vérifie que la candidature porte sur un bien de l'utilisateur
   const { data: appRow } = await supabase
     .from("rental_applications")
-    .select("id, property_id, status")
+    .select("id, property_id, tenant_id, status, move_in_date")
     .eq("id", id)
     .maybeSingle();
   if (!appRow) return { success: false, error: "Candidature introuvable." };
+  const app = appRow as {
+    id: string;
+    property_id: string;
+    tenant_id: string;
+    status: string;
+    move_in_date: string | null;
+  };
 
   const { data: prop } = await supabase
     .from("properties")
-    .select("owner_id")
-    .eq("id", (appRow as { property_id: string }).property_id)
+    .select("owner_id, title, price, status")
+    .eq("id", app.property_id)
     .maybeSingle();
-  if (!prop || (prop as { owner_id: string }).owner_id !== user.id) {
+  const property = prop as
+    | { owner_id: string; title: string; price: number; status: string }
+    | null;
+  if (!property || property.owner_id !== user.id) {
     return { success: false, error: "Cette candidature ne vous concerne pas." };
+  }
+  if (status === "ACCEPTED" && property.status !== "AVAILABLE") {
+    return {
+      success: false,
+      error: "Ce bien n'est plus disponible (déjà loué ou indisponible).",
+    };
   }
 
   const { error } = await supabase
@@ -149,6 +175,32 @@ export async function decideApplication(
     .eq("id", id)
     .eq("status", "PENDING");
   if (error) return { success: false, error: error.message };
+
+  // Candidature ACCEPTÉE → on crée la location PENDING (le locataire devient
+  // titulaire une fois le 1er loyer payé) et on lui envoie un lien pour payer.
+  if (status === "ACCEPTED") {
+    const rentalId = await createPendingRental({
+      propertyId: app.property_id,
+      tenantId: app.tenant_id,
+      monthlyRent: Number(property.price) || 0,
+      startDate: app.move_in_date,
+    });
+
+    if (rentalId) {
+      // Notification au locataire (client admin : on écrit pour un autre user).
+      const admin = createAdminClient() as unknown as SupabaseClient;
+      await createNotification(admin, {
+        userId: app.tenant_id,
+        type: "payment_due",
+        title: "Candidature acceptée 🎉",
+        body: `Votre candidature pour "${property.title}" est acceptée. Réglez le 1er loyer pour finaliser votre location.`,
+        link: `/tenant/payments/checkout?rentalId=${rentalId}`,
+        metadata: { rental_id: rentalId, property_id: app.property_id },
+      });
+    }
+    revalidatePath("/tenant/rentals");
+    revalidatePath("/tenant/applications");
+  }
 
   revalidatePath("/owner/applications");
   return { success: true };
