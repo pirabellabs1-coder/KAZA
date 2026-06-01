@@ -34,6 +34,7 @@ import {
   Send,
   Newspaper,
   CalendarCheck,
+  Tag,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -92,6 +93,7 @@ const adminNavSections: NavSection[] = [
       },
       { href: "/admin/visits", label: "Demandes de visite", icon: CalendarCheck },
       { href: "/admin/contracts", label: "Contrats", icon: FileText },
+      { href: "/admin/offers", label: "Ventes & offres", icon: Tag },
       { href: "/admin/documents", label: "Documents", icon: FolderArchive },
       { href: "/admin/careers", label: "Carrières", icon: Briefcase },
       { href: "/admin/articles", label: "Articles & blog", icon: Newspaper },
