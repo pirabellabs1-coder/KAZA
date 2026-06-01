@@ -34,6 +34,40 @@ function fullName(first?: string | null, last?: string | null): string {
   return v.length > 0 ? v : "Visiteur";
 }
 
+/**
+ * Compte les demandes de visite du mois courant sur les biens du
+ * propriétaire/agence (toutes statuts confondus, hors annulées).
+ * Utilisé par la StatsCard « Visites du mois » du dashboard agence.
+ */
+export async function countOwnerVisitsThisMonth(
+  userId: string,
+): Promise<number> {
+  if (!userId) return 0;
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+
+  const { data: props } = await supabase
+    .from("properties")
+    .select("id")
+    .eq("owner_id", userId);
+  const propIds = ((props ?? []) as Array<{ id: string }>).map((p) => p.id);
+  if (propIds.length === 0) return 0;
+
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+  const { count } = await supabase
+    .from("visit_requests")
+    .select("id", { count: "exact", head: true })
+    .in("property_id", propIds)
+    .neq("status", "CANCELLED")
+    .gte("requested_date", iso(firstDay))
+    .lt("requested_date", iso(firstNextMonth));
+
+  return count ?? 0;
+}
+
 export async function getOwnerVisitCalendar(
   userId: string,
 ): Promise<OwnerCalendarVisit[]> {

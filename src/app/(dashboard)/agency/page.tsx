@@ -33,6 +33,7 @@ import {
   listPropertiesByOwner,
 } from "@/lib/queries/owner-properties";
 import { getTeamStats, listTeamMembers } from "@/lib/queries/agency-team";
+import { countOwnerVisitsThisMonth } from "@/lib/queries/owner-visits";
 
 export const metadata: Metadata = {
   title: "Dashboard Agence — KAZA Pro",
@@ -101,12 +102,14 @@ export default async function AgencyDashboardPage() {
     redirect("/login");
   }
 
-  const [allProperties, stats, teamMembers, teamStats] = await Promise.all([
-    listPropertiesByOwner(user.id),
-    getOwnerPortfolioStats(user.id),
-    listTeamMembers(user.id),
-    getTeamStats(user.id),
-  ]);
+  const [allProperties, stats, teamMembers, teamStats, visitsThisMonth] =
+    await Promise.all([
+      listPropertiesByOwner(user.id),
+      getOwnerPortfolioStats(user.id),
+      listTeamMembers(user.id),
+      getTeamStats(user.id),
+      countOwnerVisitsThisMonth(user.id),
+    ]);
 
   const topProps = allProperties.slice(0, 5);
   const hasProperties = stats.total > 0;
@@ -197,8 +200,12 @@ export default async function AgencyDashboardPage() {
         />
         <StatsCard
           title="Visites du mois"
-          value={0}
-          subtitle="Aucune donnée encore"
+          value={visitsThisMonth}
+          subtitle={
+            visitsThisMonth === 0
+              ? "Aucune visite ce mois-ci"
+              : "Demandes reçues ce mois-ci"
+          }
           icon={Calendar}
         />
         <StatsCard
