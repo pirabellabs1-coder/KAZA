@@ -29,6 +29,7 @@ import { formatPrice, formatDate } from "@/lib/utils";
 
 import { SignaturePad } from "./signature-pad";
 import { SendContractButton } from "./send-contract-button";
+import { ContractTermsForm } from "./contract-terms-form";
 
 export const metadata = {
   title: "Contrat de location",
@@ -254,9 +255,14 @@ export default async function ContractDetailPage({
                     Complétez le bail puis envoyez-le au locataire. Il pourra
                     alors le signer, avant votre propre signature.
                   </p>
+                  <ContractTermsForm
+                    rentalId={contract.rentalId}
+                    initialCharges={contract.monthlyCharges}
+                    initialDeposit={contract.deposit}
+                  />
                   <Button variant="outline" size="sm" asChild className="w-full gap-1.5">
                     <Link href={`/contracts/${contract.contractId}/edit`}>
-                      <Pencil className="size-3.5" /> Modifier le bail
+                      <Pencil className="size-3.5" /> Éditeur avancé
                     </Link>
                   </Button>
                   <SendContractButton contractId={contract.contractId} />

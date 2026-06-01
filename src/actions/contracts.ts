@@ -120,6 +120,75 @@ export async function createContract(
 }
 
 // -----------------------------------------------------------------------------
+// setContractTerms — le bailleur complète le bail (charges, dépôt) en DRAFT
+// -----------------------------------------------------------------------------
+
+export interface SetContractTermsInput {
+  rentalId: string;
+  monthlyCharges: number;
+  securityDeposit: number;
+}
+
+/**
+ * Le bailleur ajuste les conditions financières du bail (charges mensuelles,
+ * dépôt de garantie) AVANT envoi au locataire. Possible uniquement tant que le
+ * contrat est en cours de rédaction (DRAFT). Réservé au bailleur.
+ */
+export async function setContractTerms(
+  input: SetContractTermsInput,
+): Promise<SendContractResult> {
+  if (!input.rentalId) return { success: false, error: "Location introuvable." };
+  const charges = Math.max(0, Math.round(Number(input.monthlyCharges) || 0));
+  const deposit = Math.max(0, Math.round(Number(input.securityDeposit) || 0));
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr || !user) return { success: false, error: "Authentification requise." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: rental } = await admin
+    .from("rentals")
+    .select("id, property:properties!property_id(owner_id)")
+    .eq("id", input.rentalId)
+    .maybeSingle();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rr: any = rental;
+  const ownerId = rr?.property?.owner_id as string | undefined;
+  if (!rr) return { success: false, error: "Location introuvable." };
+  if (ownerId !== user.id) {
+    return { success: false, error: "Action réservée au bailleur." };
+  }
+
+  // Le bail doit être encore en cours de rédaction.
+  const { data: contractRow } = await admin
+    .from("contracts")
+    .select("status")
+    .eq("rental_id", input.rentalId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const cStatus = (contractRow as { status?: string } | null)?.status;
+  if (cStatus && cStatus !== "DRAFT") {
+    return {
+      success: false,
+      error: "Le bail a déjà été envoyé : il n'est plus modifiable.",
+    };
+  }
+
+  const { error } = await admin
+    .from("rentals")
+    .update({ monthly_charges: charges, security_deposit: deposit })
+    .eq("id", input.rentalId);
+  if (error) return { success: false, error: "Impossible d'enregistrer." };
+
+  revalidatePath("/contracts");
+  return { success: true };
+}
+
+// -----------------------------------------------------------------------------
 // sendContractToTenant — le bailleur a fini de rédiger, il envoie au locataire
 // -----------------------------------------------------------------------------
 
