@@ -43,6 +43,10 @@ export const signupSchema = z
       .string()
       .min(8, "Le numero de telephone doit contenir au moins 8 chiffres")
       .max(20, "Le numero de telephone ne peut pas depasser 20 caracteres"),
+    // Pays (ISO alpha-2) choisi via le sélecteur du champ téléphone.
+    country: z
+      .string()
+      .length(2, "Veuillez sélectionner votre pays"),
     password: z
       .string()
       .min(8, "Le mot de passe doit contenir au moins 8 caracteres")

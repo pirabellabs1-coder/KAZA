@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/shared/phone-input";
 import { cn } from "@/lib/utils";
 import { signupSchema, type SignupFormData } from "@/validators/auth";
 import { requestSignupCode, verifySignupCode } from "@/actions/auth";
@@ -74,6 +75,7 @@ export function SignupForm() {
       lastName: "",
       email: "",
       phone: "",
+      country: "BJ",
       password: "",
       confirmPassword: "",
       role: undefined,
@@ -82,6 +84,8 @@ export function SignupForm() {
   });
 
   const selectedRole = watch("role");
+  const selectedCountry = watch("country") ?? "BJ";
+  const phoneValue = watch("phone") ?? "";
 
   useEffect(() => {
     const ref = searchParams.get("ref");
@@ -327,17 +331,25 @@ export function SignupForm() {
         )}
       </div>
 
-      {/* Phone */}
+      {/* Phone + pays (drapeau + indicatif) */}
       <div className="space-y-2">
         <Label htmlFor="phone">Téléphone</Label>
-        <Input
+        <PhoneInput
           id="phone"
-          type="tel"
-          placeholder="Votre numéro de téléphone"
-          autoComplete="tel"
-          aria-invalid={!!errors.phone}
-          {...register("phone")}
+          country={selectedCountry}
+          onCountryChange={(iso) =>
+            setValue("country", iso, { shouldValidate: true })
+          }
+          value={phoneValue}
+          onChange={(full) =>
+            setValue("phone", full, { shouldValidate: true })
+          }
+          invalid={!!errors.phone}
+          placeholder="Numéro de téléphone"
         />
+        <p className="text-xs text-muted-foreground">
+          Sélectionnez votre pays — l&apos;indicatif est ajouté automatiquement.
+        </p>
         {errors.phone && (
           <p className="text-sm text-destructive">{errors.phone.message}</p>
         )}

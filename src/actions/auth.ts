@@ -295,6 +295,7 @@ async function createAndSignIn(data: SignupFormData): Promise<AuthResult> {
       last_name: data.lastName,
       role: data.role,
       phone: data.phone,
+      country: data.country,
     },
   });
 
