@@ -141,6 +141,7 @@ interface SearchParams {
   city?: string;
   neighborhood?: string;
   type?: string;
+  listingType?: string;
   minPrice?: string;
   maxPrice?: string;
   minSurface?: string;
@@ -346,6 +347,11 @@ export default async function SearchPage({
 
   // Filtres dérivés des searchParams pour la requête Supabase
   const normalizedType = normalizePropertyType(params.type);
+  // Transaction : louer (RENT) ou acheter (SALE).
+  const listingTypeFilter =
+    params.listingType === "SALE" || params.listingType === "RENT"
+      ? params.listingType
+      : undefined;
   const minPriceNum = params.minPrice ? Number(params.minPrice) : undefined;
   const maxPriceNum = params.maxPrice ? Number(params.maxPrice) : undefined;
   const bedroomsNum = params.bedrooms ? Number(params.bedrooms) : undefined;
@@ -392,6 +398,7 @@ export default async function SearchPage({
         ? bedroomsNum
         : undefined,
     city: cityNameFilter,
+    listingType: listingTypeFilter,
   });
   const totalResults = properties.length;
 
@@ -1809,9 +1816,16 @@ function PropertyGridCard({ property }: { property: PublicProperty }) {
         <div className="absolute bottom-3 left-3 rounded-xl bg-black/70 px-3 py-1.5 text-white backdrop-blur">
           <p className="font-heading text-base font-bold">
             {formatFcfa(property.price)}
-            <span className="ml-1 text-xs font-normal opacity-80">/mois</span>
+            {property.listingType !== "SALE" && (
+              <span className="ml-1 text-xs font-normal opacity-80">/mois</span>
+            )}
           </p>
         </div>
+        {property.listingType === "SALE" && (
+          <div className="absolute left-3 top-3 rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+            À vendre
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
@@ -1927,7 +1941,9 @@ function PropertyListRow({ property }: { property: PublicProperty }) {
             <p className="font-heading text-2xl font-bold text-kaza-navy">
               {formatFcfa(property.price)}
             </p>
-            <p className="text-xs text-muted-foreground">par mois</p>
+            <p className="text-xs text-muted-foreground">
+              {property.listingType === "SALE" ? "prix de vente" : "par mois"}
+            </p>
           </div>
           <Button
             size="sm"
