@@ -45,8 +45,13 @@ export default function AgencyReportsPage() {
           <Button variant="outline" size="sm" disabled>
             <Archive className="size-4" /> Voir l&apos;archive
           </Button>
-          <Button className="bg-kaza-blue hover:bg-kaza-blue/90" size="sm">
-            <Plus className="size-4" /> Nouveau rapport
+          <Button
+            className="bg-kaza-blue hover:bg-kaza-blue/90"
+            size="sm"
+            disabled
+            title="La génération de rapports personnalisés arrive bientôt"
+          >
+            <Plus className="size-4" /> Nouveau rapport (bientôt)
           </Button>
         </div>
       </div>
