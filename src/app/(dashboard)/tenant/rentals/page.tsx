@@ -264,6 +264,9 @@ function RentalCard({
             )}
 
             <div className="mt-3 flex flex-wrap gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href={`/tenant/rentals/${rental.id}`}>Suivi</Link>
+              </Button>
               <Button variant="outline" size="sm" asChild>
                 <Link href={contractHref}>
                   <FileText className="mr-1.5 size-3.5" />
