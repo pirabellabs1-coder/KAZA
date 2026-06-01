@@ -244,7 +244,9 @@ export default async function ContractDetailPage({
                   ? "Bail signé"
                   : status === "DRAFT"
                     ? "Contrat en cours de rédaction"
-                    : "Signatures"}
+                    : status === "CANCELLED"
+                      ? "Bail annulé"
+                      : "Signatures"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
@@ -276,8 +278,17 @@ export default async function ContractDetailPage({
                 </p>
               )}
 
+              {/* --- ÉTAPE : bail annulé --- */}
+              {status === "CANCELLED" && (
+                <p className="rounded-lg bg-rose-500/10 px-3 py-2 text-xs text-rose-700">
+                  Ce bail a été annulé : le bien a été attribué à un autre
+                  candidat ou la location a été résiliée. Aucune action n&apos;est
+                  requise.
+                </p>
+              )}
+
               {/* --- ÉTAPE : signatures (PENDING_TENANT / PENDING_OWNER / SIGNED) --- */}
-              {status !== "DRAFT" && (
+              {status !== "DRAFT" && status !== "CANCELLED" && (
                 <>
                   <SignatureBlock
                     label="Locataire"

@@ -210,6 +210,7 @@ export async function getContractsForRentals(
  *  3) visites PENDING/CONFIRMED des AUTRES sur ce bien → CANCELLED
  *  4) candidatures PENDING des AUTRES sur ce bien      → REJECTED
  *  5) autres locations PENDING sur ce bien             → CANCELLED
+ *  6) contrats (non signés) de ces locations rivales   → CANCELLED
  *
  * Best-effort et idempotent. Toujours appelé avec le client admin (webhook /
  * paiement wallet) car il agit au-delà du périmètre RLS d'un seul utilisateur.
@@ -292,13 +293,29 @@ export async function activateRentalAfterPayment(
   }
 
   // 5) Autres locations PENDING sur ce bien → CANCELLED
+  //    + 6) leurs contrats (DRAFT/PENDING_*) → CANCELLED pour éviter qu'un
+  //    candidat évincé garde un « bail à signer » fantôme.
   try {
-    await admin
+    const { data: rivals } = await admin
       .from("rentals")
-      .update({ status: "CANCELLED" })
+      .select("id")
       .eq("property_id", propertyId)
       .eq("status", "PENDING")
       .neq("id", rentalId);
+    const rivalIds = ((rivals ?? []) as Array<{ id: string }>).map((x) => x.id);
+
+    if (rivalIds.length > 0) {
+      await admin
+        .from("rentals")
+        .update({ status: "CANCELLED" })
+        .in("id", rivalIds);
+
+      await admin
+        .from("contracts")
+        .update({ status: "CANCELLED" })
+        .in("rental_id", rivalIds)
+        .neq("status", "SIGNED");
+    }
   } catch (err) {
     console.error("[rentals] activate: annulation locations échouée:", err);
   }
