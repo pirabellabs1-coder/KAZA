@@ -20,7 +20,13 @@ import {
   listTenantRentals,
   type TenantRentalItem,
 } from "@/lib/queries/tenant-activity";
+import { getContractsForRentals } from "@/lib/rentals/lifecycle";
 import { formatPrice, formatDate } from "@/lib/utils";
+
+interface ContractInfo {
+  contractId: string;
+  signed: boolean;
+}
 
 export const metadata: Metadata = {
   title: "Mes Locations",
@@ -72,6 +78,9 @@ export default async function TenantRentalsPage() {
   const current = rentals.filter((r) => ACTIVE_STATUSES.has(r.status));
   const past = rentals.filter((r) => !ACTIVE_STATUSES.has(r.status));
 
+  // Statut du bail (contrat) pour conditionner « Signer » vs « Payer ».
+  const contracts = await getContractsForRentals(rentals.map((r) => r.id));
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -115,10 +124,18 @@ export default async function TenantRentalsPage() {
           </TabsList>
 
           <TabsContent value="current" className="mt-6">
-            <RentalGrid rentals={current} emptyLabel="Aucune location active." />
+            <RentalGrid
+              rentals={current}
+              contracts={contracts}
+              emptyLabel="Aucune location active."
+            />
           </TabsContent>
           <TabsContent value="past" className="mt-6">
-            <RentalGrid rentals={past} emptyLabel="Aucune location terminée." />
+            <RentalGrid
+              rentals={past}
+              contracts={contracts}
+              emptyLabel="Aucune location terminée."
+            />
           </TabsContent>
         </Tabs>
       )}
@@ -128,9 +145,11 @@ export default async function TenantRentalsPage() {
 
 function RentalGrid({
   rentals,
+  contracts,
   emptyLabel,
 }: {
   rentals: TenantRentalItem[];
+  contracts: Map<string, ContractInfo>;
   emptyLabel: string;
 }) {
   if (rentals.length === 0) {
@@ -143,16 +162,30 @@ function RentalGrid({
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {rentals.map((rental) => (
-        <RentalCard key={rental.id} rental={rental} />
+        <RentalCard
+          key={rental.id}
+          rental={rental}
+          contract={contracts.get(rental.id) ?? null}
+        />
       ))}
     </div>
   );
 }
 
-function RentalCard({ rental }: { rental: TenantRentalItem }) {
+function RentalCard({
+  rental,
+  contract,
+}: {
+  rental: TenantRentalItem;
+  contract: ContractInfo | null;
+}) {
   const badge = statusBadge(rental.status);
   const isActive = rental.status === "ACTIVE";
   const isPending = rental.status === "PENDING";
+  const contractSigned = contract?.signed ?? false;
+  const contractHref = contract
+    ? `/contracts/${contract.contractId}`
+    : `/contracts/${rental.id}`;
 
   return (
     <Card className="overflow-hidden rounded-2xl transition-shadow hover:shadow-lg">
@@ -217,21 +250,28 @@ function RentalCard({ rental }: { rental: TenantRentalItem }) {
               </div>
             )}
 
-            {isPending && (
+            {isPending && !contractSigned && (
               <div className="mt-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700">
-                Candidature acceptée. Réglez le 1<sup>er</sup> loyer pour
-                finaliser votre location et devenir locataire en titre.
+                Candidature acceptée. <strong>Signez d&apos;abord le bail</strong>{" "}
+                (propriétaire + locataire) — le paiement se débloquera ensuite.
+              </div>
+            )}
+            {isPending && contractSigned && (
+              <div className="mt-3 rounded-lg bg-kaza-green/10 px-3 py-2 text-xs text-kaza-green">
+                Bail signé ✓ — réglez le 1<sup>er</sup> loyer pour finaliser et
+                devenir locataire en titre.
               </div>
             )}
 
             <div className="mt-3 flex flex-wrap gap-2">
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/contracts/${rental.id}`}>
+                <Link href={contractHref}>
                   <FileText className="mr-1.5 size-3.5" />
-                  Contrat
+                  {isPending && !contractSigned ? "Signer le bail" : "Contrat"}
                 </Link>
               </Button>
-              {(isActive || isPending) && (
+              {/* Paiement : actif (loyer mensuel) OU pending+bail signé (1er loyer). */}
+              {(isActive || (isPending && contractSigned)) && (
                 <Button
                   size="sm"
                   className="bg-kaza-blue hover:bg-kaza-blue/90"

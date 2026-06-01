@@ -13,7 +13,10 @@ import {
   getWalletBalanceFor,
 } from "@/lib/wallet/spend";
 import { holdInEscrow, computeReleaseDate } from "@/lib/escrow";
-import { activateRentalAfterPayment } from "@/lib/rentals/lifecycle";
+import {
+  activateRentalAfterPayment,
+  getRentalContractStatus,
+} from "@/lib/rentals/lifecycle";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // =============================================================================
@@ -61,7 +64,7 @@ export async function initiateRentPayment(
   // Recupere les details du rental + email pour le provider.
   const { data: rental, error: rentalErr } = await supabase
     .from("rentals")
-    .select("id, tenant_id, monthly_rent, property_id")
+    .select("id, tenant_id, monthly_rent, property_id, status")
     .eq("id", input.rentalId)
     .single();
 
@@ -78,6 +81,20 @@ export async function initiateRentPayment(
 
   if (!rental.monthly_rent || rental.monthly_rent <= 0) {
     return { success: false, error: "Montant de loyer invalide." };
+  }
+
+  // Le 1er loyer (qui finalise le bail) n'est payable QU'APRÈS signature du
+  // contrat par les deux parties. Les loyers suivants (bail déjà ACTIVE) ne
+  // sont pas bloqués.
+  if ((rental as { status?: string }).status === "PENDING") {
+    const contract = await getRentalContractStatus(rental.id);
+    if (!contract.signed) {
+      return {
+        success: false,
+        error:
+          "Le bail doit être signé par le propriétaire et le locataire avant le paiement.",
+      };
+    }
   }
 
   // Code promo (optionnel) : on revalide TOUJOURS côté serveur. La remise
@@ -210,7 +227,7 @@ export async function payRentFromWallet(
 
   const { data: rental, error: rentalErr } = await supabase
     .from("rentals")
-    .select("id, tenant_id, monthly_rent, property_id")
+    .select("id, tenant_id, monthly_rent, property_id, status")
     .eq("id", input.rentalId)
     .single();
   if (rentalErr || !rental) return { success: false, error: "Location introuvable." };
@@ -219,6 +236,18 @@ export async function payRentFromWallet(
   }
   if (!rental.monthly_rent || rental.monthly_rent <= 0) {
     return { success: false, error: "Montant de loyer invalide." };
+  }
+
+  // Bail signé obligatoire avant le 1er loyer (cf. initiateRentPayment).
+  if ((rental as { status?: string }).status === "PENDING") {
+    const contract = await getRentalContractStatus(rental.id);
+    if (!contract.signed) {
+      return {
+        success: false,
+        error:
+          "Le bail doit être signé par le propriétaire et le locataire avant le paiement.",
+      };
+    }
   }
 
   // Promo : revalidée côté serveur (jamais déduite d'une valeur client).

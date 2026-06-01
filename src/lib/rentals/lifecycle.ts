@@ -71,6 +71,139 @@ export async function createPendingRental(input: {
 }
 
 /**
+ * Garantit qu'un contrat (bail) existe pour une location. Crée un brouillon
+ * (status DRAFT) si aucun n'existe, puis déclenche au mieux la génération du
+ * PDF (Edge Function). Idempotent. Retourne l'id du contrat (ou null).
+ *
+ * Le bail doit être SIGNÉ par les deux parties AVANT le paiement (cf.
+ * `isRentalContractSigned`). Le propriétaire/agence le complète via l'éditeur.
+ */
+export async function ensureContractForRental(
+  rentalId: string,
+): Promise<string | null> {
+  if (!rentalId) return null;
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  const { data: existing } = await admin
+    .from("contracts")
+    .select("id")
+    .eq("rental_id", rentalId)
+    .limit(1);
+  const found = (existing as Array<{ id: string }> | null)?.[0];
+  if (found?.id) return found.id;
+
+  const { data, error } = await admin
+    .from("contracts")
+    .insert({
+      rental_id: rentalId,
+      contract_type: "RENTAL",
+      status: "DRAFT",
+      signed_by_owner: false,
+      signed_by_tenant: false,
+    })
+    .select("id")
+    .single();
+  if (error || !data) {
+    console.error("[contracts] ensureContractForRental échec:", error?.message);
+    return null;
+  }
+  const contractId = (data as { id: string }).id;
+
+  // Génération du PDF — best-effort, ne bloque pas.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (supabaseUrl && anonKey) {
+    try {
+      await fetch(`${supabaseUrl}/functions/v1/generate-contract-pdf`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ contractId }),
+      });
+    } catch {
+      // Non bloquant : régénérable depuis l'éditeur de contrat.
+    }
+  }
+  return contractId;
+}
+
+export interface RentalContractStatus {
+  contractId: string | null;
+  status: string | null;
+  signed: boolean;
+}
+
+/** Statut du bail d'une location (pour conditionner le paiement à la signature). */
+export async function getRentalContractStatus(
+  rentalId: string,
+): Promise<RentalContractStatus> {
+  const empty: RentalContractStatus = {
+    contractId: null,
+    status: null,
+    signed: false,
+  };
+  if (!rentalId) return empty;
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data } = await admin
+    .from("contracts")
+    .select("id, status, signed_by_owner, signed_by_tenant")
+    .eq("rental_id", rentalId)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  const row = (data as Array<{
+    id: string;
+    status: string;
+    signed_by_owner: boolean;
+    signed_by_tenant: boolean;
+  }> | null)?.[0];
+  if (!row) return empty;
+  return {
+    contractId: row.id,
+    status: row.status,
+    signed:
+      row.status === "SIGNED" ||
+      (row.signed_by_owner === true && row.signed_by_tenant === true),
+  };
+}
+
+/**
+ * Statut de bail pour plusieurs locations en une requête (pour les listes).
+ * Map rentalId → { contractId, signed }.
+ */
+export async function getContractsForRentals(
+  rentalIds: string[],
+): Promise<Map<string, { contractId: string; signed: boolean }>> {
+  const map = new Map<string, { contractId: string; signed: boolean }>();
+  if (!rentalIds || rentalIds.length === 0) return map;
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data } = await admin
+    .from("contracts")
+    .select("id, rental_id, status, signed_by_owner, signed_by_tenant")
+    .in("rental_id", rentalIds);
+  const rows = (data ?? []) as Array<{
+    id: string;
+    rental_id: string;
+    status: string;
+    signed_by_owner: boolean;
+    signed_by_tenant: boolean;
+  }>;
+  for (const c of rows) {
+    if (!c.rental_id) continue;
+    const signed =
+      c.status === "SIGNED" ||
+      (c.signed_by_owner === true && c.signed_by_tenant === true);
+    // Conserve le contrat le plus avancé si plusieurs (rare).
+    const prev = map.get(c.rental_id);
+    if (!prev || (signed && !prev.signed)) {
+      map.set(c.rental_id, { contractId: c.id, signed });
+    }
+  }
+  return map;
+}
+
+/**
  * Active une location après encaissement du 1er loyer (escrow constitué) :
  *  1) rentals.status      → ACTIVE  (+ start_date si manquante)
  *  2) properties.status   → RENTED

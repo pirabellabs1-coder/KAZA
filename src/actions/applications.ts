@@ -16,7 +16,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { createPendingRental } from "@/lib/rentals/lifecycle";
+import {
+  createPendingRental,
+  ensureContractForRental,
+} from "@/lib/rentals/lifecycle";
 import { createNotification } from "./notifications";
 
 export interface ActionResult {
@@ -187,19 +190,28 @@ export async function decideApplication(
     });
 
     if (rentalId) {
+      // Le bail doit être SIGNÉ avant le paiement : on crée le contrat (brouillon)
+      // que le propriétaire/agence complète et que les deux parties signent.
+      const contractId = await ensureContractForRental(rentalId);
+
       // Notification au locataire (client admin : on écrit pour un autre user).
       const admin = createAdminClient() as unknown as SupabaseClient;
       await createNotification(admin, {
         userId: app.tenant_id,
-        type: "payment_due",
+        type: "contract_ready",
         title: "Candidature acceptée 🎉",
-        body: `Votre candidature pour "${property.title}" est acceptée. Réglez le 1er loyer pour finaliser votre location.`,
-        link: `/tenant/payments/checkout?rentalId=${rentalId}`,
-        metadata: { rental_id: rentalId, property_id: app.property_id },
+        body: `Votre candidature pour "${property.title}" est acceptée. Signez le bail, puis réglez le 1er loyer pour finaliser.`,
+        link: contractId ? `/contracts/${contractId}` : `/tenant/rentals`,
+        metadata: {
+          rental_id: rentalId,
+          property_id: app.property_id,
+          contract_id: contractId,
+        },
       });
     }
     revalidatePath("/tenant/rentals");
     revalidatePath("/tenant/applications");
+    revalidatePath("/contracts");
   }
 
   revalidatePath("/owner/applications");
