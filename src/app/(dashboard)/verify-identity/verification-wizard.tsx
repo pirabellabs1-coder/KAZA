@@ -34,7 +34,7 @@ import { toast } from "@/components/ui/toast-helper";
 
 type Step = 1 | 2 | 3;
 type DocType = "national_id" | "passport" | "driver_license" | "voter_card";
-type Role = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "ADMIN";
+type Role = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "BUYER" | "ADMIN";
 
 const DOC_LABELS: Record<DocType, string> = {
   national_id: "Carte nationale d'identité",

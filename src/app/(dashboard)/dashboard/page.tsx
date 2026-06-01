@@ -119,6 +119,11 @@ export default async function DashboardPage() {
 
   const role = user.role;
 
+  // L'acheteur a son propre tableau de bord dédié.
+  if (role === "BUYER") {
+    redirect("/buyer");
+  }
+
   if (role === "ADMIN") {
     return <AdminOverview firstName={user.firstName} />;
   }

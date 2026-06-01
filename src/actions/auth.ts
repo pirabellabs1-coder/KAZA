@@ -41,13 +41,20 @@ const EMAIL_OTP_ENABLED = process.env.EMAIL_OTP_ENABLED === "true";
  * l'inscription (le profil agence partage les droits OWNER côté RBAC) même
  * si la colonne `users.role` ne le matérialise pas encore en base.
  */
-type AuthRole = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "ADMIN";
+type AuthRole =
+  | "OWNER"
+  | "TENANT"
+  | "STUDENT"
+  | "AGENCY"
+  | "BUYER"
+  | "ADMIN";
 
 const ROLE_LABELS: Record<AuthRole, string> = {
   OWNER: "Propriétaire",
   TENANT: "Locataire",
   STUDENT: "Étudiant",
   AGENCY: "Agence immobilière",
+  BUYER: "Acheteur",
   ADMIN: "Administrateur",
 };
 
@@ -56,6 +63,7 @@ const ROLE_LANDING: Record<AuthRole, string> = {
   TENANT: "/tenant/saved",
   STUDENT: "/student/colocations",
   AGENCY: "/agency",
+  BUYER: "/buyer",
   ADMIN: "/admin",
 };
 

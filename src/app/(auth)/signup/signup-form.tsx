@@ -13,6 +13,7 @@ import {
   Gift,
   MailCheck,
   ArrowLeft,
+  Tag,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,12 @@ const roles = [
     label: "Étudiant",
     description: "Je cherche une colocation",
     icon: GraduationCap,
+  },
+  {
+    value: "BUYER" as const,
+    label: "Acheteur",
+    description: "Je veux acheter un bien",
+    icon: Tag,
   },
   {
     value: "AGENCY" as const,

@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { updateSession } from "@/lib/supabase/middleware";
 import type { Database } from "@/types/supabase";
 
-type Role = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "ADMIN";
+type Role = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "BUYER" | "ADMIN";
 
 /**
  * Routes nécessitant uniquement une authentification (toutes rôles confondus).
@@ -36,7 +36,9 @@ const ROLE_RULES: Record<string, Role[]> = {
   // Un étudiant peut aussi louer un logement classique (pas seulement une
   // colocation) : il accède donc aux pages locataire (favoris, visites,
   // candidatures, locations, paiement du loyer).
-  "/tenant": ["TENANT", "STUDENT", "ADMIN"],
+  // Un acheteur réutilise les pages conso partagées (favoris, visites,
+  // portefeuille) en plus de son espace /buyer.
+  "/tenant": ["TENANT", "STUDENT", "BUYER", "ADMIN"],
   "/student": ["STUDENT", "ADMIN"],
   "/agency": ["AGENCY", "ADMIN"],
   "/admin": ["ADMIN"],
@@ -112,6 +114,7 @@ function isRole(value: unknown): value is Role {
     value === "TENANT" ||
     value === "STUDENT" ||
     value === "AGENCY" ||
+    value === "BUYER" ||
     value === "ADMIN"
   );
 }

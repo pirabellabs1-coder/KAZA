@@ -2,7 +2,13 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthRole = "OWNER" | "TENANT" | "STUDENT" | "AGENCY" | "ADMIN";
+export type AuthRole =
+  | "OWNER"
+  | "TENANT"
+  | "STUDENT"
+  | "AGENCY"
+  | "BUYER"
+  | "ADMIN";
 
 export interface CurrentUser {
   id: string;
@@ -18,6 +24,7 @@ const VALID_ROLES: AuthRole[] = [
   "TENANT",
   "STUDENT",
   "AGENCY",
+  "BUYER",
   "ADMIN",
 ];
 

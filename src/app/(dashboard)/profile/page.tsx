@@ -36,6 +36,14 @@ const ROLE_LABELS: Record<string, { label: string; className: string }> = {
     label: "Étudiant",
     className: "bg-kaza-green text-white hover:bg-kaza-green/90",
   },
+  AGENCY: {
+    label: "Agence",
+    className: "bg-amber-500 text-white hover:bg-amber-500/90",
+  },
+  BUYER: {
+    label: "Acheteur",
+    className: "bg-amber-600 text-white hover:bg-amber-600/90",
+  },
   ADMIN: {
     label: "Administrateur",
     className: "bg-slate-800 text-white hover:bg-slate-800/90",

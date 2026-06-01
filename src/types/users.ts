@@ -4,7 +4,13 @@
 // =============================================================================
 
 /** Roles available for users on the KAZA platform */
-export type UserRole = "OWNER" | "TENANT" | "STUDENT" | "ADMIN";
+export type UserRole =
+  | "OWNER"
+  | "TENANT"
+  | "STUDENT"
+  | "AGENCY"
+  | "BUYER"
+  | "ADMIN";
 
 /** Status of identity verification (KYC) */
 export type VerificationStatus = "PENDING" | "APPROVED" | "REJECTED";

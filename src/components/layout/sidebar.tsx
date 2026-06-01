@@ -127,11 +127,22 @@ const agencyNav: NavItem[] = [
   { href: "/agency/settings", label: "Paramètres agence", icon: Settings },
 ];
 
+const buyerNav: NavItem[] = [
+  { href: "/buyer", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/search?listingType=SALE", label: "Biens à vendre", icon: Search },
+  { href: "/buyer/offers", label: "Mes offres d'achat", icon: Tag },
+  { href: "/tenant/saved", label: "Favoris", icon: Heart },
+  { href: "/tenant/visits", label: "Mes visites", icon: CalendarCheck },
+  { href: "/tenant/wallet", label: "Portefeuille", icon: Wallet },
+  { href: "/messages", label: "Messagerie", icon: MessageSquare },
+];
+
 const roleNavMap: Record<string, NavItem[]> = {
   OWNER: ownerNav,
   TENANT: tenantNav,
   STUDENT: studentNav,
   AGENCY: agencyNav,
+  BUYER: buyerNav,
 };
 
 interface SidebarProps {

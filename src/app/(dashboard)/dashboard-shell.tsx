@@ -39,6 +39,7 @@ const ROLE_LABELS: Record<string, string> = {
   TENANT: "Locataire",
   STUDENT: "Étudiant",
   AGENCY: "Agence immobilière",
+  BUYER: "Acheteur",
   ADMIN: "Administrateur",
 };
 
