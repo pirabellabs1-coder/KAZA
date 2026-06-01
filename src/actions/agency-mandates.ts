@@ -12,6 +12,8 @@ import { z } from "zod";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
+import { sendEmail } from "@/lib/notifications/resend";
+import { buildEmail } from "@/lib/notifications/email-template";
 
 export interface ActionResult {
   success: boolean;
@@ -50,7 +52,12 @@ async function requireAgency() {
   if (!user) return { ok: false as const, error: "Vous devez être connecté." };
   if (user.role !== "AGENCY")
     return { ok: false as const, error: "Action réservée aux agences." };
-  return { ok: true as const, userId: user.id };
+  return {
+    ok: true as const,
+    userId: user.id,
+    agencyName:
+      `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "votre agence",
+  };
 }
 
 export async function createMandate(input: MandateInput): Promise<ActionResult> {
@@ -99,6 +106,33 @@ export async function createMandate(input: MandateInput): Promise<ActionResult> 
     .single();
 
   if (error) return { success: false, error: error.message };
+
+  // Email de confirmation au mandant (best-effort — le mandant peut ne pas être
+  // un utilisateur KAZA, d'où l'envoi direct à l'email saisi).
+  if (d.ownerEmail) {
+    try {
+      const agencyName = guard.agencyName;
+      const html = buildEmail({
+        preheader: "Votre mandat de gestion KAZA",
+        heading: "Mandat de gestion enregistré",
+        intro: `Bonjour ${d.ownerName},`,
+        paragraphs: [
+          `${agencyName} a enregistré un mandat de gestion (${d.mandateType}) pour votre bien sur KAZA.`,
+        ],
+        rows: [
+          { label: "Type de mandat", value: d.mandateType },
+          { label: "Commission", value: `${d.commissionRate} %` },
+          ...(d.isExclusive ? [{ label: "Exclusivité", value: "Oui" }] : []),
+        ],
+        highlight:
+          "Vous recevrez prochainement le contrat de mandat à signer pour officialiser la gestion.",
+        outro: "L'équipe KAZA",
+      });
+      await sendEmail(d.ownerEmail, "Votre mandat de gestion KAZA", html);
+    } catch (err) {
+      console.warn("[mandates] email mandant échec:", err);
+    }
+  }
 
   revalidatePath("/agency/mandates");
   revalidatePath("/agency/commissions");

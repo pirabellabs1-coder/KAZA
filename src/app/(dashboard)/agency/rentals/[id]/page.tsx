@@ -190,12 +190,26 @@ export default async function AgencyRentalDetailPage({
               rel="noreferrer"
               className="flex items-center gap-2 text-kaza-blue hover:underline sm:col-span-2"
             >
-              <FileText className="size-4" /> Voir le contrat de bail
+              <FileText className="size-4" /> Télécharger le PDF du contrat
               {rental.contractStatus ? ` (${rental.contractStatus})` : ""}
             </a>
           ) : null}
         </CardContent>
       </Card>
+
+      {/* Actions : gérer le bail + contacter le locataire */}
+      <div className="flex flex-wrap gap-2">
+        <Button asChild variant="outline" className="gap-1.5">
+          <Link href={`/contracts/${rental.id}`}>
+            <FileText className="size-4" /> Gérer le bail
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="gap-1.5">
+          <Link href={`/messages?to=${rental.tenantId}`}>
+            <Mail className="size-4" /> Contacter le locataire
+          </Link>
+        </Button>
+      </div>
 
       {/* Paiements */}
       <Card>
