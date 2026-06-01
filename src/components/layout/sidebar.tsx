@@ -64,7 +64,7 @@ const tenantNav: NavItem[] = [
   { href: "/tenant/visits", label: "Mes Visites", icon: CalendarCheck },
   { href: "/tenant/applications", label: "Mes Candidatures", icon: ClipboardList },
   { href: "/tenant/rentals", label: "Mes Locations", icon: Home },
-  { href: "/buyer/offers", label: "Mes offres d'achat", icon: Tag },
+  { href: "/buyer", label: "Espace acheteur", icon: Tag },
   { href: "/tenant/wallet", label: "Portefeuille", icon: Wallet },
   { href: "/tenant/payments", label: "Historique Paiements", icon: CreditCard },
   { href: "/tenant/analytics", label: "Mes analyses", icon: BarChart3 },
@@ -83,7 +83,7 @@ const studentNav: NavItem[] = [
   { href: "/tenant/visits", label: "Mes visites", icon: CalendarCheck },
   { href: "/tenant/applications", label: "Mes candidatures", icon: ClipboardList },
   { href: "/tenant/rentals", label: "Mes locations", icon: Home },
-  { href: "/buyer/offers", label: "Mes offres d'achat", icon: Tag },
+  { href: "/buyer", label: "Espace acheteur", icon: Tag },
   // — Colocation —
   { href: "/student/colocations", label: "Mes Colocations", icon: Users },
   { href: "/student/roommate-matching", label: "Trouver un coloc", icon: Search },
