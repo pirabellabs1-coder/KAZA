@@ -122,10 +122,12 @@ export const propertyFormSchema = z.object({
     .or(z.literal("")),
 
   // Étape 6 : Prix
+  // Loyer mensuel (RENT) OU prix de vente (SALE) selon listingPurpose.
+  // Plafond large pour couvrir les prix de vente (souvent > 50M FCFA).
   priceMonthly: z
-    .number({ message: "Loyer mensuel requis" })
+    .number({ message: "Prix requis" })
     .min(10_000, "Min 10 000 FCFA")
-    .max(50_000_000, "Max 50 000 000 FCFA"),
+    .max(100_000_000_000, "Montant trop élevé"),
   charges: z
     .number()
     .min(0)
@@ -285,10 +287,16 @@ export const createPropertySchema = z.object({
     .string()
     .min(20, "La description doit contenir au moins 20 caracteres")
     .max(5000, "La description ne peut pas depasser 5000 caracteres"),
+  // Type de transaction : location (loyer mensuel) ou vente (prix de vente).
+  listingType: z.enum(["RENT", "SALE"], {
+    message: "Veuillez choisir Location ou Vente",
+  }),
   price: z
     .number({ message: "Le prix est requis" })
     .positive("Le prix doit etre superieur a 0")
-    .max(10_000_000, "Le prix ne peut pas depasser 10 000 000 XOF"),
+    // Plafond large pour couvrir les prix de VENTE (la location reste guidée
+    // côté UI). 100 milliards XOF = garde-fou anti-saisie aberrante.
+    .max(100_000_000_000, "Le prix saisi est trop élevé"),
   bedrooms: z
     .number({ message: "Le nombre de chambres est requis" })
     .int("Le nombre de chambres doit etre un entier")

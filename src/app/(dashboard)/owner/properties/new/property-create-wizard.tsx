@@ -455,6 +455,7 @@ export function PropertyCreateWizard({ userId }: { userId: string }) {
         const result = await createProperty({
           title: values.title,
           description: values.description,
+          listingType: values.listingPurpose === "SALE" ? "SALE" : "RENT",
           price: values.priceMonthly,
           bedrooms: values.bedrooms,
           bathrooms: values.bathrooms,

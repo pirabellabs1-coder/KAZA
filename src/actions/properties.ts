@@ -178,6 +178,7 @@ export async function createProperty(
     owner_id: user.id,
     title: parsed.data.title,
     description: parsed.data.description,
+    listing_type: parsed.data.listingType,
     price: parsed.data.price,
     bedrooms: parsed.data.bedrooms,
     bathrooms: parsed.data.bathrooms,
@@ -246,6 +247,7 @@ export async function updateProperty(
   const update: Record<string, unknown> = {};
   if (rest.title !== undefined) update.title = rest.title;
   if (rest.description !== undefined) update.description = rest.description;
+  if (rest.listingType !== undefined) update.listing_type = rest.listingType;
   if (rest.price !== undefined) update.price = rest.price;
   if (rest.bedrooms !== undefined) update.bedrooms = rest.bedrooms;
   if (rest.bathrooms !== undefined) update.bathrooms = rest.bathrooms;
