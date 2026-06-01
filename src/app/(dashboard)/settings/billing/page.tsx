@@ -12,11 +12,21 @@ export const metadata: Metadata = {
   title: "Facturation — Paramètres",
 };
 
+// Le portefeuille est rattaché à l'espace du rôle (pas de route /wallet globale).
+const WALLET_HREF_BY_ROLE: Record<string, string> = {
+  OWNER: "/owner/wallet",
+  AGENCY: "/agency/wallet",
+  TENANT: "/tenant/wallet",
+  STUDENT: "/tenant/wallet",
+};
+
 export default async function BillingPage() {
   const user = await getCurrentDisplayUser();
   let initialAddress: Record<string, unknown> = {};
   let invoices: UserInvoice[] = [];
   let walletBalance = 0;
+  const walletHref =
+    (user && WALLET_HREF_BY_ROLE[user.role]) ?? "/tenant/wallet";
 
   if (user) {
     const supabase = await createClient();
@@ -65,6 +75,7 @@ export default async function BillingPage() {
         initialAddress={initialAddress}
         invoices={invoices}
         walletBalance={walletBalance}
+        walletHref={walletHref}
       />
     </div>
   );

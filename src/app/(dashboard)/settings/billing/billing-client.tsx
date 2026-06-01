@@ -57,12 +57,14 @@ interface BillingClientProps {
   initialAddress?: Record<string, unknown>;
   invoices?: UserInvoice[];
   walletBalance?: number;
+  walletHref?: string;
 }
 
 export function BillingClient({
   initialAddress = {},
   invoices = [],
   walletBalance = 0,
+  walletHref = "/tenant/wallet",
 }: BillingClientProps) {
   const [address, setAddress] = useState({
     name: readString(initialAddress.name),
@@ -114,7 +116,7 @@ export function BillingClient({
               </p>
             </div>
             <Button asChild size="sm" variant="outline">
-              <Link href="/wallet">
+              <Link href={walletHref}>
                 Recharger
                 <ArrowUpRight className="ml-1 size-3.5" />
               </Link>
