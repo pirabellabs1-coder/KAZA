@@ -20,6 +20,9 @@ const protectedPrefixes = [
   "/profile",
   "/settings",
   "/messages",
+  // Espace acheteur (offres d'achat) — accessible à tout utilisateur connecté,
+  // sans restriction de rôle (pas d'entrée dans ROLE_RULES).
+  "/buyer",
 ];
 
 /**

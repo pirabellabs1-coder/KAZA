@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/server";
 import { getActiveBoostedPropertyIds } from "@/lib/queries/boosts";
 import { getAllCities, COUNTRIES } from "@/lib/geo/locations";
@@ -15,6 +17,8 @@ export interface PublicProperty {
   id: string;
   title: string;
   description: string;
+  /** Type de transaction : "RENT" (location) ou "SALE" (vente). */
+  listingType: string;
   price: number;
   bedrooms: number;
   bathrooms: number;
@@ -50,18 +54,20 @@ export async function listPublicProperties(
   options: {
     limit?: number;
     type?: string;
+    listingType?: string;
     minPrice?: number;
     maxPrice?: number;
     minBedrooms?: number;
     city?: string;
   } = {},
 ): Promise<PublicProperty[]> {
-  const supabase = await createClient();
+  // Loose cast : listing_type n'est pas encore dans les types générés.
+  const supabase = (await createClient()) as unknown as SupabaseClient;
   let q = supabase
     .from("properties")
     .select(
       `
-      id, title, description, price, bedrooms, bathrooms,
+      id, title, description, listing_type, price, bedrooms, bathrooms,
       square_meters, property_type, status, address, amenities,
       views_count, created_at,
       photos:property_photos(photo_url, display_order),
@@ -73,6 +79,7 @@ export async function listPublicProperties(
     .limit(options.limit ?? 24);
 
   if (options.type) q = q.eq("property_type", options.type as Enums<'property_type'>);
+  if (options.listingType) q = q.eq("listing_type", options.listingType);
   if (options.minPrice) q = q.gte("price", options.minPrice);
   if (options.maxPrice) q = q.lte("price", options.maxPrice);
   if (options.minBedrooms) q = q.gte("bedrooms", options.minBedrooms);
@@ -99,6 +106,7 @@ export async function listPublicProperties(
       id: p.id as string,
       title: p.title as string,
       description: p.description as string,
+      listingType: (p.listing_type as string) ?? "RENT",
       price: Number(p.price),
       bedrooms: p.bedrooms as number,
       bathrooms: p.bathrooms as number,
@@ -137,12 +145,12 @@ export async function listPublicProperties(
 export async function getPropertyById(
   id: string,
 ): Promise<PublicProperty | null> {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as unknown as SupabaseClient;
   const { data, error } = await supabase
     .from("properties")
     .select(
       `
-      id, title, description, price, bedrooms, bathrooms,
+      id, title, description, listing_type, price, bedrooms, bathrooms,
       square_meters, property_type, status, address, amenities,
       views_count, created_at,
       photos:property_photos(photo_url, display_order),
@@ -165,6 +173,7 @@ export async function getPropertyById(
     id: data.id as string,
     title: data.title as string,
     description: data.description as string,
+    listingType: (data.listing_type as string) ?? "RENT",
     price: Number(data.price),
     bedrooms: data.bedrooms as number,
     bathrooms: data.bathrooms as number,

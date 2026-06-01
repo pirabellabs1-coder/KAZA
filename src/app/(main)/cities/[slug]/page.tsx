@@ -192,6 +192,7 @@ export default async function CityPage({
                 id={p.id}
                 title={p.title}
                 price={p.price}
+                listingType={p.listingType}
                 address={p.address}
                 bedrooms={p.bedrooms}
                 bathrooms={p.bathrooms}

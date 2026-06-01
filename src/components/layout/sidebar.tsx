@@ -28,6 +28,7 @@ import {
   AlertOctagon,
   TrendingUp,
   GraduationCap,
+  Tag,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ const ownerNav: NavItem[] = [
   { href: "/owner/applications", label: "Candidatures", icon: ClipboardList },
   { href: "/owner/calendar", label: "Calendrier", icon: CalendarCheck },
   { href: "/owner/rentals", label: "Locations en Cours", icon: HandCoins },
+  { href: "/owner/offers", label: "Offres d'achat", icon: Tag },
   { href: "/owner/tenants", label: "Mes Locataires", icon: Users },
   { href: "/owner/payments", label: "Paiements", icon: CreditCard },
   { href: "/owner/wallet", label: "Wallet & retraits", icon: Wallet },
@@ -62,6 +64,7 @@ const tenantNav: NavItem[] = [
   { href: "/tenant/visits", label: "Mes Visites", icon: CalendarCheck },
   { href: "/tenant/applications", label: "Mes Candidatures", icon: ClipboardList },
   { href: "/tenant/rentals", label: "Mes Locations", icon: Home },
+  { href: "/buyer/offers", label: "Mes offres d'achat", icon: Tag },
   { href: "/tenant/wallet", label: "Portefeuille", icon: Wallet },
   { href: "/tenant/payments", label: "Historique Paiements", icon: CreditCard },
   { href: "/tenant/analytics", label: "Mes analyses", icon: BarChart3 },
@@ -80,6 +83,7 @@ const studentNav: NavItem[] = [
   { href: "/tenant/visits", label: "Mes visites", icon: CalendarCheck },
   { href: "/tenant/applications", label: "Mes candidatures", icon: ClipboardList },
   { href: "/tenant/rentals", label: "Mes locations", icon: Home },
+  { href: "/buyer/offers", label: "Mes offres d'achat", icon: Tag },
   // — Colocation —
   { href: "/student/colocations", label: "Mes Colocations", icon: Users },
   { href: "/student/roommate-matching", label: "Trouver un coloc", icon: Search },
@@ -102,6 +106,7 @@ const agencyNav: NavItem[] = [
   { href: "/agency/tenants", label: "Locataires", icon: Users },
   { href: "/owner/applications", label: "Candidatures", icon: ClipboardList },
   { href: "/agency/rentals", label: "Baux & locations", icon: HandCoins },
+  { href: "/owner/offers", label: "Offres d'achat", icon: Tag },
   { href: "/agency/visits", label: "Visites", icon: CalendarCheck },
   { href: "/agency/payments", label: "Loyers & encaissements", icon: Receipt },
   { href: "/agency/reviews", label: "Évaluations", icon: Star },

@@ -398,6 +398,92 @@ L'équipe KAZA`,
   };
 }
 
+export function offerReceivedTemplate(params: {
+  propertyTitle: string;
+  buyerName: string;
+  amount: number;
+}): EmailTemplate {
+  const { propertyTitle, buyerName, amount } = params;
+  const subject = `Nouvelle offre d'achat : ${propertyTitle}`;
+  return {
+    subject,
+    text: `Bonjour,
+
+${buyerName} a fait une offre de ${formatXof(amount)} pour votre bien "${propertyTitle}".
+
+Consultez et répondez à l'offre : ${APP_URL}/owner/offers
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: `Offre de ${formatXof(amount)} pour ${propertyTitle}`,
+      heading: "Nouvelle offre d'achat",
+      paragraphs: [
+        `${buyerName} a fait une offre pour votre bien « ${propertyTitle} ». Vous pouvez l'accepter ou la refuser depuis votre espace.`,
+      ],
+      rows: [
+        { label: "Bien", value: propertyTitle },
+        { label: "Acheteur", value: buyerName },
+        { label: "Offre", value: formatXof(amount) },
+      ],
+      button: {
+        label: "Voir l'offre",
+        url: `${APP_URL}/owner/offers`,
+      },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
+export function offerDecisionTemplate(params: {
+  propertyTitle: string;
+  accepted: boolean;
+  depositAmount: number;
+}): EmailTemplate {
+  const { propertyTitle, accepted, depositAmount } = params;
+  const subject = accepted
+    ? `Votre offre est acceptée : ${propertyTitle}`
+    : `Votre offre pour ${propertyTitle}`;
+  return {
+    subject,
+    text: accepted
+      ? `Bonjour,
+
+Bonne nouvelle ! Votre offre pour "${propertyTitle}" a été acceptée. Pour réserver le bien, versez l'acompte de réservation de ${formatXof(depositAmount)} via Mobile Money. La vente sera finalisée chez le notaire.
+
+Réserver le bien : ${APP_URL}/buyer/offers
+
+L'équipe KAZA`
+      : `Bonjour,
+
+Votre offre pour "${propertyTitle}" n'a pas été retenue par le vendeur. D'autres biens correspondent peut-être à votre recherche.
+
+Voir d'autres biens : ${APP_URL}/search
+
+L'équipe KAZA`,
+    html: buildEmail({
+      preheader: accepted
+        ? `Offre acceptée — réservez ${propertyTitle}`
+        : `Réponse à votre offre`,
+      heading: accepted ? "Votre offre est acceptée 🎉" : "Réponse à votre offre",
+      paragraphs: [
+        accepted
+          ? `Le vendeur a accepté votre offre pour « ${propertyTitle} ». Versez l'acompte de réservation pour bloquer le bien ; la vente se conclura ensuite chez le notaire.`
+          : `Le vendeur n'a pas retenu votre offre pour « ${propertyTitle} ». Continuez votre recherche : de nombreux biens sont disponibles.`,
+      ],
+      rows: accepted
+        ? [
+            { label: "Bien", value: propertyTitle },
+            { label: "Acompte à verser", value: formatXof(depositAmount) },
+          ]
+        : [{ label: "Bien", value: propertyTitle }],
+      button: accepted
+        ? { label: "Réserver le bien", url: `${APP_URL}/buyer/offers` }
+        : { label: "Voir d'autres biens", url: `${APP_URL}/search` },
+      outro: "L'équipe KAZA",
+    }),
+  };
+}
+
 export function referralInviteTemplate(params: {
   inviterName: string;
   code: string;

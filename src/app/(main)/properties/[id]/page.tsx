@@ -18,6 +18,9 @@ import { PropertyActions } from "@/components/property/property-actions";
 import { PropertyLocationMap } from "@/components/property/property-location-map";
 import { VisitRequestButton } from "@/components/property/visit-request-button";
 import { ApplyButton } from "@/components/property/apply-button";
+import { MakeOfferButton } from "./make-offer-button";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { VerificationBadge } from "@/components/shared/verification-badge";
 import { PropertyViewTracker } from "@/components/analytics/page-tracker";
 import { formatPrice, formatDate, getInitials } from "@/lib/utils";
@@ -39,12 +42,13 @@ export async function generateMetadata({
   if (!property) return { title: "Propriété introuvable" };
 
   const canonical = `/properties/${id}`;
-  const ogTitle = `${property.title} - ${formatPrice(property.price)}/mois`;
+  const priceSuffix = property.listingType === "SALE" ? "" : "/mois";
+  const ogTitle = `${property.title} - ${formatPrice(property.price)}${priceSuffix}`;
   const description = property.description?.slice(0, 160);
   const images = property.primaryPhotoUrl ? [property.primaryPhotoUrl] : [];
 
   return {
-    title: `${property.title} - ${formatPrice(property.price)}/mois | KAZA`,
+    title: `${property.title} - ${formatPrice(property.price)}${priceSuffix} | KAZA`,
     description,
     alternates: { canonical },
     openGraph: {
@@ -84,6 +88,7 @@ export default async function PropertyDetailPage({
   } = await supabase.auth.getUser();
   const isAuthenticated = Boolean(user);
   const isOwnProperty = user?.id === owner?.id;
+  const isSale = property.listingType === "SALE";
 
   const ownerFullName = owner
     ? `${owner.firstName} ${owner.lastName}`
@@ -258,7 +263,14 @@ export default async function PropertyDetailPage({
                   <span className="text-2xl font-bold">
                     {formatPrice(property.price)}
                   </span>
-                  <span className="text-muted-foreground"> /mois</span>
+                  {!isSale && (
+                    <span className="text-muted-foreground"> /mois</span>
+                  )}
+                  {isSale && (
+                    <span className="ml-2 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                      À vendre
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Star className="size-4 fill-kaza-warning text-kaza-warning" />
@@ -280,76 +292,125 @@ export default async function PropertyDetailPage({
                 </div>
               </div>
 
-              <div className="mb-4 rounded-lg border">
-                <div className="grid grid-cols-2 divide-x">
-                  <div className="p-3">
-                    <label className="text-[10px] font-semibold uppercase text-muted-foreground">
-                      Emménagement
-                    </label>
-                    <p className="text-sm font-medium">Immédiat</p>
+              {isSale ? (
+                /* ============ ENCART VENTE ============ */
+                <>
+                  <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+                    <p className="text-xs font-semibold text-amber-700">
+                      Bien à vendre
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Faites une offre : après accord du vendeur, vous versez un
+                      acompte de réservation (Mobile Money) qui bloque le bien.
+                      La vente est finalisée chez le notaire (OHADA).
+                    </p>
                   </div>
-                  <div className="p-3">
-                    <label className="text-[10px] font-semibold uppercase text-muted-foreground">
-                      Durée min.
-                    </label>
-                    <p className="text-sm font-medium">12 mois</p>
-                  </div>
-                </div>
-              </div>
 
-              {isOwnProperty ? (
-                <div className="mb-3 rounded-md border border-dashed border-muted-foreground/40 bg-muted/40 p-3 text-center text-xs text-muted-foreground">
-                  Vous êtes le propriétaire de ce bien.
-                </div>
+                  {isOwnProperty ? (
+                    <div className="mb-3 rounded-md border border-dashed border-muted-foreground/40 bg-muted/40 p-3 text-center text-xs text-muted-foreground">
+                      Vous êtes le propriétaire de ce bien.
+                    </div>
+                  ) : (
+                    <div className="mb-3 space-y-2">
+                      <MakeOfferButton
+                        propertyId={property.id}
+                        propertyTitle={property.title}
+                        askingPrice={property.price}
+                        isAuthenticated={isAuthenticated}
+                      />
+                      <Button asChild variant="outline" className="w-full">
+                        <Link
+                          href={
+                            owner?.id
+                              ? `/messages?to=${owner.id}`
+                              : "/messages"
+                          }
+                        >
+                          Contacter le vendeur
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+
+                  <p className="mb-1 text-center text-xs text-muted-foreground">
+                    Prix affiché : {formatPrice(property.price)}
+                  </p>
+                </>
               ) : (
-                <div className="mb-3 space-y-2">
-                  <VisitRequestButton
-                    propertyId={property.id}
-                    propertyTitle={property.title}
-                    propertyAddress={property.address}
-                    ownerName={ownerFullName}
-                    isAuthenticated={isAuthenticated}
-                    variant="large"
-                  />
-                  <ApplyButton
-                    propertyId={property.id}
-                    propertyTitle={property.title}
-                    isAuthenticated={isAuthenticated}
-                  />
-                </div>
+                /* ============ ENCART LOCATION ============ */
+                <>
+                  <div className="mb-4 rounded-lg border">
+                    <div className="grid grid-cols-2 divide-x">
+                      <div className="p-3">
+                        <label className="text-[10px] font-semibold uppercase text-muted-foreground">
+                          Emménagement
+                        </label>
+                        <p className="text-sm font-medium">Immédiat</p>
+                      </div>
+                      <div className="p-3">
+                        <label className="text-[10px] font-semibold uppercase text-muted-foreground">
+                          Durée min.
+                        </label>
+                        <p className="text-sm font-medium">12 mois</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {isOwnProperty ? (
+                    <div className="mb-3 rounded-md border border-dashed border-muted-foreground/40 bg-muted/40 p-3 text-center text-xs text-muted-foreground">
+                      Vous êtes le propriétaire de ce bien.
+                    </div>
+                  ) : (
+                    <div className="mb-3 space-y-2">
+                      <VisitRequestButton
+                        propertyId={property.id}
+                        propertyTitle={property.title}
+                        propertyAddress={property.address}
+                        ownerName={ownerFullName}
+                        isAuthenticated={isAuthenticated}
+                        variant="large"
+                      />
+                      <ApplyButton
+                        propertyId={property.id}
+                        propertyTitle={property.title}
+                        isAuthenticated={isAuthenticated}
+                      />
+                    </div>
+                  )}
+
+                  <p className="mb-4 text-center text-xs text-muted-foreground">
+                    Aucun frais ne sera prélevé
+                  </p>
+
+                  <Separator className="my-4" />
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Loyer mensuel</span>
+                      <span>{formatPrice(property.price)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Caution (2 mois)
+                      </span>
+                      <span>{formatPrice(property.price * 2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Commission KAZA
+                      </span>
+                      <span>{formatPrice(property.price * 0.05)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between font-semibold">
+                      <span>Total à l&apos;entrée</span>
+                      <span>
+                        {formatPrice(property.price * 3 + property.price * 0.05)}
+                      </span>
+                    </div>
+                  </div>
+                </>
               )}
-
-              <p className="mb-4 text-center text-xs text-muted-foreground">
-                Aucun frais ne sera prélevé
-              </p>
-
-              <Separator className="my-4" />
-
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Loyer mensuel</span>
-                  <span>{formatPrice(property.price)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Caution (2 mois)
-                  </span>
-                  <span>{formatPrice(property.price * 2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Commission KAZA
-                  </span>
-                  <span>{formatPrice(property.price * 0.05)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-semibold">
-                  <span>Total à l&apos;entrée</span>
-                  <span>
-                    {formatPrice(property.price * 3 + property.price * 0.05)}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -440,6 +501,7 @@ export default async function PropertyDetailPage({
                     id={p.id}
                     title={p.title}
                     price={p.price}
+                    listingType={p.listingType}
                     address={p.address}
                     bedrooms={p.bedrooms}
                     bathrooms={p.bathrooms}

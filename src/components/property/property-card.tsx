@@ -31,6 +31,8 @@ export interface PropertyCardProps {
   id: string;
   title: string;
   price: number;
+  /** "RENT" (loyer mensuel) ou "SALE" (prix de vente). Défaut RENT. */
+  listingType?: string;
   address: string;
   bedrooms?: number;
   bathrooms?: number;
@@ -53,6 +55,7 @@ export function PropertyCard({
   id,
   title,
   price,
+  listingType = "RENT",
   address,
   bedrooms = 0,
   bathrooms = 0,
@@ -80,6 +83,7 @@ export function PropertyCard({
 
   const typeLabel = PROPERTY_TYPE_LABELS[propertyType] ?? propertyType;
   const priceFormatted = formatPrice(price);
+  const isSale = listingType === "SALE";
 
   // === Variant COMPACT (horizontal, listings condensés) ============
   if (variant === "compact") {
@@ -133,7 +137,7 @@ export function PropertyCard({
               />
             </div>
             <div className="mt-4 flex items-end justify-between">
-              <PriceTag price={priceFormatted} />
+              <PriceTag price={priceFormatted} isSale={isSale} />
               <span className="inline-flex items-center gap-1 text-sm font-medium text-kaza-blue opacity-0 transition-opacity group-hover:opacity-100">
                 Voir <ArrowRight className="size-3.5" />
               </span>
@@ -174,6 +178,11 @@ export function PropertyCard({
 
           {/* Top-left badges */}
           <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {isSale && (
+              <Badge className="gap-1 border-0 bg-amber-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+                À vendre
+              </Badge>
+            )}
             {isBoosted && <SponsoredBadge />}
             {isFeaturedVariant && (
               <Badge className="gap-1 border-0 bg-kaza-green px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
@@ -202,9 +211,11 @@ export function PropertyCard({
                 <span className="font-heading text-base font-bold text-kaza-navy">
                   {priceFormatted}
                 </span>
-                <span className="text-[11px] font-medium text-muted-foreground">
-                  /mois
-                </span>
+                {!isSale && (
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    /mois
+                  </span>
+                )}
               </div>
             </div>
 
@@ -365,13 +376,15 @@ function SpecsRow({
   );
 }
 
-function PriceTag({ price }: { price: string }) {
+function PriceTag({ price, isSale }: { price: string; isSale?: boolean }) {
   return (
     <div className="flex items-baseline gap-1">
       <span className="font-heading text-xl font-bold text-kaza-navy">
         {price}
       </span>
-      <span className="text-xs font-medium text-muted-foreground">/mois</span>
+      {!isSale && (
+        <span className="text-xs font-medium text-muted-foreground">/mois</span>
+      )}
     </div>
   );
 }

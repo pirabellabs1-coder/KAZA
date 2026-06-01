@@ -39,6 +39,7 @@ export default async function PropertiesPage() {
               id={property.id}
               title={property.title}
               price={property.price}
+              listingType={property.listingType}
               address={property.address}
               bedrooms={property.bedrooms}
               bathrooms={property.bathrooms}

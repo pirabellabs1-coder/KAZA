@@ -34,6 +34,8 @@ import {
   contractSignedTemplate,
   rentalActivatedTemplate,
   rentalTerminatedTemplate,
+  offerReceivedTemplate,
+  offerDecisionTemplate,
   type EmailTemplate,
 } from './templates';
 
@@ -53,6 +55,9 @@ export type NotificationType =
   | 'application_rejected'
   | 'rental_activated'
   | 'rental_terminated'
+  | 'offer_received'
+  | 'offer_accepted'
+  | 'offer_rejected'
   | 'verification_approved'
   | 'verification_rejected'
   | 'welcome';
@@ -84,6 +89,9 @@ const DEFAULT_CHANNELS: Record<NotificationType, NotificationChannel[]> = {
   application_rejected: ['in_app', 'push', 'email'],
   rental_activated: ['in_app', 'push', 'email'],
   rental_terminated: ['in_app', 'push', 'email'],
+  offer_received: ['in_app', 'push', 'email'],
+  offer_accepted: ['in_app', 'push', 'email'],
+  offer_rejected: ['in_app', 'push', 'email'],
   verification_approved: ['in_app', 'push', 'email'],
   verification_rejected: ['in_app', 'push', 'email'],
   welcome: ['in_app', 'email'],
@@ -103,6 +111,9 @@ const IN_APP_TYPE: Record<NotificationType, Enums<'notification_type'>> = {
   application_rejected: 'system',
   rental_activated: 'payment_received',
   rental_terminated: 'system',
+  offer_received: 'system',
+  offer_accepted: 'system',
+  offer_rejected: 'system',
   verification_approved: 'identity_approved',
   verification_rejected: 'identity_rejected',
   welcome: 'system',
@@ -185,6 +196,24 @@ function buildPushPayload(type: NotificationType, data: Record<string, unknown>)
         body: `La location de "${asString(data.propertyTitle, 'le bien')}" a pris fin.`,
         link: data.forOwner === true ? '/owner/rentals' : '/tenant/rentals',
       };
+    case 'offer_received':
+      return {
+        title: 'Nouvelle offre d’achat',
+        body: `${asString(data.buyerName, 'Un acheteur')} propose ${new Intl.NumberFormat('fr-FR').format(asNumber(data.amount))} FCFA pour "${asString(data.propertyTitle, 'votre bien')}".`,
+        link: '/owner/offers',
+      };
+    case 'offer_accepted':
+      return {
+        title: 'Offre acceptée 🎉',
+        body: `Votre offre pour "${asString(data.propertyTitle, 'le bien')}" est acceptée. Versez l’acompte de réservation pour bloquer le bien.`,
+        link: '/buyer/offers',
+      };
+    case 'offer_rejected':
+      return {
+        title: 'Offre non retenue',
+        body: `Votre offre pour "${asString(data.propertyTitle, 'le bien')}" n’a pas été retenue.`,
+        link: '/buyer/offers',
+      };
     case 'verification_approved':
       return {
         title: 'Identité vérifiée',
@@ -261,6 +290,24 @@ function buildEmailTemplate(
         propertyTitle: asString(data.propertyTitle, 'Votre bien'),
         endDate: asString(data.endDate, ''),
         forOwner: data.forOwner === true,
+      });
+    case 'offer_received':
+      return offerReceivedTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Votre bien'),
+        buyerName: asString(data.buyerName, 'Un acheteur'),
+        amount: asNumber(data.amount, 0),
+      });
+    case 'offer_accepted':
+      return offerDecisionTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Le bien'),
+        accepted: true,
+        depositAmount: asNumber(data.depositAmount, 0),
+      });
+    case 'offer_rejected':
+      return offerDecisionTemplate({
+        propertyTitle: asString(data.propertyTitle, 'Le bien'),
+        accepted: false,
+        depositAmount: 0,
       });
     case 'verification_approved':
       return verificationApprovedTemplate({
