@@ -29,6 +29,7 @@ import { formatPrice, getInitials } from "@/lib/utils";
 
 import {
   RequestVisitButton,
+  JoinColocationButton,
   OwnerVisitRequests,
   type VisitRequestItem,
 } from "./coloc-actions";
@@ -202,6 +203,10 @@ export default async function StudentLivingDetailPage({
               ) : (
                 <div className="space-y-2">
                   <RequestVisitButton
+                    listingId={listing.id}
+                    isAuthenticated={Boolean(user)}
+                  />
+                  <JoinColocationButton
                     listingId={listing.id}
                     isAuthenticated={Boolean(user)}
                   />

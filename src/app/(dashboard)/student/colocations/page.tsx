@@ -19,7 +19,10 @@ import {
   listStudentColocations,
   type StudentColocationItem,
 } from "@/lib/queries/tenant-activity";
+import { listColocationCandidates } from "@/lib/queries/colocation-members";
 import { formatPrice, formatDate } from "@/lib/utils";
+
+import { ColocationCandidatesPanel } from "./candidates-panel";
 
 export const metadata: Metadata = {
   title: "Mes Colocations",
@@ -48,10 +51,14 @@ export default async function StudentColocationsPage() {
   const user = await getCurrentDisplayUser();
   if (!user) redirect("/login?redirect=/student/colocations");
 
-  const colocations = await listStudentColocations(user.id);
+  const [colocations, candidates] = await Promise.all([
+    listStudentColocations(user.id),
+    listColocationCandidates(user.id),
+  ]);
 
   return (
     <div className="space-y-6">
+      <ColocationCandidatesPanel candidates={candidates} />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold text-kaza-navy sm:text-3xl">

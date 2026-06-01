@@ -2,7 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarCheck, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import {
+  CalendarCheck,
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  UserPlus,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +30,67 @@ import { toast } from "@/components/ui/toast-helper";
 import {
   requestColocationVisit,
   decideColocationVisit,
+  requestToJoinColocation,
 } from "@/actions/roommate-listings";
+
+// --- Candidat : rejoindre la colocation ------------------------------------
+
+export function JoinColocationButton({
+  listingId,
+  isAuthenticated,
+}: {
+  listingId: string;
+  isAuthenticated: boolean;
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [requested, setRequested] = useState(false);
+
+  if (!isAuthenticated) {
+    return (
+      <Button
+        variant="outline"
+        className="w-full gap-2"
+        onClick={() =>
+          router.push(`/login?redirect=/student-living/${listingId}`)
+        }
+      >
+        <UserPlus className="size-4" /> Rejoindre la colocation
+      </Button>
+    );
+  }
+
+  const handle = () => {
+    startTransition(async () => {
+      const res = await requestToJoinColocation(listingId);
+      if (res.success) {
+        toast.success(
+          "Demande envoyée. Le colocataire principal validera votre profil.",
+        );
+        setRequested(true);
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Échec");
+      }
+    });
+  };
+
+  return (
+    <Button
+      variant="outline"
+      className="w-full gap-2"
+      onClick={handle}
+      disabled={isPending || requested}
+    >
+      {isPending ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : (
+        <UserPlus className="size-4" />
+      )}
+      {requested ? "Demande envoyée" : "Rejoindre la colocation"}
+    </Button>
+  );
+}
 
 // --- Visiteur : demander une visite ----------------------------------------
 
