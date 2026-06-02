@@ -557,7 +557,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                   <span className="font-heading text-xl font-bold">KAZA</span>
                 </Link>
                 <p className="mt-3 text-xs text-white/70">
-                  La plateforme immobilière de référence en Afrique de l'Ouest.
+                  La plateforme immobilière de référence en Afrique de l&apos;Ouest.
                 </p>
               </div>
 

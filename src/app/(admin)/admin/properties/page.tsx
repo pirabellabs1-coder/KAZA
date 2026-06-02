@@ -490,8 +490,8 @@ export default async function AdminPropertiesPage() {
                       colSpan={10}
                       className="px-3 py-12 text-center text-sm text-muted-foreground"
                     >
-                      Aucune annonce dans la base. Dès qu'un propriétaire
-                      publie, elle s'affichera ici.
+                      Aucune annonce dans la base. Dès qu&apos;un propriétaire
+                      publie, elle s&apos;affichera ici.
                     </td>
                   </tr>
                 )}

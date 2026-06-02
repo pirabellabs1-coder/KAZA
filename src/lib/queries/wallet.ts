@@ -5,6 +5,8 @@
 
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/server";
 
 export interface WalletState {
@@ -46,6 +48,36 @@ export interface AdminWithdrawalRequest extends WithdrawalRequest {
   userEmail: string;
 }
 
+// Lignes brutes des tables/jointures (colonnes hors types générés).
+interface WalletTxRow {
+  id: string;
+  type: string;
+  amount_fcfa: number | string;
+  description: string | null;
+  created_at: string;
+}
+interface WithdrawalRow {
+  id: string;
+  amount_fcfa: number | string;
+  method: string;
+  destination: string;
+  status: string;
+  fee_fcfa: number | string | null;
+  net_amount_fcfa: number | string;
+  requested_at: string;
+  processed_at: string | null;
+  reference: string | null;
+  notes: string | null;
+}
+interface AdminWithdrawalRow extends WithdrawalRow {
+  user_id: string;
+  user: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+  } | null;
+}
+
 const EMPTY_WALLET: WalletState = {
   balance: 0,
   totalIn: 0,
@@ -62,8 +94,9 @@ const EMPTY_WALLET: WalletState = {
  * encore (jamais crédité), renvoie un wallet vide à zéro.
  */
 export async function getWallet(userId: string): Promise<WalletState> {
-  const supabase = await createClient();
-  const { data } = await (supabase as any)
+  // Loose cast : tables wallet hors types générés Supabase.
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data } = await supabase
     .from("user_wallets")
     .select(
       "balance_fcfa, total_in_fcfa, total_out_fcfa, is_frozen, iban, bank_name, mobile_money_number, mobile_money_provider",
@@ -92,15 +125,15 @@ export async function listWalletTransactions(
   userId: string,
   limit = 30,
 ): Promise<WalletTx[]> {
-  const supabase = await createClient();
-  const { data } = await (supabase as any)
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data } = await supabase
     .from("wallet_transactions")
     .select("id, type, amount_fcfa, description, created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  return ((data ?? []) as any[]).map((t) => ({
+  return ((data ?? []) as WalletTxRow[]).map((t) => ({
     id: t.id as string,
     type: t.type as string,
     amount: Number(t.amount_fcfa),
@@ -115,8 +148,8 @@ export async function listWalletTransactions(
 export async function listWithdrawalRequests(
   userId: string,
 ): Promise<WithdrawalRequest[]> {
-  const supabase = await createClient();
-  const { data } = await (supabase as any)
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data } = await supabase
     .from("withdrawal_requests")
     .select(
       "id, amount_fcfa, method, destination, status, fee_fcfa, net_amount_fcfa, requested_at, processed_at, reference, notes",
@@ -124,7 +157,7 @@ export async function listWithdrawalRequests(
     .eq("user_id", userId)
     .order("requested_at", { ascending: false });
 
-  return ((data ?? []) as any[]).map((w) => ({
+  return ((data ?? []) as WithdrawalRow[]).map((w) => ({
     id: w.id as string,
     amount: Number(w.amount_fcfa),
     method: w.method as string,
@@ -145,20 +178,32 @@ export async function listWithdrawalRequests(
 export async function listAllWithdrawalRequests(): Promise<
   AdminWithdrawalRequest[]
 > {
-  const supabase = await createClient();
-  const { data } = await (supabase as any)
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data } = await supabase
     .from("withdrawal_requests")
     .select(
       "id, user_id, amount_fcfa, method, destination, status, fee_fcfa, net_amount_fcfa, requested_at, processed_at, reference, notes, user:users!user_id(first_name, last_name, email)",
     )
     .order("requested_at", { ascending: false });
 
-  return ((data ?? []) as any[]).map((w) => {
-    const user = (w.user ?? {}) as {
-      first_name?: string;
-      last_name?: string;
-      email?: string;
-    };
+  interface WithdrawalRow {
+    id: string;
+    user_id: string;
+    amount_fcfa: number | string;
+    method: string;
+    destination: string;
+    status: string;
+    fee_fcfa: number | string | null;
+    net_amount_fcfa: number | string;
+    requested_at: string;
+    processed_at: string | null;
+    reference: string | null;
+    notes: string | null;
+    user?: { first_name?: string; last_name?: string; email?: string } | null;
+  }
+
+  return ((data ?? []) as WithdrawalRow[]).map((w) => {
+    const user = w.user ?? {};
     const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
     return {
       id: w.id as string,
