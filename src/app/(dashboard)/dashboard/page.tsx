@@ -30,6 +30,13 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
 import { listOwnerVisits, type OwnerVisit } from "@/lib/queries/owner-activity";
 import {
+  getOwnerDashboardAnalytics,
+  type OwnerReviewsBreakdownPoint,
+  type OwnerTopProperty,
+  type OwnerVisitsFunnelPoint,
+} from "@/lib/queries/owner-dashboard";
+import type { MonthlyRevenuePoint } from "@/lib/queries/owner-revenue";
+import {
   listSavedProperties,
   listTenantMessages,
   listStudentColocations,
@@ -57,33 +64,6 @@ const EMPTY_FINANCE: TenantFinanceSummary = {
   payments: [],
   monthlyHistory: [],
 };
-
-// Fallback vide — à brancher quand l'agrégation mensuelle des revenus
-// propriétaire sera connectée à Supabase (table payments).
-const OWNER_MONTHLY_REVENUE: Array<{
-  month: string;
-  revenue: number;
-  occupancy: number;
-}> = [];
-
-// Fallback vide — à brancher quand la table reviews sera connectée.
-const OWNER_REVIEWS_BREAKDOWN: Array<{ rating: number; count: number }> = [];
-
-// Fallback vide — à brancher sur l'agrégation top propriétés.
-const OWNER_TOP_PROPERTIES: Array<{
-  title: string;
-  views: number;
-  contacts: number;
-  visits: number;
-  revenue: number;
-}> = [];
-
-// Fallback vide — à brancher sur les events analytics du funnel visites.
-const OWNER_VISITS_FUNNEL: Array<{
-  stage: string;
-  value: number;
-  color: string;
-}> = [];
 
 export const metadata: Metadata = {
   title: "Tableau de bord",
@@ -128,7 +108,10 @@ export default async function DashboardPage() {
     return <AdminOverview firstName={user.firstName} />;
   }
   if (role === "OWNER") {
-    const visits = await listOwnerVisits(user.id);
+    const [visits, analytics] = await Promise.all([
+      listOwnerVisits(user.id),
+      getOwnerDashboardAnalytics(user.id),
+    ]);
     // eslint-disable-next-line react-hooks/purity -- Server Component rendu une fois par requête ; horloge serveur acceptable
     const now = Date.now();
     const upcomingVisits = visits
@@ -159,6 +142,10 @@ export default async function DashboardPage() {
         upcomingVisits={upcomingVisits}
         pendingVisitsCount={pendingCount}
         visitsThisWeek={visitsThisWeek}
+        monthlyRevenue={analytics.monthlyRevenue}
+        reviewsBreakdown={analytics.reviewsBreakdown}
+        topProperties={analytics.topProperties}
+        visitsFunnel={analytics.visitsFunnel}
       />
     );
   }
@@ -176,11 +163,19 @@ function OwnerOverview({
   upcomingVisits,
   pendingVisitsCount,
   visitsThisWeek,
+  monthlyRevenue,
+  reviewsBreakdown,
+  topProperties,
+  visitsFunnel,
 }: {
   firstName: string;
   upcomingVisits: OwnerVisit[];
   visitsThisWeek: number;
   pendingVisitsCount: number;
+  monthlyRevenue: MonthlyRevenuePoint[];
+  reviewsBreakdown: OwnerReviewsBreakdownPoint[];
+  topProperties: OwnerTopProperty[];
+  visitsFunnel: OwnerVisitsFunnelPoint[];
 }) {
   const today = new Date().toLocaleDateString("fr-FR", {
     weekday: "long",
@@ -188,8 +183,12 @@ function OwnerOverview({
     month: "long",
     year: "numeric",
   });
+  const currentMonthLabel = new Date().toLocaleDateString("fr-FR", {
+    month: "long",
+    year: "numeric",
+  });
 
-  const data = OWNER_MONTHLY_REVENUE;
+  const data = monthlyRevenue;
   const maxRev = data.length > 0 ? Math.max(...data.map((d) => d.revenue)) : 0;
   const currentRev = data.length > 0 ? data[data.length - 1].revenue : 0;
   const prevRev = data.length > 1 ? data[data.length - 2].revenue : 0;
@@ -203,11 +202,11 @@ function OwnerOverview({
   const sparkRev = data.length > 0 ? data.slice(-8).map((d) => d.revenue) : [0];
   const sparkOcc = data.length > 0 ? data.slice(-8).map((d) => d.occupancy) : [0];
 
-  const totalReviews = OWNER_REVIEWS_BREAKDOWN.reduce((s, r) => s + r.count, 0);
+  const totalReviews = reviewsBreakdown.reduce((s, r) => s + r.count, 0);
   const avgRating =
     totalReviews > 0
       ? (
-          OWNER_REVIEWS_BREAKDOWN.reduce(
+          reviewsBreakdown.reduce(
             (s, r) => s + r.rating * r.count,
             0,
           ) / totalReviews
@@ -215,11 +214,11 @@ function OwnerOverview({
       : "0.0";
 
   // Funnel : conversion entre étapes
-  const funnel = OWNER_VISITS_FUNNEL;
+  const funnel = visitsFunnel;
   const maxFunnel = funnel.length > 0 ? Math.max(...funnel.map((f) => f.value)) : 0;
 
   // Donut avis
-  const reviews = OWNER_REVIEWS_BREAKDOWN;
+  const reviews = reviewsBreakdown;
   const donutTotal = totalReviews;
   let donutCumul = 0;
   const donutSegments = reviews.map((r) => {
@@ -631,8 +630,8 @@ function OwnerOverview({
             <CardTitle className="font-heading text-lg">
               Top 5 propriétés du mois
             </CardTitle>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Vos biens les plus performants en mai 2026
+            <p className="mt-1 text-sm capitalize text-muted-foreground">
+              Vos biens les plus performants en {currentMonthLabel}
             </p>
           </div>
           <Button variant="outline" size="sm" asChild>
@@ -642,6 +641,18 @@ function OwnerOverview({
           </Button>
         </CardHeader>
         <CardContent>
+          {topProperties.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-10 text-center">
+              <Building2 className="size-8 text-muted-foreground" />
+              <p className="text-sm font-medium text-foreground">
+                Pas encore de statistiques
+              </p>
+              <p className="max-w-sm text-xs text-muted-foreground">
+                Publiez vos biens et recevez vos premières vues, visites et
+                paiements : le classement de performance s&apos;affichera ici.
+              </p>
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[600px] text-sm">
               <thead>
@@ -654,7 +665,7 @@ function OwnerOverview({
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {OWNER_TOP_PROPERTIES.map((p, i) => (
+                {topProperties.map((p, i) => (
                   <tr key={p.title} className="hover:bg-slate-50/60">
                     <td className="py-3">
                       <div className="flex items-center gap-3">
@@ -681,6 +692,7 @@ function OwnerOverview({
               </tbody>
             </table>
           </div>
+          )}
         </CardContent>
       </Card>
 
