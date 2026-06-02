@@ -36,14 +36,11 @@ import {
 } from "@/components/ui/tabs";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
-
-// Fallback vide — à brancher quand la table subscriptions/plans sera en place.
-const AGENCY_PLAN = {
-  name: "—",
-  quota: {
-    activeListings: { used: 0, max: 0 },
-  },
-};
+import {
+  getActiveSubscription,
+  PLAN_DETAILS,
+  PLAN_LISTING_QUOTA,
+} from "@/lib/queries/subscriptions";
 import {
   getOwnerPortfolioStats,
   listPropertiesByOwner,
@@ -109,9 +106,10 @@ export default async function AgencyPortfolioPage() {
     redirect("/login");
   }
 
-  const [properties, stats] = await Promise.all([
+  const [properties, stats, subscription] = await Promise.all([
     listPropertiesByOwner(user.id),
     getOwnerPortfolioStats(user.id),
+    getActiveSubscription(user.id),
   ]);
 
   const total = stats.total;
@@ -119,11 +117,18 @@ export default async function AgencyPortfolioPage() {
   const rented = stats.rented;
   const draft = stats.draft;
 
-  // Quota plan Pro (vraies données viendront de la table subscriptions)
-  const quota = AGENCY_PLAN.quota.activeListings;
+  // Plan + quota d'annonces réels (table subscriptions). 0 = illimité.
+  const planKey = subscription?.plan ?? null;
+  const planName = planKey
+    ? PLAN_DETAILS[planKey]?.name ?? planKey
+    : "Aucun abonnement actif";
+  const quotaMax = planKey ? PLAN_LISTING_QUOTA[planKey] ?? 0 : 0;
   const quotaUsed = available + rented; // annonces "actives"
-  const quotaPct = quota.max > 0 ? Math.round((quotaUsed / quota.max) * 100) : 0;
-  const quotaWarn = quotaPct >= 90;
+  const quotaUnlimited = quotaMax === 0;
+  const quotaPct = quotaUnlimited
+    ? 0
+    : Math.round((quotaUsed / quotaMax) * 100);
+  const quotaWarn = !quotaUnlimited && quotaPct >= 90;
 
   const isEmpty = total === 0;
 
@@ -136,41 +141,42 @@ export default async function AgencyPortfolioPage() {
             Portefeuille
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {quotaUsed} annonces actives sur {quota.max} — quota{" "}
-            <span className="font-medium text-kaza-navy">
-              {AGENCY_PLAN.name}
-            </span>
+            {quotaUsed} annonces actives
+            {quotaUnlimited ? "" : ` sur ${quotaMax}`} — quota{" "}
+            <span className="font-medium text-kaza-navy">{planName}</span>
           </p>
-          {/* Barre de progression quota */}
-          <div className="mt-4 max-w-xl">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">
-                Utilisation du quota
-              </span>
-              <span
-                className={`font-semibold ${
-                  quotaWarn ? "text-amber-600" : "text-kaza-navy"
-                }`}
-              >
-                {quotaPct}%
-              </span>
+          {/* Barre de progression quota (masquée si illimité / sans plan) */}
+          {!quotaUnlimited && (
+            <div className="mt-4 max-w-xl">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">
+                  Utilisation du quota
+                </span>
+                <span
+                  className={`font-semibold ${
+                    quotaWarn ? "text-amber-600" : "text-kaza-navy"
+                  }`}
+                >
+                  {quotaPct}%
+                </span>
+              </div>
+              <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    quotaWarn
+                      ? "bg-amber-500"
+                      : "bg-gradient-to-r from-kaza-blue to-kaza-green"
+                  }`}
+                  style={{ width: `${Math.min(quotaPct, 100)}%` }}
+                />
+              </div>
+              {quotaWarn && (
+                <p className="mt-2 text-xs text-amber-700">
+                  Vous approchez de la limite. Pensez à passer au plan supérieur.
+                </p>
+              )}
             </div>
-            <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  quotaWarn
-                    ? "bg-amber-500"
-                    : "bg-gradient-to-r from-kaza-blue to-kaza-green"
-                }`}
-                style={{ width: `${Math.min(quotaPct, 100)}%` }}
-              />
-            </div>
-            {quotaWarn && (
-              <p className="mt-2 text-xs text-amber-700">
-                Vous approchez de la limite. Pensez à passer au plan supérieur.
-              </p>
-            )}
-          </div>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" disabled={isEmpty}>

@@ -127,6 +127,13 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
   },
 };
 
+// Quota d'annonces actives autorisées par plan agence (0 = illimité).
+export const PLAN_LISTING_QUOTA: Record<string, number> = {
+  PRO_STARTER: 50,
+  PRO_PREMIUM: 200,
+  PRO_ELITE: 0,
+};
+
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------
