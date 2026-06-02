@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import {
+  listSurveysWithStatus,
+  type SurveyWithStatus,
+} from "@/lib/queries/surveys";
 import { SurveysClient } from "./surveys-client";
 
 export const metadata: Metadata = {
@@ -16,5 +20,12 @@ export default async function SurveysPage() {
     redirect("/login?redirect=/surveys");
   }
 
-  return <SurveysClient userFirstName={user.firstName} />;
+  let surveys: SurveyWithStatus[] = [];
+  try {
+    surveys = await listSurveysWithStatus(user.id);
+  } catch {
+    surveys = [];
+  }
+
+  return <SurveysClient userFirstName={user.firstName} surveys={surveys} />;
 }

@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import {
-  CheckCircle2,
-  ClipboardList,
-  MessageCircle,
-  Sparkles,
-  Star,
-} from "lucide-react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { CheckCircle2, ClipboardList, Sparkles, Star } from "lucide-react";
 
+import { submitSurveyResponse } from "@/actions/surveys";
+import type {
+  SurveyQuestion,
+  SurveyWithStatus,
+} from "@/lib/queries/surveys";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,93 +31,75 @@ import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
 
 // =============================================================================
-// Types & fallbacks locaux — à brancher sur queries Supabase surveys / survey_answers
-// À brancher quand les tables surveys / survey_answers seront connectées
-// via @/lib/queries/surveys.
+// Page Sondages — branchée sur les vraies données Supabase.
+//   - `surveys` : liste des sondages actifs + statut "répondu" (server).
+//   - Soumission via la Server Action `submitSurveyResponse`.
 // =============================================================================
-
-type SurveyTrigger =
-  | "after_visit"
-  | "after_first_month"
-  | "after_contract_sign"
-  | "after_payment"
-  | "monthly_nps";
-
-type SurveyQuestionType = "rating" | "choice" | "text";
-
-interface SurveyQuestion {
-  id: string;
-  type: SurveyQuestionType;
-  question: string;
-  options?: string[];
-  required: boolean;
-  scale?: number;
-}
-
-interface PendingSurvey {
-  id: string;
-  trigger: SurveyTrigger;
-  title: string;
-  contextLabel: string;
-  triggeredAt: string;
-  questions: SurveyQuestion[];
-}
-
-interface SurveyAnswer {
-  surveyId: string;
-  answers: Record<string, string | number>;
-  completedAt: string;
-}
-
-// Fallbacks vides — à brancher sur les queries Supabase surveys.
-const SEED_SURVEYS: PendingSurvey[] = [];
-const getPendingSurveys = (): PendingSurvey[] => [];
-const getCompletedSurveys = (): SurveyAnswer[] => [];
-const submitSurvey = (_answer: SurveyAnswer): void => {
-  // no-op tant que la mutation n'est pas branchée côté Supabase
-};
 
 interface SurveysClientProps {
   userFirstName: string;
+  surveys: SurveyWithStatus[];
 }
 
-const POINTS_PER_SURVEY = 25;
+const DEFAULT_SCALE_MIN = 1;
+const DEFAULT_SCALE_MAX = 5;
 
-const TRIGGER_LABELS: Record<SurveyTrigger, string> = {
-  after_visit: "Apres une visite",
-  after_first_month: "1 mois apres emmenagement",
-  after_contract_sign: "Apres signature de contrat",
-  after_payment: "Apres un paiement",
-  monthly_nps: "Satisfaction trimestrielle",
-};
+export function SurveysClient({ userFirstName, surveys }: SurveysClientProps) {
+  const router = useRouter();
 
-const TRIGGER_TONES: Record<SurveyTrigger, string> = {
-  after_visit: "bg-blue-50 text-blue-700 border-blue-200",
-  after_first_month: "bg-violet-50 text-violet-700 border-violet-200",
-  after_contract_sign: "bg-amber-50 text-amber-700 border-amber-200",
-  after_payment: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  monthly_nps: "bg-rose-50 text-rose-700 border-rose-200",
-};
+  // State local initialisé depuis les props (pas de useEffect d'init). Il sert
+  // uniquement à l'optimistic update après soumission ; `router.refresh()`
+  // resynchronise ensuite depuis le serveur.
+  const [items, setItems] = useState<SurveyWithStatus[]>(() => surveys);
+  const [activeSurvey, setActiveSurvey] = useState<SurveyWithStatus | null>(
+    null,
+  );
+  const [submitting, setSubmitting] = useState(false);
 
-export function SurveysClient({ userFirstName }: SurveysClientProps) {
-  const [pending, setPending] = useState<PendingSurvey[]>(() => SEED_SURVEYS);
-  const [completed, setCompleted] = useState<SurveyAnswer[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-  const [activeSurvey, setActiveSurvey] = useState<PendingSurvey | null>(null);
+  const pending = useMemo(() => items.filter((s) => !s.answered), [items]);
+  const completed = useMemo(() => items.filter((s) => s.answered), [items]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- init depuis le localStorage après hydratation (SSR-safe), une seule fois
-    setPending(getPendingSurveys());
-    setCompleted(getCompletedSurveys());
-    setHydrated(true);
-  }, []);
+  const totalEarnable = useMemo(
+    () => pending.reduce((sum, s) => sum + s.rewardPoints, 0),
+    [pending],
+  );
 
-  const refresh = () => {
-    setPending(getPendingSurveys());
-    setCompleted(getCompletedSurveys());
+  const handleSubmit = async (answers: Record<string, string | number>) => {
+    if (!activeSurvey || submitting) return;
+    const target = activeSurvey;
+    setSubmitting(true);
+
+    const result = await submitSurveyResponse({
+      surveyId: target.id,
+      answers,
+    });
+
+    if (!result.success) {
+      toast.error(result.error ?? "Impossible d'enregistrer votre reponse.");
+      setSubmitting(false);
+      return;
+    }
+
+    const awarded = result.pointsAwarded ?? target.rewardPoints;
+    toast.success(
+      `Merci ! Vos reponses ont ete enregistrees.${
+        awarded > 0 ? ` +${awarded} points` : ""
+      }`,
+    );
+
+    // Optimistic update : marque le sondage comme répondu localement…
+    const answeredAt = new Date().toISOString();
+    setItems((prev) =>
+      prev.map((s) =>
+        s.id === target.id ? { ...s, answered: true, answeredAt } : s,
+      ),
+    );
+    setActiveSurvey(null);
+    setSubmitting(false);
+
+    // …puis resynchronise depuis le serveur.
+    router.refresh();
   };
-
-  const totalEarnable = pending.length * POINTS_PER_SURVEY;
 
   return (
     <div className="space-y-8">
@@ -131,11 +113,8 @@ export function SurveysClient({ userFirstName }: SurveysClientProps) {
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
           Votre retour nous aide a ameliorer KAZA chaque jour. Chaque sondage
-          complete vous rapporte{" "}
-          <span className="font-semibold text-[#4CAF50]">
-            +{POINTS_PER_SURVEY} points
-          </span>
-          .
+          complete vous rapporte des{" "}
+          <span className="font-semibold text-[#4CAF50]">KAZA Points</span>.
         </p>
       </div>
 
@@ -175,27 +154,33 @@ export function SurveysClient({ userFirstName }: SurveysClientProps) {
                 <CardHeader className="pb-3">
                   <Badge
                     variant="outline"
-                    className={cn("w-fit text-xs", TRIGGER_TONES[s.trigger])}
+                    className="w-fit border-blue-200 bg-blue-50 text-xs text-blue-700"
                   >
-                    {TRIGGER_LABELS[s.trigger]}
+                    Sondage KAZA
                   </Badge>
                   <CardTitle className="mt-2 text-base text-[#1A3A52]">
                     {s.title}
                   </CardTitle>
-                  <CardDescription>{s.contextLabel}</CardDescription>
+                  {s.description && (
+                    <CardDescription>{s.description}</CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-0">
                   <div className="text-xs text-muted-foreground">
                     {s.questions.length} question
-                    {s.questions.length > 1 ? "s" : ""} ·{" "}
-                    <span className="font-medium text-[#4CAF50]">
-                      +{POINTS_PER_SURVEY} pts
-                    </span>
+                    {s.questions.length > 1 ? "s" : ""}
+                    {s.rewardPoints > 0 && (
+                      <>
+                        {" · "}
+                        <span className="font-medium text-[#4CAF50]">
+                          +{s.rewardPoints} pts
+                        </span>
+                      </>
+                    )}
                   </div>
                   <Button
                     size="sm"
                     onClick={() => setActiveSurvey(s)}
-                    disabled={!hydrated}
                     className="bg-[#1976D2] hover:bg-[#1565C0]"
                   >
                     Repondre
@@ -223,35 +208,36 @@ export function SurveysClient({ userFirstName }: SurveysClientProps) {
           </p>
         ) : (
           <div className="space-y-2">
-            {completed
-              .slice()
-              .reverse()
-              .map((c) => {
-                const def = SEED_SURVEYS.find((s) => s.id === c.surveyId);
-                return (
-                  <Card key={c.surveyId} className="border-emerald-100">
-                    <CardContent className="flex items-center justify-between gap-3 py-4">
-                      <div>
-                        <p className="text-sm font-medium text-[#1A3A52]">
-                          {def?.title ?? c.surveyId}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {def?.contextLabel ?? "Sondage"} ·{" "}
-                          {new Date(c.completedAt).toLocaleDateString("fr-FR", {
+            {completed.map((c) => (
+              <Card key={c.id} className="border-emerald-100">
+                <CardContent className="flex items-center justify-between gap-3 py-4">
+                  <div>
+                    <p className="text-sm font-medium text-[#1A3A52]">
+                      {c.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {c.description ?? "Sondage"}
+                      {c.answeredAt && (
+                        <>
+                          {" · "}
+                          {new Date(c.answeredAt).toLocaleDateString("fr-FR", {
                             day: "2-digit",
                             month: "short",
                             year: "numeric",
                           })}
-                        </p>
-                      </div>
-                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                        <Sparkles className="mr-1 size-3" aria-hidden />+
-                        {POINTS_PER_SURVEY} pts
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  {c.rewardPoints > 0 && (
+                    <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                      <Sparkles className="mr-1 size-3" aria-hidden />+
+                      {c.rewardPoints} pts
+                    </Badge>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
       </section>
@@ -259,20 +245,11 @@ export function SurveysClient({ userFirstName }: SurveysClientProps) {
       {/* Dialog runner */}
       <SurveyRunner
         survey={activeSurvey}
-        onClose={() => setActiveSurvey(null)}
-        onSubmit={(answers) => {
-          if (!activeSurvey) return;
-          submitSurvey({
-            surveyId: activeSurvey.id,
-            answers,
-            completedAt: new Date().toISOString(),
-          });
-          toast.success(
-            `Merci ! Vos reponses ont ete enregistrees. +${POINTS_PER_SURVEY} points`,
-          );
-          refresh();
-          setActiveSurvey(null);
+        submitting={submitting}
+        onClose={() => {
+          if (!submitting) setActiveSurvey(null);
         }}
+        onSubmit={handleSubmit}
       />
     </div>
   );
@@ -283,40 +260,64 @@ export function SurveysClient({ userFirstName }: SurveysClientProps) {
 // =============================================================================
 
 interface SurveyRunnerProps {
-  survey: PendingSurvey | null;
+  survey: SurveyWithStatus | null;
+  submitting: boolean;
   onClose: () => void;
   onSubmit: (answers: Record<string, string | number>) => void;
 }
 
-function SurveyRunner({ survey, onClose, onSubmit }: SurveyRunnerProps) {
+function SurveyRunner({
+  survey,
+  submitting,
+  onClose,
+  onSubmit,
+}: SurveyRunnerProps) {
+  // `key` sur le DialogContent (via survey.id) réinitialise le composant
+  // interne à chaque changement de sondage → pas de useEffect de reset.
+  return (
+    <Dialog
+      open={Boolean(survey)}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent className="max-w-lg">
+        {survey ? (
+          <SurveyRunnerBody
+            key={survey.id}
+            survey={survey}
+            submitting={submitting}
+            onSubmit={onSubmit}
+          />
+        ) : null}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+interface SurveyRunnerBodyProps {
+  survey: SurveyWithStatus;
+  submitting: boolean;
+  onSubmit: (answers: Record<string, string | number>) => void;
+}
+
+function SurveyRunnerBody({
+  survey,
+  submitting,
+  onSubmit,
+}: SurveyRunnerBodyProps) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | number>>({});
 
-  // Reset state quand on change de sondage
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- réinitialisation intentionnelle du formulaire quand le sondage actif change
-    setStep(0);
-    setAnswers({});
-  }, [survey?.id]);
-
-  const total = survey?.questions.length ?? 0;
-  const question = survey?.questions[step];
+  const total = survey.questions.length;
+  const question = survey.questions[step];
   const isLast = step === total - 1;
   const progressPct = useMemo(
     () => (total === 0 ? 0 : Math.round(((step + 1) / total) * 100)),
     [step, total],
   );
 
-  const canProceed = useMemo(() => {
-    if (!question) return false;
-    if (!question.required) return true;
-    const v = answers[question.id];
-    if (question.type === "text") return typeof v === "string" && v.trim().length > 0;
-    return v !== undefined && v !== "";
-  }, [question, answers]);
-
   const handleNext = () => {
-    if (!survey) return;
     if (isLast) {
       onSubmit(answers);
       return;
@@ -328,78 +329,64 @@ function SurveyRunner({ survey, onClose, onSubmit }: SurveyRunnerProps) {
     setStep((s) => Math.max(0, s - 1));
   };
 
+  if (!question) return null;
+
   return (
-    <Dialog
-      open={Boolean(survey)}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
-      <DialogContent className="max-w-lg">
-        {survey && question ? (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-[#1A3A52]">
-                {survey.title}
-              </DialogTitle>
-              <DialogDescription>{survey.contextLabel}</DialogDescription>
-            </DialogHeader>
+    <>
+      <DialogHeader>
+        <DialogTitle className="text-[#1A3A52]">{survey.title}</DialogTitle>
+        {survey.description && (
+          <DialogDescription>{survey.description}</DialogDescription>
+        )}
+      </DialogHeader>
 
-            <div className="space-y-1 pt-2">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>
-                  Question {step + 1} sur {total}
-                </span>
-                <span>{progressPct}%</span>
-              </div>
-              <Progress value={progressPct} className="h-1.5" />
-            </div>
+      <div className="space-y-1 pt-2">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            Question {step + 1} sur {total}
+          </span>
+          <span>{progressPct}%</span>
+        </div>
+        <Progress value={progressPct} className="h-1.5" />
+      </div>
 
-            <div className="space-y-4 py-4">
-              <p className="text-sm font-medium text-[#1A3A52]">
-                {question.question}
-                {question.required && (
-                  <span className="ml-1 text-rose-500" aria-label="requis">
-                    *
-                  </span>
-                )}
-              </p>
+      <div className="space-y-4 py-4">
+        <p className="text-sm font-medium text-[#1A3A52]">
+          {question.question}
+        </p>
 
-              <QuestionInput
-                question={question}
-                value={answers[question.id]}
-                onChange={(v) =>
-                  setAnswers((prev) => ({ ...prev, [question.id]: v }))
-                }
-              />
-            </div>
+        <QuestionInput
+          question={question}
+          value={answers[question.id]}
+          onChange={(v) =>
+            setAnswers((prev) => ({ ...prev, [question.id]: v }))
+          }
+        />
+      </div>
 
-            <div className="flex items-center justify-between gap-2 pt-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handlePrev}
-                disabled={step === 0}
-              >
-                Precedent
-              </Button>
-              <Button
-                type="button"
-                onClick={handleNext}
-                disabled={!canProceed}
-                className={cn(
-                  isLast
-                    ? "bg-[#4CAF50] hover:bg-[#43A047]"
-                    : "bg-[#1976D2] hover:bg-[#1565C0]",
-                )}
-              >
-                {isLast ? "Soumettre" : "Suivant"}
-              </Button>
-            </div>
-          </>
-        ) : null}
-      </DialogContent>
-    </Dialog>
+      <div className="flex items-center justify-between gap-2 pt-2">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handlePrev}
+          disabled={step === 0 || submitting}
+        >
+          Precedent
+        </Button>
+        <Button
+          type="button"
+          onClick={handleNext}
+          disabled={submitting}
+          className={cn(
+            isLast
+              ? "bg-[#4CAF50] hover:bg-[#43A047]"
+              : "bg-[#1976D2] hover:bg-[#1565C0]",
+          )}
+        >
+          {isLast ? (submitting ? "Envoi..." : "Soumettre") : "Suivant"}
+        </Button>
+      </div>
+    </>
   );
 }
 
@@ -410,17 +397,21 @@ interface QuestionInputProps {
 }
 
 function QuestionInput({ question, value, onChange }: QuestionInputProps) {
-  if (question.type === "rating") {
-    const scale = question.scale ?? 5;
-    if (scale <= 5) {
+  if (question.type === "scale") {
+    const min = question.min ?? DEFAULT_SCALE_MIN;
+    const max = question.max ?? DEFAULT_SCALE_MAX;
+    const count = Math.max(1, max - min + 1);
+    const values = Array.from({ length: count }, (_, i) => min + i);
+
+    // Échelle compacte (≤ 5 graduations) → étoiles cumulatives.
+    if (count <= 5) {
       return (
         <div
           className="flex items-center gap-1"
           role="radiogroup"
           aria-label={question.question}
         >
-          {Array.from({ length: scale }).map((_, i) => {
-            const n = i + 1;
+          {values.map((n) => {
             const active = typeof value === "number" && value >= n;
             return (
               <button
@@ -447,15 +438,15 @@ function QuestionInput({ question, value, onChange }: QuestionInputProps) {
         </div>
       );
     }
-    // Scale > 5 : grille numerique (NPS 1..10)
+
+    // Échelle large (ex. NPS 1..10) → grille numérique.
     return (
       <div
         className="grid grid-cols-5 gap-2 sm:grid-cols-10"
         role="radiogroup"
         aria-label={question.question}
       >
-        {Array.from({ length: scale }).map((_, i) => {
-          const n = i + 1;
+        {values.map((n) => {
           const active = value === n;
           return (
             <button
@@ -518,17 +509,11 @@ function QuestionInput({ question, value, onChange }: QuestionInputProps) {
 
   // text
   return (
-    <div className="space-y-2">
-      <Textarea
-        placeholder="Votre reponse..."
-        rows={4}
-        value={typeof value === "string" ? value : ""}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <p className="flex items-center gap-1 text-xs text-muted-foreground">
-        <MessageCircle className="size-3" aria-hidden />
-        Vos commentaires restent confidentiels.
-      </p>
-    </div>
+    <Textarea
+      placeholder="Votre reponse..."
+      rows={4}
+      value={typeof value === "string" ? value : ""}
+      onChange={(e) => onChange(e.target.value)}
+    />
   );
 }
