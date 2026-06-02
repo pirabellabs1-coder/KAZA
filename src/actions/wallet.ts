@@ -26,6 +26,11 @@ const MIN_WITHDRAWAL = 5000;
 const MIN_TOPUP = 500;
 const MAX_TOPUP = 5_000_000;
 
+// Ligne brute users (colonne role) pour le garde admin.
+interface ProfileRoleRow {
+  role: string | null;
+}
+
 // =============================================================================
 // REQUEST WITHDRAWAL — utilisateur authentifié
 // =============================================================================
@@ -55,14 +60,15 @@ export async function requestWithdrawal(
     };
   }
 
-  const supabase = await createClient();
+  // Loose cast : tables wallet hors types générés Supabase.
+  const supabase = (await createClient()) as unknown as SupabaseClient;
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
   // Vérifie le solde et l'état du wallet
-  const { data: wallet } = await (supabase as any)
+  const { data: wallet } = await supabase
     .from("user_wallets")
     .select("balance_fcfa, is_frozen")
     .eq("user_id", user.id)
@@ -93,7 +99,7 @@ export async function requestWithdrawal(
   const fee = Math.round(parsed.data.amount * WITHDRAWAL_FEE_RATE);
   const netAmount = parsed.data.amount - fee;
 
-  const { error: insertError } = await (supabase as any)
+  const { error: insertError } = await supabase
     .from("withdrawal_requests")
     .insert({
       user_id: user.id,
@@ -107,7 +113,7 @@ export async function requestWithdrawal(
   if (insertError) return { success: false, error: insertError.message };
 
   // Bloque le montant via wallet_transaction PAYOUT_REQUESTED (négatif)
-  await (supabase as any).from("wallet_transactions").insert({
+  await supabase.from("wallet_transactions").insert({
     user_id: user.id,
     type: "PAYOUT_REQUESTED",
     amount_fcfa: -parsed.data.amount,
@@ -213,13 +219,14 @@ export async function updateBankDetails(
     return { success: false, error: "Données invalides" };
   }
 
-  const supabase = await createClient();
+  // Loose cast : tables wallet hors types générés Supabase.
+  const supabase = (await createClient()) as unknown as SupabaseClient;
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  const { error } = await (supabase as any).from("user_wallets").upsert(
+  const { error } = await supabase.from("user_wallets").upsert(
     {
       user_id: user.id,
       iban: parsed.data.iban?.trim() || null,
@@ -255,7 +262,7 @@ async function requireAdmin(): Promise<
     .select("role")
     .eq("id", user.id)
     .maybeSingle();
-  if ((profile as any)?.role !== "ADMIN") {
+  if ((profile as ProfileRoleRow | null)?.role !== "ADMIN") {
     return { ok: false, error: "Admin uniquement" };
   }
   return { ok: true, userId: user.id };
@@ -268,8 +275,9 @@ export async function approveWithdrawal(
   const guard = await requireAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
 
-  const supabase = await createClient();
-  const { data: w } = await (supabase as any)
+  // Loose cast : tables wallet hors types générés Supabase.
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data: w } = await supabase
     .from("withdrawal_requests")
     .select("user_id, amount_fcfa, status")
     .eq("id", id)
@@ -281,7 +289,7 @@ export async function approveWithdrawal(
 
   // Garde atomique anti double-débit : l'UPDATE n'aboutit que si la demande
   // est ENCORE en PENDING. Deux appels concurrents → un seul met à jour une ligne.
-  const { data: updatedRows, error: updateError } = await (supabase as any)
+  const { data: updatedRows, error: updateError } = await supabase
     .from("withdrawal_requests")
     .update({
       status: "COMPLETED",
@@ -298,7 +306,7 @@ export async function approveWithdrawal(
   }
 
   // Marque la sortie effective (montant 0 car déjà déduit lors du PAYOUT_REQUESTED)
-  await (supabase as any).from("wallet_transactions").insert({
+  await supabase.from("wallet_transactions").insert({
     user_id: w.user_id,
     type: "PAYOUT_PROCESSED",
     amount_fcfa: 0,
@@ -327,8 +335,9 @@ export async function rejectWithdrawal(
   const guard = await requireAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
 
-  const supabase = await createClient();
-  const { data: w } = await (supabase as any)
+  // Loose cast : tables wallet hors types générés Supabase.
+  const supabase = (await createClient()) as unknown as SupabaseClient;
+  const { data: w } = await supabase
     .from("withdrawal_requests")
     .select("user_id, amount_fcfa, status")
     .eq("id", id)
@@ -339,7 +348,7 @@ export async function rejectWithdrawal(
   }
 
   // Garde atomique : un seul refus possible même en concurrence.
-  const { data: updatedRows, error: updateError } = await (supabase as any)
+  const { data: updatedRows, error: updateError } = await supabase
     .from("withdrawal_requests")
     .update({
       status: "REJECTED",
@@ -356,7 +365,7 @@ export async function rejectWithdrawal(
   }
 
   // Restitue le montant initialement bloqué (positif)
-  await (supabase as any).from("wallet_transactions").insert({
+  await supabase.from("wallet_transactions").insert({
     user_id: w.user_id,
     type: "ADJUSTMENT",
     amount_fcfa: Number(w.amount_fcfa),

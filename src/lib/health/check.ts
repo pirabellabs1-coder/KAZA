@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
@@ -262,8 +264,8 @@ export interface UptimeSummary {
 
 export async function getUptimeSummary(): Promise<UptimeSummary[]> {
   try {
-    const supabase = await createClient();
-    const { data } = await (supabase as any)
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
       .from("health_uptime_summary")
       .select("*");
     return ((data ?? []) as Array<{
@@ -299,8 +301,8 @@ export interface LatencyHourly {
 
 export async function getLatencyHourly24h(): Promise<LatencyHourly[]> {
   try {
-    const supabase = await createClient();
-    const { data } = await (supabase as any)
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
       .from("health_latency_hourly_24h")
       .select("*");
     return ((data ?? []) as Array<{
@@ -330,8 +332,8 @@ export interface DailyUptime {
 
 export async function getDailyUptime90d(): Promise<DailyUptime[]> {
   try {
-    const supabase = await createClient();
-    const { data } = await (supabase as any)
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
       .from("health_daily_90d")
       .select("*");
     return ((data ?? []) as Array<{
@@ -379,16 +381,38 @@ export interface MaintenanceRow {
   affectedServices: string[];
 }
 
+// Lignes brutes des tables incidents / maintenances (hors types générés).
+interface IncidentDbRow {
+  id: string;
+  title: string;
+  description: string | null;
+  severity: string;
+  status: string;
+  affected_services: string[] | null;
+  started_at: string;
+  resolved_at: string | null;
+  updates: { at: string; message: string; status?: string }[] | null;
+}
+interface MaintenanceDbRow {
+  id: string;
+  title: string;
+  description: string | null;
+  scheduled_at: string;
+  duration_minutes: number;
+  status: string;
+  affected_services: string[] | null;
+}
+
 export async function listOpenIncidents(): Promise<IncidentRow[]> {
   try {
-    const supabase = await createClient();
-    const { data, error } = await (supabase as any)
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data, error } = await supabase
       .from("incidents")
       .select("*")
       .neq("status", "RESOLVED")
       .order("started_at", { ascending: false });
     if (error) return [];
-    return (data ?? []).map((r: any) => ({
+    return ((data ?? []) as IncidentDbRow[]).map((r) => ({
       id: r.id,
       title: r.title,
       description: r.description,
@@ -406,14 +430,14 @@ export async function listOpenIncidents(): Promise<IncidentRow[]> {
 
 export async function listRecentResolvedIncidents(limit = 10): Promise<IncidentRow[]> {
   try {
-    const supabase = await createClient();
-    const { data } = await (supabase as any)
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
       .from("incidents")
       .select("*")
       .eq("status", "RESOLVED")
       .order("resolved_at", { ascending: false })
       .limit(limit);
-    return (data ?? []).map((r: any) => ({
+    return ((data ?? []) as IncidentDbRow[]).map((r) => ({
       id: r.id,
       title: r.title,
       description: r.description,
@@ -431,14 +455,14 @@ export async function listRecentResolvedIncidents(limit = 10): Promise<IncidentR
 
 export async function listUpcomingMaintenances(): Promise<MaintenanceRow[]> {
   try {
-    const supabase = await createClient();
-    const { data } = await (supabase as any)
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
       .from("maintenances")
       .select("*")
       .in("status", ["SCHEDULED", "IN_PROGRESS"])
       .gte("scheduled_at", new Date().toISOString())
       .order("scheduled_at");
-    return (data ?? []).map((r: any) => ({
+    return ((data ?? []) as MaintenanceDbRow[]).map((r) => ({
       id: r.id,
       title: r.title,
       description: r.description,

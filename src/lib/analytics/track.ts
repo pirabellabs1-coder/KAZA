@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
@@ -37,12 +39,13 @@ export interface TrackInput {
 
 export async function track(input: TrackInput): Promise<void> {
   try {
-    const supabase = await createClient();
+    // Loose cast : table analytics_events hors types générés Supabase.
+    const supabase = (await createClient()) as unknown as SupabaseClient;
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    await (supabase as any).from("analytics_events").insert({
+    await supabase.from("analytics_events").insert({
       event_type: input.eventType,
       user_id: user?.id ?? null,
       session_id: input.sessionId ?? null,
