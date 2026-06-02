@@ -13,6 +13,7 @@ export function useOnlineStatus(): boolean {
     if (typeof window === 'undefined') return;
 
     // Initialiser avec la valeur réelle après hydratation
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
     setIsOnline(window.navigator.onLine);
 
     const handleOnline = () => setIsOnline(true);

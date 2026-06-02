@@ -39,6 +39,7 @@ export function AdminShell({
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
       if (stored === "1") setCollapsed(true);
     } catch {
       // ignore

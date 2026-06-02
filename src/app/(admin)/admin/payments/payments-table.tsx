@@ -85,6 +85,7 @@ export function PaymentsTable({ rows }: PaymentsTableProps) {
   const filtered = rows.filter((p) => {
     if (statusFilter !== "all" && p.status !== statusFilter) return false;
     if (periodFilter === "7d") {
+      // eslint-disable-next-line react-hooks/purity -- Server Component rendu une fois par requete / valeur temporelle stable — appel horloge acceptable ici
       const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (new Date(p.date).getTime() < sevenDaysAgo) return false;
     }

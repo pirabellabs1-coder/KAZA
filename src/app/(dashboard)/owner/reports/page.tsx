@@ -41,6 +41,7 @@ export default async function OwnerReportsPage() {
   ]);
 
   // Revenus 30 derniers jours = somme des paiements COMPLETED des 30 derniers jours
+  // eslint-disable-next-line react-hooks/purity -- Server Component rendu une fois par requete / valeur temporelle stable — appel horloge acceptable ici
   const since = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const completed30d = payments.filter(
     (p) => p.status === "COMPLETED" && new Date(p.createdAt).getTime() >= since,

@@ -12,6 +12,7 @@ import { PaymentsTable } from "./payments-table";
 export default async function AdminPaymentsPage() {
   const allPayments = await listAllPayments();
 
+  // eslint-disable-next-line react-hooks/purity -- Server Component rendu une fois par requete / valeur temporelle stable — appel horloge acceptable ici
   const THIRTY_DAYS_AGO = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const successOnly = allPayments.filter((p) => p.status === "success");
   const revenue30d = successOnly

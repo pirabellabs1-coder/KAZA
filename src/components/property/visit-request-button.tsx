@@ -56,6 +56,7 @@ export function VisitRequestButton({
 
   useEffect(() => {
     if (isAuthenticated !== undefined) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
       setIsAuth(isAuthenticated);
       return;
     }

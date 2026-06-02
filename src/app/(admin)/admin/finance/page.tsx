@@ -152,6 +152,7 @@ export default async function AdminFinancePage() {
     const pct = totalBreakdown > 0 ? item.value / totalBreakdown : 0;
     const dashArray = pct * donutCirc;
     const dashOffset = -cumulative;
+    // eslint-disable-next-line react-hooks/immutability -- accumulateur local pour un calcul de graphe (cumul angles/positions) — pur pour des props identiques
     cumulative += dashArray;
     return { ...item, dashArray, dashOffset, pct };
   });

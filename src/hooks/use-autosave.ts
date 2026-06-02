@@ -94,6 +94,7 @@ export function useAutoSave<T extends object>({
     try {
       const raw = window.localStorage.getItem(key);
       if (raw) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
         setHasRestoredDraft(true);
         const parsed = JSON.parse(raw) as { __savedAt?: number };
         if (parsed?.__savedAt) setLastSavedAt(parsed.__savedAt);
@@ -116,6 +117,7 @@ export function useAutoSave<T extends object>({
     if (typeof window === "undefined") return;
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
     setStatus("saving");
 
     debounceRef.current = setTimeout(() => {

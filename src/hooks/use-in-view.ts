@@ -26,6 +26,7 @@ export function useInView<T extends Element>(
     if (typeof window === 'undefined') return;
     if (typeof IntersectionObserver === 'undefined') {
       // Fallback : pas d'IO -> on considère que c'est visible
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
       setInView(true);
       return;
     }

@@ -212,6 +212,7 @@ export function VirtualTour({ images, videoUrl, embedUrl }: VirtualTourProps) {
                     className="absolute inset-0 transition-transform"
                     style={{
                       transform: `translateX(${offsetX}px) scale(1.15)`,
+                      // eslint-disable-next-line react-hooks/refs -- lecture de ref intentionnelle pour un calcul d affichage non reactif
                       transitionDuration: dragRef.current ? "0ms" : "200ms",
                     }}
                   >

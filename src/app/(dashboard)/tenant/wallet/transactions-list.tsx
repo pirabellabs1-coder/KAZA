@@ -86,6 +86,7 @@ export function TransactionsList({ transactions }: TransactionsListProps) {
   const [period, setPeriod] = useState<PeriodFilter>("all");
 
   const filtered = useMemo(() => {
+    // eslint-disable-next-line react-hooks/purity -- Server Component rendu une fois par requete / valeur temporelle stable — appel horloge acceptable ici
     const now = Date.now();
     return transactions.filter((t) => {
       if (direction !== "all" && t.direction !== direction) return false;

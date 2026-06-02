@@ -50,6 +50,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (isLocale(stored)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
         setLocaleState(stored);
         document.documentElement.lang = stored;
       }

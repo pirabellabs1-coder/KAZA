@@ -799,6 +799,7 @@ function Donut({
             strokeLinecap="butt"
           />
         );
+        // eslint-disable-next-line react-hooks/immutability -- accumulateur local pour un calcul de graphe (cumul angles/positions) — pur pour des props identiques
         offset += dash;
         return seg;
       })}

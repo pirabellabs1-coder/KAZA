@@ -54,6 +54,7 @@ export function usePropertyDraft(): UsePropertyDraftReturn {
     if (typeof window === "undefined") return;
     try {
       const raw = window.localStorage.getItem(DRAFT_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
       if (raw) setHasRestoredDraft(true);
     } catch {
       // localStorage inaccessible (mode prive, quota, etc.) — ignore.

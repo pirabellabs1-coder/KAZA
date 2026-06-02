@@ -198,6 +198,7 @@ export default function ReportsPage() {
   const [detail, setDetail] = useState<UserReport | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- init depuis le localStorage après hydratation (SSR-safe), une seule fois
     setReports(getMyReports());
   }, []);
 

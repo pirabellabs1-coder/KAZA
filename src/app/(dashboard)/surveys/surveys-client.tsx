@@ -106,6 +106,7 @@ export function SurveysClient({ userFirstName }: SurveysClientProps) {
   const [activeSurvey, setActiveSurvey] = useState<PendingSurvey | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- init depuis le localStorage après hydratation (SSR-safe), une seule fois
     setPending(getPendingSurveys());
     setCompleted(getCompletedSurveys());
     setHydrated(true);
@@ -293,6 +294,7 @@ function SurveyRunner({ survey, onClose, onSubmit }: SurveyRunnerProps) {
 
   // Reset state quand on change de sondage
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- réinitialisation intentionnelle du formulaire quand le sondage actif change
     setStep(0);
     setAnswers({});
   }, [survey?.id]);

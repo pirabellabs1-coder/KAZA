@@ -129,6 +129,7 @@ export default async function DashboardPage() {
   }
   if (role === "OWNER") {
     const visits = await listOwnerVisits(user.id);
+    // eslint-disable-next-line react-hooks/purity -- Server Component rendu une fois par requête ; horloge serveur acceptable
     const now = Date.now();
     const upcomingVisits = visits
       .filter(
@@ -223,6 +224,7 @@ function OwnerOverview({
   let donutCumul = 0;
   const donutSegments = reviews.map((r) => {
     const start = donutCumul;
+    // eslint-disable-next-line react-hooks/immutability -- accumulateur local pour le calcul du donut (cumul d'angles), pur pour des données identiques
     donutCumul += r.count;
     const startAngle = donutTotal > 0 ? (start / donutTotal) * 360 : 0;
     const endAngle = donutTotal > 0 ? (donutCumul / donutTotal) * 360 : 0;

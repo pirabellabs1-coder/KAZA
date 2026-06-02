@@ -104,6 +104,7 @@ export function ChartsClient() {
     const angle = (role.value / totalRoles) * Math.PI * 2;
     const startAngle = cumulativeAngle;
     const endAngle = cumulativeAngle + angle;
+    // eslint-disable-next-line react-hooks/immutability -- accumulateur local pour un calcul de graphe (cumul angles/positions) — pur pour des props identiques
     cumulativeAngle = endAngle;
 
     const x1 = donutCx + donutRadius * Math.cos(startAngle);

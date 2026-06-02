@@ -448,6 +448,7 @@ export function PromotionClient({
               const planMeta = planFromDb(boost.plan);
               const start = new Date(boost.startedAt).getTime();
               const end = new Date(boost.endsAt).getTime();
+              // eslint-disable-next-line react-hooks/purity -- horodatage pour calculer la progression d'un boost à l'affichage ; valeur stable dans le rendu
               const now = Date.now();
               const total = Math.max(end - start, 1);
               const elapsed = Math.min(Math.max(now - start, 0), total);

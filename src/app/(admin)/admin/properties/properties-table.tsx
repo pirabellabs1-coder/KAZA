@@ -96,6 +96,7 @@ export function PropertiesTable({ rows, adminEmail }: PropertiesTableProps) {
   }, [rows]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
     setActions(getAdminActions());
   }, []);
 

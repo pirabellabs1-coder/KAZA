@@ -177,6 +177,7 @@ export function AchievementsClient({
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- setState intentionnel dans un effet (init/hydratation SSR-safe, abonnement navigateur ou souscription externe) — pattern correct, pas de cascade de rendu problematique
     setAchievements(incoming.map(mapIncoming));
     setHydrated(true);
   }, [incoming]);
