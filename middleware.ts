@@ -23,6 +23,18 @@ const protectedPrefixes = [
   // Espace acheteur (offres d'achat) — accessible à tout utilisateur connecté,
   // sans restriction de rôle (pas d'entrée dans ROLE_RULES).
   "/buyer",
+  // Pages (dashboard) accessibles à tout utilisateur connecté (pas de
+  // restriction de rôle) : garde autoritaire au middleware (307 → /login)
+  // en plus de l'auto-protection de chaque page.
+  "/contracts",
+  "/notifications",
+  "/verify-identity",
+  "/achievements",
+  "/points",
+  "/referral",
+  "/reports",
+  "/surveys",
+  "/membre-plus",
 ];
 
 /**
