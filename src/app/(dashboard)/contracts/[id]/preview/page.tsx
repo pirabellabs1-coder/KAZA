@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getUserContractById, type UserContract } from "@/lib/queries/contracts";
 import { ContractDownloadActions } from "./download-actions";
 import {
   CONTRACT_TEMPLATES,
@@ -20,27 +21,6 @@ import {
   type ContractTemplate,
 } from "@/lib/contracts/templates";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
-
-// Type redéfini localement — à brancher sur la table contracts Supabase
-interface DemoContract {
-  id: string;
-  status: "DRAFT" | "PENDING_TENANT" | "PENDING_OWNER" | "SIGNED" | "CANCELLED";
-  propertyTitle: string;
-  propertyAddress: string;
-  ownerName: string;
-  tenantName: string;
-  monthlyRent: number;
-  deposit: number;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  signedAt?: string;
-}
-
-// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
-function getDemoContractById(_id: string): DemoContract | undefined {
-  return undefined;
-}
 
 export const metadata: Metadata = {
   title: "Aperçu du contrat",
@@ -52,7 +32,7 @@ export const metadata: Metadata = {
 
 function renderPlaceholders(
   body: string,
-  contract: DemoContract,
+  contract: UserContract,
   template: ContractTemplate
 ): string {
   const charges = Math.round(contract.monthlyRent * 0.08);
@@ -232,8 +212,9 @@ export default async function ContractPreviewPage({
   const user = await getCurrentDisplayUser();
   if (!user) redirect(`/login?redirect=/contracts/${id}/preview`);
 
-  // Fallback brouillon vierge — à brancher sur la query contracts Supabase.
-  const contract: DemoContract = getDemoContractById(id) ?? {
+  // Contrat réel (table contracts), scopé à l'utilisateur. Repli brouillon
+  // vierge si l'id ne correspond pas encore à un contrat existant.
+  const contract: UserContract = (await getUserContractById(user.id, id)) ?? {
     id,
     status: "DRAFT",
     propertyTitle: "",
@@ -441,7 +422,7 @@ function ArticleBlock({
 }: {
   num: number;
   section: ContractSection;
-  contract: DemoContract;
+  contract: UserContract;
   template: ContractTemplate;
   isLast?: boolean;
 }) {

@@ -156,3 +156,17 @@ export async function listUserContracts(
     return [];
   }
 }
+
+/**
+ * Renvoie un contrat précis de l'utilisateur (locataire ou propriétaire du
+ * bien) par son id, ou null s'il n'existe pas / n'est pas accessible.
+ * Réutilise le scope sécurisé de listUserContracts.
+ */
+export async function getUserContractById(
+  userId: string,
+  contractId: string,
+): Promise<UserContract | null> {
+  if (!userId || !contractId) return null;
+  const all = await listUserContracts(userId);
+  return all.find((c) => c.id === contractId) ?? null;
+}

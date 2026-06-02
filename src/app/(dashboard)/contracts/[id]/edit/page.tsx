@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { getUserContractById, type UserContract } from "@/lib/queries/contracts";
 import {
   getTemplateById,
   getClausesByCategory,
@@ -41,28 +42,15 @@ import {
 } from "@/lib/contracts/templates";
 import { cn, formatDate, formatPrice } from "@/lib/utils";
 
-// Type redéfini localement — à brancher sur la table contracts Supabase
-interface DemoContract {
-  id: string;
-  status: "DRAFT" | "PENDING_TENANT" | "PENDING_OWNER" | "SIGNED" | "CANCELLED";
-  propertyTitle: string;
-  propertyAddress: string;
-  ownerName: string;
-  tenantName: string;
-  monthlyRent: number;
-  deposit: number;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  signedAt?: string;
-  pdfUrl?: string;
-}
-
-// Fallback vide — à brancher quand la table contracts Supabase sera connectée.
-function getDemoContractById(_id: string): DemoContract | undefined {
-  return undefined;
-}
 import { ContractEditorClient } from "./contract-editor-client";
+
+const STATUS_LABELS: Record<UserContract["status"], string> = {
+  DRAFT: "Brouillon",
+  PENDING_TENANT: "En attente locataire",
+  PENDING_OWNER: "En attente bailleur",
+  SIGNED: "Signé",
+  CANCELLED: "Annulé",
+};
 
 export const metadata: Metadata = {
   title: "Éditeur de contrat",
@@ -94,9 +82,11 @@ export default async function ContractEditorPage({
   const user = await getCurrentDisplayUser();
   if (!user) redirect(`/login?redirect=/contracts/${id}/edit`);
 
-  // Fallback brouillon vierge — à brancher sur la query contracts Supabase.
-  const contract: DemoContract =
-    getDemoContractById(id) ?? {
+  // Contrat réel (table contracts → rentals → properties), scopé à l'utilisateur.
+  // Repli brouillon vierge si l'id ne correspond pas encore à un contrat existant.
+  const realContract = await getUserContractById(user.id, id);
+  const contract: UserContract =
+    realContract ?? {
       id,
       status: "DRAFT",
       propertyTitle: "",
@@ -136,7 +126,7 @@ export default async function ContractEditorPage({
                 variant="secondary"
                 className="ml-1 bg-muted text-muted-foreground"
               >
-                Brouillon
+                {STATUS_LABELS[contract.status]}
               </Badge>
             </p>
           </div>
@@ -246,8 +236,8 @@ export default async function ContractEditorPage({
               <Separator />
               <PartyRow
                 role="Locataire"
-                name={contract.tenantName}
-                detail="CNI : BJ-1234567890"
+                name={contract.tenantName || "Non renseigné"}
+                detail={contract.tenantName ? "Locataire désigné" : "À renseigner"}
               />
               <Separator />
               <PartyRow
