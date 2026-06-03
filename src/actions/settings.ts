@@ -224,7 +224,22 @@ export async function requestAccountDeletion(): Promise<SettingsResult> {
     };
   }
 
+  // Trace la demande dans la file RGPD/APDP pour le suivi côté admin
+  // (best-effort : ne bloque pas la suppression si l'insertion échoue).
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from("gdpr_requests").insert({
+      user_id: user.id,
+      type: "DELETION",
+      details: "Demande de suppression de compte (paramètres confidentialité).",
+      status: "PENDING",
+    });
+  } catch {
+    // silencieux : la demande de suppression principale est déjà enregistrée
+  }
+
   revalidatePath("/settings/privacy");
+  revalidatePath("/admin/documents");
   return { success: true };
 }
 
