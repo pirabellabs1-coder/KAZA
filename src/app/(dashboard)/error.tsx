@@ -22,7 +22,7 @@ interface DashboardErrorProps {
 export default function DashboardError({ error, reset }: DashboardErrorProps) {
   // En dev on log dans la console pour aider au debug.
   if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
+     
     console.error("[dashboard/error]", error);
   }
 

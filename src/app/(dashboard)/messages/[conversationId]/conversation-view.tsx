@@ -110,7 +110,7 @@ export function ConversationView({
             });
           } catch (err) {
             if (process.env.NODE_ENV !== "production") {
-              // eslint-disable-next-line no-console
+               
               console.error("[conversation-view] payload realtime:", err);
             }
           }
@@ -122,7 +122,7 @@ export function ConversationView({
         // seule la reception en direct est momentanement indisponible.
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+             
             console.error("[conversation-view] Realtime messages:", status);
           }
         }

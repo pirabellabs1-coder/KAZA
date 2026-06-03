@@ -28,7 +28,7 @@ const EMPTY_STATS: AdminStats = {
   pendingVerifications: 0,
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 /**
  * Admin space layout — garde de route.

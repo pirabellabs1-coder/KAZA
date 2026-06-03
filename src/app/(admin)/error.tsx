@@ -21,7 +21,7 @@ interface AdminErrorProps {
 
 export default function AdminError({ error, reset }: AdminErrorProps) {
   if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
+     
     console.error("[admin/error]", error);
   }
 

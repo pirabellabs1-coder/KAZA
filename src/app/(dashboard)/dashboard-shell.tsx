@@ -97,7 +97,7 @@ export function DashboardShell({
         setUnreadCount(count ?? 0);
       } catch (err) {
         if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
+           
           console.error("[dashboard-shell] refreshCount:", err);
         }
       }
@@ -122,7 +122,7 @@ export function DashboardShell({
         // l'UI. Le compteur reste sur sa derniere valeur connue (SSR ou refetch).
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+             
             console.error("[dashboard-shell] Realtime notifications:", status);
           }
         }
