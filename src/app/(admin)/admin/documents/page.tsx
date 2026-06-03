@@ -34,24 +34,12 @@ import {
 
 import { formatNumber } from "@/lib/utils";
 
-// Fallback vide — à brancher quand la table `gdpr_requests` sera en place.
-const GDPR_REQUESTS: Array<{
-  id: string;
-  type: string;
-  user: string;
-  userId: string;
-  userName: string;
-  email: string;
-  requestedAt: string;
-  deadline: string;
-  status: string;
-  daysLeft: number;
-}> = [];
 import {
   listAllIdentityVerifications,
   type AdminDocumentRow,
   type AdminUserVerification,
 } from "@/lib/queries/admin";
+import { listGdprRequests } from "@/lib/queries/gdpr";
 
 export const dynamic = "force-dynamic";
 
@@ -105,6 +93,7 @@ const GDPR_TYPE_LABELS: Record<string, string> = {
   EXPORT: "Export des données",
   DELETION: "Suppression du compte",
   RECTIFICATION: "Rectification",
+  ACCESS: "Accès aux données",
 };
 
 const GDPR_STATUS_BADGE: Record<
@@ -220,6 +209,21 @@ export default async function AdminDocumentsPage() {
     total: v.total,
   }));
 
+  // Demandes RGPD/APDP réelles (table gdpr_requests). Échéance légale de
+  // réponse = 30 jours après la demande (calcul du daysLeft fait au rendu).
+  const gdprRows = await listGdprRequests();
+  const gdprRequests = gdprRows.map((r) => ({
+    id: r.id,
+    type: r.type,
+    userId: r.userId ?? "",
+    userName: r.userName,
+    requestedAt: r.requestedAt,
+    status: r.status,
+    deadline: new Date(
+      new Date(r.requestedAt).getTime() + 30 * 24 * 60 * 60 * 1000,
+    ).toISOString(),
+  }));
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -229,11 +233,11 @@ export default async function AdminDocumentsPage() {
         </h1>
         <p className="text-sm text-muted-foreground">
           {docCounts.total} documents · {docCounts.pending} en attente de revue
-          · {GDPR_REQUESTS.length} demandes RGPD
+          · {gdprRequests.length} demandes RGPD
         </p>
       </div>
 
-      {/* RGPD requests — branché sur `gdpr_requests` (vide tant que la table n'existe pas) */}
+      {/* RGPD requests — branché sur la table réelle `gdpr_requests` */}
       <Card className="rounded-2xl border-blue-200 bg-blue-50/40 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
@@ -250,15 +254,15 @@ export default async function AdminDocumentsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {GDPR_REQUESTS.length === 0 && (
+          {gdprRequests.length === 0 && (
             <div className="rounded-xl border border-dashed border-blue-200 bg-white/60 px-4 py-8 text-center text-sm text-muted-foreground">
-              Aucune demande RGPD en attente. Les demandes d&apos;accès,
-              rectification ou suppression apparaîtront ici une fois la table{" "}
-              <code className="font-mono text-xs">gdpr_requests</code> branchée.
+              Aucune demande RGPD en attente. Les demandes d&apos;accès, de
+              rectification ou de suppression soumises par les utilisateurs
+              apparaîtront ici.
             </div>
           )}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {GDPR_REQUESTS.map((r) => {
+            {gdprRequests.map((r) => {
               const statusCfg =
                 GDPR_STATUS_BADGE[r.status] ?? GDPR_STATUS_BADGE.PENDING!;
               // Server Component rendu à chaque requête (force-dynamic).
