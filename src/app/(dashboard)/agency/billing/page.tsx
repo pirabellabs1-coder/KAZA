@@ -44,17 +44,43 @@ import {
   listUserInvoices,
   PLAN_DETAILS,
 } from "@/lib/queries/subscriptions";
+import { getOwnerPortfolioStats } from "@/lib/queries/owner-properties";
+import { getTeamStats } from "@/lib/queries/agency-team";
+import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { formatFcfa } from "@/lib/utils";
 import { SubscribeButton } from "@/components/subscriptions/subscribe-button";
 import { CancelSubscriptionButton } from "@/components/subscriptions/cancel-subscription-button";
 import { InvoiceDownloadButton } from "@/components/billing/invoice-download-button";
 
-// Fallback vide — à brancher quand la table agency_profiles sera en place.
-const AGENCY_PROFILE = {
-  legalName: "",
-  rccm: "",
-  ifu: "",
-};
+/**
+ * Identité légale de l'agence (raison sociale, RCCM, IFU) lue depuis
+ * `users.agency_settings.profile` (JSONB). Pas de table agency_profiles
+ * dédiée : ces champs vivent dans les paramètres de l'agence. Renvoie des
+ * chaînes vides si non renseignés.
+ */
+async function getAgencyLegalProfile(
+  userId: string,
+): Promise<{ legalName: string; rccm: string; ifu: string }> {
+  try {
+    const supabase = (await createClient()) as unknown as SupabaseClient;
+    const { data } = await supabase
+      .from("users")
+      .select("agency_settings")
+      .eq("id", userId)
+      .maybeSingle();
+    const profile =
+      ((data?.agency_settings as { profile?: Record<string, string> } | null)
+        ?.profile) ?? {};
+    return {
+      legalName: profile.legalName ?? "",
+      rccm: profile.rccm ?? "",
+      ifu: profile.ifu ?? "",
+    };
+  } catch {
+    return { legalName: "", rccm: "", ifu: "" };
+  }
+}
 
 export const metadata: Metadata = {
   title: "Facturation — KAZA Agence",
@@ -299,10 +325,14 @@ export default async function AgencyBillingPage() {
     redirect("/login?next=/agency/billing");
   }
 
-  const [sub, invoices] = await Promise.all([
-    getActiveSubscription(user.id),
-    listUserInvoices(user.id),
-  ]);
+  const [sub, invoices, portfolioStats, teamStats, agencyProfile] =
+    await Promise.all([
+      getActiveSubscription(user.id),
+      listUserInvoices(user.id),
+      getOwnerPortfolioStats(user.id),
+      getTeamStats(user.id),
+      getAgencyLegalProfile(user.id),
+    ]);
 
   // Empty state — pas d'abonnement actif
   if (!sub) {
@@ -318,11 +348,14 @@ export default async function AgencyBillingPage() {
     .filter((i) => i.status === "PAID" && i.issuedAt.startsWith(currentYear))
     .reduce((acc, i) => acc + i.amount, 0);
 
-  // Quotas réels — pour le MVP, on affiche les limites du plan avec
-  // une utilisation neutre (à brancher sur properties/team_members)
+  // Quotas réels : annonces actives (portfolio) + membres d'équipe (agency_members).
+  // boosts/stockage : limites du plan affichées (consommation non encore tracée).
   const quotaDisplay = {
-    activeListings: { used: 0, max: quotas.activeListings },
-    teamMembers: { used: 1, max: quotas.teamMembers },
+    activeListings: {
+      used: portfolioStats.available + portfolioStats.rented,
+      max: quotas.activeListings,
+    },
+    teamMembers: { used: teamStats.total, max: quotas.teamMembers },
     boostsPerMonth: { used: 0, max: quotas.boostsPerMonth },
     storageGB: { used: 0, max: quotas.storageGB },
   };
@@ -716,7 +749,7 @@ export default async function AgencyBillingPage() {
                 Raison sociale
               </p>
               <p className="font-semibold text-kaza-navy">
-                {AGENCY_PROFILE.legalName}
+                {agencyProfile.legalName || "Non renseignée"}
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -725,7 +758,7 @@ export default async function AgencyBillingPage() {
                   RCCM
                 </p>
                 <p className="font-mono text-sm text-foreground">
-                  {AGENCY_PROFILE.rccm}
+                  {agencyProfile.rccm || "—"}
                 </p>
               </div>
               <div>
@@ -733,7 +766,7 @@ export default async function AgencyBillingPage() {
                   IFU
                 </p>
                 <p className="font-mono text-sm text-foreground">
-                  {AGENCY_PROFILE.ifu}
+                  {agencyProfile.ifu || "—"}
                 </p>
               </div>
             </div>

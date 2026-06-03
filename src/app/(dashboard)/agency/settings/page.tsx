@@ -37,53 +37,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
 import type { AgencySettings } from "@/actions/agency-settings";
+import {
+  getTeamStats,
+  listTeamMembers,
+  type AgencyRole,
+  type AgencyTeamMember,
+} from "@/lib/queries/agency-team";
 
 import { DataExportButton } from "@/components/settings/data-export-button";
 import { SettingsProfileForm } from "./settings-profile-form";
 import { SettingsPublicForm } from "./settings-public-form";
 import { SettingsNotificationsForm } from "./settings-notifications-form";
-
-// ---------------------------------------------------------------------------
-// Types & fallbacks locaux — à brancher quand la table agency_profiles /
-// team_members sera en place.
-// ---------------------------------------------------------------------------
-
-type AgentRole =
-  | "Directrice"
-  | "Manager"
-  | "Agent senior"
-  | "Agent"
-  | "Stagiaire"
-  | "Comptable"
-  | "Gestionnaire";
-
-interface AgentMember {
-  id: string;
-  name: string;
-  role: AgentRole;
-  email: string;
-  initials: string;
-  color: string;
-  permissions: string[];
-}
-
-// Fallback vide — à brancher quand la table agency_profiles sera en place.
-const AGENCY_PROFILE = {
-  name: "",
-  legalName: "",
-  oapi: "",
-  city: "",
-  address: "",
-  email: "",
-  phone: "",
-  website: "",
-  description: "",
-  rccm: "",
-  ifu: "",
-};
-
-// Fallback vide — à brancher quand la table team_members sera en place.
-const AGENCY_TEAM: AgentMember[] = [];
 
 export const metadata: Metadata = {
   title: "Paramètres agence — KAZA Pro",
@@ -97,15 +61,37 @@ export const dynamic = "force-dynamic";
 // Helpers / constantes
 // ---------------------------------------------------------------------------
 
-const ROLE_LABEL: Record<AgentRole, string> = {
-  Directrice: "Directrice",
-  Manager: "Manager",
-  "Agent senior": "Agent senior",
-  Agent: "Agent",
-  Stagiaire: "Stagiaire",
-  Comptable: "Comptable",
-  Gestionnaire: "Gestionnaire",
+// Libellés FR des rôles agence (alignés sur /agency/team).
+const ROLE_LABEL: Record<AgencyRole, string> = {
+  DIRECTOR: "Directeur·rice",
+  MANAGER: "Manager",
+  AGENT_SENIOR: "Agent senior",
+  AGENT: "Agent",
+  INTERN: "Stagiaire",
+  ACCOUNTANT: "Comptable",
 };
+
+// Couleur de l'avatar dérivée du rôle (pas de couleur arbitraire stockée).
+const ROLE_AVATAR_COLOR: Record<AgencyRole, string> = {
+  DIRECTOR: "bg-kaza-navy",
+  MANAGER: "bg-kaza-blue",
+  AGENT_SENIOR: "bg-kaza-blue",
+  AGENT: "bg-kaza-green",
+  INTERN: "bg-cyan-600",
+  ACCOUNTANT: "bg-emerald-600",
+};
+
+/** Initiales (max 2 lettres) à partir du nom complet du membre. */
+function initialsOf(name: string): string {
+  return (
+    name
+      .split(/\s+/)
+      .map((part) => part[0]?.toUpperCase())
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("") || "?"
+  );
+}
 
 // Évènements de notification connus, avec leurs canaux par défaut.
 const DEFAULT_NOTIFICATION_EVENTS: AgencySettings["notifications"]["events"] = {
@@ -120,24 +106,24 @@ const DEFAULT_NOTIFICATION_EVENTS: AgencySettings["notifications"]["events"] = {
 
 const DEFAULT_AGENCY_SETTINGS: AgencySettings = {
   profile: {
-    commercialName: AGENCY_PROFILE.name,
-    legalName: AGENCY_PROFILE.legalName,
-    rccm: AGENCY_PROFILE.rccm,
-    ifu: AGENCY_PROFILE.ifu,
-    oapi: AGENCY_PROFILE.oapi,
-    city: AGENCY_PROFILE.city,
-    address: AGENCY_PROFILE.address,
-    email: AGENCY_PROFILE.email,
-    phone: AGENCY_PROFILE.phone,
-    website: AGENCY_PROFILE.website,
-    description: AGENCY_PROFILE.description,
+    commercialName: "",
+    legalName: "",
+    rccm: "",
+    ifu: "",
+    oapi: "",
+    city: "",
+    address: "",
+    email: "",
+    phone: "",
+    website: "",
+    description: "",
     logoUrl: "",
   },
   public: {
     slug: "",
     accentColor: "navy",
     bannerUrl: "",
-    about: AGENCY_PROFILE.description,
+    about: "",
     youtube: "",
     social: { facebook: "", instagram: "", linkedin: "", twitter: "" },
     showTeam: true,
@@ -213,7 +199,17 @@ async function loadAgencySettings(): Promise<AgencySettings> {
 // ---------------------------------------------------------------------------
 
 export default async function AgencySettingsPage() {
-  const settings = await loadAgencySettings();
+  const user = await getCurrentDisplayUser();
+
+  // L'agencyId = l'id du compte AGENCY connecté. Sans session, on rend la page
+  // avec les valeurs par défaut et une équipe vide (état-vide gracieux).
+  const [settings, teamMembers, teamStats] = await Promise.all([
+    loadAgencySettings(),
+    user ? listTeamMembers(user.id) : Promise.resolve<AgencyTeamMember[]>([]),
+    user
+      ? getTeamStats(user.id)
+      : Promise.resolve({ total: 0, active: 0, onLeave: 0, invited: 0 }),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -489,8 +485,8 @@ export default async function AgencySettingsPage() {
               <div className="flex flex-col items-start justify-between gap-3 rounded-lg border border-border/70 bg-muted/30 p-4 sm:flex-row sm:items-center">
                 <div>
                   <p className="font-heading text-2xl font-bold text-kaza-navy">
-                    {AGENCY_TEAM.length} membre{AGENCY_TEAM.length > 1 ? "s" : ""} actif
-                    {AGENCY_TEAM.length > 1 ? "s" : ""}
+                    {teamStats.active} membre{teamStats.active > 1 ? "s" : ""} actif
+                    {teamStats.active > 1 ? "s" : ""}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Gérez votre équipe depuis la page dédiée.
@@ -523,22 +519,38 @@ export default async function AgencySettingsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {AGENCY_TEAM.map((member) => (
+                    {teamMembers.length === 0 && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={5}
+                          className="py-8 text-center text-sm text-muted-foreground"
+                        >
+                          Aucun membre dans votre équipe pour le moment.{" "}
+                          <Link
+                            href="/agency/team"
+                            className="font-medium text-kaza-blue hover:underline"
+                          >
+                            Inviter un collaborateur
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {teamMembers.map((member) => (
                       <TableRow key={member.id}>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <div
-                              className={`flex size-8 items-center justify-center rounded-full text-xs font-semibold text-white ${member.color}`}
+                              className={`flex size-8 items-center justify-center rounded-full text-xs font-semibold text-white ${ROLE_AVATAR_COLOR[member.role]}`}
                             >
-                              {member.initials}
+                              {initialsOf(member.fullName)}
                             </div>
                             <span className="font-medium text-foreground">
-                              {member.name}
+                              {member.fullName}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {member.email}
+                          {member.email ?? "—"}
                         </TableCell>
                         <TableCell>
                           <Badge className="bg-kaza-blue/10 text-kaza-blue hover:bg-kaza-blue/10">

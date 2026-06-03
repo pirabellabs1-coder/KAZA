@@ -79,6 +79,34 @@ export async function listReports(): Promise<ReportSummary[]> {
 }
 
 /**
+ * Liste les signalements émis par un utilisateur donné (ses propres
+ * signalements), du plus récent au plus ancien. La policy RLS autorise un
+ * utilisateur à lire ses signalements (`reporter_id = auth.uid()`).
+ * Renvoie [] en cas d'erreur ou d'absence de session.
+ */
+export async function listMyReports(
+  userId: string,
+): Promise<ReportSummary[]> {
+  if (!userId) return [];
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from("reports")
+    .select(
+      "id, reporter_id, target_type, target_id, reason, details, status, created_at, resolved_at, resolved_by",
+    )
+    .eq("reporter_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.warn("[reports-admin] listMyReports:", error.message);
+    return [];
+  }
+
+  return ((data ?? []) as ReportRow[]).map(mapRow);
+}
+
+/**
  * Compte les signalements en attente de traitement (status = 'PENDING').
  * Utilise une requête `head: true` (aucune donnée transférée, juste le count).
  * Les policies RLS garantissent que seuls les ADMIN obtiennent le total réel.
