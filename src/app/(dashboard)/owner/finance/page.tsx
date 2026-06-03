@@ -12,7 +12,6 @@ import {
   Info,
   Landmark,
   Receipt,
-  ScrollText,
   TrendingUp,
   Wallet,
 } from "lucide-react";

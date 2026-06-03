@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listAgencyDocuments } from "@/lib/queries/agency-b2b";

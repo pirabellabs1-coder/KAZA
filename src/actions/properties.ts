@@ -242,6 +242,7 @@ export async function updateProperty(
   if (!check.ok) return check.result;
 
   const { supabase } = check;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- on retire `id` pour ne garder que les champs à mettre à jour dans `rest`
   const { id: _id, ...rest } = parsed.data;
 
   const update: Record<string, unknown> = {};

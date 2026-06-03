@@ -69,15 +69,6 @@ interface WithdrawalRow {
   reference: string | null;
   notes: string | null;
 }
-interface AdminWithdrawalRow extends WithdrawalRow {
-  user_id: string;
-  user: {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-  } | null;
-}
-
 const EMPTY_WALLET: WalletState = {
   balance: 0,
   totalIn: 0,

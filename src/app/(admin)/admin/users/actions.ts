@@ -160,6 +160,7 @@ export async function changeUserRole(
 }
 
 export async function impersonateUser(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- impersonation désactivée (sécurité) ; on conserve la signature
   id: string,
 ): Promise<AdminUserActionResult> {
   const guard = await requireAdmin();

@@ -9,7 +9,6 @@ import { buildEmail } from "@/lib/notifications/email-template";
 import {
   PARTNER_TYPES,
   PARTNER_TYPE_LABELS,
-  type PartnerType,
 } from "@/lib/partners/constants";
 
 // =============================================================================

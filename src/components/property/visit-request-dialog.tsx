@@ -85,7 +85,6 @@ export function VisitRequestDialog({
   propertyId,
   propertyTitle,
   propertyAddress,
-  ownerName: _ownerName,
 }: VisitRequestDialogProps) {
   const router = useRouter();
   const [date, setDate] = useState<string>("");

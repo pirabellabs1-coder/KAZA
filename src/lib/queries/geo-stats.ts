@@ -111,7 +111,7 @@ export async function getGeoStats(): Promise<GeoStats> {
   for (const prop of data) {
     const addr = (prop.address as string | null)?.toLowerCase() ?? "";
     const price = Number(prop.price);
-    for (const [_key, agg] of Object.entries(neighborhoodAgg)) {
+    for (const agg of Object.values(neighborhoodAgg)) {
       const lower = agg.name.toLowerCase();
       if (addr.includes(lower)) {
         agg.count += 1;

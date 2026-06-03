@@ -17,7 +17,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { StatCounter } from "@/components/marketing/stat-counter";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";

@@ -8,7 +8,6 @@ import {
   GraduationCap,
   Mail,
   MessageCircle,
-  Phone,
   Search,
   ShieldCheck,
   UserCheck,

@@ -5,7 +5,6 @@ import {
   ArrowDown,
   ArrowUp,
   BarChart3,
-  CalendarCheck,
   Eye,
   FileSpreadsheet,
   FileText,
@@ -22,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getOwnerPropertyViews30d } from "@/lib/queries/analytics";
 import { getOwnerMonthlyRevenue } from "@/lib/queries/owner-revenue";
-import { formatFcfaShort, formatNumber } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Analytics propriétaire",

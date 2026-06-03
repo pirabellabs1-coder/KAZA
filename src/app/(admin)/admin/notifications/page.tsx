@@ -3,7 +3,6 @@ import {
   BellRing,
   Inbox,
   Mail,
-  MessageSquare,
   Send,
   Smartphone,
   Target,

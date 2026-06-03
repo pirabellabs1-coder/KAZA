@@ -64,6 +64,7 @@ function formatBlockDate(iso: string): string {
 // Fallback vide — pas de persistance tant que la table availability_blocks
 // n'est pas connectée. Les méthodes restent fonctionnelles côté UI pour
 // permettre une saisie locale temporaire.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
 function getBlocksForProperty(_propertyId: string): AvailabilityBlock[] {
   return [];
 }
@@ -75,12 +76,15 @@ function addBlock(block: Omit<AvailabilityBlock, "id">): AvailabilityBlock {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
 function removeBlock(_id: string): void {
   // no-op tant que la persistance n'est pas branchée
 }
 
 function isDateBlocked(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
   _propertyId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
   _date: string,
 ): AvailabilityBlock | null {
   return null;

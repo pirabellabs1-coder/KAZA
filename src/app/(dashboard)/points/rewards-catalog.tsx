@@ -27,6 +27,7 @@ function formatPoints(value: number): string {
 // Fallback no-op — l'échange de points doit être branché sur la mutation
 // Supabase (spend_kaza_points). Retourne `false` pour indiquer l'absence
 // de mécanisme de dépense en attendant.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètres conservés tant que spend_kaza_points n'est pas branché
 function spendPoints(_amount: number, _reason: string): boolean {
   return false;
 }

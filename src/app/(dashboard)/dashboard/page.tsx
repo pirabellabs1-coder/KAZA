@@ -7,10 +7,8 @@ import {
   Building2,
   CalendarCheck,
   CreditCard,
-  FileSignature,
   FileText,
   Heart,
-  MessageCircle,
   MessagesSquare,
   Rocket,
   ShieldCheck,
@@ -18,7 +16,6 @@ import {
   Star,
   TrendingUp,
   Users,
-  UserPlus,
   Wallet,
 } from "lucide-react";
 

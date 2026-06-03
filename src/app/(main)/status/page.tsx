@@ -34,9 +34,6 @@ import {
   getDailyUptime90d,
   type ServiceCheck,
   type ServiceHealth,
-  type UptimeSummary,
-  type LatencyHourly,
-  type DailyUptime,
 } from "@/lib/health/check";
 
 export const metadata: Metadata = {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { logout } from "@/actions/auth";
-import { Search, Bell, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

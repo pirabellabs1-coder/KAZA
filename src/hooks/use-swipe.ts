@@ -52,7 +52,7 @@ export function useSwipe<T extends HTMLElement>(
       tracking = true;
     };
 
-    const handleMove = (_e: TouchEvent) => {
+    const handleMove = () => {
       // no-op: on attend touchend pour decider
     };
 

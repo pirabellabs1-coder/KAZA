@@ -47,8 +47,11 @@ const WEEK_DAYS = ["L", "M", "M", "J", "V", "S", "D"];
 // La gestion réelle des indisponibilités se fait dans le gestionnaire de
 // disponibilités dédié (bouton « Gérer les disponibilités »).
 function buildMonthMap(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé (occupation gérée dans le gestionnaire de disponibilités)
   _propertyId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé (occupation gérée dans le gestionnaire de disponibilités)
   _year: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé (occupation gérée dans le gestionnaire de disponibilités)
   _month: number,
 ): Map<number, DayKind> {
   return new Map<number, DayKind>();

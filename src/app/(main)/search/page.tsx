@@ -23,7 +23,6 @@ import {
   Home as HomeIcon,
   LayoutGrid,
   List,
-  Mail,
   MapPin,
   Map as MapIcon,
   Maximize,
@@ -33,7 +32,6 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
-  TrendingDown,
   TrendingUp,
   Video,
   Wallet,
@@ -43,8 +41,6 @@ import {
   COUNTRIES,
   getCountryByCode,
   getAllCities,
-  type Country,
-  type City,
   type Neighborhood,
 } from "@/lib/geo/locations";
 import { formatFcfa } from "@/lib/utils";
@@ -402,8 +398,6 @@ export default async function SearchPage({
     listingType: listingTypeFilter,
   });
   const totalResults = properties.length;
-
-  const breadcrumbCountry = selectedCountry?.name ?? "Tous pays";
 
   return (
     <div className="bg-gray-50">

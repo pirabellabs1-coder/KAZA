@@ -44,12 +44,6 @@ const BUCKET = "property-photos";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const DEFAULT_MAX_SIZE_MB = 10;
 
-function fileExt(name: string, fallback = "jpg"): string {
-  const parts = name.split(".");
-  if (parts.length < 2) return fallback;
-  return parts[parts.length - 1]!.toLowerCase();
-}
-
 function isImageFile(file: File): boolean {
   return ALLOWED_TYPES.includes(file.type) || file.type.startsWith("image/");
 }
@@ -159,6 +153,7 @@ export function PhotoUploader({
         }),
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `userId` conservé volontairement (convention de path) ; n'affecte pas la mémoïsation
     [photos.length, maxPhotos, maxSizeMb, userId],
   );
 

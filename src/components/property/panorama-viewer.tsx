@@ -139,6 +139,7 @@ export function PanoramaViewer({
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element -- image panoramique 360° manipulée via ref/transform (largeur 200%, drag), next/image inadapté */}
         <img
           ref={imgRef}
           src={src}

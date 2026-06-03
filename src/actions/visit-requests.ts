@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function cancelVisitRequest(
   id: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature compatible form action (formData ignoré)
   _formData?: FormData,
 ): Promise<void> {
   if (!id) return;

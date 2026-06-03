@@ -43,16 +43,6 @@ const PLATFORM_FINANCE_30D = {
   ebitdaMargin: 0,
 };
 const REVENUE_WATERFALL: Array<{ label: string; value: number; type: string }> = [];
-interface Payout {
-  id: string;
-  beneficiary: string;
-  type: "OWNER" | "AGENCY";
-  amountFcfa: number;
-  status: "SCHEDULED" | "PROCESSING" | "PAID" | "FAILED";
-  scheduledAt: string;
-  paidAt?: string;
-  method: string;
-}
 const GEO_HEATMAP: Array<{
   country: string;
   code: string;
@@ -107,16 +97,6 @@ const PAYOUT_STATUS_LABELS: Record<string, string> = {
   PROCESSING: "En cours",
   PAID: "Payé",
   FAILED: "Échec",
-};
-
-const COUNTRY_FLAGS: Record<string, string> = {
-  BJ: "🇧🇯",
-  CI: "🇨🇮",
-  SN: "🇸🇳",
-  TG: "🇹🇬",
-  BF: "🇧🇫",
-  GH: "🇬🇭",
-  NG: "🇳🇬",
 };
 
 // =============================================================================
