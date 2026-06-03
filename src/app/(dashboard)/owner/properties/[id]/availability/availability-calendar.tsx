@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CalendarDays,
   ChevronLeft,
@@ -27,22 +28,20 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/toast-helper";
+import {
+  addAvailabilityBlock,
+  deleteAvailabilityBlock,
+} from "@/actions/availability";
+import type {
+  AvailabilityBlock,
+  AvailabilityReason,
+} from "@/lib/queries/availability";
 
 // =============================================================================
-// Types & fallbacks locaux — à brancher sur availability_blocks + visits Supabase
-// À brancher quand les tables availability_blocks et visits seront connectées.
+// Calendrier de disponibilité — persistance via availability_blocks (Supabase).
+// Les blocages initiaux sont fournis par la page serveur (`initialBlocks`) ;
+// les ajouts/suppressions passent par les Server Actions `@/actions/availability`.
 // =============================================================================
-
-type AvailabilityReason = "maintenance" | "personal_use" | "reserved" | "other";
-
-interface AvailabilityBlock {
-  id: string;
-  propertyId: string;
-  startDate: string; // YYYY-MM-DD
-  endDate: string;
-  reason: AvailabilityReason;
-  note?: string;
-}
 
 const REASON_LABELS: Record<AvailabilityReason, string> = {
   maintenance: "Maintenance",
@@ -61,35 +60,6 @@ function formatBlockDate(iso: string): string {
   }).format(date);
 }
 
-// Fallback vide — pas de persistance tant que la table availability_blocks
-// n'est pas connectée. Les méthodes restent fonctionnelles côté UI pour
-// permettre une saisie locale temporaire.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
-function getBlocksForProperty(_propertyId: string): AvailabilityBlock[] {
-  return [];
-}
-
-function addBlock(block: Omit<AvailabilityBlock, "id">): AvailabilityBlock {
-  return {
-    ...block,
-    id: `blk-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-  };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
-function removeBlock(_id: string): void {
-  // no-op tant que la persistance n'est pas branchée
-}
-
-function isDateBlocked(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
-  _propertyId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètre conservé tant que la persistance n'est pas branchée
-  _date: string,
-): AvailabilityBlock | null {
-  return null;
-}
-
 interface DemoVisit {
   id: string;
   propertyId: string;
@@ -104,6 +74,7 @@ function getOwnerCalendarVisits(): DemoVisit[] {
 
 interface AvailabilityCalendarProps {
   propertyId: string;
+  initialBlocks: AvailabilityBlock[];
 }
 
 const MONTH_NAMES = [
@@ -131,14 +102,20 @@ function compareIso(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-export function AvailabilityCalendar({ propertyId }: AvailabilityCalendarProps) {
+export function AvailabilityCalendar({
+  propertyId,
+  initialBlocks,
+}: AvailabilityCalendarProps) {
+  const router = useRouter();
   const today = new Date();
   const [view, setView] = useState({
     year: today.getFullYear(),
     month: today.getMonth(),
   });
   const [selection, setSelection] = useState<string[]>([]);
-  const [blocks, setBlocks] = useState<AvailabilityBlock[]>([]);
+  const [blocks, setBlocks] = useState<AvailabilityBlock[]>(
+    () => initialBlocks,
+  );
   const [reason, setReason] = useState<AvailabilityReason>("maintenance");
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -149,11 +126,6 @@ export function AvailabilityCalendar({ propertyId }: AvailabilityCalendarProps) 
       getOwnerCalendarVisits().filter((v) => v.propertyId === propertyId),
     [propertyId],
   );
-
-  // Charge les blocages depuis localStorage côté client uniquement
-  useEffect(() => {
-    setBlocks(getBlocksForProperty(propertyId));
-  }, [propertyId]);
 
   // Construction de la grille
   const firstDay = new Date(view.year, view.month, 1);
@@ -204,39 +176,74 @@ export function AvailabilityCalendar({ propertyId }: AvailabilityCalendarProps) 
     setReason("maintenance");
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (selection.length === 0) return;
     setSubmitting(true);
     const startDate = selection[0]!;
     const endDate = selection[selection.length - 1]!;
-    const created = addBlock({
+
+    const result = await addAvailabilityBlock({
       propertyId,
       startDate,
       endDate,
       reason,
       note: note.trim() || undefined,
     });
-    setBlocks((prev) => [created, ...prev]);
-    toast.success(
-      selection.length === 1
-        ? `Date du ${formatBlockDate(startDate)} bloquée`
-        : `Plage du ${formatBlockDate(startDate)} au ${formatBlockDate(endDate)} bloquée`,
-    );
-    clearSelection();
+
+    if (result.success && result.block) {
+      setBlocks((prev) => [result.block!, ...prev]);
+      toast.success(
+        selection.length === 1
+          ? `Date du ${formatBlockDate(startDate)} bloquée`
+          : `Plage du ${formatBlockDate(startDate)} au ${formatBlockDate(endDate)} bloquée`,
+      );
+      clearSelection();
+      router.refresh();
+    } else {
+      toast.error(
+        result.success
+          ? "Impossible d'enregistrer le blocage."
+          : result.error,
+      );
+    }
+
     setSubmitting(false);
   }
 
-  function handleRemove(id: string) {
-    removeBlock(id);
-    setBlocks((prev) => prev.filter((b) => b.id !== id));
-    toast.info("Blocage supprimé");
+  async function handleRemove(id: string) {
+    const result = await deleteAvailabilityBlock(id);
+    if (result.success) {
+      setBlocks((prev) => prev.filter((b) => b.id !== id));
+      toast.info("Blocage supprimé");
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
   }
 
   type DayKind = "free" | "blocked" | "selected" | "visit" | "rented";
 
+  // Ensemble des dates bloquées (toutes les journées de chaque plage, inclus).
+  const blockedDates = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of blocks) {
+      const [sy, sm, sd] = b.startDate.split("-").map(Number);
+      const [ey, em, ed] = b.endDate.split("-").map(Number);
+      const cursor = new Date(sy!, (sm ?? 1) - 1, sd ?? 1);
+      const end = new Date(ey!, (em ?? 1) - 1, ed ?? 1);
+      while (cursor <= end) {
+        set.add(
+          isoDate(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()),
+        );
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+    return set;
+  }, [blocks]);
+
   function getKind(iso: string): DayKind {
     if (selection.includes(iso)) return "selected";
-    if (isDateBlocked(propertyId, iso)) return "blocked";
+    if (blockedDates.has(iso)) return "blocked";
     if (visits.some((v) => v.date === iso)) return "visit";
     // "rented" : on simule un état loué si le bien est marqué RENTED
     return "free";

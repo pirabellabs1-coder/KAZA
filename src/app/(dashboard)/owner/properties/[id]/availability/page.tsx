@@ -4,6 +4,7 @@ import { ArrowLeft, CalendarRange } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getPropertyById } from "@/lib/queries/properties";
+import { listAvailabilityBlocks } from "@/lib/queries/availability";
 import { AvailabilityCalendar } from "./availability-calendar";
 
 export const metadata: Metadata = {
@@ -23,6 +24,8 @@ export default async function AvailabilityPage({
   if (!property) {
     notFound();
   }
+
+  const initialBlocks = await listAvailabilityBlocks(property.id);
 
   return (
     <div className="space-y-6">
@@ -49,7 +52,10 @@ export default async function AvailabilityPage({
         </div>
       </div>
 
-      <AvailabilityCalendar propertyId={property.id} />
+      <AvailabilityCalendar
+        propertyId={property.id}
+        initialBlocks={initialBlocks}
+      />
     </div>
   );
 }
