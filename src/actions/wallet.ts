@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
 import type { PaymentProvider } from "@/lib/payments/types";
+import { walletDebit, walletRefund } from "@/lib/wallet/spend";
 
 // Commission KAZA prélevée sur chaque retrait
 const WITHDRAWAL_FEE_RATE = 0.01; // 1%
@@ -99,6 +100,23 @@ export async function requestWithdrawal(
   const fee = Math.round(parsed.data.amount * WITHDRAWAL_FEE_RATE);
   const netAmount = parsed.data.amount - fee;
 
+  // 1) Bloque le montant brut AVANT de créer la demande, de façon atomique
+  //    (RPC `wallet_debit` : verrou + vérif gel/solde + insertion négative).
+  //    Empêche les demandes répétées au-delà du solde réel. Le débit RLS direct
+  //    précédent était silencieusement rejeté → les fonds n'étaient jamais bloqués.
+  const block = await walletDebit({
+    userId: user.id,
+    amountFcfa: parsed.data.amount,
+    type: "PAYOUT_REQUESTED",
+    description: `Blocage pour demande de retrait ${parsed.data.method} → ${parsed.data.destination}`,
+    referenceId: null,
+  });
+  if (!block.ok) {
+    return { success: false, error: block.error };
+  }
+
+  // 2) Crée la demande de retrait. Si l'insert échoue APRÈS le blocage,
+  //    restitue les fonds pour ne pas léser l'utilisateur.
   const { error: insertError } = await supabase
     .from("withdrawal_requests")
     .insert({
@@ -110,15 +128,14 @@ export async function requestWithdrawal(
       net_amount_fcfa: netAmount,
       status: "PENDING",
     });
-  if (insertError) return { success: false, error: insertError.message };
-
-  // Bloque le montant via wallet_transaction PAYOUT_REQUESTED (négatif)
-  await supabase.from("wallet_transactions").insert({
-    user_id: user.id,
-    type: "PAYOUT_REQUESTED",
-    amount_fcfa: -parsed.data.amount,
-    description: `Demande de retrait ${parsed.data.method} → ${parsed.data.destination}`,
-  });
+  if (insertError) {
+    await walletRefund(
+      user.id,
+      parsed.data.amount,
+      "Annulation blocage retrait — échec création de la demande",
+    );
+    return { success: false, error: insertError.message };
+  }
 
   revalidatePath("/owner/wallet");
   revalidatePath("/agency/wallet");
@@ -305,14 +322,21 @@ export async function approveWithdrawal(
     return { success: false, error: "Demande déjà traitée (conflit)." };
   }
 
-  // Marque la sortie effective (montant 0 car déjà déduit lors du PAYOUT_REQUESTED)
-  await supabase.from("wallet_transactions").insert({
+  // Marque la sortie effective via le client SERVICE-ROLE (bypass RLS : le
+  // user_id de la ligne ≠ admin, un client RLS serait rejeté). Montant 0 car
+  // les fonds ont DÉJÀ été déduits lors du PAYOUT_REQUESTED (pas de double-débit).
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { error: txError } = await admin.from("wallet_transactions").insert({
     user_id: w.user_id,
     type: "PAYOUT_PROCESSED",
     amount_fcfa: 0,
     description: `Retrait traité ${reference ?? ""}`.trim(),
     reference_id: id,
   });
+  if (txError) {
+    console.error("[wallet] approveWithdrawal trace echec:", txError.message);
+    return { success: false, error: txError.message };
+  }
 
   revalidatePath("/admin/payouts");
   revalidatePath("/owner/wallet");
@@ -364,14 +388,21 @@ export async function rejectWithdrawal(
     return { success: false, error: "Demande déjà traitée (conflit)." };
   }
 
-  // Restitue le montant initialement bloqué (positif)
-  await supabase.from("wallet_transactions").insert({
+  // Restitue le montant initialement bloqué (positif) via le client SERVICE-ROLE
+  // (bypass RLS : le user_id de la ligne ≠ admin). SANS ça, après le blocage réel
+  // des fonds au request, un refus ne rendrait jamais l'argent à l'utilisateur.
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { error: txError } = await admin.from("wallet_transactions").insert({
     user_id: w.user_id,
     type: "ADJUSTMENT",
     amount_fcfa: Number(w.amount_fcfa),
     description: `Restitution suite refus demande retrait : ${reason.trim()}`,
     reference_id: id,
   });
+  if (txError) {
+    console.error("[wallet] rejectWithdrawal restitution echec:", txError.message);
+    return { success: false, error: txError.message };
+  }
 
   revalidatePath("/admin/payouts");
   revalidatePath("/owner/wallet");

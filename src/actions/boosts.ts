@@ -23,6 +23,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
 import type { PaymentProvider } from "@/lib/payments/types";
+import { walletDebit } from "@/lib/wallet/spend";
 
 // La table `property_boosts` et les tables wallet ne sont pas typées dans
 // `src/types/supabase.ts` — fallback sur le client générique.
@@ -88,41 +89,22 @@ export async function activateBoost(
 
   const priceFcfa = Math.max(0, Math.round(Number(amount) || 0));
 
-  // 2) Débit wallet si le boost est payant.
+  // 2) Débit wallet si le boost est payant. Passe par le chemin serveur
+  //    sécurisé `walletDebit` (RPC atomique : verrou + vérif gel/solde +
+  //    insertion de la transaction négative). Le débit RLS direct était rejeté.
   let walletTxId: string | null = null;
   if (priceFcfa > 0) {
-    const { data: wallet } = await supabase
-      .from("user_wallets")
-      .select("balance_fcfa, is_frozen")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const balance = Number(wallet?.balance_fcfa ?? 0);
-    if (wallet?.is_frozen) {
-      return { success: false, error: "WALLET_FROZEN" };
+    const debit = await walletDebit({
+      userId: user.id,
+      amountFcfa: priceFcfa,
+      type: "BOOST_DEBIT",
+      description: `Boost annonce — ${plan} (${days} jours)`,
+      referenceId: propertyId,
+    });
+    if (!debit.ok) {
+      return { success: false, error: debit.error };
     }
-    if (balance < priceFcfa) {
-      return { success: false, error: "INSUFFICIENT_FUNDS" };
-    }
-
-    // Insertion d'une transaction négative — le trigger `on_wallet_tx_insert`
-    // décrémente balance_fcfa et incrémente total_out_fcfa.
-    const { data: tx, error: txErr } = await supabase
-      .from("wallet_transactions")
-      .insert({
-        user_id: user.id,
-        type: "BOOST_DEBIT",
-        amount_fcfa: -priceFcfa,
-        description: `Boost annonce — ${plan} (${days} jours)`,
-        reference_id: propertyId,
-      })
-      .select("id")
-      .single();
-
-    if (txErr) {
-      return { success: false, error: txErr.message ?? "DEBIT_FAILED" };
-    }
-    walletTxId = (tx?.id as string | undefined) ?? null;
+    walletTxId = debit.txId;
   }
 
   // 3) Insère le boost (ends_at = now + days).

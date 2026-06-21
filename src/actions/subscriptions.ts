@@ -19,6 +19,7 @@ import type { PaymentProvider } from "@/lib/payments/types";
 import { PLAN_DETAILS } from "@/lib/queries/subscriptions";
 import { getPlan } from "@/lib/queries/plans";
 import { activatePaidSubscription } from "@/lib/subscriptions/activate";
+import { walletDebit, walletRefund } from "@/lib/wallet/spend";
 
 // Les tables `subscriptions` / `invoices` ne sont pas encore typées dans
 // `src/types/supabase.ts` — fallback sur le client générique.
@@ -77,25 +78,32 @@ export async function subscribeToPlan(
     return { success: false, error: "ALREADY_SUBSCRIBED" };
   }
 
-  // 2) Vérifie le solde wallet (skip si plan gratuit)
   const priceFcfa = Number(planDetails.priceMonthly);
-  if (priceFcfa > 0) {
-    const { data: wallet } = await supabase
-      .from("user_wallets")
-      .select("balance_fcfa")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const balance = Number(wallet?.balance_fcfa ?? 0);
-    if (balance < priceFcfa) {
-      return { success: false, error: "INSUFFICIENT_FUNDS" };
-    }
-  }
-
-  // 3) Crée la nouvelle souscription (active immédiatement)
   const now = new Date();
   const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const periodLabel = `${now.toLocaleDateString("fr-FR")} → ${periodEnd.toLocaleDateString("fr-FR")}`;
+  const isWalletPayment = paymentMethod === "wallet";
 
+  // 2) Si paiement au solde KAZA et plan payant : DÉBITE D'ABORD, de façon
+  //    atomique (verrou + vérif gel/solde côté RPC SECURITY DEFINER). Sans débit
+  //    réussi, on ne crée jamais la souscription → plus d'abonnement gratuit.
+  let walletTxId: string | null = null;
+  if (priceFcfa > 0 && isWalletPayment) {
+    const debit = await walletDebit({
+      userId: user.id,
+      amountFcfa: priceFcfa,
+      type: "SUBSCRIPTION_DEBIT",
+      description: `Abonnement ${planDetails.name} — période ${periodLabel}`,
+      referenceId: null,
+    });
+    if (!debit.ok) {
+      return { success: false, error: debit.error };
+    }
+    walletTxId = debit.txId;
+  }
+
+  // 3) Crée la nouvelle souscription (active immédiatement). Si la création
+  //    échoue APRÈS un débit réussi, on rembourse pour ne pas léser l'utilisateur.
   const { data: sub, error: subErr } = await supabase
     .from("subscriptions")
     .insert({
@@ -112,30 +120,21 @@ export async function subscribeToPlan(
     .single();
 
   if (subErr || !sub) {
+    if (walletTxId) {
+      await walletRefund(
+        user.id,
+        priceFcfa,
+        `Remboursement — échec création abonnement ${planDetails.name}`,
+      );
+    }
     return {
       success: false,
       error: subErr?.message ?? "INTERNAL",
     };
   }
 
-  // 4) Si payant : débit wallet + trace billing_attempt SUCCESS
-  if (priceFcfa > 0) {
-    const periodLabel = `${now.toLocaleDateString("fr-FR")} → ${periodEnd.toLocaleDateString("fr-FR")}`;
-
-    // Insertion d'une wallet_transactions négative — le trigger
-    // `on_wallet_tx_insert` met à jour balance_fcfa et total_out_fcfa.
-    const { data: tx } = await supabase
-      .from("wallet_transactions")
-      .insert({
-        user_id: user.id,
-        type: "SUBSCRIPTION_DEBIT",
-        amount_fcfa: -priceFcfa,
-        description: `Abonnement ${planDetails.name} — période ${periodLabel}`,
-        reference_id: sub.id,
-      })
-      .select("id")
-      .single();
-
+  // 4) Si payant au wallet : trace billing_attempt SUCCESS (le débit est déjà fait)
+  if (priceFcfa > 0 && isWalletPayment) {
     await supabase.from("subscription_billing_attempts").insert({
       subscription_id: sub.id,
       user_id: user.id,
@@ -144,7 +143,7 @@ export async function subscribeToPlan(
       period_end: periodEnd.toISOString(),
       status: "SUCCESS",
       attempted_at: now.toISOString(),
-      wallet_tx_id: tx?.id ?? null,
+      wallet_tx_id: walletTxId,
     });
   }
 

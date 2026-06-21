@@ -15,6 +15,8 @@ export type WalletDebitType =
   | "EXPENSE_DEBIT"
   | "SUBSCRIPTION_DEBIT"
   | "BOOST_DEBIT"
+  // Blocage des fonds lors d'une demande de retrait (payout).
+  | "PAYOUT_REQUESTED"
   // Acompte de réservation pour l'achat d'un bien (vente).
   | "BOOKING_DEPOSIT";
 
