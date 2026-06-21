@@ -87,8 +87,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html
+      lang="fr"
+      className={`${inter.variable} ${poppins.variable}`}
+      suppressHydrationWarning
+    >
+      <body
+        className="min-h-screen bg-background font-sans antialiased"
+        suppressHydrationWarning
+      >
         <JsonLd baseUrl={APP_URL} />
         <OfflineBanner />
         <div className="pb-16 md:pb-0">{children}</div>
