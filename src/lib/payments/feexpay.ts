@@ -188,7 +188,7 @@ async function initCardCheckout(
     currency: "XOF",
     callback_info: JSON.stringify(input.metadata ?? {}),
     ...(input.rentalId ? { custom_id: input.rentalId } : {}),
-    ...(siteUrl ? { return_url: `${siteUrl}/payments/success` } : {}),
+    ...(siteUrl ? { return_url: `${siteUrl}/tenant/payments/success` } : {}),
   };
 
   const res = await fetch(

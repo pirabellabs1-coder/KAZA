@@ -134,7 +134,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
           return;
         }
         toast.success("Loyer payé depuis votre solde KAZA.");
-        window.location.href = "/payments/success?method=wallet";
+        window.location.href = "/tenant/payments/success?method=wallet";
       } catch (err) {
         const message =
           err instanceof Error
@@ -348,7 +348,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
           }
           onSuccess={() => {
             toast.success("Paiement confirmé. Votre location est activée.");
-            window.location.href = "/payments/success?method=mobile_money";
+            window.location.href = "/tenant/payments/success?method=mobile_money";
           }}
         />
       )}

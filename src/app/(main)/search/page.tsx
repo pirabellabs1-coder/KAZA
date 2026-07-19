@@ -727,10 +727,10 @@ export default async function SearchPage({
                 </p>
               </div>
               <Link
-                href={`/pays/${selectedCountry.code.toLowerCase()}`}
+                href={buildSearchUrl({}, { country: selectedCountry.code })}
                 className="hidden text-sm font-semibold text-kaza-blue hover:underline sm:inline"
               >
-                Voir le pays →
+                Voir toutes les annonces →
               </Link>
             </div>
 
