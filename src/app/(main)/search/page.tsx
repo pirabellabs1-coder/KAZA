@@ -361,6 +361,14 @@ export default async function SearchPage({
   const CITY_COUNTS = { ...CITY_COUNTS_FALLBACK, ...geoStats.cityCounts };
   const AVG_PRICE_BY_CITY = geoStats.cityAvgPrice;
 
+  // Pays de lancement (couverture active). Le sélecteur visuel n'affiche que
+  // ces pays + tout pays ayant réellement des biens — pour éviter une longue
+  // liste de pays à « 0 bien » qui donne l'impression d'une plateforme vide.
+  const LAUNCH_COUNTRIES = new Set(["BJ", "CI", "TG", "SN", "NE"]);
+  const displayedCountries = allCountries.filter(
+    (c) => LAUNCH_COUNTRIES.has(c.code) || (COUNTRY_COUNTS[c.code] ?? 0) > 0,
+  );
+
   // Recherches populaires réelles : villes ayant le plus d'annonces publiées.
   const allCitiesRef = getAllCities();
   const cityNameBySlug = new Map(allCitiesRef.map((c) => [c.slug, c.name]));
@@ -675,8 +683,8 @@ export default async function SearchPage({
               </span>
             </Link>
 
-            {/* Tous les pays — sélectionnables */}
-            {allCountries.map((c) => {
+            {/* Pays couverts — sélectionnables */}
+            {displayedCountries.map((c) => {
               const active = country === c.code;
               return (
                 <Link
