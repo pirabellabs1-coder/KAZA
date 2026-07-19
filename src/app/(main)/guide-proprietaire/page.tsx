@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { value: 54, label: "Pays africains", description: "Couverture panafricaine" },
+  { value: 5, label: "Pays couverts", description: "Bénin, Côte d'Ivoire, Togo, Sénégal, Niger" },
   { value: 100, suffix: "%", label: "Annonces vérifiées", description: "Contrôle qualité systématique" },
   { value: 0, suffix: " FCFA", label: "Inscription", description: "Publier une annonce est gratuit" },
   { value: 24, suffix: "/7", label: "Support dédié", description: "Une équipe à votre écoute" },

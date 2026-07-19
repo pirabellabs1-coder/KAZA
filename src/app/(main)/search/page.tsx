@@ -31,7 +31,6 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
-  Star,
   TrendingUp,
   Video,
   Wallet,
@@ -368,6 +367,7 @@ export default async function SearchPage({
   const displayedCountries = allCountries.filter(
     (c) => LAUNCH_COUNTRIES.has(c.code) || (COUNTRY_COUNTS[c.code] ?? 0) > 0,
   );
+  const totalBiens = Object.values(COUNTRY_COUNTS).reduce((a, b) => a + b, 0);
 
   // Recherches populaires réelles : villes ayant le plus d'annonces publiées.
   const allCitiesRef = getAllCities();
@@ -511,7 +511,7 @@ export default async function SearchPage({
                     className="w-full appearance-none bg-transparent text-sm font-medium text-foreground outline-none"
                   >
                     <option value="all">Tous pays</option>
-                    {allCountries.map((c) => (
+                    {displayedCountries.map((c) => (
                       <option key={c.code} value={c.code}>
                         {c.name}
                       </option>
@@ -678,9 +678,11 @@ export default async function SearchPage({
               <span className="text-sm font-semibold text-foreground">
                 Tous
               </span>
-              <span className="text-[11px] text-muted-foreground">
-                {Object.values(COUNTRY_COUNTS).reduce((a, b) => a + b, 0).toLocaleString("fr-FR")} biens
-              </span>
+              {totalBiens > 0 && (
+                <span className="text-[11px] text-muted-foreground">
+                  {totalBiens.toLocaleString("fr-FR")} biens
+                </span>
+              )}
             </Link>
 
             {/* Pays couverts — sélectionnables */}
@@ -701,7 +703,9 @@ export default async function SearchPage({
                     {c.name}
                   </span>
                   <span className="text-[11px] text-muted-foreground">
-                    {COUNTRY_COUNTS[c.code]?.toLocaleString("fr-FR") ?? 0} biens
+                    {(COUNTRY_COUNTS[c.code] ?? 0) > 0
+                      ? `${COUNTRY_COUNTS[c.code]!.toLocaleString("fr-FR")} biens`
+                      : "Bientôt"}
                   </span>
                 </Link>
               );
@@ -722,8 +726,10 @@ export default async function SearchPage({
                   Villes en {selectedCountry.name}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {selectedCountry.cities.length} villes couvertes ·{" "}
-                  {COUNTRY_COUNTS[selectedCountry.code]?.toLocaleString("fr-FR")} biens
+                  {selectedCountry.cities.length} villes couvertes
+                  {(COUNTRY_COUNTS[selectedCountry.code] ?? 0) > 0
+                    ? ` · ${COUNTRY_COUNTS[selectedCountry.code]!.toLocaleString("fr-FR")} biens`
+                    : ""}
                 </p>
               </div>
               <Link
@@ -772,21 +778,22 @@ export default async function SearchPage({
                   <div className="space-y-1 p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-foreground">
-                        {CITY_COUNTS[city.slug]?.toLocaleString("fr-FR") ?? "—"}{" "}
-                        biens
+                        {(CITY_COUNTS[city.slug] ?? 0) > 0
+                          ? `${CITY_COUNTS[city.slug]!.toLocaleString("fr-FR")} biens`
+                          : "Bientôt"}
                       </span>
                       <span className="text-[11px] text-muted-foreground">
                         {(city.population / 1000).toFixed(0)}k hab.
                       </span>
                     </div>
-                    <div className="text-[11px] text-muted-foreground">
-                      Loyer moyen :{" "}
-                      <span className="font-semibold text-foreground">
-                        {AVG_PRICE_BY_CITY[city.slug]
-                          ? `${(AVG_PRICE_BY_CITY[city.slug] / 1000).toFixed(0)} k FCFA`
-                          : "—"}
-                      </span>
-                    </div>
+                    {AVG_PRICE_BY_CITY[city.slug] ? (
+                      <div className="text-[11px] text-muted-foreground">
+                        Loyer moyen :{" "}
+                        <span className="font-semibold text-foreground">
+                          {`${(AVG_PRICE_BY_CITY[city.slug] / 1000).toFixed(0)} k FCFA`}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
                 </Link>
               ))}
@@ -840,7 +847,7 @@ export default async function SearchPage({
                           className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-kaza-blue focus:outline-none"
                         >
                           <option value="all">Tous</option>
-                          {allCountries.map((c) => (
+                          {displayedCountries.map((c) => (
                             <option key={c.code} value={c.code}>
                               {c.name}
                             </option>
@@ -1731,8 +1738,8 @@ export default async function SearchPage({
             Vous êtes propriétaire ?
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/90">
-            Publiez votre annonce gratuitement en 5 minutes. Atteignez plus de
-            120 000 locataires actifs sur KAZA.
+            Publiez votre annonce gratuitement en 5 minutes et touchez une
+            communauté grandissante de locataires vérifiés.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Button
@@ -1816,8 +1823,7 @@ function FilterSection({
 function PropertyGridCard({ property }: { property: PublicProperty }) {
   const { city, neighborhood } = splitAddress(property.address);
   const isPremium = property.viewsCount > 1000;
-  const photo = property.primaryPhotoUrl ?? "";
-  const rating = 4.7;
+  const photo = property.primaryPhotoUrl || "/images/property-placeholder.jpg";
 
   return (
     <Link
@@ -1899,11 +1905,7 @@ function PropertyGridCard({ property }: { property: PublicProperty }) {
             <Maximize className="size-3.5" /> {property.sqm} m²
           </span>
         </div>
-        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 text-xs">
-          <span className="inline-flex items-center gap-1 font-semibold text-amber-600">
-            <Star className="size-3.5 fill-amber-500 text-amber-500" />
-            {rating.toFixed(1)}
-          </span>
+        <div className="mt-4 flex items-center justify-end border-t border-gray-100 pt-3 text-xs">
           <span className="text-muted-foreground">
             {property.viewsCount.toLocaleString("fr-FR")} vues
           </span>
@@ -1916,7 +1918,7 @@ function PropertyGridCard({ property }: { property: PublicProperty }) {
 function PropertyListRow({ property }: { property: PublicProperty }) {
   const { city, neighborhood } = splitAddress(property.address);
   const isPremium = property.viewsCount > 1000;
-  const photo = property.primaryPhotoUrl ?? "";
+  const photo = property.primaryPhotoUrl || "/images/property-placeholder.jpg";
   const description =
     property.description?.trim() ||
     (property.type === "VILLA"
@@ -1924,7 +1926,6 @@ function PropertyListRow({ property }: { property: PublicProperty }) {
       : property.type === "STUDIO"
         ? "Studio meublé fonctionnel, parfait pour étudiants ou jeune actif."
         : "Bien dans un quartier dynamique avec toutes commodités à proximité.");
-  const rating = 4.7;
 
   return (
     <Link
@@ -1978,10 +1979,6 @@ function PropertyListRow({ property }: { property: PublicProperty }) {
             <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium">
               <Maximize className="size-3.5" /> {property.sqm} m²
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-              <Star className="size-3 fill-amber-500 text-amber-500" />
-              {rating.toFixed(1)}
-            </span>
           </div>
         </div>
 
@@ -2008,7 +2005,7 @@ function PropertyListRow({ property }: { property: PublicProperty }) {
 
 function PropertyMapMiniCard({ property }: { property: PublicProperty }) {
   const { city, neighborhood } = splitAddress(property.address);
-  const photo = property.primaryPhotoUrl ?? "";
+  const photo = property.primaryPhotoUrl || "/images/property-placeholder.jpg";
   return (
     <Link
       href={`/properties/${property.id}`}

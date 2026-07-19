@@ -60,7 +60,7 @@ const PROFILES: Profile[] = [
         icon: Search,
         title: "Recherchez",
         description:
-          "Affinez votre recherche avec nos filtres puissants : ville, quartier, budget, surface, équipements. Plus de 12 000 annonces vérifiées vous attendent.",
+          "Affinez votre recherche avec nos filtres puissants : ville, quartier, budget, surface, équipements. Chaque annonce est vérifiée, une par une, par notre équipe.",
       },
       {
         icon: Eye,

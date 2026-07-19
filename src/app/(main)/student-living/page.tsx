@@ -45,14 +45,14 @@ export const metadata: Metadata = {
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=2000&q=80";
 
-// Grandes villes universitaires d'Afrique (illustratif, pan-africain).
+// Villes universitaires des pays couverts (Afrique de l'Ouest).
 const UNIVERSITIES = [
   { letters: "COT", name: "Cotonou", color: "#1A3A52" },
+  { letters: "PNO", name: "Porto-Novo", color: "#0F62B5" },
   { letters: "ABJ", name: "Abidjan", color: "#1976D2" },
-  { letters: "DKR", name: "Dakar", color: "#0F62B5" },
-  { letters: "LOS", name: "Lagos", color: "#4CAF50" },
-  { letters: "ACC", name: "Accra", color: "#D81B23" },
-  { letters: "CAI", name: "Le Caire", color: "#FFB800" },
+  { letters: "LOM", name: "Lomé", color: "#4CAF50" },
+  { letters: "DKR", name: "Dakar", color: "#128A44" },
+  { letters: "NIA", name: "Niamey", color: "#E8A13A" },
 ];
 
 const HOW_IT_WORKS = [
@@ -112,10 +112,10 @@ const CAMPUS_AREAS = [
     detail: "Proche des universités",
   },
   {
-    query: "lagos",
-    city: "Lagos",
-    country: "Nigeria",
-    detail: "Yaba, Akoka & campus",
+    query: "lome",
+    city: "Lomé",
+    country: "Togo",
+    detail: "Proche des universités",
   },
 ];
 
@@ -294,11 +294,11 @@ export default function StudentLivingPage() {
               Villes universitaires
             </p>
             <h2 className="mt-3 text-center font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
-              Présents dans les grandes villes universitaires d&apos;Afrique
+              Pensé pour les villes universitaires d&apos;Afrique de l&apos;Ouest
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-              Nos équipes terrain ont cartographié chaque quartier étudiant pour
-              vous proposer la chambre la plus proche de vos amphis.
+              Nous mettons en avant les quartiers étudiants pour vous aider à
+              trouver une chambre proche de vos amphis.
             </p>
           </RevealOnScroll>
 

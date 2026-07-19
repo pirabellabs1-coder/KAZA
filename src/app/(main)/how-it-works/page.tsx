@@ -139,69 +139,8 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ===== VIDEO PLACEHOLDER ===================================== */}
-      <section
-        id="video"
-        className="relative isolate overflow-hidden bg-kaza-navy py-24 text-white"
-      >
-        <div
-          className="pointer-events-none absolute -top-32 -left-32 size-[28rem] rounded-full bg-kaza-blue/30 blur-3xl"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -right-32 -bottom-32 size-[28rem] rounded-full bg-kaza-green/30 blur-3xl"
-          aria-hidden
-        />
-
-        <div className="relative mx-auto max-w-5xl px-4 lg:px-8">
-          <RevealOnScroll>
-            <div className="mb-12 text-center">
-              <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-green uppercase">
-                Présentation
-              </p>
-              <h2 className="font-heading text-3xl font-bold sm:text-4xl lg:text-5xl">
-                KAZA en 90 secondes
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-lg text-white/75">
-                Découvrez en vidéo comment KAZA transforme l&apos;expérience
-                immobilière en Afrique.
-              </p>
-            </div>
-          </RevealOnScroll>
-
-          <RevealOnScroll>
-            <GlassPanel
-              intensity="strong"
-              tint="navy"
-              className="overflow-hidden rounded-3xl border-white/10 p-2"
-            >
-              <div className="group relative aspect-video w-full overflow-hidden rounded-2xl bg-gradient-to-br from-kaza-navy via-kaza-blue/30 to-kaza-navy">
-                <Image
-                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=80"
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 1024px"
-                  className="object-cover opacity-40 transition-transform duration-700 group-hover:scale-105"
-                  aria-hidden
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-kaza-navy/80 via-transparent to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <button
-                    type="button"
-                    className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-white/95 shadow-2xl ring-4 ring-white/20 backdrop-blur transition-all duration-300 hover:scale-110 hover:ring-8"
-                    aria-label="Lire la vidéo de présentation"
-                  >
-                    <Play
-                      className="ml-1 size-10 fill-kaza-navy text-kaza-navy"
-                      strokeWidth={1.5}
-                    />
-                  </button>
-                </div>
-              </div>
-            </GlassPanel>
-          </RevealOnScroll>
-        </div>
-      </section>
+      {/* Section vidéo retirée — sera réactivée quand une vraie vidéo de
+          présentation sera disponible (évite un lecteur factice). */}
 
       {/* ===== SÉCURITÉ CHEZ KAZA ==================================== */}
       <section className="bg-white py-24">

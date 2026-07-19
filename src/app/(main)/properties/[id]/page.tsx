@@ -508,7 +508,7 @@ export default async function PropertyDetailPage({
                     squareMeters={p.sqm}
                     imageUrl={
                       p.primaryPhotoUrl ||
-                      "https://picsum.photos/seed/kaza-placeholder/800/600"
+                      "/images/property-placeholder.jpg"
                     }
                     propertyType={p.type}
                     isVerified={p.owner?.isVerified ?? false}

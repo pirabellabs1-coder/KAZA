@@ -32,14 +32,14 @@ const OG_IMAGE =
 export const metadata: Metadata = {
   title: "KAZA — Louer un logement partout en Afrique",
   description:
-    "Trouvez et louez appartements, maisons et colocations partout en Afrique. Annonces vérifiées, paiements sécurisés et contrats numériques dans 54 pays.",
+    "Trouvez et louez appartements, maisons et colocations en Afrique de l'Ouest. Annonces vérifiées, paiements sécurisés et contrats numériques.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "KAZA — Louer un logement partout en Afrique",
     description:
-      "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez partout en Afrique dans 54 pays.",
+      "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez en toute confiance en Afrique de l'Ouest.",
     url: "/",
     type: "website",
     siteName: "KAZA",
@@ -352,7 +352,7 @@ export default async function HomePage() {
                     squareMeters={property.sqm}
                     imageUrl={
                       property.primaryPhotoUrl ??
-                      "https://picsum.photos/seed/kaza-default/800/600"
+                      "/images/property-placeholder.jpg"
                     }
                     propertyType={property.type}
                     isVerified={property.owner?.isVerified ?? false}

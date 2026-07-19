@@ -52,7 +52,7 @@ function getStatusBadge(status: string) {
 
 function PropertyRow({ property }: { property: PropertyWithPhotos }) {
   const thumbnailUrl =
-    property.photos[0]?.photo_url || "https://picsum.photos/seed/kaza-placeholder/800/600";
+    property.photos[0]?.photo_url || "/images/property-placeholder.jpg";
 
   return (
     <tr className="border-b transition-colors hover:bg-muted/50">
@@ -130,7 +130,7 @@ function PropertyRow({ property }: { property: PropertyWithPhotos }) {
 
 function PropertyMobileCard({ property }: { property: PropertyWithPhotos }) {
   const thumbnailUrl =
-    property.photos[0]?.photo_url || "https://picsum.photos/seed/kaza-placeholder/800/600";
+    property.photos[0]?.photo_url || "/images/property-placeholder.jpg";
 
   return (
     <div className="rounded-xl border bg-card p-4 shadow-sm">
