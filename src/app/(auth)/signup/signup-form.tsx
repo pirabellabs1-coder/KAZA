@@ -5,15 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Building2,
-  Home,
-  GraduationCap,
   Loader2,
-  Briefcase,
   Gift,
   MailCheck,
   ArrowLeft,
-  Tag,
+  ArrowRight,
+  ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,39 +20,9 @@ import { PhoneInput } from "@/components/shared/phone-input";
 import { cn } from "@/lib/utils";
 import { signupSchema, type SignupFormData } from "@/validators/auth";
 import { requestSignupCode, verifySignupCode } from "@/actions/auth";
+import { ROLE_LIST, ROLE_META, type RoleValue } from "./roles";
 
-const roles = [
-  {
-    value: "OWNER" as const,
-    label: "Propriétaire",
-    description: "Je mets en location",
-    icon: Building2,
-  },
-  {
-    value: "TENANT" as const,
-    label: "Locataire",
-    description: "Je cherche un logement",
-    icon: Home,
-  },
-  {
-    value: "STUDENT" as const,
-    label: "Étudiant",
-    description: "Je cherche une colocation",
-    icon: GraduationCap,
-  },
-  {
-    value: "BUYER" as const,
-    label: "Acheteur",
-    description: "Je veux acheter un bien",
-    icon: Tag,
-  },
-  {
-    value: "AGENCY" as const,
-    label: "Agence",
-    description: "Agence immobilière (B2B)",
-    icon: Briefcase,
-  },
-];
+type Step = "role" | "form" | "code";
 
 export function SignupForm() {
   const router = useRouter();
@@ -63,8 +30,7 @@ export function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Étape « code » : on conserve les données validées et le code saisi.
-  const [step, setStep] = useState<"form" | "code">("form");
+  const [step, setStep] = useState<Step>("role");
   const [pending, setPending] = useState<SignupFormData | null>(null);
   const [code, setCode] = useState("");
   const [resent, setResent] = useState(false);
@@ -90,18 +56,34 @@ export function SignupForm() {
     },
   });
 
-  const selectedRole = watch("role");
+  const selectedRole = watch("role") as RoleValue | undefined;
   const selectedCountry = watch("country") ?? "BJ";
   const phoneValue = watch("phone") ?? "";
+  const theme = selectedRole ? ROLE_META[selectedRole] : null;
 
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
       setValue("referralCode", ref.toUpperCase(), { shouldValidate: false });
     }
+    // Pré-sélection du rôle via ?role=OWNER
+    const roleParam = searchParams.get("role")?.toUpperCase();
+    if (
+      roleParam &&
+      ["TENANT", "OWNER", "STUDENT", "BUYER", "AGENCY"].includes(roleParam)
+    ) {
+      setValue("role", roleParam as RoleValue, { shouldValidate: true });
+      setStep("form");
+    }
   }, [searchParams, setValue]);
 
-  // Étape 1 — envoi du code de vérification.
+  function chooseRole(value: RoleValue) {
+    setValue("role", value, { shouldValidate: true });
+    setError(null);
+    setStep("form");
+  }
+
+  // Étape « formulaire » — envoi du code de vérification.
   function onSubmit(data: SignupFormData) {
     setError(null);
     startTransition(async () => {
@@ -112,7 +94,6 @@ export function SignupForm() {
           return;
         }
         if (result?.success) {
-          // Inscription directe (code email désactivé) → redirection immédiate.
           if (result.codeRequired === false) {
             router.push(result.redirectTo ?? "/dashboard");
             router.refresh();
@@ -128,7 +109,7 @@ export function SignupForm() {
     });
   }
 
-  // Étape 2 — vérification du code + création du compte.
+  // Étape « code » — vérification + création du compte.
   function onVerify(e: React.FormEvent) {
     e.preventDefault();
     if (!pending) return;
@@ -165,10 +146,72 @@ export function SignupForm() {
     });
   }
 
-  // ---- Étape « code » ----
+  // =========================================================================
+  // ÉTAPE 1 — CHOIX DU RÔLE
+  // =========================================================================
+  if (step === "role") {
+    return (
+      <div className="animate-fade-in space-y-6">
+        <div className="space-y-2">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-kaza-navy sm:text-3xl">
+            Créez votre compte KAZA
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Pour commencer, dites-nous qui vous êtes. Votre espace s&apos;adapte
+            à votre profil.
+          </p>
+        </div>
+
+        <div className="stagger-children grid gap-3">
+          {ROLE_LIST.map((r) => {
+            const Icon = r.icon;
+            return (
+              <button
+                key={r.value}
+                type="button"
+                onClick={() => chooseRole(r.value)}
+                className={cn(
+                  "group flex items-center gap-4 rounded-2xl border-2 border-border bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
+                  r.hoverBorder,
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex size-12 shrink-0 items-center justify-center rounded-xl",
+                    r.softBg,
+                    r.iconText,
+                  )}
+                >
+                  <Icon className="size-6" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-heading text-base font-semibold text-kaza-navy">
+                    {r.label}
+                  </p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {r.tagline}
+                  </p>
+                </div>
+                <ChevronRight
+                  className={cn(
+                    "size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5",
+                    r.iconText,
+                  )}
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // ÉTAPE 3 — CODE EMAIL
+  // =========================================================================
   if (step === "code" && pending) {
     return (
-      <form onSubmit={onVerify} className="space-y-5">
+      <form onSubmit={onVerify} className="animate-fade-in space-y-5">
         <button
           type="button"
           onClick={() => {
@@ -247,46 +290,53 @@ export function SignupForm() {
     );
   }
 
-  // ---- Étape « formulaire » ----
+  // =========================================================================
+  // ÉTAPE 2 — FORMULAIRE (thématisé par rôle)
+  // =========================================================================
+  const Icon = theme?.icon;
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="animate-fade-in space-y-5">
+      {/* Bandeau du rôle sélectionné */}
+      {theme && (
+        <div
+          className={cn(
+            "flex items-center gap-3 rounded-2xl bg-gradient-to-r p-4 text-white",
+            theme.gradient,
+          )}
+        >
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur">
+            {Icon && <Icon className="size-6" />}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-white/70">
+              Inscription {theme.label}
+            </p>
+            <p className="truncate text-sm font-semibold">{theme.intro}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setStep("role");
+              setError(null);
+            }}
+            className="shrink-0 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-medium backdrop-blur transition-colors hover:bg-white/25"
+          >
+            Changer
+          </button>
+        </div>
+      )}
+
+      {errors.role && (
+        <p className="text-sm text-destructive">{errors.role.message}</p>
+      )}
+
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      {/* Role Selector */}
-      <div className="space-y-2">
-        <Label>Je suis</Label>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {roles.map((role) => {
-            const Icon = role.icon;
-            const isSelected = selectedRole === role.value;
-            return (
-              <button
-                key={role.value}
-                type="button"
-                onClick={() => setValue("role", role.value, { shouldValidate: true })}
-                className={cn(
-                  "flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-all",
-                  isSelected
-                    ? "border-kaza-blue bg-kaza-blue/5 text-kaza-blue"
-                    : "border-border bg-white text-muted-foreground hover:border-kaza-blue/40 hover:bg-muted/50"
-                )}
-              >
-                <Icon className="size-6" />
-                <span className="text-xs font-medium">{role.label}</span>
-              </button>
-            );
-          })}
-        </div>
-        {errors.role && (
-          <p className="text-sm text-destructive">{errors.role.message}</p>
-        )}
-      </div>
-
-      {/* First Name & Last Name */}
+      {/* Prénom & Nom */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label htmlFor="firstName">Prénom</Label>
@@ -315,9 +365,7 @@ export function SignupForm() {
             {...register("lastName")}
           />
           {errors.lastName && (
-            <p className="text-sm text-destructive">
-              {errors.lastName.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.lastName.message}</p>
           )}
         </div>
       </div>
@@ -338,7 +386,7 @@ export function SignupForm() {
         )}
       </div>
 
-      {/* Phone + pays (drapeau + indicatif) */}
+      {/* Téléphone + pays */}
       <div className="space-y-2">
         <Label htmlFor="phone">Téléphone</Label>
         <PhoneInput
@@ -348,52 +396,47 @@ export function SignupForm() {
             setValue("country", iso, { shouldValidate: true })
           }
           value={phoneValue}
-          onChange={(full) =>
-            setValue("phone", full, { shouldValidate: true })
-          }
+          onChange={(full) => setValue("phone", full, { shouldValidate: true })}
           invalid={!!errors.phone}
           placeholder="Numéro de téléphone"
         />
-        <p className="text-xs text-muted-foreground">
-          Sélectionnez votre pays — l&apos;indicatif est ajouté automatiquement.
-        </p>
         {errors.phone && (
           <p className="text-sm text-destructive">{errors.phone.message}</p>
         )}
       </div>
 
-      {/* Password */}
-      <div className="space-y-2">
-        <Label htmlFor="password">Mot de passe</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Min. 8 caractères"
-          autoComplete="new-password"
-          aria-invalid={!!errors.password}
-          {...register("password")}
-        />
-        {errors.password && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
-        )}
-      </div>
-
-      {/* Confirm Password */}
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder="********"
-          autoComplete="new-password"
-          aria-invalid={!!errors.confirmPassword}
-          {...register("confirmPassword")}
-        />
-        {errors.confirmPassword && (
-          <p className="text-sm text-destructive">
-            {errors.confirmPassword.message}
-          </p>
-        )}
+      {/* Mot de passe */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="password">Mot de passe</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Min. 8 caractères"
+            autoComplete="new-password"
+            aria-invalid={!!errors.password}
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-sm text-destructive">{errors.password.message}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirmation</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            aria-invalid={!!errors.confirmPassword}
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword && (
+            <p className="text-sm text-destructive">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Code de parrainage (optionnel) */}
@@ -420,20 +463,27 @@ export function SignupForm() {
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          Recevez 500 KAZA Points de bienvenue supplementaires en
-          utilisant un code.
+          Recevez 500 KAZA Points de bienvenue en utilisant un code.
         </p>
       </div>
 
-      {/* Submit */}
-      <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+      {/* Submit (couleur du rôle) */}
+      <Button
+        type="submit"
+        size="lg"
+        disabled={isPending}
+        className={cn("w-full text-white", theme?.solidBg)}
+      >
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
             Envoi du code...
           </>
         ) : (
-          "Créer mon compte"
+          <>
+            Créer mon compte
+            <ArrowRight className="size-4" />
+          </>
         )}
       </Button>
     </form>
