@@ -390,6 +390,50 @@ export async function login(data: LoginFormData): Promise<AuthResult> {
 }
 
 // =============================================================================
+// LOGIN ADMIN — portail dédié /admin-login (accès réservé aux ADMIN)
+// =============================================================================
+export async function loginAsAdmin(
+  data: LoginFormData,
+): Promise<AuthResult> {
+  const supabase = await createClient();
+  const { data: authData, error } = await supabase.auth.signInWithPassword({
+    email: data.email,
+    password: data.password,
+  });
+
+  if (error) {
+    return {
+      error:
+        error.message === "Invalid login credentials"
+          ? "Email ou mot de passe incorrect."
+          : error.message,
+    };
+  }
+
+  // Rôle canonique depuis public.users (fallback metadata).
+  const uid = authData.user?.id;
+  let role: string =
+    (authData.user?.user_metadata?.role as string | undefined) ?? "TENANT";
+  if (uid) {
+    const { data: prof } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", uid)
+      .maybeSingle();
+    if (prof?.role) role = prof.role as string;
+  }
+
+  if (role !== "ADMIN") {
+    // Non-admin : on referme immédiatement la session ouverte.
+    await supabase.auth.signOut();
+    return { error: "Accès réservé aux administrateurs." };
+  }
+
+  await track({ eventType: "LOGIN" });
+  return { success: true, redirectTo: "/admin" };
+}
+
+// =============================================================================
 // LOGIN — Vérification du second facteur (TOTP / 2FA)
 // =============================================================================
 export async function verifyMfaLogin(code: string): Promise<AuthResult> {
