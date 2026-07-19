@@ -14,10 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PropertyCard } from "@/components/property/property-card";
 import { PropertySearchBar } from "@/components/property/property-search-bar";
-import {
-  getPlatformStats,
-  listPublicProperties,
-} from "@/lib/queries/properties";
+import { listPublicProperties } from "@/lib/queries/properties";
 import { StatCounter } from "@/components/marketing/stat-counter";
 import { GradientCard } from "@/components/marketing/gradient-card";
 import { InlineNewsletter } from "@/components/marketing/inline-newsletter";
@@ -143,13 +140,11 @@ const studentBenefits = [
 ];
 
 export default async function HomePage() {
-  const [stats, featuredProperties] = await Promise.all([
-    getPlatformStats(),
-    listPublicProperties({ limit: 6 }),
-  ]);
+  const featuredProperties = await listPublicProperties({ limit: 6 });
 
-  // Stats dynamiques calées sur Supabase. "Note moyenne" reste statique
-  // tant que les reviews ne sont pas branchées.
+  // Indicateurs de confiance (statiques) : toujours vrais et valorisants,
+  // indépendants du volume de données (évite d'afficher des "0" en phase de
+  // lancement).
   const platformStats: Array<{
     value: number;
     suffix?: string;
@@ -158,24 +153,26 @@ export default async function HomePage() {
     description?: string;
   }> = [
     {
-      value: stats.totalAvailable,
-      label: "Propriétés disponibles",
-      description: "Annonces actives, vérifiées par notre équipe",
+      value: 100,
+      suffix: "%",
+      label: "Paiements sécurisés",
+      description: "Fonds en séquestre jusqu'à la remise des clés",
     },
     {
-      value: stats.totalUsers,
-      label: "Membres KAZA",
-      description: "Propriétaires, locataires et étudiants inscrits",
+      value: 0,
+      suffix: "%",
+      label: "Commission cachée",
+      description: "En direct, sans frais d'agence surprise",
     },
     {
-      value: stats.totalCities,
-      label: "Villes couvertes",
-      description: "Partout en Afrique, et en pleine expansion",
+      value: 3,
+      label: "Espaces dédiés",
+      description: "Propriétaires, locataires et étudiants",
     },
     {
-      value: stats.totalCountries,
+      value: 5,
       label: "Pays couverts",
-      description: "Présence sur tout le continent africain",
+      description: "Bénin, Côte d'Ivoire, Togo, Sénégal, Niger",
     },
   ];
 
@@ -220,9 +217,7 @@ export default async function HomePage() {
           <FadeIn delay={150}>
             <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-7xl">
               Trouvez votre{" "}
-              <span className="bg-gradient-to-r from-kaza-green via-emerald-400 to-kaza-blue bg-clip-text text-transparent">
-                logement de rêve
-              </span>
+              <span className="text-kaza-green">logement de rêve</span>
               <br className="hidden sm:block" /> en Afrique
             </h1>
           </FadeIn>
