@@ -2,33 +2,30 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Loader2, MailCheck, ArrowLeft } from "lucide-react";
 
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  requestPasswordResetCode,
-  verifyPasswordResetCode,
-} from "@/actions/auth";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// =============================================================================
+// KAZA — Mot de passe oublié (flux natif Supabase, lien par email)
+// On envoie un lien de réinitialisation via supabase.auth.resetPasswordForEmail.
+// Le lien renvoie vers /reset-password où l'utilisateur choisit un nouveau
+// mot de passe (voir reset-password-form.tsx).
+// =============================================================================
+
 export function ForgotPasswordForm() {
-  const router = useRouter();
+  const supabase = createClient();
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const [step, setStep] = useState<"email" | "reset">("email");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [resent, setResent] = useState(false);
-
-  // Étape 1 — demande du code par email.
-  function onRequest(e: React.FormEvent) {
+  function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!EMAIL_RE.test(email.trim())) {
@@ -36,165 +33,82 @@ export function ForgotPasswordForm() {
       return;
     }
     startTransition(async () => {
-      const result = await requestPasswordResetCode(email.trim());
-      if (result?.error) {
-        setError(result.error);
-        return;
-      }
-      // On passe à l'étape code même si l'email n'existe pas (anti-énumération).
-      setCode("");
-      setStep("reset");
-    });
-  }
-
-  // Étape 2 — vérification du code + nouveau mot de passe.
-  function onReset(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!/^\d{6}$/.test(code.trim())) {
-      setError("Entrez le code à 6 chiffres reçu par email.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caractères.");
-      return;
-    }
-    if (password !== confirm) {
-      setError("Les mots de passe ne correspondent pas.");
-      return;
-    }
-    startTransition(async () => {
-      const result = await verifyPasswordResetCode(
+      const { error: err } = await supabase.auth.resetPasswordForEmail(
         email.trim(),
-        code.trim(),
-        password,
+        { redirectTo: `${window.location.origin}/reset-password` },
       );
-      if (result?.error) {
-        setError(result.error);
+      if (err && /rate|too many|seconds/i.test(err.message)) {
+        setError(
+          "Trop de demandes en peu de temps. Réessayez dans quelques minutes.",
+        );
         return;
       }
-      if (result?.success) {
-        router.push(result.redirectTo ?? "/login");
-        router.refresh();
-      }
+      // Anti-énumération : on affiche toujours la confirmation, qu'un compte
+      // existe ou non pour cette adresse.
+      if (err) console.error("[reset] resetPasswordForEmail:", err.message);
+      setSent(true);
     });
   }
 
-  function resendCode() {
-    setError(null);
-    setResent(false);
-    startTransition(async () => {
-      const result = await requestPasswordResetCode(email.trim());
-      if (result?.error) setError(result.error);
-      else setResent(true);
-    });
-  }
-
-  // ---- Étape « reset » ----
-  if (step === "reset") {
+  // ---- Confirmation ----
+  if (sent) {
     return (
-      <form onSubmit={onReset} className="space-y-5">
-        <button
-          type="button"
-          onClick={() => {
-            setStep("email");
-            setError(null);
-          }}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" /> Changer d&apos;adresse email
-        </button>
-
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-kaza-blue/20 bg-kaza-blue/5 p-5 text-center">
-          <MailCheck className="size-9 text-kaza-blue" />
-          <p className="text-sm text-muted-foreground">
-            Si un compte existe pour{" "}
-            <span className="font-medium text-kaza-navy">{email}</span>, un code
-            à 6 chiffres vient d&apos;être envoyé. Saisissez-le puis choisissez
-            un nouveau mot de passe.
-          </p>
-        </div>
-
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
+      <div className="space-y-5 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-kaza-blue/20 bg-kaza-blue/5 p-6">
+          <MailCheck className="size-10 text-kaza-blue" />
+          <div className="space-y-1">
+            <p className="font-heading font-semibold text-kaza-navy">
+              Vérifiez votre boîte mail
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Si un compte existe pour{" "}
+              <span className="font-medium text-kaza-navy">{email}</span>, un
+              lien de réinitialisation vient d&apos;être envoyé. Cliquez dessus
+              pour choisir un nouveau mot de passe.
+            </p>
           </div>
-        )}
-        {resent && !error && (
-          <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-            Un nouveau code vient d&apos;être envoyé.
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <Label htmlFor="reset-code">Code de vérification</Label>
-          <Input
-            id="reset-code"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={6}
-            placeholder="123456"
-            value={code}
-            onChange={(e) =>
-              setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
-            }
-            className="text-center text-2xl font-bold tracking-[0.5em]"
-          />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="reset-password">Nouveau mot de passe</Label>
-          <Input
-            id="reset-password"
-            type="password"
-            placeholder="Min. 8 caractères"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="reset-confirm">Confirmer le mot de passe</Label>
-          <Input
-            id="reset-confirm"
-            type="password"
-            placeholder="********"
-            autoComplete="new-password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-          />
-        </div>
-
-        <Button type="submit" className="w-full" size="lg" disabled={isPending}>
-          {isPending ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Réinitialisation...
-            </>
-          ) : (
-            "Réinitialiser mon mot de passe"
-          )}
-        </Button>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Vous n&apos;avez rien reçu ?{" "}
+        <p className="text-sm text-muted-foreground">
+          Rien reçu au bout de quelques minutes ? Vérifiez vos spams, ou{" "}
           <button
             type="button"
-            onClick={resendCode}
-            disabled={isPending}
-            className="font-medium text-kaza-blue hover:underline disabled:opacity-50"
+            onClick={() => {
+              setSent(false);
+              setError(null);
+            }}
+            className="font-medium text-kaza-blue hover:underline"
           >
-            Renvoyer le code
+            réessayez
           </button>
+          .
         </p>
-      </form>
+
+        <p className="text-sm text-muted-foreground">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 font-medium text-kaza-blue hover:underline"
+          >
+            <ArrowLeft className="size-4" /> Retour à la connexion
+          </Link>
+        </p>
+      </div>
     );
   }
 
-  // ---- Étape « email ----
+  // ---- Formulaire email ----
   return (
-    <form onSubmit={onRequest} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="space-y-1">
+        <h1 className="font-heading text-2xl font-bold text-kaza-navy">
+          Mot de passe oublié ?
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Saisissez votre email : nous vous enverrons un lien pour définir un
+          nouveau mot de passe.
+        </p>
+      </div>
+
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
@@ -217,10 +131,10 @@ export function ForgotPasswordForm() {
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
-            Envoi du code...
+            Envoi du lien...
           </>
         ) : (
-          "Recevoir un code"
+          "Recevoir le lien de réinitialisation"
         )}
       </Button>
 
