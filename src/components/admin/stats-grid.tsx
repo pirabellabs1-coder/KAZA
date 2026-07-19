@@ -23,6 +23,8 @@ export function StatsGrid({
         : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
   return (
-    <div className={cn("grid gap-4", colsClass, className)}>{children}</div>
+    <div className={cn("stagger-children grid gap-4", colsClass, className)}>
+      {children}
+    </div>
   );
 }

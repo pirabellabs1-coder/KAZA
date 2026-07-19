@@ -173,6 +173,27 @@
   animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* === Cascade d'entrée pour une grille de cartes (enfants directs) === */
+/* N'enveloppe pas les enfants : aucune modification de layout. */
+.stagger-children > * {
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-children > *:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.stagger-children > *:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.stagger-children > *:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.stagger-children > *:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.stagger-children > *:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
 /* === Flottement léger (icônes hero, illustrations) === */
 @keyframes float {
   0%,
@@ -197,7 +218,8 @@
   .animate-fade-in-up,
   .animate-fade-in,
   .animate-float,
-  .pulse-ring::before {
+  .pulse-ring::before,
+  .stagger-children > * {
     animation: none !important;
   }
 }
