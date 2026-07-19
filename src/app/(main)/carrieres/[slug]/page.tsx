@@ -63,7 +63,7 @@ const DETAILS: Record<string, JobDetail> = {
   },
   "senior-backend-engineer": {
     about: [
-      "Vous êtes responsable de l'architecture backend : Supabase (Postgres + PostGIS), RLS, Edge Functions Deno, intégrations GeniusPay / Twilio / Resend.",
+      "Vous êtes responsable de l'architecture backend : Supabase (Postgres + PostGIS), RLS, Edge Functions Deno, intégrations FeexPay / Twilio / Resend.",
       "Vous garantissez la scalabilité, la sécurité et l'observabilité de la plateforme.",
     ],
     responsibilities: [

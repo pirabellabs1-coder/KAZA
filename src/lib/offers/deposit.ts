@@ -8,7 +8,7 @@ import { dispatchNotification } from "@/lib/notifications/dispatch";
 // KAZA — Acompte de réservation d'achat (helper partagé)
 //
 // Appelé soit par l'action wallet (paiement immédiat), soit par le webhook
-// GeniusPay (Mobile Money confirmé). Marque l'offre DEPOSIT_PAID, réserve le
+// FeexPay (Mobile Money confirmé). Marque l'offre DEPOSIT_PAID, réserve le
 // bien (RESERVED) et notifie le vendeur. Idempotent.
 // =============================================================================
 

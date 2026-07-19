@@ -5,14 +5,14 @@ import { PaymentProviderError } from "./types";
 // =============================================================================
 // KAZA — Reversements (payouts) sortants
 //
-// L'encaissement (checkout) passe 100% par GeniusPay. En revanche, l'API de
-// payout (reversement vers un bénéficiaire mobile money) de GeniusPay est
-// « Bientôt disponible » à ce jour — voir https://geniuspay.ci/docs/payout-api.
+// L'encaissement (checkout) passe par FeexPay / KkiaPay. Le reversement sortant
+// (payout vers un bénéficiaire mobile money) n'est PAS encore activé côté
+// plateforme (nécessite l'API disbursement du provider + accord marchand).
 //
-// Tant qu'elle n'est pas active, on NE simule PAS un transfert : `sendPayout`
+// Tant qu'il n'est pas actif, on NE simule PAS un transfert : `sendPayout`
 // lève une erreur explicite. Les libérations d'escrow / remboursements restent
 // donc en attente (escrow non débité) et sont traités manuellement depuis
-// l'espace admin (/admin/payouts) jusqu'à activation du payout GeniusPay.
+// l'espace admin (/admin/payouts).
 // =============================================================================
 
 export interface PayoutInput {
@@ -40,16 +40,16 @@ export interface PayoutResult {
 }
 
 /**
- * Déclenche un reversement sortant. Indisponible tant que l'API payout
- * GeniusPay n'est pas active : lève une {@link PaymentProviderError} pour que
+ * Déclenche un reversement sortant. Indisponible tant que l'API de payout du
+ * provider n'est pas activée : lève une {@link PaymentProviderError} pour que
  * l'appelant (libération escrow / remboursement) NE marque PAS les fonds comme
  * transférés. Le reversement doit alors être traité manuellement.
  */
 export async function sendPayout(input: PayoutInput): Promise<PayoutResult> {
   void input;
   throw new PaymentProviderError(
-    "geniuspay",
-    "Reversement automatique indisponible : l'API payout GeniusPay n'est pas " +
-      "encore active. À traiter manuellement depuis l'espace admin (/admin/payouts).",
+    "feexpay",
+    "Reversement automatique indisponible : l'API de payout n'est pas encore " +
+      "activée. À traiter manuellement depuis l'espace admin (/admin/payouts).",
   );
 }

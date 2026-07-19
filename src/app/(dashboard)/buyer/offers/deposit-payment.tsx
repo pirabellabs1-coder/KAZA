@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast-helper";
+import { MomoPaymentPanel } from "@/components/payments/momo-payment-panel";
 import { formatPrice } from "@/lib/utils";
 
 import {
@@ -32,6 +33,7 @@ export function DepositPaymentButton({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [showMomo, setShowMomo] = useState(false);
   const [pending, startTransition] = useTransition();
   const canWallet = walletBalance >= deposit;
 
@@ -44,17 +46,6 @@ export function DepositPaymentButton({
         router.refresh();
       } else {
         toast.error(res.error ?? "Échec du paiement");
-      }
-    });
-  };
-
-  const payMomo = () => {
-    startTransition(async () => {
-      const res = await initiateOfferDepositPayment(offerId);
-      if (res.success && res.checkoutUrl) {
-        window.location.href = res.checkoutUrl;
-      } else {
-        toast.error(res.error ?? "Échec de l'initiation du paiement");
       }
     });
   };
@@ -98,23 +89,37 @@ export function DepositPaymentButton({
             {pending && <Loader2 className="size-4 animate-spin" />}
           </button>
 
-          <button
-            type="button"
-            disabled={pending}
-            onClick={payMomo}
-            className="flex w-full items-center gap-3 rounded-lg border p-3 text-left transition hover:border-kaza-blue disabled:opacity-50"
-          >
-            <span className="flex size-10 items-center justify-center rounded-md bg-kaza-blue/10 text-kaza-blue">
-              <Smartphone className="size-5" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-medium">Mobile Money</span>
-              <span className="block text-xs text-muted-foreground">
-                MTN, Moov et autres opérateurs — paiement sécurisé
+          {!showMomo ? (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => setShowMomo(true)}
+              className="flex w-full items-center gap-3 rounded-lg border p-3 text-left transition hover:border-kaza-blue disabled:opacity-50"
+            >
+              <span className="flex size-10 items-center justify-center rounded-md bg-kaza-blue/10 text-kaza-blue">
+                <Smartphone className="size-5" />
               </span>
-            </span>
-            {pending && <Loader2 className="size-4 animate-spin" />}
-          </button>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium">Mobile Money</span>
+                <span className="block text-xs text-muted-foreground">
+                  MTN, Moov et autres opérateurs — paiement sécurisé
+                </span>
+              </span>
+            </button>
+          ) : (
+            <div className="rounded-lg border p-3">
+              <MomoPaymentPanel
+                amount={deposit}
+                submitLabel={`Payer ${formatPrice(deposit)}`}
+                initiate={(momo) => initiateOfferDepositPayment(offerId, momo)}
+                onSuccess={() => {
+                  toast.success("Acompte versé — le bien est réservé");
+                  setOpen(false);
+                  router.refresh();
+                }}
+              />
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -9,6 +9,7 @@ import {
   PaymentMethodSelector,
   type PaymentMethod,
 } from "@/components/payments/payment-method-selector";
+import { MomoPaymentPanel } from "@/components/payments/momo-payment-panel";
 import {
   initiateRentPayment,
   payRentFromWallet,
@@ -102,7 +103,8 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
     setPromoError(null);
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  // --- Paiement depuis le solde KAZA (wallet) ---
+  function handleWalletSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
@@ -112,7 +114,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
       toast.error(msg);
       return;
     }
-    if (method === "wallet" && !walletSufficient) {
+    if (!walletSufficient) {
       const msg = "Solde KAZA insuffisant pour ce paiement.";
       setError(msg);
       toast.error(msg);
@@ -121,39 +123,18 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
 
     startTransition(async () => {
       try {
-        // --- Paiement depuis le solde KAZA ---
-        if (method === "wallet") {
-          const result = await payRentFromWallet({
-            rentalId,
-            promoCode: appliedPromo?.code,
-          });
-          if (!result.success) {
-            const msg = result.error ?? "Le paiement a échoué. Réessayez.";
-            setError(msg);
-            toast.error(msg);
-            return;
-          }
-          toast.success("Loyer payé depuis votre solde KAZA.");
-          window.location.href = "/payments/success?method=wallet";
-          return;
-        }
-
-        // --- Paiement Mobile Money (GeniusPay) ---
-        const result = await initiateRentPayment({
+        const result = await payRentFromWallet({
           rentalId,
-          provider: "geniuspay",
           promoCode: appliedPromo?.code,
         });
-        if (!result.success || !result.checkoutUrl) {
-          const msg =
-            result.error ??
-            "Impossible d'initier le paiement. Veuillez réessayer.";
+        if (!result.success) {
+          const msg = result.error ?? "Le paiement a échoué. Réessayez.";
           setError(msg);
           toast.error(msg);
           return;
         }
-        toast.info("Redirection vers la page de paiement…");
-        window.location.href = result.checkoutUrl;
+        toast.success("Loyer payé depuis votre solde KAZA.");
+        window.location.href = "/payments/success?method=wallet";
       } catch (err) {
         const message =
           err instanceof Error
@@ -166,7 +147,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleWalletSubmit} className="space-y-6">
       {/* Étape 1 : moyen de paiement */}
       <section className="space-y-3">
         <div>
@@ -329,28 +310,48 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
         </div>
       )}
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={!canSubmit}
-        className="w-full bg-kaza-blue text-white hover:bg-kaza-blue/90"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            Initialisation du paiement…
-          </>
-        ) : (
-          <>
-            <Lock className="size-4" />
-            Payer {formatPrice(payableAmount)}
-          </>
-        )}
-      </Button>
-
-      <p className="text-center text-xs text-muted-foreground">
-        Paiement sécurisé par KAZA. Vos données sont chiffrées.
-      </p>
+      {/* Étape finale : paiement selon le moyen choisi */}
+      {method === "wallet" ? (
+        <>
+          <Button
+            type="submit"
+            size="lg"
+            disabled={!canSubmit}
+            className="w-full bg-kaza-blue text-white hover:bg-kaza-blue/90"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Paiement en cours…
+              </>
+            ) : (
+              <>
+                <Lock className="size-4" />
+                Payer {formatPrice(payableAmount)} depuis mon solde
+              </>
+            )}
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            Paiement sécurisé par KAZA. Vos données sont chiffrées.
+          </p>
+        </>
+      ) : (
+        <MomoPaymentPanel
+          amount={payableAmount}
+          disabled={!acceptCgu}
+          initiate={(momo) =>
+            initiateRentPayment({
+              rentalId,
+              promoCode: appliedPromo?.code,
+              ...momo,
+            })
+          }
+          onSuccess={() => {
+            toast.success("Paiement confirmé. Votre location est activée.");
+            window.location.href = "/payments/success?method=mobile_money";
+          }}
+        />
+      )}
     </form>
   );
 }

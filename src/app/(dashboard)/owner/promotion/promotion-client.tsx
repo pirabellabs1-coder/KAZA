@@ -32,6 +32,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { MomoPaymentPanel } from "@/components/payments/momo-payment-panel";
 import { toast } from "@/components/ui/toast-helper";
 import { cn } from "@/lib/utils";
 import {
@@ -157,6 +165,7 @@ export function PromotionClient({
   const [selectedPlan, setSelectedPlan] = useState<BoostPlan["id"]>("boost30");
   const [payMethod, setPayMethod] = useState<PayMethod>("mobile_money");
   const [boosts, setBoosts] = useState<ActiveBoostDTO[]>(initialBoosts);
+  const [momoOpen, setMomoOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const plan = useMemo(() => getPlan(selectedPlan), [selectedPlan]);
@@ -165,36 +174,41 @@ export function PromotionClient({
     [properties, propertyId],
   );
 
+  // Ajoute un boost activé à la liste locale (feedback optimiste).
+  function pushActiveBoost(boostId: string, title: string): void {
+    const now = new Date();
+    setBoosts((prev) => [
+      {
+        id: boostId,
+        propertyId,
+        propertyTitle: title,
+        plan: plan.dbPlan,
+        amount: plan.price,
+        startedAt: now.toISOString(),
+        endsAt: new Date(
+          now.getTime() + plan.duration * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        status: "ACTIVE",
+      },
+      ...prev,
+    ]);
+  }
+
   function handleActivate(): void {
     if (!property) {
       toast.error("Sélectionnez d'abord une annonce à booster.");
       return;
     }
+
+    // --- Paiement par Mobile Money (FeexPay) : tunnel on-page --------------
+    if (payMethod === "mobile_money") {
+      setMomoOpen(true);
+      return;
+    }
+
+    // --- Paiement par solde KAZA Wallet -----------------------------------
     const target = property;
-
     startTransition(async () => {
-      // --- Paiement par Mobile Money (GeniusPay) : redirection checkout -------
-      if (payMethod === "mobile_money") {
-        const res = await initiateBoostCheckout({
-          propertyId: target.id,
-          plan: plan.dbPlan,
-          days: plan.duration,
-          amount: plan.price,
-        });
-        if (res.success && res.checkoutUrl) {
-          toast.info("Redirection vers le paiement Mobile Money…");
-          window.location.href = res.checkoutUrl;
-          return;
-        }
-        toast.error(
-          ERROR_MESSAGES[res.error ?? ""] ??
-            res.error ??
-            "Impossible d'initier le paiement.",
-        );
-        return;
-      }
-
-      // --- Paiement par solde KAZA Wallet ----------------------------------
       const res = await activateBoost({
         propertyId: target.id,
         plan: plan.dbPlan,
@@ -210,20 +224,7 @@ export function PromotionClient({
         return;
       }
 
-      const now = new Date();
-      const newBoost: ActiveBoostDTO = {
-        id: res.boostId ?? `boost-${now.getTime()}`,
-        propertyId: target.id,
-        propertyTitle: target.title,
-        plan: plan.dbPlan,
-        amount: plan.price,
-        startedAt: now.toISOString(),
-        endsAt: new Date(
-          now.getTime() + plan.duration * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-        status: "ACTIVE",
-      };
-      setBoosts((prev) => [newBoost, ...prev]);
+      pushActiveBoost(res.boostId ?? `boost-${Date.now()}`, target.title);
       toast.success(`Boost activé pour « ${target.title} ».`);
     });
   }
@@ -569,6 +570,43 @@ export function PromotionClient({
           )}
         </CardContent>
       </Card>
+
+      {/* Tunnel de paiement Mobile Money (boost) */}
+      <Dialog open={momoOpen} onOpenChange={setMomoOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="font-heading">
+              Payer le boost par Mobile Money
+            </DialogTitle>
+            <DialogDescription>
+              {property
+                ? `Boost « ${property.title} » — ${plan.duration} jours.`
+                : "Sélectionnez une annonce."}
+            </DialogDescription>
+          </DialogHeader>
+          {property && (
+            <MomoPaymentPanel
+              amount={plan.price}
+              initiate={(momo) =>
+                initiateBoostCheckout(
+                  {
+                    propertyId: property.id,
+                    plan: plan.dbPlan,
+                    days: plan.duration,
+                    amount: plan.price,
+                  },
+                  momo,
+                )
+              }
+              onSuccess={() => {
+                setMomoOpen(false);
+                pushActiveBoost(`boost-${Date.now()}`, property.title);
+                toast.success(`Boost activé pour « ${property.title} ».`);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

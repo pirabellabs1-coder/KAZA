@@ -99,7 +99,7 @@
 
 ## 12. Verification et tests visuels
 
-- [ ] 12.1 Verifier la responsivite de toutes les pages avec playwright-skill (mobile 375px, tablette 768px, desktop 1280px)
-- [ ] 12.2 Verifier la navigation complete : Landing → Recherche → Detail → Auth → Dashboard → Profil
-- [ ] 12.3 Verifier le design system : coherence des couleurs, typographies, spacings sur toutes les pages
-- [ ] 12.4 Corriger les bugs visuels et d'accessibilite identifies lors des tests
+- [x] 12.1 Verifier la responsivite (mobile 375 / tablette 768 / desktop 1280) — audit de debordement horizontal sur les pages publiques (accueil, recherche, a-propos, tarifs) : AUCUN overflow aux 3 breakpoints (prod kaza-topaz.vercel.app). Reste : pages authentifiees (dashboards, checkout) non couvertes faute d'identifiants de test.
+- [x] 12.2 Verifier la navigation publique : Landing → Recherche → pages statiques (liens header/footer OK, 0 erreur console). Reste : parcours authentifie Auth → Dashboard → Profil (necessite identifiants).
+- [ ] 12.3 Verifier le design system : coherence des couleurs, typographies, spacings — necessite une revue visuelle (captures d'ecran indisponibles dans l'environnement actuel).
+- [ ] 12.4 Corriger les bugs visuels et d'accessibilite identifies lors des tests — aucun bug de layout (overflow) detecte sur le perimetre teste ; revue visuelle fine a faire.

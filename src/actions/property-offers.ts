@@ -26,7 +26,7 @@ import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { walletDebit } from "@/lib/wallet/spend";
 import { createPayment } from "@/lib/payments";
 import { markOfferDepositPaid } from "@/lib/offers/deposit";
-import type { PaymentProvider } from "@/lib/payments/types";
+import type { MomoCheckoutFields } from "@/lib/payments/types";
 
 import type { ActionResult } from "./notifications";
 
@@ -357,14 +357,22 @@ export async function payOfferDepositFromWallet(
 }
 
 /**
- * Initie le versement de l'acompte par Mobile Money (GeniusPay). Renvoie l'URL
- * de checkout. La réservation est confirmée par le webhook au succès.
+ * Initie le versement de l'acompte par Mobile Money (FeexPay, flux on-page).
+ * Renvoie la reference a poller. La réservation est confirmée au succès.
  */
 export async function initiateOfferDepositPayment(
   offerId: string,
-  provider?: PaymentProvider,
-): Promise<{ success: boolean; checkoutUrl?: string; error?: string }> {
+  momo: MomoCheckoutFields,
+): Promise<{
+  success: boolean;
+  paymentId?: string;
+  reference?: string;
+  error?: string;
+}> {
   if (!offerId) return { success: false, error: "Offre introuvable." };
+  if (!momo?.phone?.trim() || !momo?.network) {
+    return { success: false, error: "Opérateur et numéro Mobile Money requis." };
+  }
   const supabase = await createClient();
   const {
     data: { user },
@@ -376,34 +384,40 @@ export async function initiateOfferDepositPayment(
   if (!loaded.ok) return { success: false, error: loaded.error };
 
   try {
-    const result = await createPayment(
-      {
-        amount: loaded.deposit,
-        currency: "XOF",
-        description: `Acompte de réservation — ${loaded.propertyTitle}`,
-        customerEmail: user.email ?? "",
-        customerPhone:
-          (user.user_metadata?.phone as string | undefined) ?? undefined,
-        metadata: { user_id: user.id, offer_id: offerId },
-      },
-      { provider: provider ?? "geniuspay" },
-    );
-
-    const { error: insErr } = await admin.from("payments").insert({
-      user_id: user.id,
+    const result = await createPayment({
       amount: loaded.deposit,
-      payment_method: "MOBILE_MONEY",
-      transaction_id: result.providerPaymentId,
-      status: "PENDING",
-      purpose: "SALE_DEPOSIT",
-      metadata: { offer_id: offerId },
+      currency: "XOF",
+      description: `Acompte de réservation — ${loaded.propertyTitle}`,
+      customerEmail: user.email ?? "",
+      customerPhone: momo.phone,
+      network: momo.network,
+      countryCode: momo.countryCode ?? "BJ",
+      metadata: { user_id: user.id, offer_id: offerId },
     });
-    if (insErr) {
-      console.error("[property-offers] momo deposit insert:", insErr.message);
+
+    const { data: payment, error: insErr } = await admin
+      .from("payments")
+      .insert({
+        user_id: user.id,
+        amount: loaded.deposit,
+        payment_method: "MOBILE_MONEY",
+        transaction_id: result.providerPaymentId,
+        status: "PENDING",
+        purpose: "SALE_DEPOSIT",
+        metadata: { offer_id: offerId },
+      })
+      .select("id")
+      .single();
+    if (insErr || !payment) {
+      console.error("[property-offers] momo deposit insert:", insErr?.message);
       return { success: false, error: "Impossible d'enregistrer le paiement." };
     }
 
-    return { success: true, checkoutUrl: result.checkoutUrl };
+    return {
+      success: true,
+      paymentId: payment.id,
+      reference: result.providerPaymentId,
+    };
   } catch (err) {
     console.error("[property-offers] initiate deposit:", err);
     return {

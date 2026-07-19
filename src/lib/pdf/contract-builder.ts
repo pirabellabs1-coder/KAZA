@@ -206,7 +206,7 @@ export function buildContractHtml(data: ContractData): string {
     <tr><td>Total mensuel à payer</td><td style="text-align:right">${esc(formatFcfa(totalMonthly))}</td></tr>
   </table>
   <p>Le loyer est payable d'avance, au plus tard le 5 de chaque mois, par Mobile Money
-  via la plateforme KAZA (GeniusPay), virement bancaire ou tout autre moyen
+  via la plateforme KAZA (FeexPay), virement bancaire ou tout autre moyen
   convenu entre les parties. Tout retard de paiement supérieur à quinze (15) jours
   donnera lieu à une majoration de 5 % du montant dû et pourra entraîner la résiliation
   du présent bail.</p>

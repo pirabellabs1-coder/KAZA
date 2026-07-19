@@ -1,10 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { MomoPaymentPanel } from "@/components/payments/momo-payment-panel";
 import { toast } from "@/components/ui/toast-helper";
 import { initiateSubscriptionCheckout } from "@/actions/subscriptions";
 import { cn } from "@/lib/utils";
@@ -35,6 +42,8 @@ interface SubscribeButtonProps {
   currentPlanLabel?: string;
   /** Children Lucide icon prefix (rendered before label) */
   icon?: React.ReactNode;
+  /** Prix mensuel du plan en FCFA (affichage dans le tunnel de paiement). */
+  priceFcfa?: number;
 }
 
 export function SubscribeButton({
@@ -49,9 +58,10 @@ export function SubscribeButton({
   signupRoleSuffix = "",
   currentPlanLabel = "Plan actuel",
   icon,
+  priceFcfa = 0,
 }: SubscribeButtonProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
 
   if (isCurrentPlan) {
     return (
@@ -72,65 +82,69 @@ export function SubscribeButton({
       router.push(`/signup?plan=${encodeURIComponent(plan)}${signupRoleSuffix}`);
       return;
     }
+    // Plan gratuit : activation directe (l'action ignore les champs Mobile Money
+    // pour un plan à 0 FCFA). Sinon, on ouvre le tunnel de paiement on-page.
+    if (priceFcfa <= 0) {
+      void activateFree();
+      return;
+    }
+    setOpen(true);
+  };
 
-    startTransition(async () => {
-      // Paiement par moyen de paiement (Mobile Money / GeniusPay) — pas besoin
-      // de solde wallet. Le webhook active l'abonnement après confirmation.
-      const result = await initiateSubscriptionCheckout(plan);
-      if (result.success) {
-        if (result.checkoutUrl) {
-          toast.info("Redirection vers le paiement Mobile Money…");
-          window.location.href = result.checkoutUrl;
-          return;
-        }
-        // Plan gratuit : activé directement.
-        toast.success("Abonnement activé. Bienvenue !");
-        if (redirectAfterSuccess) {
-          router.push(redirectAfterSuccess);
-        } else {
-          router.refresh();
-        }
-        return;
-      }
-
-      switch (result.error) {
-        case "NOT_AUTHENTICATED":
-          router.push(
-            `/signup?plan=${encodeURIComponent(plan)}${signupRoleSuffix}`,
-          );
-          return;
-        case "ALREADY_SUBSCRIBED":
-          toast.error("Vous avez déjà un abonnement actif.");
-          return;
-        case "INTERNAL":
-          toast.error("Une erreur interne est survenue. Réessayez.");
-          return;
-        default:
-          toast.error(result.error ?? "Impossible d'initier le paiement.");
-      }
+  const activateFree = async () => {
+    const result = await initiateSubscriptionCheckout(plan, {
+      network: "",
+      phone: "",
     });
+    if (result.success) {
+      toast.success("Abonnement activé. Bienvenue !");
+      if (redirectAfterSuccess) router.push(redirectAfterSuccess);
+      else router.refresh();
+      return;
+    }
+    if (result.error === "ALREADY_SUBSCRIBED") {
+      toast.error("Vous avez déjà un abonnement actif.");
+    } else {
+      toast.error(result.error ?? "Impossible d'activer l'abonnement.");
+    }
   };
 
   return (
-    <Button
-      type="button"
-      variant={variant}
-      size={size}
-      className={className}
-      onClick={handleClick}
-      disabled={isPending}
-    >
-      {isPending ? (
-        <>
-          <Loader2 className="mr-2 size-4 animate-spin" />
-          Activation...
-        </>
-      ) : (
-        <>
-          {icon}
-          {label}
-        </>
-      )}
-    </Button>
+    <>
+      <Button
+        type="button"
+        variant={variant}
+        size={size}
+        className={className}
+        onClick={handleClick}
+      >
+        {icon}
+        {label}
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="font-heading">
+              Activer mon abonnement
+            </DialogTitle>
+            <DialogDescription>
+              Payez par Mobile Money et validez directement sur votre téléphone.
+              Votre abonnement est activé dès la confirmation.
+            </DialogDescription>
+          </DialogHeader>
+          <MomoPaymentPanel
+            amount={priceFcfa}
+            initiate={(momo) => initiateSubscriptionCheckout(plan, momo)}
+            onSuccess={() => {
+              toast.success("Abonnement activé. Bienvenue !");
+              setOpen(false);
+              if (redirectAfterSuccess) router.push(redirectAfterSuccess);
+              else router.refresh();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

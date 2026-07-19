@@ -16,7 +16,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
-import type { PaymentProvider } from "@/lib/payments/types";
+import type { MomoCheckoutFields } from "@/lib/payments/types";
 import { walletDebit, walletRefund } from "@/lib/wallet/spend";
 
 // Commission KAZA prélevée sur chaque retrait
@@ -152,12 +152,13 @@ export async function requestWithdrawal(
 export interface TopUpResult {
   success: boolean;
   error?: string;
-  checkoutUrl?: string;
+  paymentId?: string;
+  reference?: string;
 }
 
 export async function initiateWalletTopUp(
   amount: number,
-  provider: PaymentProvider = "geniuspay",
+  momo: MomoCheckoutFields,
 ): Promise<TopUpResult> {
   const value = Math.round(Number(amount) || 0);
   if (value < MIN_TOPUP) {
@@ -169,6 +170,9 @@ export async function initiateWalletTopUp(
   if (value > MAX_TOPUP) {
     return { success: false, error: "Montant trop élevé." };
   }
+  if (!momo?.phone?.trim() || !momo?.network) {
+    return { success: false, error: "Opérateur et numéro Mobile Money requis." };
+  }
 
   const supabase = await createClient();
   const {
@@ -177,35 +181,44 @@ export async function initiateWalletTopUp(
   if (!user) return { success: false, error: "Non authentifié" };
 
   try {
-    const result = await createPayment(
-      {
-        amount: value,
-        currency: "XOF",
-        description: `Recharge KAZA Wallet — ${value.toLocaleString("fr-FR")} FCFA`,
-        customerEmail: user.email ?? "",
-        customerPhone:
-          (user.user_metadata?.phone as string | undefined) ?? undefined,
-        metadata: { user_id: user.id, kind: "wallet_topup" },
-      },
-      { provider },
-    );
+    const result = await createPayment({
+      amount: value,
+      currency: "XOF",
+      description: `Recharge KAZA Wallet — ${value.toLocaleString("fr-FR")} FCFA`,
+      customerEmail: user.email ?? "",
+      customerPhone: momo.phone,
+      network: momo.network,
+      countryCode: momo.countryCode ?? "BJ",
+      metadata: { user_id: user.id, kind: "wallet_topup" },
+    });
 
     const admin = createAdminClient() as unknown as SupabaseClient;
-    const { error: insertErr } = await admin.from("payments").insert({
-      user_id: user.id,
-      rental_id: null,
-      amount: value,
-      payment_method: "MOBILE_MONEY",
-      transaction_id: result.providerPaymentId,
-      status: "PENDING",
-      purpose: "WALLET_TOPUP",
-    });
-    if (insertErr) {
-      console.error("[wallet] insert payment topup echec:", insertErr.message);
+    const { data: payment, error: insertErr } = await admin
+      .from("payments")
+      .insert({
+        user_id: user.id,
+        rental_id: null,
+        amount: value,
+        payment_method: "MOBILE_MONEY",
+        transaction_id: result.providerPaymentId,
+        status: "PENDING",
+        purpose: "WALLET_TOPUP",
+      })
+      .select("id")
+      .single();
+    if (insertErr || !payment) {
+      console.error(
+        "[wallet] insert payment topup echec:",
+        insertErr?.message,
+      );
       return { success: false, error: "Impossible d'initier la recharge." };
     }
 
-    return { success: true, checkoutUrl: result.checkoutUrl };
+    return {
+      success: true,
+      paymentId: payment.id,
+      reference: result.providerPaymentId,
+    };
   } catch (err) {
     console.error("[wallet] topup checkout echec:", err);
     return {

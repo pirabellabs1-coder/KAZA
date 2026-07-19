@@ -43,6 +43,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast-helper";
+import { MomoPaymentPanel } from "@/components/payments/momo-payment-panel";
 import { formatFcfa } from "@/lib/utils";
 
 import {
@@ -87,6 +88,10 @@ interface Props {
 export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [momoShare, setMomoShare] = useState<{
+    id: string;
+    amount: number;
+  } | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const group = groups.find((g) => g.id === selectedGroupId) ?? groups[0];
@@ -174,16 +179,8 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
     });
   };
 
-  const handlePayShare = (shareId: string) => {
-    startTransition(async () => {
-      const res = await initiateExpenseShareCheckout(shareId);
-      if (res.success && res.checkoutUrl) {
-        toast.info("Redirection vers le paiement Mobile Money…");
-        window.location.href = res.checkoutUrl;
-        return;
-      }
-      toast.error(res.error ?? "Impossible d'initier le paiement.");
-    });
+  const handlePayShare = (shareId: string, amount: number) => {
+    setMomoShare({ id: shareId, amount });
   };
 
   const handlePayShareWallet = (shareId: string) => {
@@ -616,7 +613,12 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
                                   size="sm"
                                   className="gap-1.5"
                                   disabled={isPending}
-                                  onClick={() => handlePayShare(myShare.id)}
+                                  onClick={() =>
+                                    handlePayShare(
+                                      myShare.id,
+                                      myShare.shareFcfa - myShare.paidFcfa,
+                                    )
+                                  }
                                 >
                                   <Smartphone className="size-3.5" /> Mobile Money
                                 </Button>
@@ -632,6 +634,34 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {/* Tunnel de paiement Mobile Money (frais partagés) */}
+      <Dialog
+        open={momoShare !== null}
+        onOpenChange={(v) => !v && setMomoShare(null)}
+      >
+        <DialogContent className="sm:max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle>Régler ma part par Mobile Money</DialogTitle>
+            <DialogDescription>
+              Validez le paiement directement sur votre téléphone.
+            </DialogDescription>
+          </DialogHeader>
+          {momoShare && (
+            <MomoPaymentPanel
+              amount={momoShare.amount}
+              initiate={(momo) =>
+                initiateExpenseShareCheckout(momoShare.id, momo)
+              }
+              onSuccess={() => {
+                setMomoShare(null);
+                toast.success("Part réglée.");
+                router.refresh();
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

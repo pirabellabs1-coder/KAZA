@@ -1,21 +1,21 @@
 // =============================================================================
 // KAZA — Dialog : recharge du wallet par Mobile Money (client)
-// Initialise un checkout GeniusPay ; le solde est crédité par le webhook
-// après confirmation du paiement (purpose = WALLET_TOPUP).
+// Paiement Mobile Money on-page (FeexPay) ; le solde est crédité par le webhook
+// / le polling après confirmation du paiement (purpose = WALLET_TOPUP).
 // =============================================================================
 
 "use client";
 
-import { useState, useTransition } from "react";
-import { Plus, Loader2, Smartphone } from "lucide-react";
+import { useState } from "react";
+import { Plus, Smartphone } from "lucide-react";
 
 import { initiateWalletTopUp } from "@/actions/wallet";
+import { MomoPaymentPanel } from "@/components/payments/momo-payment-panel";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -43,27 +43,13 @@ export function RechargeWalletDialog({
 }: RechargeWalletDialogProps) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState<string>("");
-  const [pending, startTransition] = useTransition();
 
   const amountNum = Number(amount.replace(/\s/g, "")) || 0;
   const error =
     amountNum > 0 && amountNum < MIN_TOPUP
       ? `Montant minimum : ${formatFcfa(MIN_TOPUP)}`
       : null;
-  const canSubmit = !pending && amountNum >= MIN_TOPUP;
-
-  const handleSubmit = () => {
-    if (!canSubmit) return;
-    startTransition(async () => {
-      const res = await initiateWalletTopUp(amountNum);
-      if (res.success && res.checkoutUrl) {
-        toast.info("Redirection vers le paiement Mobile Money…");
-        window.location.href = res.checkoutUrl;
-        return;
-      }
-      toast.error(res.error ?? "Impossible d'initier la recharge.");
-    });
-  };
+  const amountReady = amountNum >= MIN_TOPUP;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -137,26 +123,29 @@ export function RechargeWalletDialog({
 
           <div className="flex items-center gap-2 rounded-xl border border-kaza-blue/20 bg-kaza-blue/5 p-3 text-xs text-muted-foreground">
             <Smartphone className="size-4 shrink-0 text-kaza-blue" />
-            Vous serez redirigé vers la page de paiement sécurisée. Une fois le
-            paiement confirmé, votre solde sera mis à jour automatiquement.
+            Choisissez votre opérateur puis validez le paiement directement sur
+            votre téléphone. Votre solde sera mis à jour automatiquement.
           </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Annuler
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!canSubmit}
-            className="gap-2 bg-kaza-navy text-white hover:bg-kaza-navy/90"
-          >
-            {pending && <Loader2 className="size-4 animate-spin" />}
-            {amountNum >= MIN_TOPUP
-              ? `Recharger ${formatFcfa(amountNum)}`
-              : "Recharger"}
-          </Button>
-        </DialogFooter>
+          {/* Paiement Mobile Money on-page (visible une fois le montant saisi) */}
+          {amountReady ? (
+            <MomoPaymentPanel
+              amount={amountNum}
+              submitLabel={`Recharger ${formatFcfa(amountNum)}`}
+              initiate={(momo) => initiateWalletTopUp(amountNum, momo)}
+              onSuccess={() => {
+                toast.success("Recharge confirmée. Votre solde a été crédité.");
+                setOpen(false);
+                window.location.reload();
+              }}
+            />
+          ) : (
+            <p className="text-center text-xs text-muted-foreground">
+              Saisissez un montant d&apos;au moins {formatFcfa(MIN_TOPUP)} pour
+              continuer.
+            </p>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

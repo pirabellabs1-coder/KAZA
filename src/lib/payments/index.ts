@@ -1,93 +1,95 @@
 import "server-only";
 
-import { geniuspayClient } from "./geniuspay";
+import { feexpayClient } from "./feexpay";
+import { kkiapayClient } from "./kkiapay";
 import {
+  type CreateMobileMoneyInput,
   type CreatePaymentInput,
   type PaymentProvider,
   type PaymentResult,
+  type TransactionStatus,
   type WebhookEvent,
-  PaymentProviderError,
 } from "./types";
 
 // =============================================================================
-// KAZA - Facade unifiee des providers de paiement
+// KAZA - Facade unifiee du provider de paiement (FeexPay)
 // =============================================================================
-// Tous les appels paiement de l'application doivent passer par cette facade
-// pour permettre:
-// - Le fallback automatique entre providers (FedaPay -> Kkiapay)
+// Tous les appels paiement de l'application passent par cette facade pour :
 // - Une interface unique pour les server actions
 // - L'instrumentation centralisee (logs, metrics)
+// - Un decouplage total du provider concret (FeexPay aujourd'hui)
+//
+// Deux flux d'encaissement :
+// - Mobile Money (on-page)  : createPayment()      -> reference a poller
+// - Carte bancaire (redirect): createCardCheckout() -> checkoutUrl
 // =============================================================================
 
 export type {
+  CreateMobileMoneyInput,
   CreatePaymentInput,
+  MobileMoneyNetwork,
   PaymentMethod,
   PaymentProvider,
   PaymentResult,
   PaymentStatus,
+  TransactionStatus,
   WebhookEvent,
 } from "./types";
 export { PaymentProviderError, WebhookSignatureError } from "./types";
 
-interface PaymentProviderAdapter {
-  createCheckout: (input: CreatePaymentInput) => Promise<PaymentResult>;
-  verifyWebhookSignature: (rawBody: string, signature: string) => boolean;
-  parseWebhookEvent: (body: unknown) => WebhookEvent;
-}
-
-const PROVIDERS: Record<PaymentProvider, PaymentProviderAdapter> = {
-  geniuspay: geniuspayClient,
-};
-
 /**
- * Retourne l'adapter d'un provider de paiement.
- */
-export function getPaymentProvider(name: PaymentProvider): PaymentProviderAdapter {
-  const provider = PROVIDERS[name];
-  if (!provider) {
-    throw new PaymentProviderError(
-      name,
-      `Provider de paiement inconnu: ${name}`
-    );
-  }
-  return provider;
-}
-
-interface CreatePaymentOptions {
-  /** Provider de paiement (unique : GeniusPay). */
-  provider?: PaymentProvider;
-}
-
-/**
- * Crée un paiement via GeniusPay (seul provider d'encaissement de la
- * plateforme). Renvoie l'URL de checkout hébergée à laquelle rediriger le
- * client.
+ * Initie un paiement Mobile Money direct (FeexPay « requesttopay »). Le client
+ * valide ensuite sur son telephone ; le statut est confirme via
+ * {@link getPaymentStatus} (polling) et le webhook. Renvoie la reference
+ * FeexPay dans `providerPaymentId` (pas d'URL de redirection).
  */
 export async function createPayment(
-  input: CreatePaymentInput,
-  opts: CreatePaymentOptions = {}
+  input: CreateMobileMoneyInput,
 ): Promise<PaymentResult> {
-  const provider = opts.provider ?? "geniuspay";
-  return await getPaymentProvider(provider).createCheckout(input);
+  return await feexpayClient.requestToPay(input);
 }
 
 /**
- * Verifie la signature d'un webhook pour le provider donne.
+ * Initie un paiement par carte bancaire (FeexPay). Renvoie l'URL de la page de
+ * paiement hostee a laquelle rediriger le client.
  */
-export function verifyWebhook(
-  provider: PaymentProvider,
-  rawBody: string,
-  signature: string
-): boolean {
-  return getPaymentProvider(provider).verifyWebhookSignature(rawBody, signature);
+export async function createCardCheckout(
+  input: CreatePaymentInput & { firstName?: string; lastName?: string },
+): Promise<PaymentResult> {
+  return await feexpayClient.initCardCheckout(input);
 }
 
 /**
- * Parse un evenement webhook pour le provider donne.
+ * Verifie le statut autoritaire d'une transaction aupres du provider indique
+ * (FeexPay par defaut). Utilise pour le polling on-page et la re-verification
+ * des webhooks.
+ */
+export async function getPaymentStatus(
+  reference: string,
+  provider: PaymentProvider = "feexpay",
+): Promise<TransactionStatus> {
+  if (provider === "kkiapay") {
+    return await kkiapayClient.getTransactionStatus(reference);
+  }
+  return await feexpayClient.getTransactionStatus(reference);
+}
+
+/**
+ * Verifie la signature d'un webhook FeexPay (si un secret est configure).
+ */
+export function verifyWebhook(rawBody: string, signature?: string): boolean {
+  return feexpayClient.verifyWebhookSignature(rawBody, signature);
+}
+
+/**
+ * Parse un evenement webhook du provider indique (FeexPay par defaut).
  */
 export function parseWebhook(
-  provider: PaymentProvider,
-  body: unknown
+  body: unknown,
+  provider: PaymentProvider = "feexpay",
 ): WebhookEvent {
-  return getPaymentProvider(provider).parseWebhookEvent(body);
+  if (provider === "kkiapay") {
+    return kkiapayClient.parseWebhookEvent(body);
+  }
+  return feexpayClient.parseWebhookEvent(body);
 }

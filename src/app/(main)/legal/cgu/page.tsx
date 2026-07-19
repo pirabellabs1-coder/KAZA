@@ -136,7 +136,7 @@ export default function CguPage() {
               <li>
                 <strong>KAZA Pay</strong> : solution de paiement intégrée
                 permettant le règlement sécurisé des loyers, cautions et
-                commissions via Mobile Money et carte bancaire (GeniusPay).
+                commissions via Mobile Money et carte bancaire (FeexPay).
               </li>
               <li>
                 <strong>Escrow</strong> : mécanisme de séquestre des fonds
@@ -268,7 +268,7 @@ export default function CguPage() {
               8. Paiements, escrow et commissions
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Les paiements sont opérés via le prestataire agréé GeniusPay,
+              Les paiements sont opérés via le prestataire agréé FeexPay,
               acceptant les principaux moyens Mobile Money (Wave, Orange Money,
               MTN, Moov…) et carte bancaire en Afrique. KAZA ne stocke aucune
               donnée bancaire ou Mobile Money sensible : les numéros sont

@@ -100,7 +100,7 @@ const COMMON_OBLIGATIONS_TENANT: ContractSection = {
   editable: true,
   body: `Conformément aux articles 15 et suivants de la Loi 2018-12, le Locataire s'oblige notamment à :
 
-1. **Payer le loyer et les charges** aux termes convenus, à savoir le 1er à 5 de chaque mois, par virement bancaire, Mobile Money (GeniusPay) ou tout autre moyen via la plateforme KAZA (escrow sécurisé).
+1. **Payer le loyer et les charges** aux termes convenus, à savoir le 1er à 5 de chaque mois, par virement bancaire, Mobile Money (FeexPay) ou tout autre moyen via la plateforme KAZA (escrow sécurisé).
 2. **User paisiblement** des lieux loués suivant leur destination d'habitation, sans troubler la jouissance des voisins.
 3. **Répondre des dégradations** survenues pendant la durée du bail dans les lieux dont il a la jouissance exclusive, à moins qu'il ne prouve qu'elles ont eu lieu par cas de force majeure ou par la faute du Bailleur.
 4. **Assurer l'entretien courant** du logement, les menues réparations et l'ensemble des réparations locatives définies par les usages, sauf si elles sont occasionnées par vétusté, malfaçon, vice de construction ou cas de force majeure.
@@ -270,7 +270,7 @@ Conformément à l'article 7 de la Loi 2018-12, la durée minimale du bail meubl
       title: "Loyer et indexation",
       required: true,
       editable: true,
-      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme KAZA (escrow sécurisé GeniusPay / Mobile Money / virement bancaire).
+      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme KAZA (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
 
 **Indexation :** Le loyer pourra être révisé annuellement à la date anniversaire du contrat, dans la limite de la **variation de l'Indice des Prix à la Consommation (IPC)** publié par l'**Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**, et conformément à l'article 25 de la Loi 2018-12.
 
@@ -369,7 +369,7 @@ Conformément à l'article 6 de la Loi 2018-12, la durée minimale du bail non m
       title: "Loyer et indexation",
       required: true,
       editable: true,
-      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme KAZA (escrow sécurisé GeniusPay / Mobile Money / virement bancaire).
+      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme KAZA (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
 
 **Indexation :** Le loyer pourra être révisé annuellement à la date anniversaire du contrat, dans la limite de la **variation de l'Indice des Prix à la Consommation (IPC)** publié par l'**Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**, conformément à l'article 25 de la Loi 2018-12.
 

@@ -4,8 +4,12 @@ import { randomUUID } from "node:crypto";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPayment } from "@/lib/payments";
-import type { PaymentProvider } from "@/lib/payments/types";
+import { createPayment, getPaymentStatus } from "@/lib/payments";
+import type { MomoCheckoutFields, PaymentProvider } from "@/lib/payments/types";
+import {
+  applyPaymentStatus,
+  type FulfillablePayment,
+} from "@/lib/payments/fulfill";
 import { validatePromoCode, computeDiscount } from "@/lib/queries/promo";
 import {
   walletDebit,
@@ -24,9 +28,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // KAZA - Server Actions Paiements
 // =============================================================================
 
-export interface InitiateRentPaymentInput {
+export interface InitiateRentPaymentInput extends MomoCheckoutFields {
   rentalId: string;
-  provider?: PaymentProvider;
   /**
    * Code promo (optionnel). Re-validé côté serveur : la remise n'est jamais
    * calculée à partir d'une valeur fournie par le client.
@@ -37,16 +40,20 @@ export interface InitiateRentPaymentInput {
 export interface InitiateRentPaymentResult {
   success: boolean;
   paymentId?: string;
+  /** Reference FeexPay a poller (flux Mobile Money on-page). */
+  reference?: string;
+  /** URL de redirection (uniquement flux carte). */
   checkoutUrl?: string;
   error?: string;
 }
 
 /**
- * Initie un paiement de loyer:
+ * Initie un paiement de loyer Mobile Money (FeexPay, flux on-page) :
  * 1) Verifie que l'utilisateur courant est bien le locataire du rental
- * 2) Cree la transaction cote provider (FedaPay par defaut, fallback Kkiapay)
- * 3) Insere une ligne `payments` avec status=PENDING
- * 4) Retourne l'URL de checkout pour redirection client
+ * 2) Declenche la demande de paiement FeexPay (« requesttopay ») vers le numero
+ * 3) Insere une ligne `payments` avec status=PENDING et la reference FeexPay
+ * 4) Retourne la reference : le client valide sur son telephone puis le statut
+ *    est confirme par polling (`checkPaymentStatus`) + webhook.
  */
 export async function initiateRentPayment(
   input: InitiateRentPaymentInput
@@ -129,24 +136,30 @@ export async function initiateRentPayment(
 
   const amountToCharge = Math.max(0, baseAmount - discount);
 
+  if (!input.phone || !input.phone.trim()) {
+    return { success: false, error: "Numéro de téléphone requis." };
+  }
+  if (!input.network) {
+    return { success: false, error: "Opérateur Mobile Money requis." };
+  }
+
   try {
-    const result = await createPayment(
-      {
-        amount: amountToCharge,
-        currency: "XOF",
-        description: `Loyer mensuel - location ${rental.id}`,
-        customerEmail: user.email ?? "",
-        customerPhone: (user.user_metadata?.phone as string | undefined) ?? undefined,
-        rentalId: rental.id,
-        metadata: {
-          user_id: user.id,
-          ...(appliedPromoCode
-            ? { promo_code: appliedPromoCode, promo_discount: String(discount) }
-            : {}),
-        },
+    const result = await createPayment({
+      amount: amountToCharge,
+      currency: "XOF",
+      description: `Loyer mensuel - location ${rental.id}`,
+      customerEmail: user.email ?? "",
+      customerPhone: input.phone,
+      network: input.network,
+      countryCode: input.countryCode ?? "BJ",
+      rentalId: rental.id,
+      metadata: {
+        user_id: user.id,
+        ...(appliedPromoCode
+          ? { promo_code: appliedPromoCode, promo_discount: String(discount) }
+          : {}),
       },
-      { provider: input.provider ?? "geniuspay" }
-    );
+    });
 
     // Insere la ligne payments (admin client car le webhook devra pouvoir
     // updater meme si l'utilisateur n'est plus connecte).
@@ -184,7 +197,7 @@ export async function initiateRentPayment(
     return {
       success: true,
       paymentId: payment.id,
-      checkoutUrl: result.checkoutUrl,
+      reference: result.providerPaymentId,
     };
   } catch (err) {
     console.error("[payments] initiation echec:", err);
@@ -195,6 +208,81 @@ export async function initiateRentPayment(
           ? err.message
           : "Erreur lors de l'initiation du paiement.",
     };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Polling on-page : verifie le statut d'un paiement Mobile Money aupres du
+// provider (source de verite) et applique le fulfillment si COMPLETED. Appele
+// en boucle par le formulaire de checkout apres l'initiation.
+// ---------------------------------------------------------------------------
+
+export interface CheckPaymentStatusResult {
+  status: "pending" | "processing" | "succeeded" | "failed";
+  error?: string;
+}
+
+/**
+ * Verifie le statut d'un paiement dont l'utilisateur courant est proprietaire.
+ * Idempotent : delegue a `applyPaymentStatus` (meme logique que le webhook).
+ */
+export async function checkPaymentStatus(
+  paymentId: string,
+  provider: PaymentProvider = "feexpay",
+): Promise<CheckPaymentStatusResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr || !user) return { status: "failed", error: "Authentification requise." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: payment, error: pErr } = await admin
+    .from("payments")
+    .select(
+      "id, rental_id, status, user_id, amount, purpose, subscription_plan, metadata, transaction_id",
+    )
+    .eq("id", paymentId)
+    .single();
+
+  if (pErr || !payment) return { status: "failed", error: "Paiement introuvable." };
+  if ((payment as { user_id: string }).user_id !== user.id) {
+    return { status: "failed", error: "Non autorisé." };
+  }
+
+  const p = payment as unknown as FulfillablePayment & {
+    transaction_id: string;
+  };
+
+  // Deja finalise ?
+  if (p.status === "COMPLETED") return { status: "succeeded" };
+  if (p.status === "FAILED") return { status: "failed" };
+
+  try {
+    const verified = await getPaymentStatus(p.transaction_id, provider);
+    await applyPaymentStatus(
+      admin,
+      p,
+      verified.status,
+      (p.metadata as Record<string, string>) ?? {},
+    );
+    switch (verified.status) {
+      case "succeeded":
+      case "held_in_escrow":
+      case "released":
+        return { status: "succeeded" };
+      case "failed":
+      case "refunded":
+        return { status: "failed" };
+      case "processing":
+        return { status: "processing" };
+      default:
+        return { status: "pending" };
+    }
+  } catch (err) {
+    console.error("[payments] check status echec:", err);
+    return { status: "pending", error: "Vérification impossible pour le moment." };
   }
 }
 
@@ -212,7 +300,7 @@ export async function getMyWalletBalance(): Promise<{
 }
 
 /**
- * Paie le loyer DEPUIS le solde KAZA (wallet) — alternative à GeniusPay.
+ * Paie le loyer DEPUIS le solde KAZA (wallet) — alternative à FeexPay.
  * Débit atomique (pas de double-débit), puis mise en séquestre. Si la mise en
  * séquestre échoue, le solde est recrédité automatiquement.
  */

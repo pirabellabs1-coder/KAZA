@@ -17,7 +17,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
-import type { PaymentProvider } from "@/lib/payments/types";
+import type { MomoCheckoutFields } from "@/lib/payments/types";
 import { walletDebit, walletRefund } from "@/lib/wallet/spend";
 import { settleExpenseShareFromPayment } from "@/lib/expenses/settle";
 
@@ -188,14 +188,18 @@ export async function settleShare(shareId: string): Promise<ActionResult> {
 export interface ShareCheckoutResult {
   success: boolean;
   error?: string;
-  checkoutUrl?: string;
+  paymentId?: string;
+  reference?: string;
 }
 
 export async function initiateExpenseShareCheckout(
   shareId: string,
-  provider: PaymentProvider = "geniuspay",
+  momo: MomoCheckoutFields,
 ): Promise<ShareCheckoutResult> {
   if (!shareId) return { success: false, error: "Part introuvable." };
+  if (!momo?.phone?.trim() || !momo?.network) {
+    return { success: false, error: "Opérateur et numéro Mobile Money requis." };
+  }
   const user = await getCurrentDisplayUser();
   if (!user) return { success: false, error: "Vous devez être connecté." };
 
@@ -236,33 +240,41 @@ export async function initiateExpenseShareCheckout(
   }
 
   try {
-    const result = await createPayment(
-      {
-        amount,
-        currency: "XOF",
-        description: `Frais partagés — ${s.expense?.title ?? "colocation"}`,
-        customerEmail: user.email ?? "",
-        metadata: { user_id: user.id, kind: "expense_share", share_id: shareId },
-      },
-      { provider },
-    );
-
-    const { error: insertErr } = await admin.from("payments").insert({
-      user_id: user.id,
-      rental_id: null,
+    const result = await createPayment({
       amount,
-      payment_method: "MOBILE_MONEY",
-      transaction_id: result.providerPaymentId,
-      status: "PENDING",
-      purpose: "EXPENSE_SHARE",
-      metadata: { share_id: shareId, paid_by: paidBy },
+      currency: "XOF",
+      description: `Frais partagés — ${s.expense?.title ?? "colocation"}`,
+      customerEmail: user.email ?? "",
+      customerPhone: momo.phone,
+      network: momo.network,
+      countryCode: momo.countryCode ?? "BJ",
+      metadata: { user_id: user.id, kind: "expense_share", share_id: shareId },
     });
-    if (insertErr) {
-      console.error("[expenses] insert payment echec:", insertErr.message);
+
+    const { data: payment, error: insertErr } = await admin
+      .from("payments")
+      .insert({
+        user_id: user.id,
+        rental_id: null,
+        amount,
+        payment_method: "MOBILE_MONEY",
+        transaction_id: result.providerPaymentId,
+        status: "PENDING",
+        purpose: "EXPENSE_SHARE",
+        metadata: { share_id: shareId, paid_by: paidBy },
+      })
+      .select("id")
+      .single();
+    if (insertErr || !payment) {
+      console.error("[expenses] insert payment echec:", insertErr?.message);
       return { success: false, error: "Impossible d'initier le paiement." };
     }
 
-    return { success: true, checkoutUrl: result.checkoutUrl };
+    return {
+      success: true,
+      paymentId: payment.id,
+      reference: result.providerPaymentId,
+    };
   } catch (err) {
     console.error("[expenses] checkout echec:", err);
     return {
@@ -273,7 +285,7 @@ export async function initiateExpenseShareCheckout(
 }
 
 // ---------------------------------------------------------------------------
-// Règlement d'une part DEPUIS le solde KAZA (wallet) — alternative à GeniusPay.
+// Règlement d'une part DEPUIS le solde KAZA (wallet) — alternative à FeexPay.
 // Débit atomique, marque la part réglée + rembourse le payeur. Idempotent et
 // recrédite le solde si une étape échoue.
 // ---------------------------------------------------------------------------

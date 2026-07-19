@@ -56,3 +56,7 @@ test-results/
 scripts/
 .team/dev-server.log
 .claude/scheduled_tasks.lock
+
+# Logs locaux (dev/install)
+_*.log
+build-err.log

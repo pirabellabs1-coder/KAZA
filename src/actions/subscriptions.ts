@@ -15,7 +15,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
-import type { PaymentProvider } from "@/lib/payments/types";
+import type { MomoCheckoutFields } from "@/lib/payments/types";
 import { PLAN_DETAILS } from "@/lib/queries/subscriptions";
 import { getPlan } from "@/lib/queries/plans";
 import { activatePaidSubscription } from "@/lib/subscriptions/activate";
@@ -185,14 +185,15 @@ export async function subscribeToPlan(
 export interface CheckoutResult {
   success: boolean;
   error?: string;
-  checkoutUrl?: string;
+  paymentId?: string;
+  reference?: string;
   /** true si plan gratuit : aucun paiement, abonnement activé directement. */
   activated?: boolean;
 }
 
 export async function initiateSubscriptionCheckout(
   plan: string,
-  provider: PaymentProvider = "geniuspay",
+  momo: MomoCheckoutFields,
 ): Promise<CheckoutResult> {
   const supabase = await getLooseClient();
   const {
@@ -228,38 +229,51 @@ export async function initiateSubscriptionCheckout(
     return { success: true, activated: true };
   }
 
-  // Plan payant → checkout provider (Mobile Money).
+  if (!momo?.phone?.trim() || !momo?.network) {
+    return { success: false, error: "Opérateur et numéro Mobile Money requis." };
+  }
+
+  // Plan payant → paiement Mobile Money on-page.
   try {
-    const result = await createPayment(
-      {
-        amount: priceFcfa,
-        currency: "XOF",
-        description: `Abonnement ${planDetails.name}`,
-        customerEmail: user.email ?? "",
-        customerPhone:
-          (user.user_metadata?.phone as string | undefined) ?? undefined,
-        metadata: { user_id: user.id, kind: "subscription", plan },
-      },
-      { provider },
-    );
+    const result = await createPayment({
+      amount: priceFcfa,
+      currency: "XOF",
+      description: `Abonnement ${planDetails.name}`,
+      customerEmail: user.email ?? "",
+      customerPhone: momo.phone,
+      network: momo.network,
+      countryCode: momo.countryCode ?? "BJ",
+      metadata: { user_id: user.id, kind: "subscription", plan },
+    });
 
     const admin = createAdminClient() as unknown as SupabaseClient;
-    const { error: insertErr } = await admin.from("payments").insert({
-      user_id: user.id,
-      rental_id: null,
-      amount: priceFcfa,
-      payment_method: "MOBILE_MONEY",
-      transaction_id: result.providerPaymentId,
-      status: "PENDING",
-      purpose: "SUBSCRIPTION",
-      subscription_plan: plan,
-    });
-    if (insertErr) {
-      console.error("[subscriptions] insert payment echec:", insertErr.message);
+    const { data: payment, error: insertErr } = await admin
+      .from("payments")
+      .insert({
+        user_id: user.id,
+        rental_id: null,
+        amount: priceFcfa,
+        payment_method: "MOBILE_MONEY",
+        transaction_id: result.providerPaymentId,
+        status: "PENDING",
+        purpose: "SUBSCRIPTION",
+        subscription_plan: plan,
+      })
+      .select("id")
+      .single();
+    if (insertErr || !payment) {
+      console.error(
+        "[subscriptions] insert payment echec:",
+        insertErr?.message,
+      );
       return { success: false, error: "Impossible d'initier le paiement." };
     }
 
-    return { success: true, checkoutUrl: result.checkoutUrl };
+    return {
+      success: true,
+      paymentId: payment.id,
+      reference: result.providerPaymentId,
+    };
   } catch (err) {
     console.error("[subscriptions] checkout echec:", err);
     return {

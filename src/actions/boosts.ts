@@ -22,7 +22,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayment } from "@/lib/payments";
-import type { PaymentProvider } from "@/lib/payments/types";
+import type { MomoCheckoutFields } from "@/lib/payments/types";
 import { walletDebit } from "@/lib/wallet/spend";
 
 // La table `property_boosts` et les tables wallet ne sont pas typées dans
@@ -145,12 +145,13 @@ export async function activateBoost(
 export interface BoostCheckoutResult {
   success: boolean;
   error?: string;
-  checkoutUrl?: string;
+  paymentId?: string;
+  reference?: string;
 }
 
 export async function initiateBoostCheckout(
   input: ActivateBoostInput,
-  provider: PaymentProvider = "geniuspay",
+  momo: MomoCheckoutFields,
 ): Promise<BoostCheckoutResult> {
   const { propertyId, plan, days } = input;
   const priceFcfa = Math.max(0, Math.round(Number(input.amount) || 0));
@@ -160,6 +161,9 @@ export async function initiateBoostCheckout(
   }
   if (priceFcfa <= 0) {
     return { success: false, error: "INVALID_AMOUNT" };
+  }
+  if (!momo?.phone?.trim() || !momo?.network) {
+    return { success: false, error: "Opérateur et numéro Mobile Money requis." };
   }
 
   const supabase = await getLooseClient();
@@ -181,46 +185,52 @@ export async function initiateBoostCheckout(
   }
 
   try {
-    const result = await createPayment(
-      {
-        amount: priceFcfa,
-        currency: "XOF",
-        description: `Boost annonce « ${property.title ?? "—"} » — ${plan} (${days} j)`,
-        customerEmail: user.email ?? "",
-        customerPhone:
-          (user.user_metadata?.phone as string | undefined) ?? undefined,
-        metadata: {
-          user_id: user.id,
-          kind: "boost",
-          property_id: propertyId,
-          plan,
-          days: String(days),
-        },
-      },
-      { provider },
-    );
-
-    const admin = createAdminClient() as unknown as SupabaseClient;
-    const { error: insertErr } = await admin.from("payments").insert({
-      user_id: user.id,
-      rental_id: null,
+    const result = await createPayment({
       amount: priceFcfa,
-      payment_method: "MOBILE_MONEY",
-      transaction_id: result.providerPaymentId,
-      status: "PENDING",
-      purpose: "BOOST",
+      currency: "XOF",
+      description: `Boost annonce « ${property.title ?? "—"} » — ${plan} (${days} j)`,
+      customerEmail: user.email ?? "",
+      customerPhone: momo.phone,
+      network: momo.network,
+      countryCode: momo.countryCode ?? "BJ",
       metadata: {
+        user_id: user.id,
+        kind: "boost",
         property_id: propertyId,
         plan,
-        days,
+        days: String(days),
       },
     });
-    if (insertErr) {
-      console.error("[boosts] insert payment echec:", insertErr.message);
+
+    const admin = createAdminClient() as unknown as SupabaseClient;
+    const { data: payment, error: insertErr } = await admin
+      .from("payments")
+      .insert({
+        user_id: user.id,
+        rental_id: null,
+        amount: priceFcfa,
+        payment_method: "MOBILE_MONEY",
+        transaction_id: result.providerPaymentId,
+        status: "PENDING",
+        purpose: "BOOST",
+        metadata: {
+          property_id: propertyId,
+          plan,
+          days,
+        },
+      })
+      .select("id")
+      .single();
+    if (insertErr || !payment) {
+      console.error("[boosts] insert payment echec:", insertErr?.message);
       return { success: false, error: "Impossible d'initier le paiement." };
     }
 
-    return { success: true, checkoutUrl: result.checkoutUrl };
+    return {
+      success: true,
+      paymentId: payment.id,
+      reference: result.providerPaymentId,
+    };
   } catch (err) {
     console.error("[boosts] checkout echec:", err);
     return {
