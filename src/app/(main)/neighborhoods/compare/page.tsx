@@ -1,27 +1,22 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Compass, MapPin, Sparkles } from "lucide-react";
+import { Compass } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/fade-in";
+import { listAllNeighborhoods } from "@/actions/neighborhoods";
+import { NeighborhoodsComparator } from "./neighborhoods-comparator";
 
 export const metadata: Metadata = {
   title: "Comparateur de quartiers | Kaabo",
   description:
-    "Comparez les quartiers du Bénin sur la qualité de vie, les prix et les équipements. Outil en cours de finalisation.",
+    "Comparez les quartiers du Bénin sur le loyer moyen, la surface, les équipements et le standing — statistiques calculées à partir des annonces disponibles.",
 };
 
-// =============================================================================
-// Kaabo — /neighborhoods/compare
-// Le comparateur sera réactivé dès qu'un référentiel `neighborhoods` (scores,
-// prix moyen au m², population, équipements) sera disponible côté Supabase.
-// Pour l'instant on affiche un état vide soigné, sans aucune donnée fictive.
-// =============================================================================
+export const dynamic = "force-dynamic";
 
-const MAX_SLOTS = 3;
+export default async function NeighborhoodsComparePage() {
+  const options = await listAllNeighborhoods();
 
-export default function NeighborhoodsComparePage() {
   return (
     <div className="bg-white">
       {/* ===== HERO ============================================== */}
@@ -47,41 +42,16 @@ export default function NeighborhoodsComparePage() {
               </span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-white/85">
-              Confrontez jusqu&apos;à {MAX_SLOTS} quartiers du Bénin sur la
-              qualité de vie, les prix, les équipements et la sécurité.
+              Confrontez jusqu&apos;à 3 quartiers sur le loyer moyen, la surface,
+              les équipements et le standing — sur données réelles.
             </p>
           </FadeIn>
         </div>
       </section>
 
-      {/* ===== ÉTAT VIDE ============================================== */}
-      <div className="mx-auto max-w-7xl px-4 py-16 lg:px-8">
-        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-gray-200 bg-gradient-to-br from-white via-[#F4F7FB] to-white p-20 text-center">
-          <div className="mb-6 inline-flex size-24 items-center justify-center rounded-3xl bg-kaza-blue/10 text-kaza-blue">
-            <MapPin className="size-12" aria-hidden="true" />
-          </div>
-          <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl">
-            Référentiel quartiers à venir
-          </h2>
-          <p className="mt-4 max-w-md text-base text-muted-foreground">
-            Le comparateur sera disponible dès que nos équipes terrain auront
-            cartographié les quartiers couverts par Kaabo. En attendant, lancez
-            une recherche pour découvrir les biens disponibles près de chez
-            vous.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-kaza-blue hover:bg-kaza-navy"
-            >
-              <Link href="/search">
-                <Sparkles className="mr-2 size-4" />
-                Voir les annonces
-              </Link>
-            </Button>
-          </div>
-        </div>
+      {/* ===== COMPARATEUR ============================================== */}
+      <div className="mx-auto max-w-5xl px-4 py-12 lg:px-8">
+        <NeighborhoodsComparator options={options} />
       </div>
     </div>
   );
