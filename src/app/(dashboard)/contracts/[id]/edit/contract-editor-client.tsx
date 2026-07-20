@@ -10,6 +10,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
+  ArrowDown,
+  ArrowUp,
   CheckCircle2,
   FileText,
   PlusCircle,
@@ -26,6 +28,13 @@ import {
   CardContent,
   CardHeader,
 } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast-helper";
@@ -108,6 +117,51 @@ function readDraft(key: string): ContractDraft | null {
   }
 }
 
+// Clauses standards insérables dans une section.
+const STANDARD_CLAUSES: Array<{ label: string; text: string }> = [
+  {
+    label: "Clause de solidarité",
+    text: "Les colocataires sont solidairement et indivisiblement tenus au paiement du loyer et des charges, ainsi qu'à l'exécution de toutes les obligations du présent bail.",
+  },
+  {
+    label: "Clause résolutoire",
+    text: "À défaut de paiement du loyer ou des charges aux termes convenus, et après un commandement de payer resté infructueux pendant [DELAI], le présent bail sera résilié de plein droit.",
+  },
+  {
+    label: "Entretien courant",
+    text: "Le locataire s'engage à prendre à sa charge l'entretien courant du logement et les menues réparations, conformément à la réglementation en vigueur.",
+  },
+  {
+    label: "Interdiction de sous-location",
+    text: "Le locataire s'interdit de sous-louer le logement, en tout ou partie, sans l'accord écrit préalable du bailleur.",
+  },
+  {
+    label: "État des lieux",
+    text: "Un état des lieux contradictoire sera établi lors de la remise des clés puis à la restitution du logement. Il sera annexé au présent contrat.",
+  },
+  {
+    label: "Assurance habitation",
+    text: "Le locataire s'engage à souscrire une assurance couvrant les risques locatifs et à en justifier chaque année à la demande du bailleur.",
+  },
+];
+
+// Variables (placeholders) remplacées à la génération du contrat.
+const CONTRACT_VARIABLES: Array<{ label: string; token: string }> = [
+  { label: "Nom du locataire", token: "[NOM_LOCATAIRE]" },
+  { label: "Nom du bailleur", token: "[NOM_BAILLEUR]" },
+  { label: "Adresse du bien", token: "[ADRESSE_BIEN]" },
+  { label: "Date de début", token: "[DATE_DEBUT]" },
+  { label: "Date de fin", token: "[DATE_FIN]" },
+  { label: "Montant du loyer", token: "[MONTANT_LOYER]" },
+  { label: "Dépôt de garantie", token: "[DEPOT_GARANTIE]" },
+];
+
+let sectionSeq = 0;
+function nextSectionId(): string {
+  sectionSeq += 1;
+  return `custom-${sectionSeq}-${Math.floor(performance.now())}`;
+}
+
 export function ContractEditorClient({
   contractId,
   initialTitle,
@@ -174,6 +228,63 @@ export function ContractEditorClient({
   const updateSection = (id: string, patch: Partial<EditableSection>) => {
     setSections((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+    );
+  };
+
+  const addSection = () => {
+    const id = nextSectionId();
+    setSections((prev) => [
+      ...prev,
+      {
+        id,
+        title: "Nouvelle section",
+        body: "",
+        required: false,
+        editable: true,
+      },
+    ]);
+    toast.success("Section ajoutée.");
+    // Défilement vers la nouvelle section au prochain tick.
+    setTimeout(() => {
+      document
+        .getElementById(`section-${id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+
+  const removeSection = (id: string) => {
+    setSections((prev) => prev.filter((s) => s.id !== id));
+    toast.info("Section supprimée.");
+  };
+
+  const moveSection = (index: number, dir: -1 | 1) => {
+    setSections((prev) => {
+      const j = index + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[j]] = [next[j]!, next[index]!];
+      return next;
+    });
+  };
+
+  const appendToSection = (id: string, text: string) => {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.id === id
+          ? {
+              ...s,
+              body: s.body.trim().length > 0 ? `${s.body}\n\n${text}` : text,
+            }
+          : s,
+      ),
+    );
+  };
+
+  const insertVariable = (id: string, token: string) => {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, body: `${s.body}${s.body ? " " : ""}${token}` } : s,
+      ),
     );
   };
 
@@ -317,42 +428,109 @@ export function ContractEditorClient({
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 border-t pt-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-xs"
-                  >
-                    <PlusCircle className="mr-1.5 size-3.5" />
-                    Insérer clause standard
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-xs"
-                  >
-                    <FileText className="mr-1.5 size-3.5" />
-                    Insérer variable
-                  </Button>
-                  {!section.required && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-8 text-xs"
+                      >
+                        <PlusCircle className="mr-1.5 size-3.5" />
+                        Insérer clause standard
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="max-w-xs">
+                      <DropdownMenuLabel>Clauses standards</DropdownMenuLabel>
+                      {STANDARD_CLAUSES.map((c) => (
+                        <DropdownMenuItem
+                          key={c.label}
+                          onClick={() => appendToSection(section.id, c.text)}
+                        >
+                          {c.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs"
+                      >
+                        <FileText className="mr-1.5 size-3.5" />
+                        Insérer variable
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuLabel>Variables</DropdownMenuLabel>
+                      {CONTRACT_VARIABLES.map((v) => (
+                        <DropdownMenuItem
+                          key={v.token}
+                          onClick={() => insertVariable(section.id, v.token)}
+                        >
+                          {v.label}{" "}
+                          <span className="ml-1 font-mono text-[10px] text-muted-foreground">
+                            {v.token}
+                          </span>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <div className="ml-auto flex items-center gap-0.5">
                     <Button
                       type="button"
                       variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "ml-auto h-8 text-xs text-destructive hover:text-destructive",
-                      )}
+                      size="icon"
+                      className="size-8"
+                      onClick={() => moveSection(idx, -1)}
+                      disabled={idx === 0}
+                      aria-label="Monter la section"
                     >
-                      <Trash2 className="mr-1.5 size-3.5" />
-                      Supprimer section
+                      <ArrowUp className="size-3.5" />
                     </Button>
-                  )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      onClick={() => moveSection(idx, 1)}
+                      disabled={idx === sections.length - 1}
+                      aria-label="Descendre la section"
+                    >
+                      <ArrowDown className="size-3.5" />
+                    </Button>
+                    {!section.required && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs text-destructive hover:text-destructive"
+                        onClick={() => removeSection(section.id)}
+                      >
+                        <Trash2 className="mr-1.5 size-3.5" />
+                        Supprimer
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
           );
         })}
+
+        {/* Ajouter une section */}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full border-dashed"
+          onClick={addSection}
+        >
+          <PlusCircle className="mr-1.5 size-4" />
+          Ajouter une section
+        </Button>
       </div>
 
       {/* Footer sticky */}

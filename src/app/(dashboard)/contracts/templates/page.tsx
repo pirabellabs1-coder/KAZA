@@ -161,11 +161,14 @@ export default async function TemplatesGalleryPage() {
               </div>
             </div>
             <Button
+              asChild
               variant="outline"
               className="border-kaza-navy text-kaza-navy hover:bg-kaza-navy hover:text-white"
             >
-              <PlusCircle className="mr-2 size-4" />
-              Créer un modèle
+              <Link href="/contracts/new">
+                <PlusCircle className="mr-2 size-4" />
+                Créer un modèle
+              </Link>
             </Button>
           </CardContent>
         </Card>

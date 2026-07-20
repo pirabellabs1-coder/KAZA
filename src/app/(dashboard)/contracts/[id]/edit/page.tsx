@@ -9,8 +9,6 @@ import {
   Eye,
   FileText,
   Home,
-  Move,
-  PlusCircle,
   Scale,
   ShieldCheck,
   User,
@@ -31,6 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { CopyClauseButton } from "./copy-clause-button";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getUserContractById, type UserContract } from "@/lib/queries/contracts";
 import {
@@ -194,15 +193,11 @@ export default async function ContractEditorPage({
               })}
             </CardContent>
             <Separator />
-            <CardContent className="space-y-2 pt-3">
-              <Button variant="outline" size="sm" className="w-full justify-start">
-                <PlusCircle className="mr-1.5 size-4" />
-                Ajouter une section
-              </Button>
-              <Button variant="ghost" size="sm" className="w-full justify-start">
-                <Move className="mr-1.5 size-4" />
-                Réordonner
-              </Button>
+            <CardContent className="pt-3">
+              <p className="text-xs text-muted-foreground">
+                Ajoutez, réordonnez ou supprimez des sections directement dans
+                l&apos;éditeur au centre, via les contrôles de chaque section.
+              </p>
             </CardContent>
           </Card>
         </aside>
@@ -347,15 +342,7 @@ export default async function ContractEditorPage({
                           <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
                             {c.body}
                           </p>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="mt-2 h-7 w-full text-[11px]"
-                          >
-                            <PlusCircle className="mr-1 size-3" />
-                            Insérer
-                          </Button>
+                          <CopyClauseButton text={c.body} />
                         </div>
                       ))}
                     </AccordionContent>
