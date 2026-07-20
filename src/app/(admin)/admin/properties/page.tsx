@@ -21,6 +21,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PropertyModActions } from "./property-mod-actions";
+import { ReportedListingActions } from "./reported-listing-actions";
+import { listReports } from "@/lib/queries/reports-admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -153,8 +155,7 @@ function timeAgo(iso: string): string {
   return `il y a ${d}j`;
 }
 
-// Signalements / boosts — tables `property_reports` et `property_boosts`
-// non encore branchées. Empty state propre en attendant.
+// Signalements communautaires — table `reports` (targetType = "property").
 interface ReportedListing {
   id: string;
   title: string;
@@ -164,9 +165,8 @@ interface ReportedListing {
   priceFcfa: number;
   reason: string;
   reportsCount: number;
+  reportIds: string[];
 }
-
-const reportedListings: ReportedListing[] = [];
 
 interface PremiumBoost {
   id: string;
@@ -238,14 +238,51 @@ function StatCard({
 
 export default async function AdminPropertiesPage() {
   // ----- Données Supabase réelles -----
-  const [adminStats, reviewProps, allPropsRaw] = await Promise.all([
+  const [adminStats, reviewProps, allPropsRaw, allReports] = await Promise.all([
     getAdminStats(),
     listPropertiesToReview(12),
     listAllProperties({ limit: 200 }),
+    listReports(),
   ]);
 
   const pendingReview = reviewProps.map(toListingRow);
   const extendedListings = allPropsRaw.map(toListingRow);
+
+  // Signalements communautaires en attente, groupés par annonce.
+  const listingsById = new Map(extendedListings.map((l) => [l.id, l]));
+  const reportsByProperty = new Map<
+    string,
+    { reason: string; reportIds: string[] }
+  >();
+  for (const rep of allReports) {
+    if (rep.targetType !== "property" || !rep.targetId) continue;
+    if (rep.status === "RESOLVED" || rep.status === "DISMISSED") continue;
+    const entry = reportsByProperty.get(rep.targetId) ?? {
+      reason: rep.reason,
+      reportIds: [],
+    };
+    entry.reportIds.push(rep.id);
+    reportsByProperty.set(rep.targetId, entry);
+  }
+  const reportedListings: ReportedListing[] = Array.from(
+    reportsByProperty.entries(),
+  )
+    .map(([propertyId, { reason, reportIds }]) => {
+      const l = listingsById.get(propertyId);
+      if (!l) return null;
+      return {
+        id: l.id,
+        title: l.title,
+        city: l.city,
+        ownerName: l.ownerName,
+        photo: l.photo,
+        priceFcfa: l.priceFcfa,
+        reason,
+        reportsCount: reportIds.length,
+        reportIds,
+      } satisfies ReportedListing;
+    })
+    .filter((x): x is ReportedListing => x !== null);
 
   const stats = {
     total: adminStats.totalProperties,
@@ -643,21 +680,10 @@ export default async function AdminPropertiesPage() {
                       {r.reportsCount} signalements
                     </p>
                   </div>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <Button size="sm" variant="outline" className="text-xs">
-                      Vérifier
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-red-200 text-xs text-red-600 hover:bg-red-50"
-                    >
-                      Bannir
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-xs">
-                      Conserver
-                    </Button>
-                  </div>
+                  <ReportedListingActions
+                    propertyId={r.id}
+                    reportIds={r.reportIds}
+                  />
                 </div>
               ))}
             </div>
