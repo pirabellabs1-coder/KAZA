@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Code2, KeyRound, Webhook } from "lucide-react";
+import { Activity, Code2, KeyRound, Webhook } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { getActiveSubscription } from "@/lib/queries/subscriptions";
+import { getApiUsage } from "@/lib/queries/api-usage";
 import { listMyApiKeys } from "@/actions/api-keys";
 import { listMyWebhooks } from "@/actions/webhooks";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,9 +29,10 @@ export default async function DevelopersPage() {
     .maybeSingle();
   const role = (profile as { role?: string } | null)?.role;
 
-  const [keys, webhooks, subscription] = await Promise.all([
+  const [keys, webhooks, usage, subscription] = await Promise.all([
     listMyApiKeys(),
     listMyWebhooks(),
+    getApiUsage(user.id),
     getActiveSubscription(user.id),
   ]);
 
@@ -54,6 +56,87 @@ export default async function DevelopersPage() {
             : " L'accès API nécessite l'abonnement Kaabo Developer API (gratuit pour les agences)."}
         </p>
       </div>
+
+      {/* Suivi d'utilisation (données réelles) */}
+      <section>
+        <h2 className="mb-3 flex items-center gap-2 font-heading text-lg font-semibold text-kaza-navy">
+          <Activity className="size-5" />
+          Suivi d&apos;utilisation
+        </h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Appels (total)</p>
+              <p className="mt-1 font-heading text-2xl font-bold text-kaza-navy">
+                {usage.totalCalls.toLocaleString("fr-FR")}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Aujourd&apos;hui</p>
+              <p className="mt-1 font-heading text-2xl font-bold text-kaza-navy">
+                {usage.callsToday.toLocaleString("fr-FR")}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Clés actives</p>
+              <p className="mt-1 font-heading text-2xl font-bold text-kaza-navy">
+                {usage.activeKeys}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Webhooks</p>
+              <p className="mt-1 font-heading text-2xl font-bold text-kaza-navy">
+                {webhooks.length}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {usage.recent.length > 0 && (
+          <Card className="mt-3">
+            <CardContent className="p-0">
+              <p className="border-b px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Requêtes récentes
+              </p>
+              <div className="divide-y">
+                {usage.recent.map((r, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 px-4 py-2 text-xs"
+                  >
+                    <span className="flex items-center gap-2 font-mono">
+                      <span className="rounded bg-muted px-1.5 py-0.5 font-semibold">
+                        {r.method}
+                      </span>
+                      {r.path}
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <span
+                        className={
+                          r.status >= 200 && r.status < 300
+                            ? "text-kaza-green"
+                            : "text-red-500"
+                        }
+                      >
+                        {r.status}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {new Date(r.createdAt).toLocaleString("fr-FR")}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </section>
 
       {/* Clés API */}
       <section>

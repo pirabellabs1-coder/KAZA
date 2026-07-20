@@ -329,6 +329,90 @@ export default function ApiDocsPage() {
 }`}
                 />
               </div>
+
+              {/* POST create */}
+              <div className="border-t pt-6">
+                <Endpoint method="POST" path="/api/v1/properties" />
+                <p className="mt-3">
+                  Crée une annonce. Réservé aux clés dont le compte est{" "}
+                  <strong>propriétaire ou agence</strong> (les agences peuvent
+                  ainsi publier via l&apos;API). L&apos;annonce est créée au nom
+                  du titulaire de la clé.
+                </p>
+                <p className="mt-3 font-semibold text-kaza-navy">
+                  Corps de la requête
+                </p>
+                <div className="mt-2 overflow-x-auto">
+                  <table className="w-full min-w-[520px] border-collapse text-sm">
+                    <thead>
+                      <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                        <th className="py-2">Champ</th>
+                        <th className="py-2">Requis</th>
+                        <th className="py-2">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b">
+                        <td className="py-2 font-mono text-xs">title</td>
+                        <td className="py-2">oui</td>
+                        <td className="py-2">Titre (≥ 3 caractères)</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="py-2 font-mono text-xs">price</td>
+                        <td className="py-2">oui</td>
+                        <td className="py-2">Prix / loyer (FCFA, &gt; 0)</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="py-2 font-mono text-xs">propertyType</td>
+                        <td className="py-2">oui</td>
+                        <td className="py-2">
+                          APARTMENT, HOUSE, VILLA, STUDIO, ROOM, OFFICE, LAND,
+                          COMMERCIAL
+                        </td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="py-2 font-mono text-xs">listingType</td>
+                        <td className="py-2">non</td>
+                        <td className="py-2">RENT (défaut) ou SALE</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 font-mono text-xs">
+                          description, address, bedrooms, bathrooms, squareMeters
+                        </td>
+                        <td className="py-2">non</td>
+                        <td className="py-2">Champs optionnels</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-4 font-semibold text-kaza-navy">Exemple</p>
+                <CodeBlock
+                  lang="bash"
+                  code={`curl -X POST "${BASE_URL}/api/v1/properties" \\
+  -H "Authorization: Bearer kaabo_live_xxxxxxxx" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "title": "Villa 4 chambres à Cotonou",
+    "price": 350000,
+    "propertyType": "VILLA",
+    "listingType": "RENT",
+    "address": "Les Cocotiers, Cotonou",
+    "bedrooms": 4,
+    "bathrooms": 3
+  }'`}
+                />
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Réponse{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 font-mono">
+                    201 Created
+                  </code>{" "}
+                  avec l&apos;objet créé. Déclenche l&apos;événement webhook{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 font-mono">
+                    property.created
+                  </code>
+                  .
+                </p>
+              </div>
             </div>
           </Section>
 
