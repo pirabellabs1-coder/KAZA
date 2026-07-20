@@ -5,8 +5,10 @@ import { Code2, KeyRound, Webhook } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveSubscription } from "@/lib/queries/subscriptions";
 import { listMyApiKeys } from "@/actions/api-keys";
+import { listMyWebhooks } from "@/actions/webhooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { ApiKeysManager } from "./api-keys-manager";
+import { WebhooksManager } from "./webhooks-manager";
 
 export const metadata: Metadata = {
   title: "API & Développeurs — Kaabo",
@@ -26,8 +28,9 @@ export default async function DevelopersPage() {
     .maybeSingle();
   const role = (profile as { role?: string } | null)?.role;
 
-  const [keys, subscription] = await Promise.all([
+  const [keys, webhooks, subscription] = await Promise.all([
     listMyApiKeys(),
+    listMyWebhooks(),
     getActiveSubscription(user.id),
   ]);
 
@@ -59,6 +62,19 @@ export default async function DevelopersPage() {
           Vos clés API
         </h2>
         <ApiKeysManager keys={keys} canCreate={canCreate} />
+      </section>
+
+      {/* Webhooks */}
+      <section>
+        <h2 className="mb-3 flex items-center gap-2 font-heading text-lg font-semibold text-kaza-navy">
+          <Webhook className="size-5" />
+          Webhooks
+        </h2>
+        <p className="mb-3 text-sm text-muted-foreground">
+          Recevez une requête HTTP signée à chaque événement (nouvelle annonce,
+          etc.), plutôt que d&apos;interroger l&apos;API en continu.
+        </p>
+        <WebhooksManager webhooks={webhooks} canCreate={canCreate} />
       </section>
 
       {/* Documentation rapide */}

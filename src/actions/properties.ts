@@ -15,6 +15,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { track } from "@/lib/analytics/track";
 import { awardPoints } from "@/lib/points/award";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatch";
 import { getActiveSubscription } from "@/lib/queries/subscriptions";
 import { getPlanQuotas } from "@/lib/subscriptions/quotas";
 import type { Property } from "@/types/properties";
@@ -227,6 +228,16 @@ export async function createProperty(
     250,
     { property_id: data.id },
   );
+
+  // Webhook : notifie les endpoints abonnés (best-effort, non bloquant).
+  await dispatchWebhookEvent("property.created", {
+    id: data.id,
+    title: parsed.data.title,
+    price: parsed.data.price,
+    listingType: parsed.data.listingType,
+    propertyType: parsed.data.propertyType,
+    address: parsed.data.address,
+  });
 
   revalidatePath("/owner/properties");
   // TODO: type manquant - `Property` (src/types/properties.ts) n'inclut pas

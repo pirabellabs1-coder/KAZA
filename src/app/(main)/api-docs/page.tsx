@@ -410,23 +410,77 @@ print(r.json()["data"])`}
 
           <Section id="webhooks" title="Webhooks" icon={Webhook}>
             <p>
-              Les webhooks vous permettent de recevoir des notifications en temps
-              réel lorsqu&apos;un événement se produit (nouvelle annonce, mise à
-              jour, etc.), plutôt que d&apos;interroger l&apos;API en continu.
+              Recevez une notification en temps réel lorsqu&apos;un événement se
+              produit, plutôt que d&apos;interroger l&apos;API en continu.
+              Configurez une URL de réception (HTTPS) depuis votre espace{" "}
+              <Link href="/developers" className="text-kaza-blue underline">
+                API & Développeurs
+              </Link>
+              .
             </p>
+            <p className="font-semibold text-kaza-navy">Événements disponibles</p>
+            <ul className="space-y-1 text-xs">
+              <li>
+                <code className="rounded bg-muted px-1 py-0.5 font-mono">
+                  property.created
+                </code>{" "}
+                — une nouvelle annonce est publiée
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1 py-0.5 font-mono">
+                  property.updated
+                </code>{" "}
+                — une annonce est mise à jour
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1 py-0.5 font-mono">
+                  property.rented
+                </code>{" "}
+                — une annonce passe en louée
+              </li>
+            </ul>
+            <p className="font-semibold text-kaza-navy">Format reçu (POST)</p>
+            <CodeBlock
+              lang="json"
+              code={`{
+  "event": "property.created",
+  "createdAt": "2026-07-20T10:00:00Z",
+  "data": {
+    "id": "ce71652d-...",
+    "title": "Appartement 2 chambres à Lomé",
+    "price": 140000,
+    "listingType": "RENT",
+    "propertyType": "APARTMENT",
+    "address": "Quartier Tokoin, Lomé, Togo"
+  }
+}`}
+            />
             <p>
-              Configurez une URL de réception (endpoint HTTPS) dans votre espace
-              développeur ; Kaabo y enverra une requête{" "}
-              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                POST
-              </code>{" "}
-              signée à chaque événement. La signature (en-tête{" "}
+              Chaque requête inclut l&apos;en-tête{" "}
               <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
                 X-Kaabo-Signature
+              </code>{" "}
+              (
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+                sha256=…
               </code>
-              , HMAC-SHA256) permet de vérifier l&apos;authenticité.
+              ) : un HMAC-SHA256 du corps brut, calculé avec le secret de votre
+              endpoint. Vérifiez-le pour garantir l&apos;authenticité :
             </p>
-            <Badge variant="secondary">Bientôt disponible</Badge>
+            <CodeBlock
+              lang="javascript"
+              code={`import crypto from "node:crypto";
+
+function verify(rawBody, signature, secret) {
+  const expected =
+    "sha256=" +
+    crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected),
+  );
+}`}
+            />
           </Section>
 
           <Section id="tarifs" title="Tarifs & accès" icon={KeyRound}>
