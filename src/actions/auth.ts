@@ -47,6 +47,7 @@ type AuthRole =
   | "STUDENT"
   | "AGENCY"
   | "BUYER"
+  | "DEVELOPER"
   | "ADMIN";
 
 const ROLE_LABELS: Record<AuthRole, string> = {
@@ -55,6 +56,7 @@ const ROLE_LABELS: Record<AuthRole, string> = {
   STUDENT: "Étudiant",
   AGENCY: "Agence immobilière",
   BUYER: "Acheteur",
+  DEVELOPER: "Développeur",
   ADMIN: "Administrateur",
 };
 
@@ -64,6 +66,7 @@ const ROLE_LANDING: Record<AuthRole, string> = {
   STUDENT: "/student/colocations",
   AGENCY: "/agency",
   BUYER: "/buyer",
+  DEVELOPER: "/developers",
   ADMIN: "/admin",
 };
 

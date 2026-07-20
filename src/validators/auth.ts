@@ -54,9 +54,12 @@ export const signupSchema = z
     confirmPassword: z
       .string()
       .min(1, "Veuillez confirmer votre mot de passe"),
-    role: z.enum(["OWNER", "TENANT", "STUDENT", "AGENCY", "BUYER"], {
-      message: "Veuillez selectionner un role valide",
-    }),
+    role: z.enum(
+      ["OWNER", "TENANT", "STUDENT", "AGENCY", "BUYER", "DEVELOPER"],
+      {
+        message: "Veuillez selectionner un role valide",
+      },
+    ),
     // Champ optionnel : nom de l'agence (uniquement si role === 'AGENCY')
     agencyName: z
       .string()

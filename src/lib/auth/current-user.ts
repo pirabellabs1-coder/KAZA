@@ -8,6 +8,7 @@ export type AuthRole =
   | "STUDENT"
   | "AGENCY"
   | "BUYER"
+  | "DEVELOPER"
   | "ADMIN";
 
 export interface CurrentUser {
@@ -25,6 +26,7 @@ const VALID_ROLES: AuthRole[] = [
   "STUDENT",
   "AGENCY",
   "BUYER",
+  "DEVELOPER",
   "ADMIN",
 ];
 

@@ -1,4 +1,11 @@
-import { Building2, Home, GraduationCap, Tag, Briefcase } from "lucide-react";
+import {
+  Building2,
+  Home,
+  GraduationCap,
+  Tag,
+  Briefcase,
+  Code2,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 // =============================================================================
@@ -8,7 +15,13 @@ import type { LucideIcon } from "lucide-react";
 // pour que le compilateur les détecte.
 // =============================================================================
 
-export type RoleValue = "TENANT" | "OWNER" | "STUDENT" | "BUYER" | "AGENCY";
+export type RoleValue =
+  | "TENANT"
+  | "OWNER"
+  | "STUDENT"
+  | "BUYER"
+  | "AGENCY"
+  | "DEVELOPER";
 
 export interface RoleMeta {
   value: RoleValue;
@@ -99,6 +112,20 @@ export const ROLE_META: Record<RoleValue, RoleMeta> = {
     hoverBorder: "hover:border-purple-600",
     gradient: "from-purple-600 to-indigo-800",
   },
+  DEVELOPER: {
+    value: "DEVELOPER",
+    label: "Développeur",
+    tagline: "Accédez à l'API Kaabo : clés, webhooks, intégrations.",
+    intro: "Je veux intégrer l'API Kaabo",
+    icon: Code2,
+    accentText: "text-cyan-600",
+    iconText: "text-cyan-600",
+    softBg: "bg-cyan-500/10",
+    solidBg: "bg-cyan-600 hover:bg-cyan-600/90",
+    selectedBorder: "border-cyan-600",
+    hoverBorder: "hover:border-cyan-600",
+    gradient: "from-cyan-600 to-blue-800",
+  },
 };
 
 export const ROLE_LIST: RoleMeta[] = [
@@ -107,4 +134,5 @@ export const ROLE_LIST: RoleMeta[] = [
   ROLE_META.STUDENT,
   ROLE_META.BUYER,
   ROLE_META.AGENCY,
+  ROLE_META.DEVELOPER,
 ];

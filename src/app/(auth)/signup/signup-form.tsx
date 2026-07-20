@@ -70,7 +70,9 @@ export function SignupForm() {
     const roleParam = searchParams.get("role")?.toUpperCase();
     if (
       roleParam &&
-      ["TENANT", "OWNER", "STUDENT", "BUYER", "AGENCY"].includes(roleParam)
+      ["TENANT", "OWNER", "STUDENT", "BUYER", "AGENCY", "DEVELOPER"].includes(
+        roleParam,
+      )
     ) {
       setValue("role", roleParam as RoleValue, { shouldValidate: true });
       setStep("form");
@@ -337,7 +339,7 @@ export function SignupForm() {
       )}
 
       {/* Prénom & Nom */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="firstName">Prénom</Label>
           <Input

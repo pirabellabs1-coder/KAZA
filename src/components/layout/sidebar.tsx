@@ -153,12 +153,18 @@ const adminNav: NavItem[] = [
   { href: "/developers", label: "API & Développeurs", icon: Code2 },
 ];
 
+const developerNav: NavItem[] = [
+  { href: "/developers", label: "API & Développeurs", icon: Code2 },
+  { href: "/messages", label: "Messagerie", icon: MessageSquare },
+];
+
 const roleNavMap: Record<string, NavItem[]> = {
   OWNER: ownerNav,
   TENANT: tenantNav,
   STUDENT: studentNav,
   AGENCY: agencyNav,
   BUYER: buyerNav,
+  DEVELOPER: developerNav,
   ADMIN: adminNav,
 };
 

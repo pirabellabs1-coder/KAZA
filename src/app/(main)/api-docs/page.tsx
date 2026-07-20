@@ -91,6 +91,16 @@ export default function ApiDocsPage() {
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild className="bg-white text-kaza-navy hover:bg-white/90">
+            <Link href="/signup?role=DEVELOPER">
+              <Code2 className="mr-1.5 size-4" />
+              Créer un compte développeur
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="border-white/30 bg-transparent text-white hover:bg-white/10"
+          >
             <Link href="/developers">
               <KeyRound className="mr-1.5 size-4" />
               Obtenir une clé API
@@ -514,13 +524,16 @@ function verify(rawBody, signature, secret) {
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <Button asChild>
-                <Link href="/developers">
-                  <KeyRound className="mr-1.5 size-4" />
-                  Obtenir une clé API
+                <Link href="/signup?role=DEVELOPER">
+                  <Code2 className="mr-1.5 size-4" />
+                  Créer un compte développeur
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/pricing">Voir tous les tarifs</Link>
+                <Link href="/developers">
+                  <KeyRound className="mr-1.5 size-4" />
+                  Gérer mes clés
+                </Link>
               </Button>
             </div>
           </Section>

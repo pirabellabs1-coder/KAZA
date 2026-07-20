@@ -101,6 +101,11 @@ export default async function DashboardPage() {
     redirect("/buyer");
   }
 
+  // Le développeur atterrit sur son espace API.
+  if (role === "DEVELOPER") {
+    redirect("/developers");
+  }
+
   // L'admin a son espace dédié (/admin) avec sa propre coquille (AdminShell +
   // sidebar admin). On l'y redirige plutôt que d'afficher un aperçu dans la
   // coquille générique (qui montrerait la sidebar propriétaire).

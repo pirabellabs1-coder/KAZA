@@ -65,7 +65,7 @@ export default function AuthLayout({
       </aside>
 
       {/* Form droite */}
-      <main className="flex flex-1 flex-col bg-white">
+      <main className="flex flex-1 flex-col overflow-x-hidden bg-white">
         {/* Mobile : bandeau image compact en haut */}
         <div className="relative h-32 w-full overflow-hidden lg:hidden">
           <Image
