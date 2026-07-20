@@ -3,7 +3,6 @@ import {
   Banknote,
   Calendar,
   Download,
-  FileText,
   Globe2,
   PercentCircle,
   Receipt,
@@ -25,6 +24,7 @@ import { CountryFlag } from "@/components/shared/country-flag";
 import { listAdminPayouts } from "@/lib/queries/admin-payouts";
 import { PayoutRowActions } from "./payout-row-actions";
 import { PrintReportButton } from "./print-report-button";
+import { DgiDeclarationButton } from "./dgi-declaration-button";
 
 export const dynamic = "force-dynamic";
 
@@ -708,10 +708,14 @@ export default async function AdminFinancePage() {
               <p className="mt-1 font-heading text-2xl font-bold text-purple-700">
                 {formatFcfa(PLATFORM_FINANCE_30D.taxesFcfa)}
               </p>
-              <Button size="sm" className="mt-2 bg-purple-600 hover:bg-purple-700">
-                <FileText className="mr-1 h-3.5 w-3.5" />
-                Déclaration DGI Bénin
-              </Button>
+              <DgiDeclarationButton
+                periodLabel="30 derniers jours"
+                grossRevenueLabel={formatFcfa(
+                  PLATFORM_FINANCE_30D.grossRevenueFcfa,
+                )}
+                tvaRateLabel="18 %"
+                tvaAmountLabel={formatFcfa(PLATFORM_FINANCE_30D.taxesFcfa)}
+              />
             </div>
           </div>
         </CardContent>
