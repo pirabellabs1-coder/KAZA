@@ -170,6 +170,7 @@ export function UsersManager({ users }: { users: AdminUser[] }) {
   const [pageSize, setPageSize] = useState<number>(25);
   const [page, setPage] = useState<number>(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [detailUser, setDetailUser] = useState<AdminUser | null>(null);
   const [confirm, setConfirm] = useState<null | {
     type: "suspend" | "ban";
     targetIds: string[];
@@ -484,7 +485,12 @@ export function UsersManager({ users }: { users: AdminUser[] }) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="outline" className="h-8">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8"
+                          onClick={() => setDetailUser(u)}
+                        >
                           <Eye className="size-3.5" /> Voir
                         </Button>
                         <DropdownMenu>
@@ -666,6 +672,83 @@ export function UsersManager({ users }: { users: AdminUser[] }) {
               onClick={handleConfirm}
             >
               {confirm?.type === "ban" ? "Confirmer le bannissement" : "Confirmer la suspension"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Détail utilisateur */}
+      <Dialog
+        open={detailUser !== null}
+        onOpenChange={(v) => !v && setDetailUser(null)}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Détails de l&apos;utilisateur</DialogTitle>
+            <DialogDescription>Fiche complète du compte.</DialogDescription>
+          </DialogHeader>
+          {detailUser && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-12 items-center justify-center rounded-full bg-kaza-navy/10 font-heading font-semibold text-kaza-navy">
+                  {initials(detailUser)}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-kaza-navy">
+                    {detailUser.firstName} {detailUser.lastName}
+                  </p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {detailUser.email}
+                  </p>
+                </div>
+              </div>
+              <dl className="grid grid-cols-3 gap-x-4 gap-y-2.5 text-sm">
+                <dt className="text-muted-foreground">Rôle</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {detailUser.role}
+                </dd>
+                <dt className="text-muted-foreground">Statut</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {detailUser.status}
+                </dd>
+                <dt className="text-muted-foreground">Téléphone</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {detailUser.phone || "—"}
+                </dd>
+                <dt className="text-muted-foreground">Pays</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {detailUser.flag} {detailUser.country || "—"}
+                </dd>
+                <dt className="text-muted-foreground">Vérification</dt>
+                <dd className="col-span-2">
+                  <VerificationBadge v={detailUser.verification} />
+                </dd>
+                <dt className="text-muted-foreground">Score de confiance</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {detailUser.trustScore}/100
+                </dd>
+                <dt className="text-muted-foreground">Total dépensé</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {formatFcfa(detailUser.totalSpentFcfa)}
+                </dd>
+                <dt className="text-muted-foreground">Inscrit</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {relativeFromDays(detailUser.signupAt)}
+                </dd>
+                <dt className="text-muted-foreground">Dernière connexion</dt>
+                <dd className="col-span-2 font-medium text-foreground">
+                  {relativeFromDays(detailUser.lastLoginAt)}
+                </dd>
+                <dt className="text-muted-foreground">Identifiant</dt>
+                <dd className="col-span-2 font-mono text-xs text-muted-foreground">
+                  {detailUser.id}
+                </dd>
+              </dl>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDetailUser(null)}>
+              Fermer
             </Button>
           </DialogFooter>
         </DialogContent>
