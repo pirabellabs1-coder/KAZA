@@ -121,6 +121,7 @@ export const propertyFormSchema = z.object({
       z.object({
         url: z.string().url(),
         label: z.string().optional(),
+        startAngle: z.number().min(0).max(1).optional(),
       }),
     )
     .optional()
@@ -309,6 +310,7 @@ export const createPropertySchema = z.object({
       z.object({
         url: z.string().url(),
         label: z.string().optional(),
+        startAngle: z.number().min(0).max(1).optional(),
       }),
     )
     .optional()

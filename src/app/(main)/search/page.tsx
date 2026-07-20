@@ -19,7 +19,6 @@ import {
   Crown,
   Filter,
   Globe2,
-  Heart,
   Home as HomeIcon,
   LayoutGrid,
   List,
@@ -52,6 +51,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CountryFlag, GlobeFlag } from "@/components/shared/country-flag";
 import { PageTracker } from "@/components/analytics/page-tracker";
+import { FavoriteButton } from "@/components/property/favorite-button";
 import { SearchSaveActions } from "@/components/property/search-save-actions";
 
 // SEO longue traîne : le titre et la description s'adaptent aux filtres de
@@ -1860,13 +1860,10 @@ function PropertyGridCard({ property }: { property: PublicProperty }) {
           )}
         </div>
         {/* Favori */}
-        <button
-          type="button"
-          aria-label="Ajouter aux favoris"
-          className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-white/95 text-foreground shadow-md backdrop-blur transition-all hover:scale-110 hover:text-rose-500"
-        >
-          <Heart className="size-4" />
-        </button>
+        <FavoriteButton
+          propertyId={property.id}
+          className="absolute right-3 top-3"
+        />
         {/* Prix overlay */}
         <div className="absolute bottom-3 left-3 rounded-xl bg-black/70 px-3 py-1.5 text-white backdrop-blur">
           <p className="font-heading text-base font-bold">

@@ -71,6 +71,9 @@ export function Panorama360Uploader({
   function updateLabel(i: number, label: string) {
     onChange(scenes.map((s, idx) => (idx === i ? { ...s, label } : s)));
   }
+  function updateStart(i: number, startAngle: number) {
+    onChange(scenes.map((s, idx) => (idx === i ? { ...s, startAngle } : s)));
+  }
   function remove(i: number) {
     onChange(scenes.filter((_, idx) => idx !== i));
   }
@@ -102,52 +105,75 @@ export function Panorama360Uploader({
           {scenes.map((s, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 rounded-xl border bg-white p-2"
+              className="space-y-2 rounded-xl border bg-white p-2"
             >
-              {/* Vignette */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={s.url}
-                alt=""
-                className="h-12 w-20 shrink-0 rounded-lg object-cover"
-              />
-              <span className="w-5 shrink-0 text-center text-sm font-semibold text-muted-foreground">
-                {i + 1}
-              </span>
-              <Input
-                value={s.label ?? ""}
-                onChange={(e) => updateLabel(i, e.target.value)}
-                placeholder="Nom de la pièce (ex : Salon, Chambre, Extérieur)"
-                className="h-9 flex-1"
-              />
-              <div className="flex shrink-0 items-center gap-0.5">
-                <button
-                  type="button"
-                  onClick={() => move(i, -1)}
-                  disabled={i === 0}
-                  className="rounded-md p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
-                  aria-label="Monter"
-                >
-                  <ArrowUp className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(i, 1)}
-                  disabled={i === scenes.length - 1}
-                  className="rounded-md p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
-                  aria-label="Descendre"
-                >
-                  <ArrowDown className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => remove(i)}
-                  className="rounded-md p-1.5 text-destructive hover:bg-destructive/5"
-                  aria-label="Supprimer"
-                >
-                  <Trash2 className="size-4" />
-                </button>
+              <div className="flex items-center gap-3">
+                {/* Vignette */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.url}
+                  alt=""
+                  className="h-12 w-20 shrink-0 rounded-lg object-cover"
+                />
+                <span className="w-5 shrink-0 text-center text-sm font-semibold text-muted-foreground">
+                  {i + 1}
+                </span>
+                <Input
+                  value={s.label ?? ""}
+                  onChange={(e) => updateLabel(i, e.target.value)}
+                  placeholder="Nom de la pièce (ex : Salon, Chambre, Extérieur)"
+                  className="h-9 flex-1"
+                />
+                <div className="flex shrink-0 items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => move(i, -1)}
+                    disabled={i === 0}
+                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
+                    aria-label="Monter"
+                  >
+                    <ArrowUp className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(i, 1)}
+                    disabled={i === scenes.length - 1}
+                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
+                    aria-label="Descendre"
+                  >
+                    <ArrowDown className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => remove(i)}
+                    className="rounded-md p-1.5 text-destructive hover:bg-destructive/5"
+                    aria-label="Supprimer"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
               </div>
+
+              {/* Réglage : orientation de départ de la scène */}
+              <label className="flex items-center gap-2 pl-1 pr-1 text-xs text-muted-foreground">
+                <Compass className="size-3.5 shrink-0 text-kaza-blue" />
+                <span className="shrink-0">Orientation d&apos;ouverture</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={Math.round((s.startAngle ?? 0) * 100)}
+                  onChange={(e) =>
+                    updateStart(i, Number(e.target.value) / 100)
+                  }
+                  className="h-1.5 flex-1 cursor-pointer accent-kaza-blue"
+                  aria-label="Orientation de départ de la scène"
+                />
+                <span className="w-9 shrink-0 text-right tabular-nums">
+                  {Math.round((s.startAngle ?? 0) * 100)}%
+                </span>
+              </label>
             </div>
           ))}
         </div>

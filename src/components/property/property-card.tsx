@@ -14,9 +14,12 @@ import {
   Megaphone,
   ArrowRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { cn, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { toggleSaveProperty } from "@/actions/favorites";
+import { toast } from "@/components/ui/toast-helper";
 
 const PROPERTY_TYPE_LABELS: Record<string, string> = {
   HOUSE: "Maison",
@@ -73,12 +76,37 @@ export function PropertyCard({
   className,
 }: PropertyCardProps) {
   const [favorite, setFavorite] = useState(isFavorite);
+  const [, startFav] = useTransition();
+  const router = useRouter();
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setFavorite(!favorite);
+    const next = !favorite;
+    setFavorite(next); // optimiste
     onFavoriteToggle?.(id);
+    startFav(async () => {
+      try {
+        const res = await toggleSaveProperty(id);
+        if (!res.success) {
+          setFavorite(!next); // rollback
+          if (/connect/i.test(res.error ?? "")) {
+            toast.error("Connectez-vous pour enregistrer vos favoris.");
+            router.push("/login?redirect=/tenant/saved");
+          } else {
+            toast.error(res.error ?? "Action impossible pour le moment.");
+          }
+          return;
+        }
+        const favorited = res.data?.favorited ?? next;
+        toast.success(
+          favorited ? "Ajouté à vos favoris." : "Retiré de vos favoris.",
+        );
+      } catch {
+        setFavorite(!next);
+        toast.error("Impossible de joindre le serveur.");
+      }
+    });
   };
 
   const typeLabel = PROPERTY_TYPE_LABELS[propertyType] ?? propertyType;

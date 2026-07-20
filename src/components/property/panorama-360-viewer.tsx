@@ -34,6 +34,11 @@ export interface PanoramaScene {
   url: string;
   /** Nom de la pièce / zone (ex: "Salon", "Chambre", "Extérieur"). */
   label?: string;
+  /**
+   * Orientation de départ (fraction 0→1) : où la scène s'ouvre par défaut.
+   * 0 = bord gauche de la photo, 0.5 = centre, etc. Réglable à la création.
+   */
+  startAngle?: number;
 }
 
 interface Panorama360ViewerProps {
@@ -68,6 +73,7 @@ export function Panorama360Viewer({
   const safeIndex = Math.min(sceneIndex, Math.max(sceneList.length - 1, 0));
   const currentSrc = sceneList[safeIndex]?.url ?? "";
   const currentLabel = sceneList[safeIndex]?.label;
+  const currentStart = sceneList[safeIndex]?.startAngle ?? 0;
   const multi = sceneList.length > 1;
 
   const goPrev = () =>
@@ -83,11 +89,14 @@ export function Panorama360Viewer({
   const [rotating, setRotating] = useState(autoRotate);
   const dragStart = useRef<{ x: number; offsetX: number } | null>(null);
 
-  // Au changement de scène : on relance le chargement et on recentre.
+  // Au changement de scène : on relance le chargement et on positionne
+  // l'image selon l'orientation de départ réglée par le propriétaire.
   useEffect(() => {
     setIsLoaded(false);
-    setOffsetX(0);
-  }, [currentSrc]);
+    const width = containerRef.current?.clientWidth ?? 0;
+    const frac = Math.min(Math.max(currentStart, 0), 1);
+    setOffsetX(-frac * width);
+  }, [currentSrc, currentStart]);
 
   // Auto-rotation
   useEffect(() => {
