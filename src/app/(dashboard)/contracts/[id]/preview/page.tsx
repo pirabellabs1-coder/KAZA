@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   Edit3,
   FileText,
-  Send,
   ShieldCheck,
 } from "lucide-react";
 
@@ -14,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getUserContractById, type UserContract } from "@/lib/queries/contracts";
 import { ContractDownloadActions } from "./download-actions";
+import { SendSignatureButton } from "./send-signature-button";
 import {
   CONTRACT_TEMPLATES,
   getTemplateById,
@@ -252,10 +252,7 @@ export default async function ContractPreviewPage({
               contractId={id}
               contractNumber={contractNumber}
             />
-            <Button variant="outline" className="w-full justify-start">
-              <Send className="mr-2 size-4" />
-              Envoyer pour signature
-            </Button>
+            <SendSignatureButton contractId={id} />
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href={`/contracts/${id}/edit`}>
                 <Edit3 className="mr-2 size-4" />

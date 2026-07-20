@@ -118,6 +118,24 @@ export async function getJobOfferBySlug(slug: string): Promise<JobOffer | null> 
   return mapRow(data as JobOfferRow);
 }
 
+/** Récupère une offre par son ID (édition admin). `null` si introuvable. */
+export async function getJobOfferById(id: string): Promise<JobOffer | null> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from("job_offers")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error || !data) {
+    if (error) console.warn("[careers] getJobOfferById:", error.message);
+    return null;
+  }
+
+  return mapRow(data as JobOfferRow);
+}
+
 /**
  * Liste toutes les offres pour le back-office admin (toutes statuts).
  * Le passage des policies RLS garantit que seuls les ADMIN voient cette

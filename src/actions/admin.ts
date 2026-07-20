@@ -279,6 +279,36 @@ export async function approveIdentity(
   const guard = await assertAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
 
+  // Écrit RÉELLEMENT la validation en base (sinon le badge restait "en
+  // attente" malgré l'approbation).
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  const nowIso = new Date().toISOString();
+
+  const { error: verifErr } = await adminDb
+    .from("identity_verifications")
+    .update({
+      status: "APPROVED",
+      reviewed_by: guard.adminId,
+      reviewed_at: nowIso,
+      rejection_reason: null,
+    })
+    .eq("user_id", input.userId);
+  if (verifErr) {
+    return { success: false, error: "Impossible de valider la pièce." };
+  }
+
+  await adminDb
+    .from("users")
+    .update({ verification_status: "APPROVED", is_verified: true })
+    .eq("id", input.userId);
+
+  await writeAuditLog({
+    action: "KYC_APPROVED",
+    targetType: "USER",
+    targetId: input.userId,
+    targetLabel: input.userName,
+  });
+
   const subject = "Identité vérifiée — badge de confiance Kaabo";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre identité est vérifiée</h2>
@@ -301,6 +331,8 @@ export async function approveIdentity(
   );
 
   const emailSent = await trySendEmail(input.userEmail, subject, html);
+  revalidatePath("/admin/documents");
+  revalidatePath("/admin/audit-log");
   return { success: true, emailSent };
 }
 
@@ -320,6 +352,34 @@ export async function rejectIdentity(
 ): Promise<AdminActionResult> {
   const guard = await assertAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
+
+  // Persiste le rejet en base (statut + motif).
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  const { error: verifErr } = await adminDb
+    .from("identity_verifications")
+    .update({
+      status: "REJECTED",
+      reviewed_by: guard.adminId,
+      reviewed_at: new Date().toISOString(),
+      rejection_reason: input.reason,
+    })
+    .eq("user_id", input.userId);
+  if (verifErr) {
+    return { success: false, error: "Impossible d'enregistrer le rejet." };
+  }
+
+  await adminDb
+    .from("users")
+    .update({ verification_status: "REJECTED", is_verified: false })
+    .eq("id", input.userId);
+
+  await writeAuditLog({
+    action: "KYC_REJECTED",
+    targetType: "USER",
+    targetId: input.userId,
+    targetLabel: input.userName,
+    reason: input.reason,
+  });
 
   const subject = "Pièce d'identité non conforme — Kaabo";
   const html = layout(
@@ -341,6 +401,8 @@ export async function rejectIdentity(
   );
 
   const emailSent = await trySendEmail(input.userEmail, subject, html);
+  revalidatePath("/admin/documents");
+  revalidatePath("/admin/audit-log");
   return { success: true, emailSent };
 }
 

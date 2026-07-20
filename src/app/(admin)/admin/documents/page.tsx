@@ -15,7 +15,6 @@ import {
   RefreshCw,
   Scale,
   ShieldCheck,
-  Trash2,
   TrendingUp,
   XCircle,
 } from "lucide-react";
@@ -39,6 +38,8 @@ import {
   type AdminDocumentRow,
   type AdminUserVerification,
 } from "@/lib/queries/admin";
+
+import { DocumentModActions } from "./document-mod-actions";
 import { listGdprRequests } from "@/lib/queries/gdpr";
 
 export const dynamic = "force-dynamic";
@@ -542,35 +543,21 @@ export default async function AdminDocumentsPage() {
                         </td>
                         <td className="px-3 py-3">
                           <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-xs"
-                            >
-                              Voir
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-xs text-kaza-green hover:bg-emerald-50"
-                            >
-                              Approuver
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-xs text-red-600 hover:bg-red-50"
-                            >
-                              Rejeter
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-8 text-slate-500 hover:bg-slate-100"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="size-4" />
-                            </Button>
+                            <DocumentModActions
+                              userId={d.userId}
+                              userName={d.userName}
+                              userEmail={d.userEmail}
+                              status={d.status}
+                              images={[
+                                { label: "Recto", url: d.documentFrontUrl },
+                                { label: "Verso", url: d.documentBackUrl },
+                                { label: "Selfie", url: d.selfieUrl },
+                                ...d.extraDocuments.map((ex) => ({
+                                  label: ex.label,
+                                  url: ex.url,
+                                })),
+                              ]}
+                            />
                           </div>
                         </td>
                       </tr>
