@@ -93,6 +93,12 @@ export default async function DevelopersPage() {
                 — annonces disponibles (paramètres : limit, offset)
               </li>
             </ul>
+            <a
+              href="/api-docs"
+              className="inline-flex items-center gap-1 text-sm font-medium text-kaza-blue hover:underline"
+            >
+              Consulter la documentation complète
+            </a>
           </CardContent>
         </Card>
       </section>

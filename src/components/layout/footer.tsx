@@ -35,6 +35,8 @@ const companyLinks = [
   { href: "/about", label: "À propos" },
   { href: "/pro", label: "Kaabo Pro (B2B)" },
   { href: "/plus", label: "Kaabo Plus Premium" },
+  { href: "/agences", label: "Annuaire des agences" },
+  { href: "/api-docs", label: "API & Développeurs" },
   { href: "/carrieres", label: "Carrières" },
   { href: "/blog", label: "Blog" },
   { href: "/partners", label: "Partenaires" },

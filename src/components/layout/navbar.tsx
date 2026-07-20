@@ -27,6 +27,7 @@ import {
   Activity,
   Sparkles,
   GraduationCap,
+  Code2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -172,6 +173,13 @@ const MEGA_MENU: MegaSection[] = [
             description: "Notaires, courtiers, prestataires",
             icon: Handshake,
           },
+          {
+            href: "/api-docs",
+            label: "API & Développeurs",
+            description: "Intégrez les données Kaabo à vos outils",
+            icon: Code2,
+            badge: "API",
+          },
         ],
       },
     ],
@@ -239,6 +247,12 @@ const MEGA_MENU: MegaSection[] = [
             label: "Comment ça marche",
             description: "Votre parcours étape par étape",
             icon: GraduationCap,
+          },
+          {
+            href: "/agences",
+            label: "Annuaire des agences",
+            description: "Toutes les agences partenaires",
+            icon: Building2,
           },
         ],
       },
