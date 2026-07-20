@@ -23,6 +23,7 @@ import {
 import { formatFcfa, formatFcfaShort } from "@/lib/utils";
 import { CountryFlag } from "@/components/shared/country-flag";
 import { listAdminPayouts } from "@/lib/queries/admin-payouts";
+import { PayoutRowActions } from "./payout-row-actions";
 import { PrintReportButton } from "./print-report-button";
 
 export const dynamic = "force-dynamic";
@@ -527,19 +528,21 @@ export default async function AdminFinancePage() {
                     <td className="px-6 py-4 text-xs text-gray-600">{p.method}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-1.5">
-                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
-                          Détail
-                        </Button>
-                        {p.status === "FAILED" && (
-                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
-                            Renvoyer
-                          </Button>
-                        )}
-                        {p.status === "SCHEDULED" && (
-                          <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
-                            Annuler
-                          </Button>
-                        )}
+                        <PayoutRowActions
+                          payout={{
+                            id: p.id,
+                            beneficiary: p.beneficiary,
+                            type: p.type,
+                            amountLabel: formatFcfa(p.amountFcfa),
+                            statusLabel: PAYOUT_STATUS_LABELS[p.status],
+                            status: p.status,
+                            method: p.method,
+                            scheduledAt: p.paidAt
+                              ? p.paidAt
+                              : p.scheduledAt,
+                            paidAt: p.paidAt,
+                          }}
+                        />
                       </div>
                     </td>
                   </tr>
