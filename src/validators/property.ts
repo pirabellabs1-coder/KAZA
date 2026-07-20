@@ -115,6 +115,16 @@ export const propertyFormSchema = z.object({
     .url("URL panorama invalide")
     .optional()
     .or(z.literal("")),
+  // Visite 360° multi-scènes : liste ordonnée de panoramas nommés.
+  panorama360Scenes: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        label: z.string().optional(),
+      }),
+    )
+    .optional()
+    .default([]),
   floorPlanUrl: z
     .string()
     .url("URL du plan invalide")
@@ -293,6 +303,16 @@ export const createPropertySchema = z.object({
     .url("URL panorama invalide")
     .optional()
     .or(z.literal("")),
+  // Visite 360° multi-scènes : liste ordonnée de panoramas nommés.
+  panorama360Scenes: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        label: z.string().optional(),
+      }),
+    )
+    .optional()
+    .default([]),
   // Type de transaction : location (loyer mensuel) ou vente (prix de vente).
   listingType: z.enum(["RENT", "SALE"], {
     message: "Veuillez choisir Location ou Vente",

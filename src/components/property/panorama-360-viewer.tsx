@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Maximize2, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  RotateCw,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -22,9 +29,18 @@ import { cn } from "@/lib/utils";
  * une fois l'image équirectangulaire produite.
  */
 
-interface Panorama360ViewerProps {
+export interface PanoramaScene {
   /** URL d'une image équirectangulaire (ratio 2:1 idéalement) */
-  src: string;
+  url: string;
+  /** Nom de la pièce / zone (ex: "Salon", "Chambre", "Extérieur"). */
+  label?: string;
+}
+
+interface Panorama360ViewerProps {
+  /** Scène unique (rétrocompat). */
+  src?: string;
+  /** Visite multi-scènes ordonnée (salon, chambres, extérieur…). */
+  scenes?: PanoramaScene[];
   /** Texte alternatif */
   alt?: string;
   /** Hauteur du viewer (px ou Tailwind class via className) */
@@ -36,11 +52,28 @@ interface Panorama360ViewerProps {
 
 export function Panorama360Viewer({
   src,
+  scenes,
   alt = "Vue à 360°",
   height = 480,
   className,
   autoRotate = false,
 }: Panorama360ViewerProps) {
+  // Liste de scènes normalisée (fallback sur `src` unique).
+  const sceneList = useMemo<PanoramaScene[]>(
+    () =>
+      scenes && scenes.length > 0 ? scenes : src ? [{ url: src }] : [],
+    [scenes, src],
+  );
+  const [sceneIndex, setSceneIndex] = useState(0);
+  const safeIndex = Math.min(sceneIndex, Math.max(sceneList.length - 1, 0));
+  const currentSrc = sceneList[safeIndex]?.url ?? "";
+  const currentLabel = sceneList[safeIndex]?.label;
+  const multi = sceneList.length > 1;
+
+  const goPrev = () =>
+    setSceneIndex((i) => (i - 1 + sceneList.length) % sceneList.length);
+  const goNext = () => setSceneIndex((i) => (i + 1) % sceneList.length);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [offsetX, setOffsetX] = useState(0);
@@ -49,6 +82,12 @@ export function Panorama360Viewer({
   const [isDragging, setIsDragging] = useState(false);
   const [rotating, setRotating] = useState(autoRotate);
   const dragStart = useRef<{ x: number; offsetX: number } | null>(null);
+
+  // Au changement de scène : on relance le chargement et on recentre.
+  useEffect(() => {
+    setIsLoaded(false);
+    setOffsetX(0);
+  }, [currentSrc]);
 
   // Auto-rotation
   useEffect(() => {
@@ -118,8 +157,8 @@ export function Panorama360Viewer({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
-        src={src}
-        alt={alt}
+        src={currentSrc}
+        alt={currentLabel ?? alt}
         onLoad={() => setIsLoaded(true)}
         className={cn(
           "h-full select-none object-cover pointer-events-none transition-opacity duration-500",
@@ -149,6 +188,61 @@ export function Panorama360Viewer({
         <span className="text-base leading-none">⊙</span>
         360°
       </div>
+
+      {/* Navigation multi-scènes (visite : pièce par pièce) */}
+      {multi && (
+        <>
+          {/* Nom de la pièce + compteur */}
+          <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-black/70 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur">
+            {currentLabel ?? `Scène ${safeIndex + 1}`}
+            <span className="ml-2 text-xs font-normal text-white/70">
+              {safeIndex + 1} / {sceneList.length}
+            </span>
+          </div>
+
+          {/* Pastilles de scènes */}
+          <div className="absolute left-1/2 top-14 z-10 flex max-w-[80%] -translate-x-1/2 flex-wrap justify-center gap-1.5">
+            {sceneList.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => setSceneIndex(i)}
+                title={s.label ?? `Scène ${i + 1}`}
+                className={cn(
+                  "h-2 rounded-full transition-all",
+                  i === safeIndex
+                    ? "w-6 bg-white"
+                    : "w-2 bg-white/50 hover:bg-white/80",
+                )}
+                aria-label={s.label ?? `Scène ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Flèche précédente */}
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={goPrev}
+            className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/55 p-2.5 text-white shadow-lg backdrop-blur transition-colors hover:bg-kaza-blue"
+            aria-label="Pièce précédente"
+          >
+            <ChevronLeft className="size-6" />
+          </button>
+
+          {/* Flèche suivante */}
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={goNext}
+            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/55 p-2.5 text-white shadow-lg backdrop-blur transition-colors hover:bg-kaza-blue"
+            aria-label="Pièce suivante"
+          >
+            <ChevronRight className="size-6" />
+          </button>
+        </>
+      )}
 
       {/* Hint drag — disparaît au premier drag */}
       {!isDragging && (

@@ -281,6 +281,7 @@ const DEFAULTS: PropertyFormData = {
   photos: [],
   videoUrl: "",
   panorama360Url: "",
+  panorama360Scenes: [],
   floorPlanUrl: "",
   priceMonthly: 0,
   charges: 0,
@@ -470,7 +471,7 @@ export function PropertyCreateWizard({ userId }: { userId: string }) {
             | "ROOM",
           address: fullAddress,
           amenities,
-          panorama360Url: values.panorama360Url || undefined,
+          panorama360Scenes: values.panorama360Scenes ?? [],
           locationLatitude: values.lat,
           locationLongitude: values.lng,
           photos: [],
@@ -1396,7 +1397,7 @@ function Step5Media({ userId }: { userId: string }) {
   const { watch, setValue, register, formState } =
     useFormContext<PropertyFormData>();
   const photos = (watch("photos") ?? []) as string[];
-  const panoramaUrl = watch("panorama360Url");
+  const panoramaScenes = watch("panorama360Scenes") ?? [];
   const videoUrl = watch("videoUrl");
   const floorPlanUrl = watch("floorPlanUrl");
 
@@ -1467,15 +1468,17 @@ function Step5Media({ userId }: { userId: string }) {
           </div>
         </div>
         <Panorama360Uploader
-          value={panoramaUrl}
-          onChange={(url) =>
-            setValue("panorama360Url", url, {
+          value={panoramaScenes}
+          onChange={(scenes) =>
+            setValue("panorama360Scenes", scenes, {
               shouldValidate: true,
               shouldDirty: true,
             })
           }
         />
-        <FieldError message={formState.errors.panorama360Url?.message} />
+        <FieldError
+          message={formState.errors.panorama360Scenes?.message as string}
+        />
       </section>
 
       {/* PLAN */}
@@ -2077,10 +2080,10 @@ function Step8Publish() {
             </div>
 
             <div className="flex flex-wrap gap-1.5 pt-2">
-              {v.panorama360Url && (
+              {v.panorama360Scenes && v.panorama360Scenes.length > 0 && (
                 <Badge className="gap-1 bg-kaza-blue text-white">
                   <Compass className="size-3" />
-                  Vue 360°
+                  Visite 360° ({v.panorama360Scenes.length})
                 </Badge>
               )}
               {v.videoUrl && (

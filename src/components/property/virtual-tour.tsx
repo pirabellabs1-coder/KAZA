@@ -24,11 +24,17 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import {
+  Panorama360Viewer,
+  type PanoramaScene,
+} from "@/components/property/panorama-360-viewer";
 
 interface VirtualTourProps {
   images: string[];
   videoUrl?: string; // YouTube / Vimeo
   embedUrl?: string; // Matterport ou équivalent
+  /** Visite 360° multi-scènes (salon, chambres, extérieur…). */
+  panoramaScenes?: PanoramaScene[];
 }
 
 type TourTab = "photos" | "video" | "tour360";
@@ -67,14 +73,20 @@ function toEmbedUrl(raw: string): string {
   }
 }
 
-export function VirtualTour({ images, videoUrl, embedUrl }: VirtualTourProps) {
+export function VirtualTour({
+  images,
+  videoUrl,
+  embedUrl,
+  panoramaScenes,
+}: VirtualTourProps) {
+  const has360 = (panoramaScenes && panoramaScenes.length > 0) || !!embedUrl;
   const tabs = useMemo<TourTab[]>(() => {
     const list: TourTab[] = [];
     if (images.length > 0) list.push("photos");
     if (videoUrl) list.push("video");
-    if (embedUrl || images.length > 0) list.push("tour360");
+    if (has360) list.push("tour360");
     return list;
-  }, [images.length, videoUrl, embedUrl]);
+  }, [images.length, videoUrl, has360]);
 
   const [active, setActive] = useState<TourTab>(tabs[0] ?? "photos");
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -187,7 +199,13 @@ export function VirtualTour({ images, videoUrl, embedUrl }: VirtualTourProps) {
           {/* Visite 360° / Panorama */}
           {tabs.includes("tour360") && (
             <TabsContent value="tour360" className="mt-3">
-              {tourSrc ? (
+              {panoramaScenes && panoramaScenes.length > 0 ? (
+                <Panorama360Viewer
+                  scenes={panoramaScenes}
+                  height={480}
+                  autoRotate
+                />
+              ) : tourSrc ? (
                 <div className="relative w-full overflow-hidden rounded-xl bg-black">
                   <div className="relative aspect-video w-full">
                     <iframe
