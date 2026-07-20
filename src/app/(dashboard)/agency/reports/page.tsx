@@ -109,7 +109,12 @@ export default function AgencyReportsPage() {
               Rapports envoyés automatiquement par e-mail.
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled
+            title="L'envoi automatique de rapports par e-mail arrive bientôt"
+          >
             <Plus className="size-4" /> Planifier
           </Button>
         </CardHeader>
