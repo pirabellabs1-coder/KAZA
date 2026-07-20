@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast-helper";
 
@@ -161,13 +160,14 @@ export function TemplatesEditor({ templates }: TemplatesEditorProps) {
         open={edit !== null}
         onOpenChange={(open) => !open && setEdit(null)}
       >
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-h-[92vh] max-w-5xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Éditer : {edit?.name ?? "Template"}</DialogTitle>
             <DialogDescription>
-              Les variables entre{" "}
-              <code className="font-mono">{`{{ }}`}</code> sont remplacées par
-              les valeurs dynamiques au moment de l&apos;envoi.
+              Modifiez le code à gauche, l&apos;aperçu à droite se met à jour en
+              direct. Les variables entre{" "}
+              <code className="font-mono">{`{{ }}`}</code> sont remplacées à
+              l&apos;envoi.
             </DialogDescription>
           </DialogHeader>
 
@@ -185,37 +185,31 @@ export function TemplatesEditor({ templates }: TemplatesEditorProps) {
                 />
               </div>
 
-              <Tabs defaultValue="edit" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="edit">Corps HTML</TabsTrigger>
-                  <TabsTrigger value="preview">Aperçu</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="edit" className="pt-4">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="tpl-body">Corps HTML</Label>
-                    <Textarea
-                      id="tpl-body"
-                      value={edit.bodyHtml}
-                      onChange={(e) =>
-                        setEdit({ ...edit, bodyHtml: e.target.value })
-                      }
-                      className="min-h-[320px] font-mono text-xs leading-relaxed"
-                      spellCheck={false}
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="preview" className="pt-4">
-                  <div className="rounded-lg border border-border bg-white p-2">
+              {/* Vue partagée : code + aperçu live côte à côte */}
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="tpl-body">Corps HTML</Label>
+                  <Textarea
+                    id="tpl-body"
+                    value={edit.bodyHtml}
+                    onChange={(e) =>
+                      setEdit({ ...edit, bodyHtml: e.target.value })
+                    }
+                    className="min-h-[420px] font-mono text-xs leading-relaxed"
+                    spellCheck={false}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label>Aperçu en direct</Label>
+                  <div className="min-h-[420px] flex-1 overflow-hidden rounded-lg border border-border bg-white">
                     <iframe
                       title="Aperçu email"
                       srcDoc={previewDoc}
-                      className="h-[360px] w-full rounded border-0"
+                      className="h-full min-h-[420px] w-full border-0"
                     />
                   </div>
-                </TabsContent>
-              </Tabs>
+                </div>
+              </div>
             </div>
           )}
 

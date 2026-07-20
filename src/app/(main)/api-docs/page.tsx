@@ -86,8 +86,8 @@ export default function ApiDocsPage() {
         <p className="mt-3 max-w-2xl text-white/80">
           Intégrez les données immobilières de Kaabo à vos applications, sites
           web, CRM ou ERP. Une API REST simple, authentifiée par clé, avec des
-          réponses JSON. <strong>Gratuite pour les agences</strong>, accessible
-          aux développeurs via l&apos;abonnement Kaabo Developer API.
+          réponses JSON. <strong>Gratuite</strong> avec un compte développeur ou
+          agence.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild className="bg-white text-kaza-navy hover:bg-white/90">
@@ -206,23 +206,18 @@ export default function ApiDocsPage() {
               <table className="w-full min-w-[420px] border-collapse text-sm">
                 <thead>
                   <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                    <th className="py-2">Type de clé</th>
+                    <th className="py-2">Type de compte</th>
                     <th className="py-2">Quota</th>
-                    <th className="py-2">Prix</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b">
-                    <td className="py-2">Agence (compte agence Kaabo)</td>
-                    <td className="py-2">5 000 requêtes / jour</td>
-                    <td className="py-2 font-semibold text-kaza-green">
-                      Gratuit
-                    </td>
+                    <td className="py-2">Compte développeur</td>
+                    <td className="py-2">10 000 requêtes / jour</td>
                   </tr>
                   <tr>
-                    <td className="py-2">Développeur externe</td>
-                    <td className="py-2">10 000 requêtes / jour</td>
-                    <td className="py-2">Kaabo Developer API</td>
+                    <td className="py-2">Compte agence</td>
+                    <td className="py-2">5 000 requêtes / jour</td>
                   </tr>
                 </tbody>
               </table>
@@ -577,35 +572,13 @@ function verify(rawBody, signature, secret) {
             />
           </Section>
 
-          <Section id="tarifs" title="Tarifs & accès" icon={KeyRound}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border p-5">
-                <p className="font-heading text-lg font-semibold text-kaza-navy">
-                  Agences
-                </p>
-                <p className="mt-1 text-2xl font-bold text-kaza-green">Gratuit</p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Inclus dans tout compte agence Kaabo. Générez vos clés
-                  directement depuis votre tableau de bord.
-                </p>
-              </div>
-              <div className="rounded-2xl border-2 border-kaza-blue p-5">
-                <p className="font-heading text-lg font-semibold text-kaza-navy">
-                  Kaabo Developer API
-                </p>
-                <p className="mt-1 text-2xl font-bold text-kaza-navy">
-                  15 000 FCFA
-                  <span className="text-sm font-normal text-muted-foreground">
-                    {" "}
-                    / mois
-                  </span>
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Pour les développeurs et entreprises externes : jusqu&apos;à
-                  10 000 requêtes/jour, accès API + webhooks, support développeur.
-                </p>
-              </div>
-            </div>
+          <Section id="tarifs" title="Accès" icon={KeyRound}>
+            <p>
+              L&apos;accès à l&apos;API est <strong>gratuit</strong>. Il vous
+              suffit d&apos;un compte <strong>développeur</strong> (inscription
+              gratuite) ou d&apos;un compte <strong>agence</strong> pour générer
+              vos clés et vos webhooks depuis votre espace développeur.
+            </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Button asChild>
                 <Link href="/signup?role=DEVELOPER">

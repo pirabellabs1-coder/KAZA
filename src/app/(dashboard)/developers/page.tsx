@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { Activity, Code2, KeyRound, Webhook } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
-import { getActiveSubscription } from "@/lib/queries/subscriptions";
 import { getApiUsage } from "@/lib/queries/api-usage";
 import { listMyApiKeys } from "@/actions/api-keys";
 import { listMyWebhooks } from "@/actions/webhooks";
@@ -29,15 +28,14 @@ export default async function DevelopersPage() {
     .maybeSingle();
   const role = (profile as { role?: string } | null)?.role;
 
-  const [keys, webhooks, usage, subscription] = await Promise.all([
+  const [keys, webhooks, usage] = await Promise.all([
     listMyApiKeys(),
     listMyWebhooks(),
     getApiUsage(user.id),
-    getActiveSubscription(user.id),
   ]);
 
-  const isAgency = role === "AGENCY" || role === "ADMIN";
-  const canCreate = isAgency || subscription?.plan === "DEVELOPER_API";
+  const canCreate =
+    role === "AGENCY" || role === "ADMIN" || role === "DEVELOPER";
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://kaza-topaz.vercel.app";
@@ -50,10 +48,9 @@ export default async function DevelopersPage() {
           API & Développeurs
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Accédez aux données publiques des annonces Kaabo par programmation.
-          {isAgency
-            ? " En tant qu'agence, l'accès API est inclus gratuitement."
-            : " L'accès API nécessite l'abonnement Kaabo Developer API (gratuit pour les agences)."}
+          Accédez aux données des annonces Kaabo par programmation : récupérez
+          le catalogue, synchronisez vos outils, recevez les nouveautés en
+          temps réel.
         </p>
       </div>
 

@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
-import { getActiveSubscription } from "@/lib/queries/subscriptions";
 import { WEBHOOK_EVENTS } from "@/lib/webhooks/events";
 
 // =============================================================================
@@ -43,9 +42,7 @@ async function canManage(
     .eq("id", userId)
     .maybeSingle();
   const role = (profile as { role?: string } | null)?.role;
-  if (role === "AGENCY" || role === "ADMIN") return true;
-  const sub = await getActiveSubscription(userId);
-  return sub?.plan === "DEVELOPER_API";
+  return role === "AGENCY" || role === "ADMIN" || role === "DEVELOPER";
 }
 
 export async function createWebhookEndpoint(
@@ -72,8 +69,7 @@ export async function createWebhookEndpoint(
   if (!(await canManage(supabase, user.id))) {
     return {
       success: false,
-      error:
-        "Les webhooks sont réservés aux agences (gratuit) ou à l'abonnement Kaabo Developer API.",
+      error: "Créez un compte développeur pour utiliser les webhooks.",
     };
   }
 

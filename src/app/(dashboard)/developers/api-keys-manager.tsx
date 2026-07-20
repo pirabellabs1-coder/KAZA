@@ -99,9 +99,8 @@ export function ApiKeysManager({ keys, canCreate }: ApiKeysManagerProps) {
 
       {!canCreate && (
         <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-          L&apos;accès API est <strong>gratuit pour les agences</strong>. En tant
-          que développeur externe, souscrivez à l&apos;abonnement{" "}
-          <strong>Kaabo Developer API</strong> pour générer des clés.
+          Pour générer des clés API, connectez-vous avec un compte{" "}
+          <strong>développeur</strong> ou <strong>agence</strong>.
         </p>
       )}
 

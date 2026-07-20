@@ -133,9 +133,8 @@ export function WebhooksManager({ webhooks, canCreate }: WebhooksManagerProps) {
 
       {!canCreate && (
         <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-          Les webhooks sont <strong>gratuits pour les agences</strong> et
-          nécessitent l&apos;abonnement Kaabo Developer API pour les développeurs
-          externes.
+          Pour utiliser les webhooks, connectez-vous avec un compte{" "}
+          <strong>développeur</strong> ou <strong>agence</strong>.
         </p>
       )}
 

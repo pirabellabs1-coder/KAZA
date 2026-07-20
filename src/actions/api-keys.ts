@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
-import { getActiveSubscription } from "@/lib/queries/subscriptions";
 
 // =============================================================================
 // Kaabo — Clés API (accès programmatique)
@@ -40,7 +39,11 @@ function hashKey(fullKey: string): string {
   return createHash("sha256").update(fullKey).digest("hex");
 }
 
-/** AGENCY et ADMIN → accès gratuit ; sinon abonnement Developer requis. */
+/**
+ * Détermine le tier de la clé selon le rôle. L'accès à l'API est ouvert
+ * (consultation des annonces publiques) : agences, admin et comptes
+ * développeur peuvent générer des clés.
+ */
 async function resolveTier(
   supabase: SupabaseClient,
   userId: string,
@@ -55,15 +58,12 @@ async function resolveTier(
   if (role === "AGENCY" || role === "ADMIN") {
     return { tier: "AGENCY" };
   }
-
-  // Développeur externe : abonnement Developer API actif requis.
-  const sub = await getActiveSubscription(userId);
-  if (sub?.plan === "DEVELOPER_API") {
+  if (role === "DEVELOPER") {
     return { tier: "DEVELOPER" };
   }
   return {
     error:
-      "L'accès API est réservé aux agences (gratuit) ou nécessite un abonnement « Kaabo Developer API ».",
+      "Créez un compte développeur pour accéder à l'API (inscription gratuite).",
   };
 }
 
