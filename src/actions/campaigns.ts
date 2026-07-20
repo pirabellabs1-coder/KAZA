@@ -16,13 +16,38 @@ import type { SegmentKey } from "@/lib/queries/campaigns";
 // comme à configurer (Resend/FCM bulk) — pas de faux "envoyé".
 // =============================================================================
 
+const SEGMENT_ENUM = z.enum([
+  "ALL",
+  "TENANTS",
+  "OWNERS",
+  "STUDENTS",
+  "AGENCIES",
+  "RECENT_7D",
+]);
+
 const schema = z.object({
   name: z.string().min(2, "Nom trop court").max(120),
   channel: z.enum(["IN_APP", "EMAIL", "PUSH", "SMS"]),
-  segment: z.enum(["ALL", "TENANTS", "OWNERS", "STUDENTS", "AGENCIES", "RECENT_7D"]),
-  subject: z.string().max(160).optional(),
-  content: z.string().min(2, "Contenu requis").max(2000),
+  // Multi-audience : on peut cibler plusieurs segments à la fois
+  // (ex. Locataires + Étudiants). L'union est dédupliquée.
+  segments: z.array(SEGMENT_ENUM).min(1, "Sélectionnez au moins une audience"),
+  subject: z.string().max(200).optional(),
+  content: z.string().min(2, "Contenu requis").max(20000),
 });
+
+/** Convertit un contenu HTML (éditeur riche) en texte simple. */
+function htmlToPlain(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li)>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
 export type CampaignResult =
   | { success: true; sentCount: number }
@@ -43,7 +68,7 @@ function segmentRoleFilter(segment: SegmentKey): { column: string; value: string
   }
 }
 
-/** Récupère les user_ids du segment ciblé (réel). */
+/** Récupère les user_ids d'un segment (réel). */
 async function resolveAudience(
   admin: ReturnType<typeof createAdminClient>,
   segment: SegmentKey,
@@ -63,6 +88,23 @@ async function resolveAudience(
   return (data ?? []).map((u: any) => u.id as string);
 }
 
+/** Union dédupliquée des user_ids de plusieurs segments. */
+async function resolveAudienceMulti(
+  admin: ReturnType<typeof createAdminClient>,
+  segments: SegmentKey[],
+): Promise<string[]> {
+  // Si "ALL" est présent, tous les utilisateurs suffisent.
+  if (segments.includes("ALL")) {
+    return resolveAudience(admin, "ALL");
+  }
+  const set = new Set<string>();
+  for (const seg of segments) {
+    const ids = await resolveAudience(admin, seg);
+    for (const id of ids) set.add(id);
+  }
+  return Array.from(set);
+}
+
 /**
  * Crée et envoie une campagne.
  * - IN_APP : insère une notification pour chaque destinataire (envoi réel).
@@ -80,20 +122,20 @@ export async function createAndSendCampaign(input: unknown): Promise<CampaignRes
     return { success: false, error: "Accès réservé aux administrateurs." };
   }
 
-  const { name, channel, segment, subject, content } = parsed.data;
+  const { name, channel, segments, subject, content } = parsed.data;
   const admin = createAdminClient();
 
-  // Audience réelle
-  const audienceIds = await resolveAudience(admin, segment as SegmentKey);
+  // Audience réelle (union dédupliquée des segments sélectionnés)
+  const audienceIds = await resolveAudienceMulti(admin, segments as SegmentKey[]);
   const audienceSize = audienceIds.length;
 
-  // Crée l'enregistrement campagne
+  // Crée l'enregistrement campagne (segments joints en texte)
   const { data: campaign, error: campErr } = await (admin as any)
     .from("campaigns")
     .insert({
       name,
       channel,
-      segment,
+      segment: segments.join(","),
       subject: subject ?? null,
       content,
       audience_size: audienceSize,
@@ -118,11 +160,13 @@ export async function createAndSendCampaign(input: unknown): Promise<CampaignRes
       return { success: true, sentCount: 0 };
     }
 
+    // Les notifications in-app s'affichent en texte : on convertit le HTML.
+    const plain = htmlToPlain(content);
     const rows = audienceIds.map((uid) => ({
       user_id: uid,
       type: "system",
       title: subject || name,
-      body: content,
+      body: plain,
       metadata: { campaign_id: campaign.id, channel: "in_app" },
     }));
 
@@ -183,7 +227,7 @@ export async function sendTestCampaign(input: unknown): Promise<CampaignResult> 
     user_id: user.id,
     type: "system",
     title: `[TEST] ${parsed.data.subject || parsed.data.name}`,
-    body: parsed.data.content,
+    body: htmlToPlain(parsed.data.content),
     metadata: { test: true },
   });
 

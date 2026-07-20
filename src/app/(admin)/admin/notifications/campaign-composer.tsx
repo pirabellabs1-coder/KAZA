@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { MessageSquare, Send, Sparkles } from "lucide-react";
+import { useMemo, useState, useTransition } from "react";
+import { Check, MessageSquare, Send, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RichTextEditor } from "@/components/cms/rich-text-editor";
 import { toast } from "@/components/ui/toast-helper";
+import { cn } from "@/lib/utils";
 import { createAndSendCampaign, sendTestCampaign } from "@/actions/campaigns";
 import type { AudienceSegment } from "@/lib/queries/campaigns";
 
@@ -19,21 +21,54 @@ const CHANNELS = [
 export function CampaignComposer({ segments }: { segments: AudienceSegment[] }) {
   const [name, setName] = useState("");
   const [channel, setChannel] = useState<string>("IN_APP");
-  const [segment, setSegment] = useState<string>("ALL");
+  // Multi-audience : plusieurs segments cochés à la fois.
+  const [selected, setSelected] = useState<string[]>(["ALL"]);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [pending, startTransition] = useTransition();
 
-  const selectedSegment = segments.find((s) => s.key === segment);
-  const audienceCount = selectedSegment?.count ?? 0;
+  const allCount = segments.find((s) => s.key === "ALL")?.count ?? 0;
+
+  // Estimation du nombre de destinataires (rôles mutuellement exclusifs).
+  const audienceCount = useMemo(() => {
+    if (selected.includes("ALL")) return allCount;
+    return segments
+      .filter((s) => selected.includes(s.key))
+      .reduce((sum, s) => sum + s.count, 0);
+  }, [selected, segments, allCount]);
+
+  function toggleSegment(key: string) {
+    setSelected((prev) => {
+      if (key === "ALL") return ["ALL"];
+      const withoutAll = prev.filter((k) => k !== "ALL");
+      const next = withoutAll.includes(key)
+        ? withoutAll.filter((k) => k !== key)
+        : [...withoutAll, key];
+      return next.length === 0 ? ["ALL"] : next;
+    });
+  }
+
+  function isEmptyContent(html: string) {
+    return html.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim().length === 0;
+  }
 
   function handleSend() {
-    if (!name.trim() || !content.trim()) {
+    if (!name.trim() || isEmptyContent(content)) {
       toast.error("Renseignez au moins le nom et le contenu de la campagne.");
       return;
     }
+    if (selected.length === 0) {
+      toast.error("Sélectionnez au moins une audience.");
+      return;
+    }
     startTransition(async () => {
-      const res = await createAndSendCampaign({ name, channel, segment, subject, content });
+      const res = await createAndSendCampaign({
+        name,
+        channel,
+        segments: selected,
+        subject,
+        content,
+      });
       if (res.success) {
         toast.success(
           `Campagne « ${name} » envoyée à ${res.sentCount} destinataire${res.sentCount > 1 ? "s" : ""}.`,
@@ -48,7 +83,7 @@ export function CampaignComposer({ segments }: { segments: AudienceSegment[] }) 
   }
 
   function handleTest() {
-    if (!content.trim()) {
+    if (isEmptyContent(content)) {
       toast.error("Saisissez un contenu avant d'envoyer un test.");
       return;
     }
@@ -86,38 +121,54 @@ export function CampaignComposer({ segments }: { segments: AudienceSegment[] }) 
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/70">
-                Canal
-              </label>
-              <select
-                value={channel}
-                onChange={(e) => setChannel(e.target.value)}
-                className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none [&>option]:text-kaza-navy"
-              >
-                {CHANNELS.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/70">
-                Audience
-              </label>
-              <select
-                value={segment}
-                onChange={(e) => setSegment(e.target.value)}
-                className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none [&>option]:text-kaza-navy"
-              >
-                {segments.map((s) => (
-                  <option key={s.key} value={s.key}>
-                    {s.name} ({s.count})
-                  </option>
-                ))}
-              </select>
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/70">
+              Canal
+            </label>
+            <select
+              value={channel}
+              onChange={(e) => setChannel(e.target.value)}
+              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none [&>option]:text-kaza-navy"
+            >
+              {CHANNELS.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Multi-audience */}
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/70">
+              Audience{" "}
+              <span className="font-normal normal-case text-white/50">
+                (plusieurs possibles)
+              </span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {segments.map((s) => {
+                const active = selected.includes(s.key);
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => toggleSegment(s.key)}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition",
+                      active
+                        ? "border-amber-300 bg-amber-400 text-kaza-navy"
+                        : "border-white/20 bg-white/5 text-white/80 hover:bg-white/10",
+                    )}
+                  >
+                    {active && <Check className="size-3" />}
+                    {s.name}
+                    <span className={active ? "text-kaza-navy/70" : "text-white/40"}>
+                      ({s.count})
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -136,17 +187,18 @@ export function CampaignComposer({ segments }: { segments: AudienceSegment[] }) 
           )}
         </div>
 
+        {/* Éditeur riche (comme le blog) */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-white/70">
             Contenu
           </label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={6}
-            placeholder="Rédigez votre message…"
-            className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none"
-          />
+          <div className="rounded-xl bg-white p-1 text-foreground">
+            <RichTextEditor
+              value={content}
+              onChange={setContent}
+              placeholder="Rédigez votre message… (titres, gras, listes, liens)"
+            />
+          </div>
         </div>
       </div>
 

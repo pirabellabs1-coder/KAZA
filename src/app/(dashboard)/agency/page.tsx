@@ -15,6 +15,7 @@ import {
   ClipboardList,
   Sparkles,
   Plus,
+  Globe,
 } from "lucide-react";
 
 import { StatsCard } from "@/components/dashboard/stats-card";
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/card";
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
+import { createClient } from "@/lib/supabase/server";
 import {
   getOwnerPortfolioStats,
   listPropertiesByOwner,
@@ -119,6 +121,22 @@ export default async function AgencyDashboardPage() {
     countPendingOffersForSeller(user.id),
   ]);
 
+  // Slug de la page publique de l'agence (si publiée).
+  let publicSlug = "";
+  try {
+    const sb = await createClient();
+    const { data: settingsRow } = await sb
+      .from("users")
+      .select("agency_settings")
+      .eq("id", user.id)
+      .maybeSingle();
+    const settings = (settingsRow as { agency_settings?: unknown } | null)
+      ?.agency_settings as { public?: { slug?: string } } | null;
+    publicSlug = (settings?.public?.slug ?? "").trim();
+  } catch {
+    /* profil public non publié */
+  }
+
   const topProps = allProperties.slice(0, 5);
   const hasProperties = stats.total > 0;
   const activeListings = stats.available + stats.rented;
@@ -165,6 +183,19 @@ export default async function AgencyDashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Button
+              asChild
+              variant="outline"
+              className="border-white bg-transparent text-white hover:bg-white/10"
+            >
+              <Link
+                href={publicSlug ? `/agences/${publicSlug}` : "/agency/settings"}
+                target={publicSlug ? "_blank" : undefined}
+              >
+                <Globe className="mr-2 size-4" />
+                {publicSlug ? "Ma page publique" : "Publier ma page"}
+              </Link>
+            </Button>
             <Button
               asChild
               variant="outline"

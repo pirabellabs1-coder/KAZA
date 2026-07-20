@@ -178,7 +178,7 @@ export function SettingsPublicForm({
           <div className="flex flex-col gap-2 sm:flex-row">
             <div className="flex flex-1 items-center rounded-lg border border-input">
               <span className="border-r border-input bg-muted/60 px-3 py-2 text-sm text-muted-foreground">
-                kaza.africa/agences/
+                kaabo.immo/agences/
               </span>
               <Input
                 id="custom-url"
