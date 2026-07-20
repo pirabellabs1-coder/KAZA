@@ -15,6 +15,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/queries";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { PIRABEL } from "@/lib/legal/pirabel";
 
 export const dynamic = "force-dynamic";
 
@@ -174,6 +175,8 @@ export async function GET(
       <div>
         <div class="brand">Kaabo<span>.</span></div>
         <p class="muted">Reçu de paiement de loyer</p>
+        <p class="muted">Émis par ${esc(PIRABEL.legalName)} · RCCM ${esc(PIRABEL.rccm)}</p>
+        <p class="muted">${esc(PIRABEL.address)}</p>
       </div>
       <span class="badge">Payé</span>
     </div>
@@ -202,8 +205,9 @@ export async function GET(
     </div>
 
     <p class="footer">
-      Ce reçu est généré automatiquement par Kaabo et fait foi du paiement.
-      Pour toute question, contactez le support Kaabo.
+      Reçu émis par ${esc(PIRABEL.legalName)} (RCCM ${esc(PIRABEL.rccm)}), exploitant la plateforme Kaabo,
+      et faisant foi du paiement encaissé via la plateforme. Document conservé électroniquement
+      conformément au Code du numérique en République du Bénin. Réf. ${esc(reference)}.
     </p>
   </div>
 
