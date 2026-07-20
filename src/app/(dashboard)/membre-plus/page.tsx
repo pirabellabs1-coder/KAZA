@@ -236,9 +236,14 @@ export default function PlusDashboardPage() {
                 votre prochain logement. Dites-moi simplement ce dont vous avez besoin. »
               </p>
             </div>
-            <Button className="bg-amber-500 text-white hover:bg-amber-500/90">
-              <MessageSquare className="mr-2 size-4" />
-              Démarrer le chat
+            <Button
+              asChild
+              className="bg-amber-500 text-white hover:bg-amber-500/90"
+            >
+              <Link href="/tenant/messages">
+                <MessageSquare className="mr-2 size-4" />
+                Démarrer le chat
+              </Link>
             </Button>
           </div>
         </CardContent>
