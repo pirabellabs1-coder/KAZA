@@ -60,3 +60,4 @@ scripts/
 # Logs locaux (dev/install)
 _*.log
 build-err.log
+.props_tmp.json
