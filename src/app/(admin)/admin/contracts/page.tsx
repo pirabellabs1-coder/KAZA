@@ -14,6 +14,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RenewalNotifyButton } from "./renewal-notify-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -289,13 +290,7 @@ export default async function AdminContractsPage() {
                         </span>
                       </td>
                       <td className="px-3 py-3 text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-amber-200 text-amber-700 hover:bg-amber-50"
-                        >
-                          Notifier renouvellement
-                        </Button>
+                        <RenewalNotifyButton contractId={c.id} />
                       </td>
                     </tr>
                   ))}

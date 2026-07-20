@@ -23,6 +23,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/notifications/resend";
 import { buildEmail } from "@/lib/notifications/email-template";
 import { writeAuditLog } from "@/lib/audit/write-log";
+import { createNotification } from "@/actions/notifications";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -859,5 +860,69 @@ export async function adminDeleteProperty(
 
   revalidatePath("/admin/properties");
   revalidatePath("/admin/audit-log");
+  return { success: true };
+}
+
+// ===========================================================================
+// 9. Notifier le renouvellement d'un contrat (proprio + locataire)
+// ===========================================================================
+
+/**
+ * Envoie une notification in-app de renouvellement au propriétaire et au
+ * locataire d'un contrat proche de l'échéance. Best-effort côté email.
+ */
+export async function notifyContractRenewal(
+  contractId: string,
+): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+  if (!contractId) return { success: false, error: "Contrat introuvable." };
+
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  const { data: contract } = await adminDb
+    .from("contracts")
+    .select(
+      `id, end_date,
+       rental:rentals!contracts_rental_id_fkey(
+         tenant_id,
+         property:properties!rentals_property_id_fkey(owner_id, title)
+       )`,
+    )
+    .eq("id", contractId)
+    .maybeSingle();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const r: any = (contract as any)?.rental;
+  const tenantId = r?.tenant_id as string | undefined;
+  const ownerId = r?.property?.owner_id as string | undefined;
+  const propertyTitle = (r?.property?.title as string | undefined) ?? "votre logement";
+
+  if (!tenantId && !ownerId) {
+    return { success: false, error: "Parties du contrat introuvables." };
+  }
+
+  const title = "Renouvellement de bail à préparer";
+  const body = `Le contrat pour « ${propertyTitle} » arrive à échéance. Pensez à préparer son renouvellement.`;
+
+  const targets = [tenantId, ownerId].filter(Boolean) as string[];
+  for (const userId of targets) {
+    await createNotification(adminDb, {
+      userId,
+      type: "contract_ready",
+      title,
+      body,
+      link: "/contracts",
+    });
+  }
+
+  await writeAuditLog({
+    action: "OTHER",
+    targetType: "CONTRACT",
+    targetId: contractId,
+    targetLabel: propertyTitle,
+    reason: "Notification de renouvellement envoyée",
+  });
+
+  revalidatePath("/admin/contracts");
   return { success: true };
 }

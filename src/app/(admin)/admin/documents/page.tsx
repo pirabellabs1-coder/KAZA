@@ -40,6 +40,7 @@ import {
 } from "@/lib/queries/admin";
 
 import { DocumentModActions } from "./document-mod-actions";
+import { GdprRequestActions } from "./gdpr-request-actions";
 import { listGdprRequests } from "@/lib/queries/gdpr";
 
 export const dynamic = "force-dynamic";
@@ -320,15 +321,16 @@ export default async function AdminDocumentsPage() {
                     · {new Date(r.deadline).toLocaleDateString("fr-FR")}
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-kaza-blue text-white hover:bg-kaza-blue/90"
-                    >
-                      Traiter
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      Voir détails
-                    </Button>
+                    <GdprRequestActions
+                      request={{
+                        id: r.id,
+                        typeLabel: GDPR_TYPE_LABELS[r.type] ?? r.type,
+                        userName: r.userName,
+                        requestedAt: r.requestedAt,
+                        deadline: r.deadline,
+                        statusLabel: statusCfg.label,
+                      }}
+                    />
                   </div>
                 </div>
               );
