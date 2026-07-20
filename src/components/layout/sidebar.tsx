@@ -137,12 +137,26 @@ const buyerNav: NavItem[] = [
   { href: "/messages", label: "Messagerie", icon: MessageSquare },
 ];
 
+// Filet de sécurité : si un admin atterrit sur une route partagée du groupe
+// (dashboard) (ex. /messages, /wallet), il voit une nav admin et non celle du
+// propriétaire. L'espace admin principal reste /admin (coquille AdminShell).
+const adminNav: NavItem[] = [
+  { href: "/admin", label: "Centre de contrôle", icon: LayoutDashboard },
+  { href: "/admin/users", label: "Utilisateurs", icon: Users },
+  { href: "/admin/properties", label: "Annonces", icon: FileText },
+  { href: "/admin/verifications", label: "Vérifications KYC", icon: ShieldCheck },
+  { href: "/admin/payments", label: "Paiements", icon: CreditCard },
+  { href: "/admin/finance", label: "Finance", icon: Wallet },
+  { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+];
+
 const roleNavMap: Record<string, NavItem[]> = {
   OWNER: ownerNav,
   TENANT: tenantNav,
   STUDENT: studentNav,
   AGENCY: agencyNav,
   BUYER: buyerNav,
+  ADMIN: adminNav,
 };
 
 interface SidebarProps {

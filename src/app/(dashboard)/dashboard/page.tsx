@@ -101,8 +101,11 @@ export default async function DashboardPage() {
     redirect("/buyer");
   }
 
+  // L'admin a son espace dédié (/admin) avec sa propre coquille (AdminShell +
+  // sidebar admin). On l'y redirige plutôt que d'afficher un aperçu dans la
+  // coquille générique (qui montrerait la sidebar propriétaire).
   if (role === "ADMIN") {
-    return <AdminOverview firstName={user.firstName} />;
+    redirect("/admin");
   }
   if (role === "OWNER") {
     const [visits, analytics] = await Promise.all([
