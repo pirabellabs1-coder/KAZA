@@ -348,3 +348,70 @@ export async function cancelVisit(id: string): Promise<ActionResult<VisitRequest
   revalidatePath("/tenant/visits");
   return { success: true, data: data as unknown as VisitRequest };
 }
+
+// ---------------------------------------------------------------------------
+// Proprietaire : reprogrammer une visite (proposer une nouvelle date)
+// ---------------------------------------------------------------------------
+
+/**
+ * Le proprietaire propose une nouvelle date pour une visite. Met a jour
+ * `requested_date`, repasse la visite en CONFIRMED et notifie le locataire.
+ */
+export async function rescheduleVisit(
+  id: string,
+  newDate: string,
+): Promise<ActionResult<VisitRequest>> {
+  if (!id || !newDate) {
+    return { success: false, error: "Date invalide." };
+  }
+  if (isDemoMode()) return demoVisitSuccess("CONFIRMED");
+
+  const supabase = await getLooseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: "Vous devez etre connecte." };
+  }
+
+  const { data: visit, error: fetchError } = await supabase
+    .from("visit_requests")
+    .select("id, tenant_id, property_id, properties!inner(owner_id, title)")
+    .eq("id", id)
+    .maybeSingle();
+  if (fetchError || !visit) {
+    return { success: false, error: "Demande de visite introuvable." };
+  }
+
+  const ownerId = (visit as unknown as { properties: { owner_id: string } })
+    .properties.owner_id;
+  if (ownerId !== user.id) {
+    return {
+      success: false,
+      error: "Vous n'etes pas autorise a modifier cette demande.",
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("visit_requests")
+    .update({ requested_date: newDate, status: "CONFIRMED" })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error || !data) {
+    return { success: false, error: "Impossible de reprogrammer la visite." };
+  }
+
+  const dateLabel = new Date(newDate).toLocaleDateString("fr-FR");
+  await createNotification(supabase, {
+    userId: visit.tenant_id,
+    type: "VISIT_CONFIRMED",
+    title: "Visite reprogrammee",
+    body: `Le proprietaire propose une nouvelle date : ${dateLabel}.`,
+    link: `/tenant/visits`,
+  });
+
+  revalidatePath("/owner/visits");
+  revalidatePath("/tenant/visits");
+  return { success: true, data: data as VisitRequest };
+}

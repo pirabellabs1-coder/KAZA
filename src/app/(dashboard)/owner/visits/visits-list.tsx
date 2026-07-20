@@ -17,9 +17,19 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast-helper";
 import { formatDate, getInitials } from "@/lib/utils";
-import { acceptVisit, rejectVisit } from "@/actions/visits";
+import { acceptVisit, rejectVisit, rescheduleVisit } from "@/actions/visits";
 import type { OwnerVisit } from "@/lib/queries/owner-activity";
 
 type Filter = "ALL" | "PENDING" | "CONFIRMED" | "PAST";
@@ -88,6 +98,8 @@ export function OwnerVisitsView({ visits: initialVisits }: OwnerVisitsViewProps)
   const [filter, setFilter] = useState<Filter>("ALL");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const [rescheduleId, setRescheduleId] = useState<string | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState("");
 
   const counts = useMemo(() => {
     const now = new Date();
@@ -175,10 +187,39 @@ export function OwnerVisitsView({ visits: initialVisits }: OwnerVisitsViewProps)
     });
   };
 
-  const handleReschedule = () => {
-    toast.info(
-      "Bientôt disponible : proposez une nouvelle date au locataire directement depuis la fiche.",
-    );
+  const handleReschedule = (id: string) => {
+    setRescheduleId(id);
+    setRescheduleDate("");
+  };
+
+  const submitReschedule = () => {
+    if (!rescheduleId) return;
+    if (!rescheduleDate) {
+      toast.error("Choisissez une nouvelle date.");
+      return;
+    }
+    const id = rescheduleId;
+    setPendingId(id);
+    startTransition(async () => {
+      try {
+        const res = await rescheduleVisit(id, rescheduleDate);
+        if (res.success) {
+          setVisits((prev) =>
+            prev.map((v) =>
+              v.id === id
+                ? { ...v, status: "CONFIRMED", proposedDate: rescheduleDate }
+                : v,
+            ),
+          );
+          toast.success("Nouvelle date proposée au locataire.");
+          setRescheduleId(null);
+        } else {
+          toast.error(res.error ?? "Reprogrammation impossible.");
+        }
+      } finally {
+        setPendingId(null);
+      }
+    });
   };
 
   return (
@@ -289,7 +330,7 @@ export function OwnerVisitsView({ visits: initialVisits }: OwnerVisitsViewProps)
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={handleReschedule}
+                        onClick={() => handleReschedule(visit.id)}
                         aria-label="Proposer une autre date"
                       >
                         <CalendarPlus className="size-3.5" />
@@ -321,6 +362,41 @@ export function OwnerVisitsView({ visits: initialVisits }: OwnerVisitsViewProps)
           ))}
         </div>
       )}
+
+      {/* Reprogrammation : proposer une nouvelle date */}
+      <Dialog
+        open={rescheduleId !== null}
+        onOpenChange={(o) => !o && setRescheduleId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Proposer une nouvelle date</DialogTitle>
+            <DialogDescription>
+              Le locataire sera notifié de la date proposée pour la visite.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="reschedule-date">Nouvelle date</Label>
+            <Input
+              id="reschedule-date"
+              type="date"
+              value={rescheduleDate}
+              onChange={(e) => setRescheduleDate(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRescheduleId(null)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={submitReschedule}
+              disabled={pendingId === rescheduleId}
+            >
+              Proposer la date
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -17,6 +17,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataExportButtons } from "@/components/dashboard/data-export-buttons";
+import {
+  RentRowAction,
+  PayoutReceiptButton,
+} from "./finance-row-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatFcfa, formatFcfaShort } from "@/lib/utils";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
@@ -473,9 +477,16 @@ export default async function OwnerFinancePage() {
                         {new Date(r.dueDate).toLocaleDateString("fr-FR")}
                       </td>
                       <td className="py-2.5 text-right">
-                        <Button size="sm" variant="outline" className="h-7 text-[11px]">
-                          {r.status === "RECEIVED" ? "Voir détail" : "Relancer"}
-                        </Button>
+                        <RentRowAction
+                          paymentId={r.id}
+                          status={r.status}
+                          tenant={r.tenant}
+                          property={r.property}
+                          amountLabel={formatFcfa(r.expected)}
+                          dueDateLabel={new Date(r.dueDate).toLocaleDateString(
+                            "fr-FR",
+                          )}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -539,10 +550,13 @@ export default async function OwnerFinancePage() {
                       <PayoutStatusBadge status={p.status} />
                     </td>
                     <td className="py-2.5 text-right">
-                      <Button size="sm" variant="ghost" className="h-7 text-[11px]">
-                        <Download className="mr-1 size-3" />
-                        Téléchar.
-                      </Button>
+                      <PayoutReceiptButton
+                        reference={`KB-${p.id.slice(0, 8).toUpperCase()}`}
+                        dateLabel={new Date(p.date).toLocaleDateString("fr-FR")}
+                        amountLabel={formatFcfa(p.amount)}
+                        method={p.method}
+                        statusLabel={p.status}
+                      />
                     </td>
                   </tr>
                 ))}
