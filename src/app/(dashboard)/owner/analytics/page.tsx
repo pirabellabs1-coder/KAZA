@@ -6,8 +6,6 @@ import {
   ArrowUp,
   BarChart3,
   Eye,
-  FileSpreadsheet,
-  FileText,
   Heart,
   MessageSquare,
   Sparkles,
@@ -15,12 +13,12 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getOwnerPropertyViews30d } from "@/lib/queries/analytics";
 import { getOwnerMonthlyRevenue } from "@/lib/queries/owner-revenue";
+import { DataExportButtons } from "@/components/dashboard/data-export-buttons";
 import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -79,12 +77,14 @@ export default async function OwnerAnalyticsPage() {
               ))}
             </TabsList>
           </Tabs>
-          <Button variant="outline" size="sm">
-            <FileText className="mr-2 size-4" /> Exporter PDF
-          </Button>
-          <Button variant="outline" size="sm">
-            <FileSpreadsheet className="mr-2 size-4" /> Exporter Excel
-          </Button>
+          <DataExportButtons
+            filename="kaabo-analytics"
+            rows={data.map((d) => ({
+              Mois: d.month,
+              "Revenu (FCFA)": d.revenue,
+              "Occupation (%)": d.occupancy,
+            }))}
+          />
         </div>
       </div>
 

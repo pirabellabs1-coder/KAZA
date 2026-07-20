@@ -4,7 +4,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Plus,
-  Download,
   Search,
   Bed,
   Bath,
@@ -23,6 +22,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataExportButtons } from "@/components/dashboard/data-export-buttons";
 import {
   Card,
   CardContent,
@@ -179,10 +179,21 @@ export default async function AgencyPortfolioPage() {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" disabled={isEmpty}>
-            <Download className="mr-2 size-4" />
-            Exporter CSV
-          </Button>
+          <DataExportButtons
+            filename="kaabo-portefeuille"
+            pdf={false}
+            rows={properties.map((p) => ({
+              Titre: p.title,
+              Type: p.type,
+              Statut: p.status,
+              "Prix (FCFA)": p.price,
+              Chambres: p.bedrooms,
+              "Salles de bain": p.bathrooms,
+              "Surface (m2)": p.sqm,
+              Adresse: p.address,
+              Vues: p.viewsCount,
+            }))}
+          />
           <Button
             asChild
             className="bg-kaza-navy text-white hover:bg-kaza-navy/90"

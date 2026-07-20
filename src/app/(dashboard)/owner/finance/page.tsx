@@ -7,8 +7,6 @@ import {
   CheckCircle2,
   ClipboardList,
   Download,
-  FileSpreadsheet,
-  FileText,
   Info,
   Landmark,
   Receipt,
@@ -18,6 +16,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataExportButtons } from "@/components/dashboard/data-export-buttons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatFcfa, formatFcfaShort } from "@/lib/utils";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
@@ -214,12 +213,13 @@ export default async function OwnerFinancePage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm">
-            <FileText className="mr-2 size-4" /> PDF annuel
-          </Button>
-          <Button size="sm" className="bg-kaza-navy text-white hover:bg-kaza-navy/90">
-            <FileSpreadsheet className="mr-2 size-4" /> Exporter compta
-          </Button>
+          <DataExportButtons
+            filename="kaabo-comptabilite"
+            rows={OWNER_MONTHLY_REVENUE.map((m) => ({
+              Mois: m.month,
+              "Revenu (FCFA)": m.revenue,
+            }))}
+          />
         </div>
       </div>
 
