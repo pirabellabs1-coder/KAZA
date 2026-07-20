@@ -31,7 +31,7 @@ import { listTeamMembers } from "@/lib/queries/agency-team";
 import { NewEventDialog } from "./new-event-dialog";
 
 export const metadata: Metadata = {
-  title: "Agenda équipe — KAZA Pro Agence",
+  title: "Agenda équipe — Kaabo Pro Agence",
   description:
     "Calendrier multi-agents : visites, signatures, réunions et inspections de votre équipe.",
 };

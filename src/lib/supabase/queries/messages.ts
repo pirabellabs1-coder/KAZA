@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Messages Queries (Server Components)
+// Kaabo - Messages Queries (Server Components)
 //
 // Une conversation est definie par la paire (utilisateur courant, autre user)
 // + un property_id optionnel pour le contexte.

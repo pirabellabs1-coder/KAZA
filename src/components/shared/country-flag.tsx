@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Drapeaux pays en SVG inline
+// Kaabo — Drapeaux pays en SVG inline
 //
 // Sur Windows, les emojis drapeaux régionaux (🇧🇯 🇨🇮 etc.) ne sont pas
 // rendus nativement — ils s'affichent comme leurs codes (BJ, CI, etc.).

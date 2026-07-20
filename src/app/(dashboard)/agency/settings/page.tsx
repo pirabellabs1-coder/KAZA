@@ -50,7 +50,7 @@ import { SettingsPublicForm } from "./settings-public-form";
 import { SettingsNotificationsForm } from "./settings-notifications-form";
 
 export const metadata: Metadata = {
-  title: "Paramètres agence — KAZA Pro",
+  title: "Paramètres agence — Kaabo Pro",
   description:
     "Configurez votre profil agence, votre page publique, vos notifications et vos paramètres de sécurité.",
 };
@@ -373,7 +373,7 @@ export default async function AgencySettingsPage() {
                   Aucune clé API créée
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  L&apos;intégration de KAZA à vos outils internes sera bientôt
+                  L&apos;intégration de Kaabo à vos outils internes sera bientôt
                   disponible.
                 </p>
               </div>

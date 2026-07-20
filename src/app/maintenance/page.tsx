@@ -4,14 +4,14 @@ import { Wrench } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Maintenance en cours — KAZA",
+  title: "Maintenance en cours — Kaabo",
   robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
 
 const DEFAULT_MESSAGE =
-  "KAZA est temporairement en maintenance pour améliorer votre expérience. Nous revenons très vite. Merci de votre patience.";
+  "Kaabo est temporairement en maintenance pour améliorer votre expérience. Nous revenons très vite. Merci de votre patience.";
 
 export default async function MaintenancePage() {
   let message = DEFAULT_MESSAGE;
@@ -42,7 +42,7 @@ export default async function MaintenancePage() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400">
           <span className="text-sm font-bold text-kaza-navy">K</span>
         </div>
-        <span className="font-heading text-xl font-bold">KAZA</span>
+        <span className="font-heading text-xl font-bold">Kaabo</span>
       </div>
       <h1 className="mt-6 font-heading text-3xl font-bold sm:text-4xl">
         Maintenance en cours

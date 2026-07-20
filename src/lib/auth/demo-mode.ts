@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Demo Mode helpers (server-side)
+// Kaabo - Demo Mode helpers (server-side)
 //
 // Quand aucun Supabase n'est branché, les server actions doivent retomber
 // gracieusement sur des réponses "mock success" plutôt que de planter avec

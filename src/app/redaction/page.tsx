@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const metadata: Metadata = { title: "Rédaction — KAZA" };
+export const metadata: Metadata = { title: "Rédaction — Kaabo" };
 export const dynamic = "force-dynamic";
 
 function formatDate(iso: string): string {
@@ -30,7 +30,7 @@ export default async function RedactionPage() {
             Mes articles
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Rédigez et publiez des articles pour le journal KAZA.
+            Rédigez et publiez des articles pour le journal Kaabo.
           </p>
         </div>
         <Button asChild size="sm" className="bg-kaza-blue hover:bg-kaza-blue/90">

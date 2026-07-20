@@ -10,7 +10,7 @@ import {
 import { ExpensesView } from "./expenses-view";
 
 export const metadata: Metadata = {
-  title: "Frais Partagés — KAZA",
+  title: "Frais Partagés — Kaabo",
   description:
     "Suivez et répartissez les dépenses de votre colocation entre colocataires.",
 };

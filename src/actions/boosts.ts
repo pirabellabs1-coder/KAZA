@@ -1,11 +1,11 @@
 "use server";
 
 // =============================================================================
-// KAZA — Boosts d'annonce (Server Actions)
+// Kaabo — Boosts d'annonce (Server Actions)
 //
 // Activation d'un boost de visibilité sur une annonce. Flow wallet-based MVP :
 //  1) Vérifie l'authentification + propriété du bien
-//  2) Débite le wallet KAZA de l'utilisateur si solde suffisant (insertion
+//  2) Débite le wallet Kaabo de l'utilisateur si solde suffisant (insertion
 //     d'une `wallet_transactions` négative — le trigger `on_wallet_tx_insert`
 //     met à jour `user_wallets.balance_fcfa` / `total_out_fcfa`)
 //  3) Insère la ligne `property_boosts` (ends_at = now + days)
@@ -57,7 +57,7 @@ export interface ActivateBoostResult {
 
 /**
  * Active un boost pour une annonce de l'utilisateur courant en débitant son
- * wallet KAZA.
+ * wallet Kaabo.
  */
 export async function activateBoost(
   input: ActivateBoostInput,

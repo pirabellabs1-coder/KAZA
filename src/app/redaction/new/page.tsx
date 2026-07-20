@@ -4,7 +4,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listWriters } from "@/lib/queries/contributors";
 import { ArticleEditorForm } from "@/components/cms/article-editor-form";
 
-export const metadata: Metadata = { title: "Nouvel article — Rédaction KAZA" };
+export const metadata: Metadata = { title: "Nouvel article — Rédaction Kaabo" };
 export const dynamic = "force-dynamic";
 
 export default async function NewRedactionArticlePage() {

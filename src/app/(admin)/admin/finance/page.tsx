@@ -53,7 +53,7 @@ const GEO_HEATMAP: Array<{
 }> = [];
 
 export const metadata: Metadata = {
-  title: "Finance plateforme — KAZA Admin",
+  title: "Finance plateforme — Kaabo Admin",
   description: "Contrôle financier complet · revenus, reversements, EBITDA.",
 };
 

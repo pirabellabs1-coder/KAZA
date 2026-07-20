@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin / Modération de contenu
+// Kaabo - Admin / Modération de contenu
 // =============================================================================
 
 import { Building2, MessageSquare, Star } from "lucide-react";

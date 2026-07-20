@@ -5,7 +5,7 @@ import { Check, Smartphone, Wallet } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 
 // =============================================================================
-// KAZA — Sélecteur de moyen de paiement : Solde KAZA (wallet) ou Mobile Money.
+// Kaabo — Sélecteur de moyen de paiement : Solde Kaabo (wallet) ou Mobile Money.
 // =============================================================================
 
 export type PaymentMethod = "wallet" | "mobile_money";
@@ -13,7 +13,7 @@ export type PaymentMethod = "wallet" | "mobile_money";
 interface PaymentMethodSelectorProps {
   value: PaymentMethod;
   onChange: (value: PaymentMethod) => void;
-  /** Solde KAZA disponible (FCFA). */
+  /** Solde Kaabo disponible (FCFA). */
   walletBalance?: number;
   /** Wallet gelé ? */
   walletFrozen?: boolean;
@@ -35,7 +35,7 @@ export function PaymentMethodSelector({
 
   return (
     <div role="radiogroup" aria-label="Moyen de paiement" className="grid gap-3">
-      {/* ---- Solde KAZA ---- */}
+      {/* ---- Solde Kaabo ---- */}
       <button
         type="button"
         role="radio"
@@ -56,7 +56,7 @@ export function PaymentMethodSelector({
           <Wallet className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-foreground">Solde KAZA</p>
+          <p className="text-sm font-semibold text-foreground">Solde Kaabo</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Paiement instantané depuis votre solde — sans frais.
           </p>

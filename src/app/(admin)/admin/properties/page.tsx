@@ -44,7 +44,7 @@ import {
 import { PropertyReviewModal } from "./property-review-modal";
 
 export const metadata: Metadata = {
-  title: "Modération des annonces — KAZA Admin",
+  title: "Modération des annonces — Kaabo Admin",
   description: "Modération, signalements et mise en avant des annonces.",
 };
 

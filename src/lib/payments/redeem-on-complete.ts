@@ -6,7 +6,7 @@ import { redeemPromoForUser } from "@/actions/promo";
 import type { WebhookEvent } from "@/lib/payments/types";
 
 // =============================================================================
-// KAZA — Redemption d'un code promo au passage d'un paiement à COMPLETED
+// Kaabo — Redemption d'un code promo au passage d'un paiement à COMPLETED
 // =============================================================================
 // Appelé EXCLUSIVEMENT par les webhooks de paiement (FedaPay / Kkiapay) lors de
 // la transition PENDING → COMPLETED. À ce stade le paiement est confirmé côté

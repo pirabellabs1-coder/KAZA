@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - AvatarUploader
+// Kaabo - AvatarUploader
 //
 // Composant client qui gere :
 //   1) le rendu de l'avatar courant (image ou initiales),

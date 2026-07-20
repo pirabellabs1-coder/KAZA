@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Formulaire profil agence (client)
+// Kaabo — Formulaire profil agence (client)
 //
 // Formulaire CONTROLÉ branché sur la Server Action `updateAgencySettings`
 // (bloc `profile` du JSONB users.agency_settings, migration 00035). Le bouton
@@ -357,7 +357,7 @@ export function SettingsProfileForm({
             onChange={(e) => update("description", e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
-            Cette description apparaît sur votre page publique KAZA et dans les
+            Cette description apparaît sur votre page publique Kaabo et dans les
             résultats de recherche.
           </p>
         </CardContent>

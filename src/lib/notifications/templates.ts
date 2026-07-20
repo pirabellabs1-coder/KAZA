@@ -1,13 +1,13 @@
 // =============================================================================
-// KAZA - Email templates (FR)
+// Kaabo - Email templates (FR)
 //
-// Templates HTML pour les emails transactionnels KAZA. Tous délèguent le rendu
+// Templates HTML pour les emails transactionnels Kaabo. Tous délèguent le rendu
 // au gabarit unique `buildEmail` (src/lib/notifications/email-template.ts) pour
 // un design cohérent et soigné sur tous les clients mail.
 //
 // Chaque template retourne `{ subject, html, text }` :
 //  - `subject` : sujet de l'email
-//  - `html`    : corps HTML stylé (gabarit KAZA)
+//  - `html`    : corps HTML stylé (gabarit Kaabo)
 //  - `text`    : version texte brut (fallback accessibilité / clients legacy)
 // =============================================================================
 
@@ -36,24 +36,24 @@ function formatXof(amount: number): string {
 export function welcomeTemplate(params: { firstName: string }): EmailTemplate {
   const { firstName } = params;
   const name = firstName?.trim() || "";
-  const subject = name ? `Bienvenue sur KAZA, ${name} !` : "Bienvenue sur KAZA !";
+  const subject = name ? `Bienvenue sur Kaabo, ${name} !` : "Bienvenue sur Kaabo !";
 
   return {
     subject,
     text: `Bonjour ${name},
 
-Bienvenue sur KAZA, la plateforme d'immobilier en Afrique. Votre compte est créé : explorez des milliers d'annonces, contactez directement les propriétaires et gérez vos paiements en toute sécurité.
+Bienvenue sur Kaabo, la plateforme d'immobilier en Afrique. Votre compte est créé : explorez des milliers d'annonces, contactez directement les propriétaires et gérez vos paiements en toute sécurité.
 
 Votre espace : ${APP_URL}/dashboard
 
 À très vite,
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
-      preheader: "Votre compte KAZA est prêt.",
+      preheader: "Votre compte Kaabo est prêt.",
       heading: subject,
       intro: name ? `Bonjour ${name},` : "Bonjour,",
       paragraphs: [
-        "Nous sommes ravis de vous compter parmi nous. KAZA simplifie la location immobilière en Afrique : annonces vérifiées, contact direct avec les propriétaires, et paiements 100% sécurisés.",
+        "Nous sommes ravis de vous compter parmi nous. Kaabo simplifie la location immobilière en Afrique : annonces vérifiées, contact direct avec les propriétaires, et paiements 100% sécurisés.",
         "Pour commencer, connectez-vous à votre tableau de bord et complétez votre profil.",
       ],
       button: { label: "Accéder à mon tableau de bord", url: `${APP_URL}/dashboard` },
@@ -78,7 +78,7 @@ ${requesterName} souhaite visiter votre bien "${propertyTitle}" le ${date}.
 
 Acceptez ou refusez depuis votre tableau de bord : ${APP_URL}/dashboard
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `${requesterName} veut visiter ${propertyTitle}`,
       heading: "Nouvelle demande de visite",
@@ -107,11 +107,11 @@ export function paymentReceivedTemplate(params: {
       subject,
       text: `Bonjour,
 
-Votre paiement de ${formatXof(amount)} pour le bien "${propertyTitle}" a bien été reçu et placé en séquestre KAZA. Vous recevrez votre reçu dès la confirmation.
+Votre paiement de ${formatXof(amount)} pour le bien "${propertyTitle}" a bien été reçu et placé en séquestre Kaabo. Vous recevrez votre reçu dès la confirmation.
 
 Détails : ${APP_URL}/tenant/payments
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
       html: buildEmail({
         preheader: `Paiement de ${formatXof(amount)} confirmé`,
         heading: "Paiement confirmé ✅",
@@ -121,9 +121,9 @@ L'équipe KAZA`,
           { label: "Montant", value: formatXof(amount) },
         ],
         highlight:
-          "Vos fonds sont protégés en séquestre KAZA jusqu'au respect des conditions de la location.",
+          "Vos fonds sont protégés en séquestre Kaabo jusqu'au respect des conditions de la location.",
         button: { label: "Voir mes paiements", url: `${APP_URL}/tenant/payments` },
-        outro: "L'équipe KAZA",
+        outro: "L'équipe Kaabo",
       }),
     };
   }
@@ -136,7 +136,7 @@ Vous venez de recevoir un paiement de ${formatXof(amount)} pour le bien "${prope
 
 Détails : ${APP_URL}/owner/payments
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Paiement de ${formatXof(amount)} reçu`,
       heading: "Paiement reçu 🎉",
@@ -146,9 +146,9 @@ L'équipe KAZA`,
         { label: "Montant", value: formatXof(amount) },
       ],
       highlight:
-        "Le montant est actuellement détenu en séquestre KAZA. Il sera versé sur votre compte selon les conditions du contrat de location.",
+        "Le montant est actuellement détenu en séquestre Kaabo. Il sera versé sur votre compte selon les conditions du contrat de location.",
       button: { label: "Voir mes paiements", url: `${APP_URL}/owner/payments` },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -167,7 +167,7 @@ export function contractReadyTemplate(params: {
 
 Votre contrat de location pour le bien "${propertyTitle}" est prêt à être consulté et signé : ${url}
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Contrat prêt pour ${propertyTitle}`,
       heading: "Votre contrat est prêt",
@@ -175,7 +175,7 @@ L'équipe KAZA`,
         `Le contrat de location pour « ${propertyTitle} » est désormais disponible. Prenez le temps de le lire attentivement avant de le signer.`,
       ],
       button: { label: "Consulter et signer le contrat", url },
-      outro: "Une question sur le contrat ? Contactez votre interlocuteur depuis la messagerie KAZA.",
+      outro: "Une question sur le contrat ? Contactez votre interlocuteur depuis la messagerie Kaabo.",
     }),
   };
 }
@@ -192,7 +192,7 @@ export function applicationReceivedTemplate(params: {
 
 ${requesterName} a postulé pour louer votre bien "${propertyTitle}". Consultez son dossier et acceptez ou refusez : ${APP_URL}/owner/applications
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `${requesterName} a postulé pour ${propertyTitle}`,
       heading: "Nouvelle candidature reçue",
@@ -220,7 +220,7 @@ export function applicationAcceptedTemplate(params: {
 
 Bonne nouvelle ! Votre candidature pour "${propertyTitle}" a été acceptée. Le bailleur prépare votre bail. Vous pourrez le signer puis régler le 1er loyer : ${url}
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Candidature acceptée pour ${propertyTitle}`,
       heading: "Votre candidature est acceptée 🎉",
@@ -229,7 +229,7 @@ L'équipe KAZA`,
       ],
       highlight: "Prochaine étape : signez le bail, puis réglez le 1er loyer pour finaliser votre location.",
       button: { label: "Suivre ma location", url },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -244,9 +244,9 @@ export function applicationRejectedTemplate(params: {
     subject,
     text: `Bonjour,
 
-Votre candidature pour le bien "${propertyTitle}" n'a pas été retenue${reason ? ` : ${reason}` : "."}. D'autres biens vous attendent sur KAZA : ${APP_URL}/search
+Votre candidature pour le bien "${propertyTitle}" n'a pas été retenue${reason ? ` : ${reason}` : "."}. D'autres biens vous attendent sur Kaabo : ${APP_URL}/search
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Réponse à votre candidature pour ${propertyTitle}`,
       heading: "Votre candidature n'a pas été retenue",
@@ -254,7 +254,7 @@ L'équipe KAZA`,
         `Nous vous remercions de l'intérêt porté à « ${propertyTitle} ». Malheureusement, votre candidature n'a pas été retenue${reason ? ` (${reason})` : ""}.`,
       ],
       button: { label: "Découvrir d'autres biens", url: `${APP_URL}/search`, color: "navy" },
-      outro: "Ne baissez pas les bras — de nombreux logements sont disponibles sur KAZA.",
+      outro: "Ne baissez pas les bras — de nombreux logements sont disponibles sur Kaabo.",
     }),
   };
 }
@@ -276,12 +276,12 @@ export function contractSignedTemplate(params: {
 
 Le bail pour "${propertyTitle}" est signé par les deux parties. Vous pouvez désormais finaliser via le paiement du 1er loyer : ${url}
 
-L'équipe KAZA`
+L'équipe Kaabo`
       : `Bonjour,
 
 Le bail pour "${propertyTitle}" vient d'être signé par l'autre partie. À vous de le signer pour le finaliser : ${url}
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: fullySigned
         ? `Bail entièrement signé pour ${propertyTitle}`
@@ -296,7 +296,7 @@ L'équipe KAZA`,
         ? "Prochaine étape : le règlement du 1er loyer active la location."
         : undefined,
       button: { label: fullySigned ? "Voir le contrat" : "Signer le contrat", url },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -317,14 +317,14 @@ Le 1er loyer a été réglé : la location de "${propertyTitle}" (${formatXof(mo
 
 Détails : ${APP_URL}/owner/rentals
 
-L'équipe KAZA`
+L'équipe Kaabo`
       : `Bonjour,
 
 Félicitations ! Votre location de "${propertyTitle}" (${formatXof(monthlyRent)}/mois) est désormais ACTIVE. Bienvenue chez vous !
 
 Détails : ${APP_URL}/tenant/rentals
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Location active : ${propertyTitle}`,
       heading: "Votre location est active 🎉",
@@ -341,7 +341,7 @@ L'équipe KAZA`,
         label: "Voir ma location",
         url: forOwner ? `${APP_URL}/owner/rentals` : `${APP_URL}/tenant/rentals`,
       },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -369,14 +369,14 @@ La location de "${propertyTitle}" a été résiliée (fin au ${endLabel}). Votre
 
 Détails : ${APP_URL}/owner/rentals
 
-L'équipe KAZA`
+L'équipe Kaabo`
       : `Bonjour,
 
 Votre location de "${propertyTitle}" a pris fin le ${endLabel}. Nous vous remercions de votre confiance.
 
 Détails : ${APP_URL}/tenant/rentals
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Bail résilié : ${propertyTitle}`,
       heading: "Fin de votre bail",
@@ -393,7 +393,7 @@ L'équipe KAZA`,
         label: forOwner ? "Voir mes locations" : "Trouver un logement",
         url: forOwner ? `${APP_URL}/owner/rentals` : `${APP_URL}/search`,
       },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -413,7 +413,7 @@ ${buyerName} a fait une offre de ${formatXof(amount)} pour votre bien "${propert
 
 Consultez et répondez à l'offre : ${APP_URL}/owner/offers
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Offre de ${formatXof(amount)} pour ${propertyTitle}`,
       heading: "Nouvelle offre d'achat",
@@ -429,7 +429,7 @@ L'équipe KAZA`,
         label: "Voir l'offre",
         url: `${APP_URL}/owner/offers`,
       },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -452,14 +452,14 @@ Bonne nouvelle ! Votre offre pour "${propertyTitle}" a été acceptée. Pour ré
 
 Réserver le bien : ${APP_URL}/buyer/offers
 
-L'équipe KAZA`
+L'équipe Kaabo`
       : `Bonjour,
 
 Votre offre pour "${propertyTitle}" n'a pas été retenue par le vendeur. D'autres biens correspondent peut-être à votre recherche.
 
 Voir d'autres biens : ${APP_URL}/search
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: accepted
         ? `Offre acceptée — réservez ${propertyTitle}`
@@ -479,7 +479,7 @@ L'équipe KAZA`,
       button: accepted
         ? { label: "Réserver le bien", url: `${APP_URL}/buyer/offers` }
         : { label: "Voir d'autres biens", url: `${APP_URL}/search` },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -499,7 +499,7 @@ ${buyerName} a versé l'acompte de réservation de ${formatXof(depositAmount)} p
 
 Détails : ${APP_URL}/owner/offers
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Acompte reçu — ${propertyTitle} réservé`,
       heading: "Acompte reçu — bien réservé",
@@ -512,7 +512,7 @@ L'équipe KAZA`,
         { label: "Acompte versé", value: formatXof(depositAmount) },
       ],
       button: { label: "Voir l'offre", url: `${APP_URL}/owner/offers` },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -528,27 +528,27 @@ export function saleClosedTemplate(params: {
     text: forOwner
       ? `Bonjour,
 
-La vente de "${propertyTitle}" est finalisée. Le bien est marqué comme VENDU. Merci d'avoir utilisé KAZA.
+La vente de "${propertyTitle}" est finalisée. Le bien est marqué comme VENDU. Merci d'avoir utilisé Kaabo.
 
-L'équipe KAZA`
+L'équipe Kaabo`
       : `Bonjour,
 
 Félicitations ! La vente de "${propertyTitle}" est finalisée. Le bien est désormais à vous. Merci de votre confiance.
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: `Vente finalisée : ${propertyTitle}`,
       heading: forOwner ? "Vente finalisée" : "Félicitations, c'est à vous 🎉",
       paragraphs: [
         forOwner
-          ? `La vente de « ${propertyTitle} » est finalisée. Le bien est marqué comme vendu. Merci d'avoir fait confiance à KAZA.`
+          ? `La vente de « ${propertyTitle} » est finalisée. Le bien est marqué comme vendu. Merci d'avoir fait confiance à Kaabo.`
           : `La vente de « ${propertyTitle} » est finalisée. Le bien est désormais à vous — félicitations et merci de votre confiance !`,
       ],
       rows: [{ label: "Bien", value: propertyTitle }],
       button: forOwner
         ? { label: "Mes biens", url: `${APP_URL}/owner/properties` }
         : { label: "Mes offres", url: `${APP_URL}/buyer/offers` },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -559,23 +559,23 @@ export function referralInviteTemplate(params: {
   signupUrl: string;
 }): EmailTemplate {
   const { inviterName, code, signupUrl } = params;
-  const subject = `${inviterName} vous invite à rejoindre KAZA`;
+  const subject = `${inviterName} vous invite à rejoindre Kaabo`;
 
   return {
     subject,
     text: `Bonjour,
 
-${inviterName} vous invite à rejoindre KAZA. Inscrivez-vous avec le code de parrainage ${code} pour profiter d'avantages exclusifs : ${signupUrl}
+${inviterName} vous invite à rejoindre Kaabo. Inscrivez-vous avec le code de parrainage ${code} pour profiter d'avantages exclusifs : ${signupUrl}
 
 Besoin d'aide ? immobilierkaza@gmail.com`,
     html: buildEmail({
-      preheader: `${inviterName} vous invite à rejoindre KAZA`,
-      heading: `${inviterName} vous invite sur KAZA`,
+      preheader: `${inviterName} vous invite à rejoindre Kaabo`,
+      heading: `${inviterName} vous invite sur Kaabo`,
       paragraphs: [
-        `${inviterName} pense que KAZA pourrait vous être utile : annonces vérifiées, contact direct avec les propriétaires et paiements 100% sécurisés.`,
+        `${inviterName} pense que Kaabo pourrait vous être utile : annonces vérifiées, contact direct avec les propriétaires et paiements 100% sécurisés.`,
       ],
       rows: [{ label: "Votre code de parrainage", value: code }],
-      button: { label: "Créer mon compte KAZA", url: signupUrl },
+      button: { label: "Créer mon compte Kaabo", url: signupUrl },
       outro: "Inscrivez-vous avec ce code pour bénéficier d'un bonus de bienvenue.",
     }),
   };
@@ -596,7 +596,7 @@ Votre identité a été vérifiée avec succès. Votre badge "Vérifié" est mai
 
 Mon profil : ${APP_URL}/profile
 
-L'équipe KAZA`,
+L'équipe Kaabo`,
     html: buildEmail({
       preheader: "Identité vérifiée avec succès",
       heading: "Votre identité est vérifiée",
@@ -607,7 +607,7 @@ L'équipe KAZA`,
       highlight:
         "Vous pouvez maintenant publier des annonces, faire des demandes de location et finaliser des contrats.",
       button: { label: "Voir mon profil", url: `${APP_URL}/profile` },
-      outro: "L'équipe KAZA",
+      outro: "L'équipe Kaabo",
     }),
   };
 }
@@ -628,7 +628,7 @@ Nous n'avons pas pu valider votre pièce d'identité pour la raison suivante : $
 
 Vous pouvez soumettre à nouveau vos documents : ${APP_URL}/verify-identity
 
-L'équipe KAZA reste à votre disposition.`,
+L'équipe Kaabo reste à votre disposition.`,
     html: buildEmail({
       preheader: "Vérification à recommencer",
       heading: "Vérification d'identité non aboutie",

@@ -33,7 +33,7 @@ export function MobileNav({ role = "OWNER" }: MobileNavProps) {
               <span className="text-sm font-bold text-white">K</span>
             </div>
             <span className="font-heading text-xl font-bold text-kaza-navy">
-              KAZA
+              Kaabo
             </span>
           </Link>
         </div>

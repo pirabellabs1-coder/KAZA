@@ -272,7 +272,7 @@ export default function TenantDocumentsPage() {
           </div>
           <div className="space-y-0.5">
             <p className="text-sm font-semibold text-kaza-navy">
-              Astuce KAZA
+              Astuce Kaabo
             </p>
             <p className="text-sm text-muted-foreground">
               Un dossier complet et soigné inspire confiance aux propriétaires.

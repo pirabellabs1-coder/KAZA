@@ -35,12 +35,12 @@ import { GlassPanel } from "@/components/shared/glass-panel";
 import { ProDemoForm } from "./pro-demo-form";
 
 export const metadata: Metadata = {
-  title: "KAZA Pro — Solution premium pour agences immobilières",
+  title: "Kaabo Pro — Solution premium pour agences immobilières",
   description:
-    "KAZA Pro : plateforme PropTech enterprise pour les agences immobilières en Afrique de l'Ouest. Multi-utilisateurs, analytics, API, support 24/7 et white-label.",
+    "Kaabo Pro : plateforme PropTech enterprise pour les agences immobilières en Afrique de l'Ouest. Multi-utilisateurs, analytics, API, support 24/7 et white-label.",
   alternates: { canonical: "/pro" },
   openGraph: {
-    title: "KAZA Pro — la solution PropTech pour les agences immobilières",
+    title: "Kaabo Pro — la solution PropTech pour les agences immobilières",
     description:
       "Gérez votre agence, votre équipe et votre parc immobilier sur une seule plateforme premium.",
     url: "/pro",
@@ -96,7 +96,7 @@ const proFeatures: ProFeature[] = [
     icon: Code2,
     title: "API REST + Webhooks",
     description:
-      "Connectez KAZA Pro à votre CRM, ERP ou ATS via notre API documentée et nos webhooks en temps réel.",
+      "Connectez Kaabo Pro à votre CRM, ERP ou ATS via notre API documentée et nos webhooks en temps réel.",
     metric: "API 100% REST",
     variant: "blue",
   },
@@ -220,7 +220,7 @@ const ONBOARDING_STEPS = [
     step: "01",
     title: "Démo personnalisée",
     description:
-      "Un expert KAZA Pro analyse vos besoins et vous présente la plateforme adaptée à votre agence.",
+      "Un expert Kaabo Pro analyse vos besoins et vous présente la plateforme adaptée à votre agence.",
     icon: PlayCircle,
   },
   {
@@ -241,7 +241,7 @@ const ONBOARDING_STEPS = [
     step: "04",
     title: "Mise en ligne",
     description:
-      "Votre agence est visible sur KAZA, intégrée à votre site et à vos canaux marketing.",
+      "Votre agence est visible sur Kaabo, intégrée à votre site et à vos canaux marketing.",
     icon: Rocket,
   },
 ];
@@ -260,7 +260,7 @@ const PRO_FAQ = [
     a: "Le plan Starter permet 5 utilisateurs, le plan Pro jusqu'à 20, et l'Enterprise est illimité. Chaque utilisateur reçoit un compte personnel avec ses propres permissions (Admin, Manager ou Agent).",
   },
   {
-    q: "Comment fonctionne l'API REST de KAZA Pro ?",
+    q: "Comment fonctionne l'API REST de Kaabo Pro ?",
     a: "L'API REST permet de synchroniser vos annonces, contacts et transactions avec votre CRM ou ERP. Nous fournissons une documentation complète, des SDK Node.js et Python, ainsi qu'un environnement de sandbox.",
   },
   {
@@ -319,7 +319,7 @@ export default function ProPage() {
 
           <FadeIn delay={120}>
             <h1 className="font-heading text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-              KAZA Pro pour les{" "}
+              Kaabo Pro pour les{" "}
               <span className="bg-gradient-to-r from-kaza-green via-emerald-300 to-kaza-blue bg-clip-text text-transparent">
                 agences immobilières
               </span>
@@ -608,7 +608,7 @@ export default function ProPage() {
               </h2>
               <p className="mx-auto mt-5 max-w-2xl text-lg text-white/75">
                 De la démo à la mise en ligne, 4 étapes simples accompagnées par
-                votre équipe KAZA dédiée.
+                votre équipe Kaabo dédiée.
               </p>
             </div>
           </RevealOnScroll>
@@ -663,7 +663,7 @@ export default function ProPage() {
                 </h2>
                 <p className="mt-5 text-lg text-white/80">
                   Réservez une démo personnalisée de 30 minutes avec notre équipe
-                  Pro. Nous vous montrerons comment KAZA peut s&apos;intégrer à
+                  Pro. Nous vous montrerons comment Kaabo peut s&apos;intégrer à
                   votre flux actuel et accélérer votre croissance.
                 </p>
                 <ul className="mt-10 space-y-4 text-sm text-white/85">

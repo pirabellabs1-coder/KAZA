@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries analytics agrégées
+// Kaabo — Queries analytics agrégées
 // =============================================================================
 
 export interface DailyStat {

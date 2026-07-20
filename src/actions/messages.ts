@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Messages (Server Actions)
+// Kaabo - Messages (Server Actions)
 //
 // Messagerie 1-1 entre utilisateurs (locataires/proprietaires/etudiants).
 // Une "conversation" est identifiee par la paire d'utilisateurs + un

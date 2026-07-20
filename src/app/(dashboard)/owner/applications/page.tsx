@@ -7,7 +7,7 @@ import { listOwnerApplications } from "@/lib/queries/applications";
 import { OwnerApplicationsView } from "./applications-view";
 
 export const metadata: Metadata = {
-  title: "Candidatures reçues — KAZA",
+  title: "Candidatures reçues — Kaabo",
   description: "Acceptez ou refusez les candidatures de location sur vos biens.",
 };
 

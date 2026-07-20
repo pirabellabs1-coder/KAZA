@@ -7,7 +7,7 @@ import { listOwnerPayments } from "@/lib/queries/owner-activity";
 import { OwnerPaymentsView } from "./payments-view";
 
 export const metadata: Metadata = {
-  title: "Paiements — KAZA",
+  title: "Paiements — Kaabo",
   description: "Suivi des paiements perçus, en attente et en retard.",
 };
 

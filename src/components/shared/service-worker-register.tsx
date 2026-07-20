@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - Service Worker Register (Client)
+// Kaabo - Service Worker Register (Client)
 // Wave 10 - Olamide Adesanya (Mobile/PWA Specialist)
 //
 // Composant invisible qui enregistre `/sw.js` au mount.

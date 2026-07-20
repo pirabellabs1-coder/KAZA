@@ -5,7 +5,7 @@ import { ShieldCheck } from "lucide-react";
 import { AdminLoginForm } from "./admin-login-form";
 
 export const metadata: Metadata = {
-  title: "Connexion administrateur — KAZA",
+  title: "Connexion administrateur — Kaabo",
   robots: { index: false, follow: false },
 };
 
@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
             <ShieldCheck className="size-7 text-kaza-green" />
           </div>
           <h1 className="font-heading text-2xl font-bold text-white sm:text-3xl">
-            KAZA · Centre de contrôle
+            Kaabo · Centre de contrôle
           </h1>
           <p className="mt-2 text-sm text-slate-400">
             Portail d&apos;administration de la plateforme. Connectez-vous avec

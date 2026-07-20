@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Photos de profil colocataire (Server Actions)
+// Kaabo - Photos de profil colocataire (Server Actions)
 //
 // Upload REEL des photos du profil de colocation (photo de profil + photos
 // "lifestyle") dans le bucket public `avatars`, sous le prefixe

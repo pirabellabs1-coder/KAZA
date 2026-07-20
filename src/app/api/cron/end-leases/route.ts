@@ -5,7 +5,7 @@ import { completeEndedRentals } from "@/lib/rentals/end-leases";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // =============================================================================
-// KAZA — Cron : fin de bail automatique (quotidien)
+// Kaabo — Cron : fin de bail automatique (quotidien)
 //
 // GET /api/cron/end-leases
 // Passe les locations ACTIVE arrivées à terme à COMPLETED et libère le bien.

@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Property photos (Server Actions)
+// Kaabo - Property photos (Server Actions)
 //
 // Persistance des URLs des photos uploadées vers Supabase Storage dans la
 // table `property_photos`. L'upload réel des fichiers se fait côté client

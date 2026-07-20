@@ -1,10 +1,10 @@
 "use server";
 
 // =============================================================================
-// KAZA — Subscriptions (Server Actions)
+// Kaabo — Subscriptions (Server Actions)
 //
-// Souscription, annulation et facturation des abonnements KAZA Pro (agences)
-// et KAZA Plus (locataires). Pas de Stripe pour le MVP : on suppose que le
+// Souscription, annulation et facturation des abonnements Kaabo Pro (agences)
+// et Kaabo Plus (locataires). Pas de Stripe pour le MVP : on suppose que le
 // paiement est validé en amont par le caller (intégration FedaPay / mobile
 // money à venir). `payment_method` reste un libellé texte.
 // =============================================================================
@@ -38,7 +38,7 @@ export interface SubscribeResult {
 }
 
 /**
- * Crée un abonnement actif pour l'utilisateur courant en débitant son wallet KAZA.
+ * Crée un abonnement actif pour l'utilisateur courant en débitant son wallet Kaabo.
  *
  * Flow wallet-based MVP :
  *  1) Refuse si abonnement TRIAL/ACTIVE déjà présent (ALREADY_SUBSCRIBED)
@@ -84,7 +84,7 @@ export async function subscribeToPlan(
   const periodLabel = `${now.toLocaleDateString("fr-FR")} → ${periodEnd.toLocaleDateString("fr-FR")}`;
   const isWalletPayment = paymentMethod === "wallet";
 
-  // 2) Si paiement au solde KAZA et plan payant : DÉBITE D'ABORD, de façon
+  // 2) Si paiement au solde Kaabo et plan payant : DÉBITE D'ABORD, de façon
   //    atomique (verrou + vérif gel/solde côté RPC SECURITY DEFINER). Sans débit
   //    réussi, on ne crée jamais la souscription → plus d'abonnement gratuit.
   let walletTxId: string | null = null;

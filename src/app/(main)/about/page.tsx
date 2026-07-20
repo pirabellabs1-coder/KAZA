@@ -4,11 +4,11 @@ import { ContactForm } from "@/app/(main)/contact/contact-form";
 
 export const metadata: Metadata = {
   title: "À propos",
-  description: "Découvrez KAZA, la plateforme immobilière de référence en Afrique.",
+  description: "Découvrez Kaabo, la plateforme immobilière de référence en Afrique.",
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "À propos de KAZA",
-    description: "Découvrez KAZA, la plateforme immobilière de référence en Afrique.",
+    title: "À propos de Kaabo",
+    description: "Découvrez Kaabo, la plateforme immobilière de référence en Afrique.",
     url: "/about",
     type: "website",
     images: ["/images/hero-bg.jpg"],
@@ -52,7 +52,7 @@ export default function AboutPage() {
             Transformer le marché immobilier africain
           </h1>
           <p className="mt-4 text-lg text-white/70">
-            KAZA est née de la volonté d&apos;éliminer les intermédiaires,
+            Kaabo est née de la volonté d&apos;éliminer les intermédiaires,
             réduire les coûts et apporter transparence et confiance dans le
             processus de location en Afrique.
           </p>

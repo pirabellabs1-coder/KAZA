@@ -83,9 +83,9 @@ async function getAgencyLegalProfile(
 }
 
 export const metadata: Metadata = {
-  title: "Facturation — KAZA Agence",
+  title: "Facturation — Kaabo Agence",
   description:
-    "Gérez votre abonnement KAZA Pro, vos factures et vos moyens de paiement.",
+    "Gérez votre abonnement Kaabo Pro, vos factures et vos moyens de paiement.",
 };
 
 // ---------------------------------------------------------------------------
@@ -209,7 +209,7 @@ function NoSubscriptionState({ isAuthenticated }: { isAuthenticated: boolean }) 
           Facturation &amp; abonnement
         </h1>
         <p className="text-sm text-muted-foreground">
-          Souscrivez à un plan KAZA Pro pour gérer votre agence.
+          Souscrivez à un plan Kaabo Pro pour gérer votre agence.
         </p>
       </header>
 
@@ -222,7 +222,7 @@ function NoSubscriptionState({ isAuthenticated }: { isAuthenticated: boolean }) 
             Aucun abonnement actif
           </h2>
           <p className="mt-3 text-white/85">
-            Choisissez l&apos;une de nos 3 formules KAZA Pro pour débloquer la
+            Choisissez l&apos;une de nos 3 formules Kaabo Pro pour débloquer la
             gestion d&apos;agence : annonces illimitées, équipe, boosts,
             analytics et bien plus.
           </p>
@@ -244,7 +244,7 @@ function NoSubscriptionState({ isAuthenticated }: { isAuthenticated: boolean }) 
       <section>
         <div className="mb-4">
           <h2 className="font-heading text-xl font-bold text-kaza-navy">
-            Nos formules KAZA Pro
+            Nos formules Kaabo Pro
           </h2>
           <p className="text-sm text-muted-foreground">
             Souscription immédiate, sans engagement, résiliable à tout moment.
@@ -368,7 +368,7 @@ export default async function AgencyBillingPage() {
           Facturation &amp; abonnement
         </h1>
         <p className="text-sm text-muted-foreground">
-          Gérez votre abonnement KAZA Pro, vos factures et vos moyens de paiement.
+          Gérez votre abonnement Kaabo Pro, vos factures et vos moyens de paiement.
         </p>
       </header>
 
@@ -657,7 +657,7 @@ export default async function AgencyBillingPage() {
                   </ul>
                   <SubscribeButton
                     plan={planKey}
-                    label={isCurrent ? "Plan actuel" : `Passer à ${plan.name.replace(/^KAZA Pro /, "")}`}
+                    label={isCurrent ? "Plan actuel" : `Passer à ${plan.name.replace(/^Kaabo Pro /, "")}`}
                     isAuthenticated
                     isCurrentPlan={isCurrent}
                     signupRoleSuffix="&role=agency"
@@ -691,7 +691,7 @@ export default async function AgencyBillingPage() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-kaza-navy">
-                    KAZA Wallet
+                    Kaabo Wallet
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Réglez vos abonnements depuis votre solde

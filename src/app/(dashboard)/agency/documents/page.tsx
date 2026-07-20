@@ -12,7 +12,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listAgencyDocuments } from "@/lib/queries/agency-b2b";
 
 export const metadata: Metadata = {
-  title: "Documents — KAZA Pro",
+  title: "Documents — Kaabo Pro",
   description:
     "Contrats de bail et contrats de mandat de votre agence, centralisés.",
 };

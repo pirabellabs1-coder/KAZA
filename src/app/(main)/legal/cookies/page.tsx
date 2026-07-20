@@ -5,13 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import { LegalToc } from "@/components/marketing/legal-toc";
 
 export const metadata: Metadata = {
-  title: "Politique cookies — KAZA",
+  title: "Politique cookies — Kaabo",
   description:
-    "Liste détaillée des cookies utilisés par KAZA et modalités de gestion du consentement selon la Loi n° 2017-20 du Bénin.",
+    "Liste détaillée des cookies utilisés par Kaabo et modalités de gestion du consentement selon la Loi n° 2017-20 du Bénin.",
   openGraph: {
-    title: "Politique cookies — KAZA",
+    title: "Politique cookies — Kaabo",
     description:
-      "Cookies utilisés sur KAZA : essentiels, mesure d'audience, marketing. Comment révoquer votre consentement.",
+      "Cookies utilisés sur Kaabo : essentiels, mesure d'audience, marketing. Comment révoquer votre consentement.",
     type: "article",
   },
 };
@@ -56,21 +56,21 @@ const COOKIES: CookieGroup[] = [
       },
       {
         name: "kaza-role",
-        provider: "KAZA / PIRABEL LABS",
+        provider: "Kaabo / PIRABEL LABS",
         purpose: "Cache court de votre rôle pour accélérer le routage.",
         duration: "5 minutes",
         basis: "Intérêt légitime",
       },
       {
         name: "kaza-cookie-consent",
-        provider: "KAZA / PIRABEL LABS",
+        provider: "Kaabo / PIRABEL LABS",
         purpose: "Mémorise votre choix concernant les cookies.",
         duration: "12 mois",
         basis: "Obligation légale (Loi 2017-20)",
       },
       {
         name: "kaza-locale",
-        provider: "KAZA / PIRABEL LABS",
+        provider: "Kaabo / PIRABEL LABS",
         purpose: "Mémorise votre langue d'affichage.",
         duration: "12 mois",
         basis: "Exécution du contrat",
@@ -152,13 +152,13 @@ export default function CookiesPage() {
             <p className="mt-3 text-muted-foreground">
               Un cookie est un petit fichier déposé sur votre terminal
               (ordinateur, smartphone, tablette) lors de votre visite sur la
-              plateforme KAZA. Il permet à PIRABEL LABS SARL, éditeur de KAZA,
+              plateforme Kaabo. Il permet à PIRABEL LABS SARL, éditeur de Kaabo,
               ou à ses partenaires, de reconnaître votre terminal, de
               mémoriser certaines informations et de mesurer l&apos;audience
               du site.
             </p>
             <p className="mt-3 text-muted-foreground">
-              La présente politique liste les cookies utilisés par KAZA et
+              La présente politique liste les cookies utilisés par Kaabo et
               décrit comment vous pouvez exercer vos choix.
             </p>
           </section>

@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/fade-in";
 
 export const metadata: Metadata = {
-  title: "Comparateur de quartiers | KAZA",
+  title: "Comparateur de quartiers | Kaabo",
   description:
     "Comparez les quartiers du Bénin sur la qualité de vie, les prix et les équipements. Outil en cours de finalisation.",
 };
 
 // =============================================================================
-// KAZA — /neighborhoods/compare
+// Kaabo — /neighborhoods/compare
 // Le comparateur sera réactivé dès qu'un référentiel `neighborhoods` (scores,
 // prix moyen au m², population, équipements) sera disponible côté Supabase.
 // Pour l'instant on affiche un état vide soigné, sans aucune donnée fictive.
@@ -65,7 +65,7 @@ export default function NeighborhoodsComparePage() {
           </h2>
           <p className="mt-4 max-w-md text-base text-muted-foreground">
             Le comparateur sera disponible dès que nos équipes terrain auront
-            cartographié les quartiers couverts par KAZA. En attendant, lancez
+            cartographié les quartiers couverts par Kaabo. En attendant, lancez
             une recherche pour découvrir les biens disponibles près de chez
             vous.
           </p>

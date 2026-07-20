@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { ContributorToggle } from "./contributor-toggle";
 
-export const metadata: Metadata = { title: "Contributeurs — Admin KAZA" };
+export const metadata: Metadata = { title: "Contributeurs — Admin Kaabo" };
 export const dynamic = "force-dynamic";
 
 const ROLE_LABELS: Record<string, string> = {

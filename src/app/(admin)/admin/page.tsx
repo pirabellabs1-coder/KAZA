@@ -39,8 +39,8 @@ import { runHealthchecks } from "@/lib/health/check";
 import { formatFcfaShort, formatNumber, settleAll } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Centre de contrôle — KAZA Admin",
-  description: "Vue temps réel de la plateforme KAZA.",
+  title: "Centre de contrôle — Kaabo Admin",
+  description: "Vue temps réel de la plateforme Kaabo.",
 };
 
 export const dynamic = "force-dynamic";
@@ -207,11 +207,11 @@ export default async function AdminDashboardPage() {
                 Admin
               </Badge>
               <span className="text-xs uppercase tracking-[0.18em] text-white/60">
-                Console KAZA
+                Console Kaabo
               </span>
             </div>
             <h1 className="font-heading text-3xl font-bold leading-tight lg:text-4xl">
-              Centre de contrôle KAZA
+              Centre de contrôle Kaabo
             </h1>
             <p className="text-sm text-white/70 lg:text-base">
               Données temps réel — utilisateurs, annonces, paiements, santé services.

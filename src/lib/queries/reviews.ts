@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Reviews (server-side)
+// Kaabo — Queries Reviews (server-side)
 // Lecture des avis (`ratings`) prêts à afficher.
 // Empty array si rien — pas d'erreur côté UI.
 // =============================================================================

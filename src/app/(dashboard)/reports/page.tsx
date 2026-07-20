@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: "Mes signalements",
   description:
-    "Suivez l'avancement des contenus que vous avez signalés à l'équipe KAZA.",
+    "Suivez l'avancement des contenus que vous avez signalés à l'équipe Kaabo.",
 };
 
 // Mapping table `reports` (valeurs base) → vocabulaire de l'UI -----------------

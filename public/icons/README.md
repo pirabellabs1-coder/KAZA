@@ -1,6 +1,6 @@
-# Icons KAZA (PWA)
+# Icons Kaabo (PWA)
 
-Icones de l'application progressive web (PWA) KAZA.
+Icones de l'application progressive web (PWA) Kaabo.
 
 ## Fichiers
 

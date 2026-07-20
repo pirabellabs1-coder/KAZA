@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export const metadata: Metadata = {
-  title: "Réinitialiser le mot de passe — KAZA",
+  title: "Réinitialiser le mot de passe — Kaabo",
 };
 
 export default function ResetPasswordPage() {

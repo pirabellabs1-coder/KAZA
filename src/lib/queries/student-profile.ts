@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Profil colocataire + matching (student_profiles, migration 00040)
+// Kaabo — Profil colocataire + matching (student_profiles, migration 00040)
 // =============================================================================
 
 import type { SupabaseClient } from "@supabase/supabase-js";

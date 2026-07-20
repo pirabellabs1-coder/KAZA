@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Vue messagerie (legacy placeholder, non plus utilisée)
+// Kaabo — Vue messagerie (legacy placeholder, non plus utilisée)
 //
 // La page Messages utilise maintenant `listConversations` côté serveur
 // (cf. ./page.tsx). Ce composant reste comme empty state au cas où il

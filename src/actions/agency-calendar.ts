@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Server Actions calendrier multi-agents
+// Kaabo — Server Actions calendrier multi-agents
 // CRUD events. agency_id = user.id (rôle AGENCY).
 // =============================================================================
 

@@ -15,7 +15,7 @@ import { listAllIdentityVerifications } from "@/lib/queries/admin";
 import { VerificationsClient } from "./verifications-client";
 
 export const metadata: Metadata = {
-  title: "Vérifications d'identité — Admin KAZA",
+  title: "Vérifications d'identité — Admin Kaabo",
   description:
     "Modération des dossiers KYC : pièces d'identité, justificatifs et selfies.",
 };

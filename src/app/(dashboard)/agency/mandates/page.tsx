@@ -10,7 +10,7 @@ import {
 import { MandatesView } from "./mandates-view";
 
 export const metadata: Metadata = {
-  title: "Mandats propriétaires — KAZA Pro",
+  title: "Mandats propriétaires — Kaabo Pro",
   description:
     "Gérez vos contrats de mandat avec les propriétaires mandants et leurs commissions.",
 };

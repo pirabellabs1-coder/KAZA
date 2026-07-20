@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Assainisseur HTML pur-JS (sans jsdom), compatible runtime serverless
+// Kaabo — Assainisseur HTML pur-JS (sans jsdom), compatible runtime serverless
 // Vercel. Remplace isomorphic-dompurify qui embarque jsdom et plante au
 // bundling/exécution serverless.
 //

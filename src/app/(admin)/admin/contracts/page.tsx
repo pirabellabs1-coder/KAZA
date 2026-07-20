@@ -36,7 +36,7 @@ import { ContractActionsMenu } from "./contract-actions-menu";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Contrats plateforme — KAZA Admin",
+  title: "Contrats plateforme — Kaabo Admin",
   description:
     "Suivi de tous les contrats de location, litiges et conformité juridique.",
 };
@@ -127,7 +127,7 @@ function StatCard({
 }
 
 function contractNumber(c: AdminContractRow): string {
-  return `KAZA-${c.id.slice(0, 8).toUpperCase()}`;
+  return `Kaabo-${c.id.slice(0, 8).toUpperCase()}`;
 }
 
 function formatDate(value: string | null): string {
@@ -443,7 +443,7 @@ export default async function AdminContractsPage() {
               Conformité juridique
             </CardTitle>
             <p className="text-xs text-muted-foreground">
-              Cadre réglementaire applicable à tous les contrats KAZA
+              Cadre réglementaire applicable à tous les contrats Kaabo
             </p>
           </div>
         </CardHeader>

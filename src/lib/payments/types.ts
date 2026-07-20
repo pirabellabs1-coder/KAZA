@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Payment Provider Types (couche d'integration paiement)
+// Kaabo - Payment Provider Types (couche d'integration paiement)
 // =============================================================================
 // Ces types sont utilises par la couche d'integration du provider (FeexPay) et
 // la facade unifiee (`createPayment` / `createCardCheckout` / `getPaymentStatus`).

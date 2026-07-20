@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Queries KAZA Points (server-side)
+// Kaabo - Queries Kaabo Points (server-side)
 //
 // Tables ciblees :
 //   - public.kaza_points_balance      (user_id PK, balance int)
@@ -38,7 +38,7 @@ export interface PointsTransaction {
 }
 
 /**
- * Retourne le solde de KAZA Points du user. 0 si pas de ligne (le
+ * Retourne le solde de Kaabo Points du user. 0 si pas de ligne (le
  * trigger d'init cree la ligne au signup, mais on est defensif).
  */
 export async function getPointsBalance(userId: string): Promise<number> {

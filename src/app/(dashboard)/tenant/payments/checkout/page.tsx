@@ -9,7 +9,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listTenantRentals } from "@/lib/queries/tenant-activity";
 
 // =============================================================================
-// KAZA - Page Checkout (tunnel paiement loyer) — données réelles Supabase
+// Kaabo - Page Checkout (tunnel paiement loyer) — données réelles Supabase
 // =============================================================================
 
 export const metadata: Metadata = {
@@ -60,7 +60,7 @@ export default async function CheckoutPage({
             Aucun loyer à régler
           </h1>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Vous n&apos;avez pas encore de location active sur KAZA. Dès qu&apos;un
+            Vous n&apos;avez pas encore de location active sur Kaabo. Dès qu&apos;un
             bail sera signé, vos échéances de loyer apparaîtront ici.
           </p>
           <Button asChild variant="outline" className="mt-2">

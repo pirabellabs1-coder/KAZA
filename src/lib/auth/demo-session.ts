@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Demo Session (cookie signé, compatible Edge Runtime)
+// Kaabo - Demo Session (cookie signé, compatible Edge Runtime)
 //
 // Quand aucun Supabase n'est branché, on garde une vraie sensation de "compte
 // connecté" via un cookie httpOnly signé HMAC-SHA256 (Web Crypto API,

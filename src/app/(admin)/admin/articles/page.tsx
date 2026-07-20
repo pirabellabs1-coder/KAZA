@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export const metadata: Metadata = { title: "Articles — Admin KAZA" };
+export const metadata: Metadata = { title: "Articles — Admin Kaabo" };
 export const dynamic = "force-dynamic";
 
 function formatDate(iso: string): string {

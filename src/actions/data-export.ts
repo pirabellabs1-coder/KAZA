@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Export RGPD : l'utilisateur télécharge l'ensemble de ses données
+// Kaabo — Export RGPD : l'utilisateur télécharge l'ensemble de ses données
 // personnelles au format JSON (droit d'accès / portabilité — RGPD art. 15 & 20,
 // APDP Bénin). On utilise le client utilisateur : la RLS garantit qu'on ne
 // renvoie QUE les lignes appartenant à l'utilisateur courant.
@@ -53,7 +53,7 @@ export async function exportMyData(): Promise<DataExportResult> {
       genere_le: new Date().toISOString(),
       utilisateur_id: userId,
       description:
-        "Export de vos données personnelles KAZA (RGPD / APDP Bénin). " +
+        "Export de vos données personnelles Kaabo (RGPD / APDP Bénin). " +
         "Seules les données vous appartenant sont incluses.",
     },
   };

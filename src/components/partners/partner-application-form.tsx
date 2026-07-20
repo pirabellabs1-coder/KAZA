@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Formulaire public : devenir partenaire
+// Kaabo — Formulaire public : devenir partenaire
 // react-hook-form + zod. À la soumission, appelle la server action
 // `submitPartnerApplication` (persistance + emails) puis affiche un toast.
 // =============================================================================
@@ -294,7 +294,7 @@ export function PartnerApplicationForm() {
           <Textarea
             id="description"
             rows={5}
-            placeholder="Décrivez votre activité, vos services et ce que vous souhaitez apporter à l'écosystème KAZA."
+            placeholder="Décrivez votre activité, vos services et ce que vous souhaitez apporter à l'écosystème Kaabo."
             {...register("description")}
           />
           {errors.description && (

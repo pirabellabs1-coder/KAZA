@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { subscribeNewsletter } from "@/actions/newsletter";
 
 // =============================================================================
-// KAZA - Newsletter form (réutilisable)
+// Kaabo - Newsletter form (réutilisable)
 // Vague 10 (reprise) - Moussa Keïta
 //
 // Composant client de souscription newsletter, disponible en 2 variantes :
@@ -98,7 +98,7 @@ export function NewsletterForm({
 
     // Anti-doublon UI --------------------------------------------------------
     if (alreadySubscribed(email)) {
-      toast.info("Vous êtes déjà inscrit à la newsletter KAZA.");
+      toast.info("Vous êtes déjà inscrit à la newsletter Kaabo.");
       setDone(true);
       return;
     }
@@ -147,7 +147,7 @@ export function NewsletterForm({
           "flex w-full flex-col gap-2 sm:flex-row sm:items-center",
           className,
         )}
-        aria-label="Inscription à la newsletter KAZA"
+        aria-label="Inscription à la newsletter Kaabo"
       >
         <div className="relative flex-1">
           <Mail
@@ -201,7 +201,7 @@ export function NewsletterForm({
         "flex w-full flex-col gap-4 rounded-2xl border bg-white p-6 shadow-sm",
         className,
       )}
-      aria-label="Inscription à la newsletter KAZA"
+      aria-label="Inscription à la newsletter Kaabo"
     >
       <div>
         <h3 className="font-heading text-lg font-semibold text-kaza-navy">
@@ -251,7 +251,7 @@ export function NewsletterForm({
           className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border-gray-300 text-kaza-blue focus:ring-kaza-blue"
         />
         <span>
-          J&apos;accepte de recevoir la newsletter KAZA et la{" "}
+          J&apos;accepte de recevoir la newsletter Kaabo et la{" "}
           <a
             href="/legal/confidentialite"
             className="underline hover:text-kaza-blue"

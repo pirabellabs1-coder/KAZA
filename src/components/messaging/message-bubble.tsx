@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - MessageBubble (server component)
+// Kaabo - MessageBubble (server component)
 //
 // Bulle de message unique : a droite (own, kaza-blue) ou a gauche (autre,
 // gray-200). Affiche un avatar pour les messages recus uniquement.

@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - Error Boundary (segment main / pages publiques)
+// Kaabo - Error Boundary (segment main / pages publiques)
 //
 // Capture les erreurs runtime sur les pages publiques (accueil, recherche,
 // fiche propriete, etc.). Variante neutre pour visiteurs non connectes.

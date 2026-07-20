@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Server Actions équipe agence
+// Kaabo — Server Actions équipe agence
 // L'agence courante (auth.uid()) est le owner du tenant agency_members. Les
 // invitations sont stockées en INVITED + invited_email ; le rattachement
 // member_id se fait via `acceptInvitation()` au signup.

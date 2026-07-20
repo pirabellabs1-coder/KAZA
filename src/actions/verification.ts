@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Identity Verifications (Server Actions)
+// Kaabo - Identity Verifications (Server Actions)
 // Wave 2 - Aminata Traoré
 //
 // Tunnel d'identité (refonte KYC) :
@@ -147,7 +147,7 @@ export async function requestPhoneOtp(
   // Envoi du SMS (mode DEV log si Twilio non configuré).
   const sms = await sendSms(
     normalizedPhone,
-    `KAZA : votre code de vérification est ${code}. Valable ${OTP_TTL_MINUTES} minutes.`
+    `Kaabo : votre code de vérification est ${code}. Valable ${OTP_TTL_MINUTES} minutes.`
   );
 
   if (!sms.success) {
@@ -663,7 +663,7 @@ async function assertAdmin(): Promise<
   return { ok: true, userId: user.id };
 }
 
-/** Approuve une vérification d'identité (admin) et crédite +500 KAZA Points. */
+/** Approuve une vérification d'identité (admin) et crédite +500 Kaabo Points. */
 export async function approveVerification(
   verificationId: string
 ): Promise<ActionResult> {
@@ -720,7 +720,7 @@ export async function approveVerification(
     })
     .eq("id", targetUserId);
 
-  // Bonus KAZA Points : +500 (table kaza_points_transactions, trigger met
+  // Bonus Kaabo Points : +500 (table kaza_points_transactions, trigger met
   // à jour la balance automatiquement). Best-effort, on n'échoue pas le
   // workflow si cette table n'existe pas encore en environnement.
   try {

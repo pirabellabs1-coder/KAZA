@@ -67,7 +67,7 @@ export default async function TenantFinancePage() {
           <CardContent className="p-5">
             <Wallet className="size-5 text-kaza-blue" />
             <p className="mt-3 text-xs uppercase tracking-wide text-muted-foreground">
-              Solde KAZA
+              Solde Kaabo
             </p>
             <p className="font-heading text-2xl font-bold text-kaza-navy">
               {formatFcfa(fin.walletBalance)}
@@ -128,7 +128,7 @@ export default async function TenantFinancePage() {
                 Aucun paiement enregistré
               </p>
               <p className="max-w-sm text-xs text-muted-foreground">
-                Vos paiements de loyer via KAZA apparaîtront ici, mois par mois.
+                Vos paiements de loyer via Kaabo apparaîtront ici, mois par mois.
               </p>
             </div>
           ) : (

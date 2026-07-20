@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Articles (CMS blog). Table `articles` (migration 00044).
+// Kaabo — Queries Articles (CMS blog). Table `articles` (migration 00044).
 // Non encore typée dans src/types/supabase.ts → client générique (loose cast).
 // =============================================================================
 

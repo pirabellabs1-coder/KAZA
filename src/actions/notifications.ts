@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Notifications (Server Actions)
+// Kaabo - Notifications (Server Actions)
 //
 // Convention de retour : `{ success: true } | { success: false; error: string }`
 // (Server Actions destinees a etre appelees depuis des composants client).

@@ -5,9 +5,9 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { CreateListingForm } from "./create-listing-form";
 
 export const metadata: Metadata = {
-  title: "Créer une annonce de colocation · KAZA",
+  title: "Créer une annonce de colocation · Kaabo",
   description:
-    "Publiez une annonce de colocation étudiante sur KAZA. Trouvez vos futurs colocataires en quelques minutes.",
+    "Publiez une annonce de colocation étudiante sur Kaabo. Trouvez vos futurs colocataires en quelques minutes.",
 };
 
 export const dynamic = "force-dynamic";

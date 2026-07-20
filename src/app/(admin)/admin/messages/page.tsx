@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Messages de contact (liste)
+// Kaabo — Admin / Messages de contact (liste)
 // Server component. Lit `contact_messages` (formulaire public /contact) via
 // `listContactMessages`. Le bouton "Marquer comme lu" est délégué à un petit
 // composant client (MarkReadButton) qui appelle l'action serveur.

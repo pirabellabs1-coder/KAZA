@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries Surveys (server-side)
+// Kaabo — Queries Surveys (server-side)
 //
 // Tables ciblées :
 //   - public.surveys           (catalogue, JSONB questions)

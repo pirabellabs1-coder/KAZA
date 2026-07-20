@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Visites du propriétaire (pour le calendrier)
+// Kaabo — Visites du propriétaire (pour le calendrier)
 // Source : visit_requests des biens dont l'utilisateur est propriétaire.
 // =============================================================================
 

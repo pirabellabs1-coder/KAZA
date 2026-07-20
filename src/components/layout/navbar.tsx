@@ -154,14 +154,14 @@ const MEGA_MENU: MegaSection[] = [
         items: [
           {
             href: "/pro",
-            label: "KAZA Pro",
+            label: "Kaabo Pro",
             description: "Outils B2B pour agences immobilières",
             icon: Briefcase,
             badge: "B2B",
           },
           {
             href: "/plus",
-            label: "KAZA Plus Premium",
+            label: "Kaabo Plus Premium",
             description: "Visibilité maximale et services prioritaires",
             icon: Crown,
             badge: "Premium",
@@ -177,7 +177,7 @@ const MEGA_MENU: MegaSection[] = [
     ],
     cta: {
       href: "/pro",
-      label: "Découvrir KAZA Pro",
+      label: "Découvrir Kaabo Pro",
       description: "Tableau de bord agence, leads qualifiés, équipe",
     },
   },
@@ -208,7 +208,7 @@ const MEGA_MENU: MegaSection[] = [
           {
             href: "/securite",
             label: "Sécurité & confiance",
-            description: "Comment KAZA vous protège",
+            description: "Comment Kaabo vous protège",
             icon: ShieldCheck,
           },
           {
@@ -248,7 +248,7 @@ const MEGA_MENU: MegaSection[] = [
     label: "Entreprise",
     columns: [
       {
-        title: "À propos de KAZA",
+        title: "À propos de Kaabo",
         items: [
           {
             href: "/about",
@@ -320,7 +320,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
             <span className="text-sm font-bold text-white">K</span>
           </div>
           <span className="font-heading text-xl font-bold text-kaza-navy">
-            KAZA
+            Kaabo
           </span>
         </Link>
 
@@ -554,7 +554,7 @@ export function Navbar({ user = null }: { user?: NavbarUser | null }) {
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white">
                     <span className="text-sm font-bold text-kaza-navy">K</span>
                   </div>
-                  <span className="font-heading text-xl font-bold">KAZA</span>
+                  <span className="font-heading text-xl font-bold">Kaabo</span>
                 </Link>
                 <p className="mt-3 text-xs text-white/70">
                   La plateforme immobilière de référence en Afrique de l&apos;Ouest.

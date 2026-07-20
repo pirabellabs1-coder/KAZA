@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { COUNTRIES, getAllCities } from "@/lib/geo/locations";
 
 // =============================================================================
-// KAZA — Stats géographiques live (counts par pays, par ville, prix moyen)
+// Kaabo — Stats géographiques live (counts par pays, par ville, prix moyen)
 // =============================================================================
 
 export interface GeoStats {

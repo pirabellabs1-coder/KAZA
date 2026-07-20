@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin actions state (mode démo)
+// Kaabo - Admin actions state (mode démo)
 // Wave 8 - Ibrahima Sow
 //
 // Helpers localStorage pour persister les décisions admin entre les

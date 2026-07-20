@@ -13,11 +13,11 @@ import { GlassPanel } from "@/components/shared/glass-panel";
 import { PartnerApplicationForm } from "@/components/partners/partner-application-form";
 
 export const metadata: Metadata = {
-  title: "Nos partenaires | KAZA",
+  title: "Nos partenaires | Kaabo",
   description:
-    "Découvrez l'écosystème KAZA. Page en cours de mise à jour — la liste officielle de nos partenaires sera publiée prochainement.",
+    "Découvrez l'écosystème Kaabo. Page en cours de mise à jour — la liste officielle de nos partenaires sera publiée prochainement.",
   openGraph: {
-    title: "L'écosystème de partenaires KAZA",
+    title: "L'écosystème de partenaires Kaabo",
     description:
       "La liste officielle de nos partenaires sera publiée prochainement.",
     type: "website",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 // =============================================================================
-// KAZA — /partners
+// Kaabo — /partners
 // La liste des partenaires (paiement, tech, presse, institutionnels) sera
 // alimentée par un référentiel maintenu côté Supabase. Tant qu'aucun
 // partenaire n'est officiellement confirmé et signé, on n'affiche aucun nom :
@@ -45,7 +45,7 @@ export default function PartnersPage() {
           <FadeIn>
             <Badge className="mb-6 border-0 bg-gradient-to-r from-kaza-green via-emerald-400 to-kaza-blue px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white shadow-xl">
               <Sparkles className="mr-1.5 size-3.5" />
-              Écosystème KAZA
+              Écosystème Kaabo
             </Badge>
           </FadeIn>
 
@@ -119,7 +119,7 @@ export default function PartnersPage() {
                     <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
                       partenaire
                     </span>{" "}
-                    KAZA
+                    Kaabo
                   </h2>
                   <p className="mx-auto mt-6 max-w-2xl text-lg text-white/85 sm:text-xl">
                     Vous êtes une fintech, une marque tech, une institution ou
@@ -171,7 +171,7 @@ export default function PartnersPage() {
                 Devenir partenaire
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
-                Remplissez ce formulaire pour rejoindre l&apos;écosystème KAZA.
+                Remplissez ce formulaire pour rejoindre l&apos;écosystème Kaabo.
                 Notre équipe partenariats étudie chaque dossier et revient vers
                 vous sous 5 jours ouvrés.
               </p>

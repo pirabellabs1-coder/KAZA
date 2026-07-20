@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 
 // =============================================================================
-// KAZA — Notifications de paiement de loyer (bailleur + locataire).
+// Kaabo — Notifications de paiement de loyer (bailleur + locataire).
 // Appelé par le webhook FeexPay ET le paiement par solde (payRentFromWallet)
 // pour que chaque encaissement notifie les deux parties (et signale le bail
 // actif au 1er loyer). Best-effort — ne bloque jamais le flux de paiement.

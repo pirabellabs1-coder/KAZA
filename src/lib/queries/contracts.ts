@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Requête « Mes contrats » (/contracts) branchée sur la table réelle
+// Kaabo — Requête « Mes contrats » (/contracts) branchée sur la table réelle
 // `contracts` → `rentals` → `properties` + noms (users). Scopée à l'utilisateur :
 // il voit les contrats où il est LOCATAIRE (rental.tenant_id) ou PROPRIÉTAIRE
 // du bien (property.owner_id). Lecture via service role, filtrage strict en code.

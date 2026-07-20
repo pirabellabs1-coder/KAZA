@@ -37,7 +37,7 @@ import { countOwnerVisitsThisMonth } from "@/lib/queries/owner-visits";
 import { countPendingOffersForSeller } from "@/lib/queries/offers";
 
 export const metadata: Metadata = {
-  title: "Dashboard Agence — KAZA Pro",
+  title: "Dashboard Agence — Kaabo Pro",
   description: "Pilotez votre agence immobilière en un coup d'œil.",
 };
 
@@ -161,7 +161,7 @@ export default async function AgencyDashboardPage() {
               {teamStats.total > 0
                 ? `${teamStats.total} collaborateur${teamStats.total > 1 ? "s" : ""}`
                 : "Aucun collaborateur — invitez votre équipe"}
-              {" · Espace KAZA Pro"}
+              {" · Espace Kaabo Pro"}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -342,7 +342,7 @@ export default async function AgencyDashboardPage() {
             </p>
             <p className="mt-1 max-w-md text-sm text-muted-foreground">
               Les revenus mensuels apparaîtront ici dès que vos premiers loyers
-              auront été encaissés via KAZA.
+              auront été encaissés via Kaabo.
             </p>
           </div>
         </CardContent>
@@ -420,7 +420,7 @@ export default async function AgencyDashboardPage() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="size-5 text-amber-500" />
-              Quotas — KAZA Pro Premium
+              Quotas — Kaabo Pro Premium
             </CardTitle>
             <p className="mt-1 text-sm text-muted-foreground">
               Utilisation en temps réel de votre plan d&apos;abonnement.

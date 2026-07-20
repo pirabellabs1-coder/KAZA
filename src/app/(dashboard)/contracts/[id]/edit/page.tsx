@@ -121,7 +121,7 @@ export default async function ContractEditorPage({
           <div className="hidden h-6 w-px bg-border sm:block" />
           <div>
             <p className="text-xs text-muted-foreground">
-              N° KAZA-2026-{id.slice(-6).toUpperCase()} ·{" "}
+              N° Kaabo-2026-{id.slice(-6).toUpperCase()} ·{" "}
               <Badge
                 variant="secondary"
                 className="ml-1 bg-muted text-muted-foreground"

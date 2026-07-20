@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ensureContractForRental } from "@/lib/rentals/lifecycle";
 
 // =============================================================================
-// KAZA — Contrat de bail à afficher/signer. Pilote le VRAI cycle d'état de la
+// Kaabo — Contrat de bail à afficher/signer. Pilote le VRAI cycle d'état de la
 // table `contracts` (DRAFT → PENDING_TENANT → PENDING_OWNER → SIGNED), avec les
 // infos du bail (rental + property + parties) pour le rendu. L'`id` de route
 // peut être un rental_id (lien des locations) OU un contract_id (lien des

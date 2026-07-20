@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Référentiel géographique Afrique de l'Ouest
+// Kaabo — Référentiel géographique Afrique de l'Ouest
 // Pays → Villes → Quartiers (utilisé partout : filtres search, création bien,
 // pages /pays/[code], pages /villes/[slug], etc.)
 // =============================================================================
@@ -39,7 +39,7 @@ export interface Country {
 }
 
 // ---------------------------------------------------------------------------
-// BÉNIN — couverture la plus dense (pays d'origine KAZA)
+// BÉNIN — couverture la plus dense (pays d'origine Kaabo)
 // ---------------------------------------------------------------------------
 
 const COTONOU_NEIGHBORHOODS: Neighborhood[] = [

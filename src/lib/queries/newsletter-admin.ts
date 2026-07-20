@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Abonnés newsletter (back-office admin)
+// Kaabo — Queries Abonnés newsletter (back-office admin)
 // Lecture de `newsletter_subscribers` (inscriptions footer / landing / faq).
 // RLS : SELECT réservé aux ADMIN (policy `newsletter_admin_select`).
 // Les types Supabase auto-générés ne connaissent pas encore la table → cast.

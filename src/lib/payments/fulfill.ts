@@ -14,7 +14,7 @@ import { notifyRentPayment } from "@/lib/rentals/notify-payment";
 import { markOfferDepositPaid } from "@/lib/offers/deposit";
 
 // =============================================================================
-// KAZA - Fulfillment d'un paiement confirme (COMPLETED)
+// Kaabo - Fulfillment d'un paiement confirme (COMPLETED)
 // =============================================================================
 // Logique unique appelee A LA FOIS par :
 //  - la route webhook (`/api/webhooks/feexpay`, `/api/webhooks/kkiapay`)

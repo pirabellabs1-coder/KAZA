@@ -280,7 +280,7 @@ export function ArticleEditorForm({
               id="art-author-role"
               value={authorRole}
               onChange={(e) => setAuthorRole(e.target.value)}
-              placeholder="Ex. Conseillère KAZA"
+              placeholder="Ex. Conseillère Kaabo"
             />
           </div>
         </div>

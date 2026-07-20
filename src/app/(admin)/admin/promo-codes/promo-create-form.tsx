@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Admin / Création d'un code promo
+// Kaabo — Admin / Création d'un code promo
 // Formulaire client (react-hook-form + Zod). Submit → server action
 // `createPromoCode`, toast + router.refresh en cas de succès.
 // =============================================================================

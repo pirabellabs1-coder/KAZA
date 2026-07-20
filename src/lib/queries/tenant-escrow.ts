@@ -5,7 +5,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Fonds en séquestre du locataire (données réelles)
+// Kaabo — Fonds en séquestre du locataire (données réelles)
 //
 // Source : table `escrow_payments` (migration 00001_initial_schema.sql).
 // Colonnes : id, rental_id, tenant_id, owner_id, total_amount, amount_paid,

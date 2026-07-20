@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 
 // =============================================================================
-// KAZA — Acompte de réservation d'achat (helper partagé)
+// Kaabo — Acompte de réservation d'achat (helper partagé)
 //
 // Appelé soit par l'action wallet (paiement immédiat), soit par le webhook
 // FeexPay (Mobile Money confirmé). Marque l'offre DEPOSIT_PAID, réserve le

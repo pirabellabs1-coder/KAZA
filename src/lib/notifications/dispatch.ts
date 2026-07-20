@@ -1,7 +1,7 @@
 import 'server-only';
 
 // =============================================================================
-// KAZA - Notification dispatcher
+// Kaabo - Notification dispatcher
 // Wave 3 - Kwame Asante
 //
 // Point d'entrée unique pour l'envoi de notifications côté Next.js (server
@@ -248,7 +248,7 @@ function buildPushPayload(type: NotificationType, data: Record<string, unknown>)
       };
     case 'welcome':
       return {
-        title: 'Bienvenue sur KAZA',
+        title: 'Bienvenue sur Kaabo',
         body: `Bonjour ${asString(data.firstName, '')}, explorez des milliers d'annonces.`,
         link: '/dashboard',
       };

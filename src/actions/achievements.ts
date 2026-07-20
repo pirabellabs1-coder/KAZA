@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Achievements (Server Actions)
+// Kaabo — Achievements (Server Actions)
 //
 // `unlockAchievement` :
 //   - vérifie l'existence du code dans `achievement_definitions`

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Codes promo (liste + création)
+// Kaabo — Admin / Codes promo (liste + création)
 // Server Component. Lit tous les codes via `listPromoCodes`, affiche le
 // formulaire de création (client) et un interrupteur actif/inactif par code.
 // =============================================================================

@@ -27,7 +27,7 @@ import { ReferralCodeCard } from "./referral-code-card";
 export const metadata: Metadata = {
   title: "Parrainage",
   description:
-    "Invitez vos proches sur KAZA et gagnez des points pour chaque filleul valide.",
+    "Invitez vos proches sur Kaabo et gagnez des points pour chaque filleul valide.",
 };
 
 const REFERRAL_REWARD_POINTS = 1000;
@@ -44,14 +44,14 @@ const HOW_IT_WORKS = [
     step: 2,
     title: "Votre filleul s'inscrit",
     description:
-      "Il cree son compte KAZA en saisissant votre code lors de l'inscription.",
+      "Il cree son compte Kaabo en saisissant votre code lors de l'inscription.",
     icon: UserPlus,
   },
   {
     step: 3,
     title: "Vous gagnez 1 000 points",
     description:
-      "Des sa premiere location signee, vous recevez 1 000 KAZA Points dans votre cagnotte.",
+      "Des sa premiere location signee, vous recevez 1 000 Kaabo Points dans votre cagnotte.",
     icon: Gift,
   },
 ];
@@ -61,7 +61,7 @@ const TERMS = [
   "Le code parrainage est personnel et non transferable.",
   "Les 1 000 points sont credites apres signature et premier paiement de la location.",
   "Maximum 50 filleuls valides par annee civile par compte.",
-  "KAZA se reserve le droit de suspendre les comptes en cas d'abus avere.",
+  "Kaabo se reserve le droit de suspendre les comptes en cas d'abus avere.",
 ];
 
 const STATUS_LABELS: Record<string, string> = {
@@ -111,7 +111,7 @@ export default async function ReferralPage() {
           <div className="max-w-2xl">
             <Badge className="mb-3 border-white/20 bg-white/10 text-white hover:bg-white/15">
               <Sparkles className="mr-1 size-3" />
-              Programme Ambassadeur KAZA
+              Programme Ambassadeur Kaabo
             </Badge>
             <h1 className="font-heading text-3xl font-bold leading-tight sm:text-4xl">
               Parrainez et gagnez{" "}
@@ -121,8 +121,8 @@ export default async function ReferralPage() {
               par filleul
             </h1>
             <p className="mt-3 text-sm text-white/80 sm:text-base">
-              Invitez vos amis, votre famille et vos collegues sur KAZA. Vous
-              gagnez {REFERRAL_REWARD_POINTS} KAZA Points des leur premiere
+              Invitez vos amis, votre famille et vos collegues sur Kaabo. Vous
+              gagnez {REFERRAL_REWARD_POINTS} Kaabo Points des leur premiere
               location signee — eux profitent d&apos;un bonus de bienvenue.
             </p>
           </div>
@@ -157,7 +157,7 @@ export default async function ReferralPage() {
         <StatsCard
           title="Locations completees"
           value={stats.totalConverted}
-          subtitle="Filleuls actifs sur KAZA"
+          subtitle="Filleuls actifs sur Kaabo"
           icon={CheckCircle2}
         />
         <StatsCard
@@ -298,7 +298,7 @@ export default async function ReferralPage() {
               href="/legal/cgu"
               className="font-medium text-kaza-blue hover:underline"
             >
-              CGU KAZA
+              CGU Kaabo
             </a>{" "}
             et la{" "}
             <a

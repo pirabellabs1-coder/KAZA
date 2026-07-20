@@ -281,7 +281,7 @@ export default async function OwnerAnalyticsPage() {
           <span className="size-2 animate-pulse rounded-full bg-kaza-green" />
           Données live — analytics_events (30 j)
         </span>
-        <span>Source : Plateforme KAZA</span>
+        <span>Source : Plateforme Kaabo</span>
       </div>
     </div>
   );

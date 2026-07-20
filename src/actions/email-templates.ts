@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server Actions Email Templates (upsert sur `email_templates`)
+// Kaabo — Server Actions Email Templates (upsert sur `email_templates`)
 //
 // upsertEmailTemplate :
 //   1. Vérifie que l'utilisateur courant a le rôle ADMIN

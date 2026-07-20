@@ -1,7 +1,7 @@
 import 'server-only';
 
 // =============================================================================
-// KAZA - Resend email helper
+// Kaabo - Resend email helper
 // Wave 3 - Kwame Asante
 //
 // Wrapper minimaliste autour de l'API Resend (https://resend.com/docs/api).
@@ -38,7 +38,7 @@ export async function sendEmail(
 ): Promise<EmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.NOTIFICATIONS_FROM_EMAIL ?? 'noreply@kaza.africa';
-  const fromName = process.env.NOTIFICATIONS_FROM_NAME ?? 'KAZA';
+  const fromName = process.env.NOTIFICATIONS_FROM_NAME ?? 'Kaabo';
   const from = `${fromName} <${fromEmail}>`;
 
   const recipients = Array.isArray(to) ? to : [to];

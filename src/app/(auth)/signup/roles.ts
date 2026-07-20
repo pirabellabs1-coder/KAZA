@@ -2,7 +2,7 @@ import { Building2, Home, GraduationCap, Tag, Briefcase } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 // =============================================================================
-// KAZA - Rôles d'inscription + thème visuel par rôle
+// Kaabo - Rôles d'inscription + thème visuel par rôle
 // =============================================================================
 // Classes Tailwind écrites en toutes lettres (pas de concaténation dynamique)
 // pour que le compilateur les détecte.

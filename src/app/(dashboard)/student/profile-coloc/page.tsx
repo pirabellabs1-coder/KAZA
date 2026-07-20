@@ -25,7 +25,7 @@ export default async function ProfileColocPage() {
           Mon profil colocataire
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Plus votre profil est complet, plus l&apos;algorithme KAZA peut vous
+          Plus votre profil est complet, plus l&apos;algorithme Kaabo peut vous
           proposer des matchs précis.
         </p>
       </div>

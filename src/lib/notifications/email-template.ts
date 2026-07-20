@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Gabarit email transactionnel (marque KAZA)
+// Kaabo — Gabarit email transactionnel (marque Kaabo)
 //
 // Un seul gabarit responsive, compatible clients mail (Gmail, Outlook, Apple
 // Mail, mobile) : tables + styles inline, largeur 600px, polices web-safe.
@@ -48,7 +48,7 @@ export interface BuildEmailParams {
   rows?: EmailRow[];
   /** Bouton d'action principal. */
   button?: EmailButton;
-  /** Ligne de clôture (ex. « L'équipe KAZA »). */
+  /** Ligne de clôture (ex. « L'équipe Kaabo »). */
   outro?: string;
   /** Encart info optionnel (texte mis en avant, fond bleu clair). */
   highlight?: string;
@@ -136,7 +136,7 @@ export function buildEmail(params: BuildEmailParams): string {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>${esc(heading ?? preheader ?? "KAZA")}</title>
+  <title>${esc(heading ?? preheader ?? "Kaabo")}</title>
 </head>
 <body style="margin:0;padding:0;background:${BG};">
   <span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;">${esc(preheader ?? heading ?? "")}</span>
@@ -147,7 +147,7 @@ export function buildEmail(params: BuildEmailParams): string {
           <!-- Header -->
           <tr>
             <td align="center" style="padding:8px 0 20px;">
-              <span style="font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:800;letter-spacing:1px;color:${NAVY};">KAZA<span style="color:${GREEN};">.</span></span>
+              <span style="font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:800;letter-spacing:1px;color:${NAVY};">Kaabo<span style="color:${GREEN};">.</span></span>
               <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${MUTED};margin-top:2px;">Immobilier en Afrique</div>
             </td>
           </tr>
@@ -173,7 +173,7 @@ export function buildEmail(params: BuildEmailParams): string {
               </p>
               <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${MUTED};">
                 <a href="${SITE_URL}" style="color:${MUTED};text-decoration:none;">${SITE_URL.replace(/^https?:\/\//, "")}</a>
-                &nbsp;·&nbsp; KAZA, une plateforme PIRABEL LABS
+                &nbsp;·&nbsp; Kaabo, une plateforme PIRABEL LABS
               </p>
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#9CA3AF;">
                 Cet email vous a été envoyé suite à une action sur votre compte ou à votre demande.

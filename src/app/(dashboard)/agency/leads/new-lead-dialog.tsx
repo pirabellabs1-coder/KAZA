@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Dialog client : créer un nouveau lead
+// Kaabo — Dialog client : créer un nouveau lead
 // =============================================================================
 
 import { useState, useTransition } from "react";
@@ -32,7 +32,7 @@ import { toast } from "@/components/ui/toast-helper";
 import { createLead } from "@/actions/agency-leads";
 
 const SOURCES = [
-  { value: "SITE_KAZA", label: "Site KAZA" },
+  { value: "SITE_KAZA", label: "Site Kaabo" },
   { value: "SOCIAL", label: "Réseaux sociaux" },
   { value: "WORD_OF_MOUTH", label: "Bouche-à-oreille" },
   { value: "GOOGLE_ADS", label: "Pub Google" },

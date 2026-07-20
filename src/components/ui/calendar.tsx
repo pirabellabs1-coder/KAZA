@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - Calendar (shadcn-style)
+// Kaabo - Calendar (shadcn-style)
 //
 // Implementation custom legere (sans react-day-picker) pour eviter une
 // dependance supplementaire. Grille 7x6 mois courant + jours debordants.

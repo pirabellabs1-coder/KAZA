@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================
-   KAZA Design System - CSS Variables
+   Kaabo Design System - CSS Variables
    Palette from PRD + shadcn/ui integration
    ============================================ */
 
@@ -118,7 +118,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* KAZA specific colors */
+  /* Kaabo specific colors */
   --color-kaza-navy: var(--color-primary-navy);
   --color-kaza-navy-light: var(--color-primary-navy-light);
   --color-kaza-navy-dark: var(--color-primary-navy-dark);

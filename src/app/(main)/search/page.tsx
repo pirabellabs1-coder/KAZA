@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Page Recherche luxe-pro (refonte complète)
+// Kaabo — Page Recherche luxe-pro (refonte complète)
 // Server Component avec searchParams pour filtres GET
 // Sections : Hero premium, tabs pays, villes populaires, filtres sticky,
 // résultats (grid/liste/carte placeholder), alertes, top quartiers, FAQ, etc.
@@ -93,10 +93,10 @@ export async function generateMetadata({
   let description: string;
 
   if (cityName || countryName || typeLabel) {
-    title = `${noun}${place} - KAZA`;
+    title = `${noun}${place} - Kaabo`;
     description = `${noun} à louer${place} : annonces immobilières vérifiées${
       hasMaxPrice ? ` jusqu'à ${formatFcfa(maxPriceNum!)}` : ""
-    }. Filtrez par quartier, prix et équipements sur KAZA.`;
+    }. Filtrez par quartier, prix et équipements sur Kaabo.`;
   } else {
     title = "Rechercher un logement en Afrique";
     description =
@@ -462,7 +462,7 @@ export default async function SearchPage({
           <div className="max-w-4xl">
             <Badge className="mb-4 border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
               <Sparkles className="mr-1.5 size-3.5 text-kaza-green" />
-              KAZA Search — la plus large couverture en Afrique de l&apos;Ouest
+              Kaabo Search — la plus large couverture en Afrique de l&apos;Ouest
             </Badge>
             <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Trouvez votre prochain{" "}
@@ -1609,7 +1609,7 @@ export default async function SearchPage({
       </section>
 
       {/* =========================================================== */}
-      {/* POURQUOI KAZA                                                */}
+      {/* POURQUOI Kaabo                                                */}
       {/* =========================================================== */}
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -1618,7 +1618,7 @@ export default async function SearchPage({
               Confiance
             </span>
             <h2 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">
-              Pourquoi rechercher sur KAZA ?
+              Pourquoi rechercher sur Kaabo ?
             </h2>
           </div>
 
@@ -1633,7 +1633,7 @@ export default async function SearchPage({
               {
                 icon: Wallet,
                 title: "Paiement sécurisé",
-                desc: "Wallet KAZA + Mobile Money. Caution séquestrée, libération à l'état des lieux.",
+                desc: "Wallet Kaabo + Mobile Money. Caution séquestrée, libération à l'état des lieux.",
                 color: "bg-blue-100 text-blue-700",
               },
               {
@@ -1691,7 +1691,7 @@ export default async function SearchPage({
             {[
               {
                 q: "Les biens affichés sont-ils tous vérifiés ?",
-                a: "Oui. Chaque annonce est vérifiée par notre équipe : photos authentiques, propriétaire identifié, prix conforme au marché. Le badge KAZA Verified garantit la fiabilité.",
+                a: "Oui. Chaque annonce est vérifiée par notre équipe : photos authentiques, propriétaire identifié, prix conforme au marché. Le badge Kaabo Verified garantit la fiabilité.",
               },
               {
                 q: "Puis-je rechercher dans plusieurs pays à la fois ?",

@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - useTypingIndicator (optionnel)
+// Kaabo - useTypingIndicator (optionnel)
 //
 // Hook utilitaire base sur Supabase Realtime "broadcast" pour publier et
 // recevoir des evenements "typing" 1-1. Sans table SQL : ephemeral only.

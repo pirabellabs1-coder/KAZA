@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Sérialisation CSV serveur (sans dépendance externe)
+// Kaabo - Sérialisation CSV serveur (sans dépendance externe)
 // =============================================================================
 // Implémentation minimale conforme RFC 4180 :
 //   - séparateur : virgule

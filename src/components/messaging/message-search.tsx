@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - MessageSearch (client component)
+// Kaabo - MessageSearch (client component)
 //
 // Champ de recherche debounce (300ms) avec icone loupe + bouton clear. Notifie
 // le parent via `onSearch` uniquement apres la fin du debounce ; la valeur

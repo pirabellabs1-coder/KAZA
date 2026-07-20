@@ -78,7 +78,7 @@ export function DepositPaymentButton({
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-sm font-medium">
-                Solde KAZA ({formatPrice(walletBalance)})
+                Solde Kaabo ({formatPrice(walletBalance)})
               </span>
               <span className="block text-xs text-muted-foreground">
                 {canWallet

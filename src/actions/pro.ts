@@ -8,7 +8,7 @@ import { sendEmail } from "@/lib/notifications/resend";
 import { buildEmail } from "@/lib/notifications/email-template";
 
 // =============================================================================
-// KAZA - Server Action : demande de démo Espace Pro (agences)
+// Kaabo - Server Action : demande de démo Espace Pro (agences)
 //
 // Persiste la demande dans la table générique `contact_messages` (réutilisée
 // pour tout canal de contact) puis :
@@ -62,10 +62,10 @@ function buildConfirmationHtml(name: string, agencyName: string): string {
     heading: "Votre demande de démo a bien été reçue",
     intro: `Bonjour ${name},`,
     paragraphs: [
-      "Merci de votre intérêt pour l'Espace Pro KAZA. Notre équipe Pro revient vers vous sous 24h ouvrées pour planifier votre démonstration.",
+      "Merci de votre intérêt pour l'Espace Pro Kaabo. Notre équipe Pro revient vers vous sous 24h ouvrées pour planifier votre démonstration.",
     ],
     rows: [{ label: "Agence", value: agencyName }],
-    outro: "L'équipe KAZA",
+    outro: "L'équipe Kaabo",
   });
 }
 
@@ -132,7 +132,7 @@ export async function submitProDemoRequest(
   try {
     await sendEmail(
       recipient,
-      `[KAZA Pro] ${subject}`,
+      `[Kaabo Pro] ${subject}`,
       buildAdminHtml({
         agencyName: data.agencyName,
         contactName: data.contactName,
@@ -144,7 +144,7 @@ export async function submitProDemoRequest(
     );
     await sendEmail(
       data.email,
-      "Votre demande de démo Pro KAZA a bien été reçue",
+      "Votre demande de démo Pro Kaabo a bien été reçue",
       buildConfirmationHtml(data.contactName, data.agencyName),
     );
   } catch (err) {

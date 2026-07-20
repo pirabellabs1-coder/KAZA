@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Demandes de colocation de l'étudiant (réelles)
+// Kaabo — Demandes de colocation de l'étudiant (réelles)
 // roommate_members (statut) → roommate_groups (listing) → roommate_listings.
 // =============================================================================
 

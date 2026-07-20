@@ -127,7 +127,7 @@ export default async function ContractDetailPage({
                 Le loyer mensuel est fixé à{" "}
                 <strong>{formatPrice(contract.monthlyRent)}</strong>, payable
                 d&apos;avance au plus tard le 5 de chaque mois via la plateforme
-                KAZA (séquestre sécurisé — Mobile Money ou solde KAZA).
+                Kaabo (séquestre sécurisé — Mobile Money ou solde Kaabo).
               </Article>
 
               <Article num="4" title="Charges">
@@ -150,7 +150,7 @@ export default async function ContractDetailPage({
               <Article num="5" title="Dépôt de garantie">
                 Un dépôt de garantie de{" "}
                 <strong>{formatPrice(contract.deposit)}</strong> est versé à la
-                signature et conservé sur le compte séquestre KAZA. Il sera
+                signature et conservé sur le compte séquestre Kaabo. Il sera
                 restitué dans les délais légaux suivant la remise des clés,
                 déduction faite des éventuelles dégradations dûment constatées.
               </Article>
@@ -187,8 +187,8 @@ export default async function ContractDetailPage({
               <Article num="10" title="Droit applicable et litiges">
                 Le présent contrat est régi par le droit béninois (Loi n° 2018-12)
                 et l&apos;OHADA. Tout litige sera soumis à la médiation gratuite
-                KAZA puis, à défaut d&apos;accord sous 30 jours, aux tribunaux
-                compétents de Cotonou. La signature électronique apposée via KAZA
+                Kaabo puis, à défaut d&apos;accord sous 30 jours, aux tribunaux
+                compétents de Cotonou. La signature électronique apposée via Kaabo
                 a valeur probante (Loi n° 2017-20, Code du numérique).
               </Article>
             </div>

@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Subscriptions & Invoices (server-side queries)
+// Kaabo — Subscriptions & Invoices (server-side queries)
 //
 // Branche les tables `subscriptions` et `invoices` (migration
 // 00011_subscriptions.sql). Catalogue PLAN_DETAILS partagé entre la facturation
@@ -63,7 +63,7 @@ export interface PlanDetails {
 
 export const PLAN_DETAILS: Record<string, PlanDetails> = {
   PRO_STARTER: {
-    name: "KAZA Pro Starter",
+    name: "Kaabo Pro Starter",
     priceMonthly: 75_000,
     audience: "AGENCY",
     features: [
@@ -75,7 +75,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
     ],
   },
   PRO_PREMIUM: {
-    name: "KAZA Pro Premium",
+    name: "Kaabo Pro Premium",
     priceMonthly: 145_000,
     audience: "AGENCY",
     features: [
@@ -89,7 +89,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
     ],
   },
   PRO_ELITE: {
-    name: "KAZA Pro Elite",
+    name: "Kaabo Pro Elite",
     priceMonthly: 295_000,
     audience: "AGENCY",
     features: [
@@ -103,7 +103,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
     ],
   },
   PLUS_MONTHLY: {
-    name: "KAZA Plus Mensuel",
+    name: "Kaabo Plus Mensuel",
     priceMonthly: 4_900,
     audience: "TENANT",
     features: [
@@ -114,7 +114,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
     ],
   },
   PLUS_YEARLY: {
-    name: "KAZA Plus Annuel",
+    name: "Kaabo Plus Annuel",
     priceMonthly: 3_900,
     priceYearly: 47_000,
     audience: "TENANT",

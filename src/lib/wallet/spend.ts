@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Débit / crédit du solde KAZA (wallet) pour payer un service.
+// Kaabo — Débit / crédit du solde Kaabo (wallet) pour payer un service.
 // Le débit passe par la fonction Postgres `wallet_debit` (verrou FOR UPDATE +
 // garde-fou anti-solde-négatif) → atomique, jamais de double-débit.
 // =============================================================================
@@ -33,7 +33,7 @@ export type WalletDebitResult =
   | { ok: true; txId: string }
   | { ok: false; error: string };
 
-/** Débite le solde KAZA de façon atomique. Échoue proprement si insuffisant. */
+/** Débite le solde Kaabo de façon atomique. Échoue proprement si insuffisant. */
 export async function walletDebit(
   input: WalletDebitInput,
 ): Promise<WalletDebitResult> {
@@ -50,16 +50,16 @@ export async function walletDebit(
   if (error) {
     const m = (error.message || "").toUpperCase();
     if (m.includes("INSUFFICIENT_BALANCE")) {
-      return { ok: false, error: "Solde KAZA insuffisant pour ce paiement." };
+      return { ok: false, error: "Solde Kaabo insuffisant pour ce paiement." };
     }
     if (m.includes("WALLET_FROZEN")) {
-      return { ok: false, error: "Votre solde KAZA est temporairement gelé." };
+      return { ok: false, error: "Votre solde Kaabo est temporairement gelé." };
     }
     if (m.includes("INVALID_AMOUNT")) {
       return { ok: false, error: "Montant invalide." };
     }
     console.error("[wallet] debit failed:", error.message);
-    return { ok: false, error: "Échec du débit du solde KAZA." };
+    return { ok: false, error: "Échec du débit du solde Kaabo." };
   }
 
   return { ok: true, txId: data as string };
@@ -91,7 +91,7 @@ export interface WalletBalance {
   frozen: boolean;
 }
 
-/** Solde KAZA courant + indicateur de gel. */
+/** Solde Kaabo courant + indicateur de gel. */
 export async function getWalletBalanceFor(
   userId: string,
 ): Promise<WalletBalance> {

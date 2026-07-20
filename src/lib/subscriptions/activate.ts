@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Activation d'un abonnement payé par moyen de paiement (Mobile Money).
+// Kaabo — Activation d'un abonnement payé par moyen de paiement (Mobile Money).
 // Réutilisé par le webhook (après paiement COMPLETED) ET par l'action quand le
 // plan est gratuit. NE débite PAS le wallet (l'argent vient du provider).
 // =============================================================================

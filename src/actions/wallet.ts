@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Server actions Wallet & demandes de retrait
+// Kaabo — Server actions Wallet & demandes de retrait
 // - Demande de retrait (locataire/proprio/agence)
 // - Mise à jour RIB / Mobile Money
 // - Admin : approuver / refuser une demande de retrait
@@ -19,7 +19,7 @@ import { createPayment } from "@/lib/payments";
 import type { MomoCheckoutFields } from "@/lib/payments/types";
 import { walletDebit, walletRefund } from "@/lib/wallet/spend";
 
-// Commission KAZA prélevée sur chaque retrait
+// Commission Kaabo prélevée sur chaque retrait
 const WITHDRAWAL_FEE_RATE = 0.01; // 1%
 const MIN_WITHDRAWAL = 5000;
 
@@ -85,7 +85,7 @@ export async function requestWithdrawal(
   if (wallet.is_frozen) {
     return {
       success: false,
-      error: "Wallet gelé. Contactez le support KAZA.",
+      error: "Wallet gelé. Contactez le support Kaabo.",
     };
   }
 
@@ -184,7 +184,7 @@ export async function initiateWalletTopUp(
     const result = await createPayment({
       amount: value,
       currency: "XOF",
-      description: `Recharge KAZA Wallet — ${value.toLocaleString("fr-FR")} FCFA`,
+      description: `Recharge Kaabo Wallet — ${value.toLocaleString("fr-FR")} FCFA`,
       customerEmail: user.email ?? "",
       customerPhone: momo.phone,
       network: momo.network,

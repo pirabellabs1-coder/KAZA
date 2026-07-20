@@ -9,7 +9,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listTenantEscrowPayments } from "@/lib/queries/tenant-escrow";
 
 // =============================================================================
-// KAZA - Page Fonds en séquestre (escrow)
+// Kaabo - Page Fonds en séquestre (escrow)
 //
 // Lecture réelle des paiements en séquestre du locataire via
 // `listTenantEscrowPayments` (table escrow_payments, filtre tenant_id).

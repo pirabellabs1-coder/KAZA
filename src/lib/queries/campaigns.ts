@@ -5,7 +5,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Campagnes de communication (admin)
+// Kaabo — Campagnes de communication (admin)
 // Comptes d'audience RÉELS depuis la table users + historique campagnes.
 // =============================================================================
 

@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - PropertyActions (client component)
+// Kaabo - PropertyActions (client component)
 //
 // Barre d'actions affichee a cote du titre de la propriete : demande de visite
 // (VisitRequestButton existant), bouton "Sauvegarder" (favoris localStorage) et
@@ -97,7 +97,7 @@ export function PropertyActions({
       try {
         await navigator.share({
           title: propertyTitle,
-          text: `Découvrez ce bien sur KAZA : ${propertyTitle}`,
+          text: `Découvrez ce bien sur Kaabo : ${propertyTitle}`,
           url,
         });
         return;

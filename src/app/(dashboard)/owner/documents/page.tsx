@@ -22,7 +22,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listAgencyDocuments } from "@/lib/queries/agency-b2b";
 
 export const metadata: Metadata = {
-  title: "Mes documents — KAZA",
+  title: "Mes documents — Kaabo",
   description: "Contrats de bail de vos biens et modèles de contrats.",
 };
 
@@ -158,7 +158,7 @@ export default async function OwnerDocumentsPage() {
             Modèles de contrats
           </h2>
           <p className="text-xs text-muted-foreground">
-            Modèles prêts à personnaliser dans l&apos;éditeur de contrat KAZA.
+            Modèles prêts à personnaliser dans l&apos;éditeur de contrat Kaabo.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-3">

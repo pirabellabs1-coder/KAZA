@@ -22,7 +22,7 @@ import { getAudienceSegments, listCampaigns } from "@/lib/queries/campaigns";
 import { CampaignComposer } from "./campaign-composer";
 
 export const metadata: Metadata = {
-  title: "Notifications & campagnes — KAZA Admin",
+  title: "Notifications & campagnes — Kaabo Admin",
   description: "Pilotage des envois email/push/in-app et segmentation réelle.",
 };
 

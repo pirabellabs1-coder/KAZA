@@ -205,10 +205,10 @@ export function AchievementsClient({
           Bonjour {userFirstName}
         </p>
         <h1 className="text-3xl font-bold tracking-tight text-[#1A3A52]">
-          Mes badges KAZA
+          Mes badges Kaabo
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          Chaque action sur KAZA vous rapporte des badges et des KAZA Points.
+          Chaque action sur Kaabo vous rapporte des badges et des Kaabo Points.
           Debloquez la collection complete pour devenir une legende de la
           plateforme.
         </p>

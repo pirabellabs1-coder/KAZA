@@ -11,7 +11,7 @@ import { SurveysClient } from "./surveys-client";
 export const metadata: Metadata = {
   title: "Vos avis comptent",
   description:
-    "Repondez aux sondages KAZA et aidez-nous a ameliorer votre experience. Chaque sondage rapporte des KAZA Points.",
+    "Repondez aux sondages Kaabo et aidez-nous a ameliorer votre experience. Chaque sondage rapporte des Kaabo Points.",
 };
 
 export default async function SurveysPage() {

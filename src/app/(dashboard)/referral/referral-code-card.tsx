@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - ReferralCodeCard
+// Kaabo - ReferralCodeCard
 //
 // Petit composant client : affiche le code de parrainage, gere copy +
 // share natif (Web Share API quand dispo), et propose un bouton
@@ -86,8 +86,8 @@ export function ReferralCodeCard({
   const handleShare = async () => {
     if (!code || !referralLink) return;
     const shareData = {
-      title: "Rejoignez KAZA avec mon code",
-      text: `Salut, j'utilise KAZA pour la location au Benin. Inscris-toi avec mon code ${code} et profite d'avantages exclusifs.`,
+      title: "Rejoignez Kaabo avec mon code",
+      text: `Salut, j'utilise Kaabo pour la location au Benin. Inscris-toi avec mon code ${code} et profite d'avantages exclusifs.`,
       url: referralLink,
     };
     if (typeof navigator !== "undefined" && "share" in navigator) {

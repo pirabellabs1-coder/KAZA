@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Persistance du profil colocataire (table student_profiles, migr 00040)
+// Kaabo — Persistance du profil colocataire (table student_profiles, migr 00040)
 // =============================================================================
 
 import { revalidatePath } from "next/cache";

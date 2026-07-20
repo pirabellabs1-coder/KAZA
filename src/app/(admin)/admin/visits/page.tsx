@@ -13,7 +13,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Demandes de visite — KAZA Admin",
+  title: "Demandes de visite — Kaabo Admin",
   description:
     "Supervision des demandes de visite : visiteur, bien, propriétaire, statut.",
 };

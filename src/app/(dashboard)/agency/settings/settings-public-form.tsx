@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Onglet « Page publique » des paramètres agence (client)
+// Kaabo — Onglet « Page publique » des paramètres agence (client)
 //
 // Formulaire controlé branché sur la Server Action `updateAgencySettings`
 // (colonne JSONB users.agency_settings, migration 00035). Remplace l'ancien

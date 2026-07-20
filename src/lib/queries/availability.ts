@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Blocages de disponibilité (server-side)
+// Kaabo — Queries Blocages de disponibilité (server-side)
 //
 // Lecture de `public.availability_blocks` (migration 00055) pour le calendrier
 // de disponibilité côté propriétaire.

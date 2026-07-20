@@ -8,7 +8,7 @@ import {
 import { BLOG_ARTICLES, type BlogArticle } from "@/lib/blog-data";
 
 // =============================================================================
-// KAZA — Source unifiée du blog public.
+// Kaabo — Source unifiée du blog public.
 // Les articles rédigés en base (admin/contributeurs) sont prioritaires ; les
 // articles statiques historiques complètent la liste tant que peu d'articles
 // réels existent. Mapping DB `Article` → forme `BlogArticle` attendue par l'UI.
@@ -18,14 +18,14 @@ const DEFAULT_COVER =
   "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=80";
 
 function toBlogArticle(a: Article): BlogArticle {
-  const author = a.authorName || "Équipe KAZA";
+  const author = a.authorName || "Équipe Kaabo";
   return {
     slug: a.slug,
     title: a.title,
     excerpt: a.excerpt || "",
     category: a.category || "Actualités",
     author,
-    authorRole: a.authorRole || "Rédaction KAZA",
+    authorRole: a.authorRole || "Rédaction Kaabo",
     authorAvatarSeed: author.replace(/\s+/g, "+"),
     publishedAt: a.publishedAt || a.createdAt,
     readingTime: a.readMinutes || 3,

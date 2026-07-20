@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - i18n (utilitaires + dictionnaire central)
+// Kaabo - i18n (utilitaires + dictionnaire central)
 // Wave 10 - Olamide Adesanya (Mobile/PWA Specialist)
 //
 // Approche minimaliste sans next-intl (non installe) : un simple Context

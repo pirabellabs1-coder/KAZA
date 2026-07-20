@@ -10,7 +10,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { writeAuditLog } from "@/lib/audit/write-log";
 
 // =============================================================================
-// KAZA — Actions de modération des utilisateurs (espace admin).
+// Kaabo — Actions de modération des utilisateurs (espace admin).
 // Suspension/bannissement via le bannissement natif Supabase Auth
 // (`ban_duration`) — un utilisateur banni ne peut plus se connecter. Garde
 // ADMIN + journal d'audit sur chaque action.

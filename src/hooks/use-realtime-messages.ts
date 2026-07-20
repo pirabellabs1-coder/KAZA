@@ -1,14 +1,14 @@
 'use client';
 
 // =============================================================================
-// KAZA - useRealtimeMessages
+// Kaabo - useRealtimeMessages
 //
 // Hook client qui :
 //   1. Charge l'historique des messages echanges entre deux utilisateurs.
 //   2. S'abonne au channel Supabase Realtime pour recevoir les INSERT live.
 //   3. Nettoie le channel automatiquement au demontage.
 //
-// La convention KAZA : une "conversation" = paire (currentUser, otherUser).
+// La convention Kaabo : une "conversation" = paire (currentUser, otherUser).
 // Il n'y a pas de table conversations cote SQL.
 // =============================================================================
 

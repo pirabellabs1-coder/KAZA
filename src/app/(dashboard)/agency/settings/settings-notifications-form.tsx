@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Onglet « Notifications » des paramètres agence (client)
+// Kaabo — Onglet « Notifications » des paramètres agence (client)
 //
 // Formulaire controlé branché sur la Server Action `updateAgencySettings`
 // (colonne JSONB users.agency_settings, migration 00035). Remplace l'ancien

@@ -6,7 +6,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getPointsBalance } from "@/lib/queries/kaza-points";
 
 // =============================================================================
-// KAZA — Server action : solde KAZA Points de l'utilisateur courant.
+// Kaabo — Server action : solde Kaabo Points de l'utilisateur courant.
 // Sert au badge de la barre d'outils (composant client).
 // =============================================================================
 

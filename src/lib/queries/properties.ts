@@ -8,7 +8,7 @@ import { getAllCities, COUNTRIES } from "@/lib/geo/locations";
 import type { Enums } from "@/types/supabase";
 
 // =============================================================================
-// KAZA — Queries propriétés Supabase (server-side)
+// Kaabo — Queries propriétés Supabase (server-side)
 // Toutes les fonctions retournent des données prêtes à afficher.
 // Empty array si aucune donnée — pas d'erreur.
 // =============================================================================

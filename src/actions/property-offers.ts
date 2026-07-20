@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Offres d'achat (Server Actions)
+// Kaabo — Offres d'achat (Server Actions)
 //
 // Modèle acompte + clôture notaire :
 //   - submitPropertyOffer : l'acheteur fait une offre sur un bien à vendre.
@@ -289,7 +289,7 @@ async function loadPayableOffer(
 }
 
 /**
- * Verse l'acompte de réservation depuis le solde KAZA (wallet). Succès →
+ * Verse l'acompte de réservation depuis le solde Kaabo (wallet). Succès →
  * offre DEPOSIT_PAID + bien RESERVED + notif vendeur.
  */
 export async function payOfferDepositFromWallet(

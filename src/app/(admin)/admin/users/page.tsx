@@ -59,9 +59,9 @@ function toAdminUser(u: AdminUserRow): AdminUser {
 }
 
 export const metadata: Metadata = {
-  title: "Gestion des utilisateurs — Admin KAZA",
+  title: "Gestion des utilisateurs — Admin Kaabo",
   description:
-    "Suspendez, bannissez, réactivez et auditez les comptes utilisateurs de la plateforme KAZA.",
+    "Suspendez, bannissez, réactivez et auditez les comptes utilisateurs de la plateforme Kaabo.",
 };
 
 // Force dynamic — toujours afficher l'état réel de la base.

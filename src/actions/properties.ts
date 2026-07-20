@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Properties (Server Actions)
+// Kaabo - Properties (Server Actions)
 //
 // Convention de retour : `{ success: true; data?: T } | { success: false; error }`.
 // Toutes les mutations valident l'entree avec Zod, recuperent le user via

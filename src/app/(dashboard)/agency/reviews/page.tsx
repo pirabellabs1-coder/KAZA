@@ -16,7 +16,7 @@ import { listOwnerReceivedReviews } from "@/lib/queries/reviews";
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 
 export const metadata: Metadata = {
-  title: "Évaluations — KAZA Pro",
+  title: "Évaluations — Kaabo Pro",
   description:
     "Avis laissés par les locataires et visiteurs sur les biens gérés par votre agence.",
 };

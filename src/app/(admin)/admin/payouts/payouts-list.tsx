@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Liste des demandes de retrait (client)
+// Kaabo — Admin / Liste des demandes de retrait (client)
 // =============================================================================
 
 "use client";

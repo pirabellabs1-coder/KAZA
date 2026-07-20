@@ -5,7 +5,7 @@ import { getArticleById } from "@/lib/queries/articles";
 import { listWriters } from "@/lib/queries/contributors";
 import { ArticleEditorForm } from "@/components/cms/article-editor-form";
 
-export const metadata: Metadata = { title: "Éditer l'article — Admin KAZA" };
+export const metadata: Metadata = { title: "Éditer l'article — Admin Kaabo" };
 export const dynamic = "force-dynamic";
 
 export default async function EditArticlePage({

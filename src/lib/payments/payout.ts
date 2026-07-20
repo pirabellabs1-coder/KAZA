@@ -3,7 +3,7 @@ import "server-only";
 import { PaymentProviderError } from "./types";
 
 // =============================================================================
-// KAZA — Reversements (payouts) sortants
+// Kaabo — Reversements (payouts) sortants
 //
 // L'encaissement (checkout) passe par FeexPay / KkiaPay. Le reversement sortant
 // (payout vers un bénéficiaire mobile money) n'est PAS encore activé côté
@@ -28,7 +28,7 @@ export interface PayoutInput {
   firstname?: string;
   lastname?: string;
   description?: string;
-  /** Référence interne KAZA (idempotence). */
+  /** Référence interne Kaabo (idempotence). */
   merchantReference?: string;
 }
 

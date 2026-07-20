@@ -195,7 +195,7 @@ export function ContactForm() {
             htmlFor="consent"
             className="text-sm text-muted-foreground"
           >
-            J&apos;accepte que mes données soient traitées par KAZA pour
+            J&apos;accepte que mes données soient traitées par Kaabo pour
             répondre à ma demande, conformément à la{" "}
             <a href="/legal/confidentialite" className="text-kaza-blue hover:underline">
               politique de confidentialité

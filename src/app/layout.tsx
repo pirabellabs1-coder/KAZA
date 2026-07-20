@@ -29,8 +29,8 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: "KAZA - Immobilier en Afrique",
-    template: "%s | KAZA",
+    default: "Kaabo - Immobilier en Afrique",
+    template: "%s | Kaabo",
   },
   description:
     "La plus grande plateforme d'immobilier panafricaine. Louez appartements, maisons et colocations dans 54 pays : Côte d'Ivoire, Nigeria, Sénégal, Ghana, Togo, Kenya, Maroc, Bénin et partout en Afrique.",
@@ -57,20 +57,20 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "KAZA",
+    title: "Kaabo",
   },
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    siteName: "KAZA",
+    siteName: "Kaabo",
     url: "/",
-    title: "KAZA - Immobilier en Afrique",
+    title: "Kaabo - Immobilier en Afrique",
     description:
       "La plus grande plateforme d'immobilier panafricaine. Louez partout en Afrique : appartements, maisons et colocations dans 54 pays.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "KAZA - Immobilier en Afrique",
+    title: "Kaabo - Immobilier en Afrique",
     description:
       "La plus grande plateforme d'immobilier panafricaine. Louez partout en Afrique dans 54 pays.",
   },

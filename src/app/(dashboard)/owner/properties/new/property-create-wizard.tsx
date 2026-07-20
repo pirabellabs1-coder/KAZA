@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Wizard de création/publication d'un bien (8 étapes)
+// Kaabo — Wizard de création/publication d'un bien (8 étapes)
 //
 // Étapes :
 //   1. Type de bien (+ louer/vendre)

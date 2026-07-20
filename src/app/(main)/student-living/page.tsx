@@ -35,7 +35,7 @@ import { GlassPanel } from "@/components/shared/glass-panel";
 export const metadata: Metadata = {
   title: "Logement étudiant premium — Colocations vérifiées près des campus",
   description:
-    "Trouvez votre colocation idéale partout en Afrique avec KAZA Student Living : annonces vérifiées, baux numériques, matching colocataires près de votre université.",
+    "Trouvez votre colocation idéale partout en Afrique avec Kaabo Student Living : annonces vérifiées, baux numériques, matching colocataires près de votre université.",
 };
 
 // -----------------------------------------------------------------------------
@@ -85,7 +85,7 @@ const HOW_IT_WORKS = [
     number: "04",
     title: "Emménagez",
     description:
-      "Signature électronique du bail, dépôt sécurisé via KAZA Pay, clés remises sous 48h.",
+      "Signature électronique du bail, dépôt sécurisé via Kaabo Pay, clés remises sous 48h.",
     variant: "sunset" as const,
   },
 ];
@@ -121,7 +121,7 @@ const CAMPUS_AREAS = [
 
 const FAQ_ITEMS = [
   {
-    q: "Qui peut publier ou rejoindre une colocation sur KAZA ?",
+    q: "Qui peut publier ou rejoindre une colocation sur Kaabo ?",
     a: "Toute personne majeure inscrite à un établissement d'enseignement supérieur reconnu peut publier ou rejoindre une colocation. Votre statut étudiant est vérifié via votre carte étudiante ou attestation de scolarité.",
   },
   {
@@ -138,7 +138,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Que se passe-t-il en cas de conflit avec un colocataire ?",
-    a: "KAZA propose un service de médiation gratuit avec un référent dédié. En cas de blocage, une procédure de sortie anticipée est prévue dans le contrat, sans pénalité pour le coloc lésé.",
+    a: "Kaabo propose un service de médiation gratuit avec un référent dédié. En cas de blocage, une procédure de sortie anticipée est prévue dans le contrat, sans pénalité pour le coloc lésé.",
   },
   {
     q: "Comment sont calculées les charges partagées ?",
@@ -451,7 +451,7 @@ export default function StudentLivingPage() {
                 icon: "MessagesSquare",
                 title: "Médiation conflits",
                 description:
-                  "Un référent KAZA intervient en 24h en cas de désaccord pour préserver l'ambiance maison.",
+                  "Un référent Kaabo intervient en 24h en cas de désaccord pour préserver l'ambiance maison.",
                 metric: "Résolution < 24h",
               },
             ].map((f, i) => (

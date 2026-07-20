@@ -6,9 +6,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPayout } from "@/lib/payments/payout";
 
 // =============================================================================
-// KAZA - Logique Escrow
+// Kaabo - Logique Escrow
 // =============================================================================
-// L'escrow permet a KAZA de retenir les fonds verses par le locataire pendant
+// L'escrow permet a Kaabo de retenir les fonds verses par le locataire pendant
 // X jours avant de les liberer au proprietaire. Cela securise les deux parties
 // (verification de l'etat des lieux, possibilite de remboursement en cas de
 // litige).
@@ -268,7 +268,7 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
       mode: destination.mode,
       email: destination.email,
       countryCode: destination.countryCode,
-      description: `KAZA — libération escrow location ${payment.rental_id}`,
+      description: `Kaabo — libération escrow location ${payment.rental_id}`,
       merchantReference: `escrow-release-${escrow.id}`,
     });
     payoutId = result.payoutId;
@@ -378,7 +378,7 @@ export async function refundFromEscrow(
       mode: destination.mode,
       email: destination.email,
       countryCode: destination.countryCode,
-      description: `KAZA — remboursement escrow location ${payment.rental_id} (${reason})`,
+      description: `Kaabo — remboursement escrow location ${payment.rental_id} (${reason})`,
       merchantReference: `escrow-refund-${escrow.id}`,
     });
     refundId = result.payoutId;

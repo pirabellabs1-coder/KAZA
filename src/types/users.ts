@@ -1,9 +1,9 @@
 // =============================================================================
-// KAZA - User Types
+// Kaabo - User Types
 // Aligned with the SQL schema defined in PRD (users table)
 // =============================================================================
 
-/** Roles available for users on the KAZA platform */
+/** Roles available for users on the Kaabo platform */
 export type UserRole =
   | "OWNER"
   | "TENANT"

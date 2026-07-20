@@ -24,7 +24,7 @@ export function InstallPrompt() {
     if (result === 'accepted') {
       // MVP : toast léger via alert. À remplacer par un vrai toast plus tard.
       if (typeof window !== 'undefined') {
-        window.alert('KAZA a été installée sur votre appareil.');
+        window.alert('Kaabo a été installée sur votre appareil.');
       }
     }
   };
@@ -32,7 +32,7 @@ export function InstallPrompt() {
   return (
     <div
       role="dialog"
-      aria-label="Installation de l'application KAZA"
+      aria-label="Installation de l'application Kaabo"
       className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] z-50 mx-auto max-w-md animate-in slide-in-from-bottom-6 rounded-xl border border-border bg-white p-4 shadow-lg md:bottom-4"
     >
       <div className="flex items-start gap-3">
@@ -41,7 +41,7 @@ export function InstallPrompt() {
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-foreground">
-            Installez KAZA sur votre téléphone
+            Installez Kaabo sur votre téléphone
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Pour un accès rapide à vos annonces et messages.

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Wallet propriétaire
+// Kaabo — Wallet propriétaire
 // Solde, transactions, demandes de retrait, RIB/Mobile Money.
 // =============================================================================
 
@@ -15,7 +15,7 @@ import {
 import { WalletView } from "@/components/wallet/wallet-view";
 
 export const metadata: Metadata = {
-  title: "Wallet & retraits — KAZA",
+  title: "Wallet & retraits — Kaabo",
 };
 
 export default async function OwnerWalletPage() {
@@ -41,7 +41,7 @@ export default async function OwnerWalletPage() {
           Wallet & retraits
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Suivez votre solde KAZA, vos transactions et demandez vos virements.
+          Suivez votre solde Kaabo, vos transactions et demandez vos virements.
         </p>
       </div>
 

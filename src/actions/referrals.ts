@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Referrals (Server Actions)
+// Kaabo - Referrals (Server Actions)
 //
 // `referral_codes(user_id PK, code unique)` : 1 code par utilisateur.
 // `referrals(referrer_id, referred_id, code, status, points_awarded, ...)`.
@@ -61,7 +61,7 @@ async function ensureReferralCode(
     .select("first_name")
     .eq("id", userId)
     .maybeSingle();
-  const seed = (profile as { first_name?: string } | null)?.first_name ?? "KAZA";
+  const seed = (profile as { first_name?: string } | null)?.first_name ?? "Kaabo";
 
   // 3) Tente 5 codes — collision -> retry.
   for (let i = 0; i < 5; i++) {
@@ -161,7 +161,7 @@ export async function inviteByEmail(email: string): Promise<InviteResult> {
   const p = profile as { first_name?: string; last_name?: string } | null;
   const inviterName =
     [p?.first_name, p?.last_name].filter(Boolean).join(" ").trim() ||
-    "Un membre KAZA";
+    "Un membre Kaabo";
 
   // 3) Lien d'inscription porteur du code.
   const appUrl = (

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Dialog : recharge du wallet par Mobile Money (client)
+// Kaabo — Dialog : recharge du wallet par Mobile Money (client)
 // Paiement Mobile Money on-page (FeexPay) ; le solde est crédité par le webhook
 // / le polling après confirmation du paiement (purpose = WALLET_TOPUP).
 // =============================================================================

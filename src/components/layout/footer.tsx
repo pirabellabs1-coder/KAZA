@@ -33,8 +33,8 @@ const supportLinks = [
 
 const companyLinks = [
   { href: "/about", label: "À propos" },
-  { href: "/pro", label: "KAZA Pro (B2B)" },
-  { href: "/plus", label: "KAZA Plus Premium" },
+  { href: "/pro", label: "Kaabo Pro (B2B)" },
+  { href: "/plus", label: "Kaabo Plus Premium" },
   { href: "/carrieres", label: "Carrières" },
   { href: "/blog", label: "Blog" },
   { href: "/partners", label: "Partenaires" },
@@ -63,7 +63,7 @@ export function Footer() {
           <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-xl">
               <h3 className="font-heading text-2xl font-bold sm:text-3xl">
-                Restez informé des nouveautés KAZA
+                Restez informé des nouveautés Kaabo
               </h3>
               <p className="mt-2 text-sm text-white/70 sm:text-base">
                 Annonces premium, analyses du marché, conseils pratiques. Une
@@ -78,13 +78,13 @@ export function Footer() {
       {/* Sections de liens */}
       <div className="mx-auto max-w-7xl px-4 py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Marque KAZA (col 1) */}
+          {/* Marque Kaabo (col 1) */}
           <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
                 <span className="font-bold text-kaza-navy">K</span>
               </div>
-              <span className="font-heading text-2xl font-bold">KAZA</span>
+              <span className="font-heading text-2xl font-bold">Kaabo</span>
             </Link>
             <p className="text-sm leading-relaxed text-white/70">
               La plateforme immobilière de référence en Afrique de l&apos;Ouest.

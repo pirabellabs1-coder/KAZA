@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PLAN_DETAILS, type PlanDetails } from "@/lib/queries/subscriptions";
 
 // =============================================================================
-// KAZA — Plans d'abonnement centralisés en DB (lecture server-side)
+// Kaabo — Plans d'abonnement centralisés en DB (lecture server-side)
 //
 // Source de vérité : table `public.plans` (migration 00031). Pilotable depuis
 // l'espace admin (/admin/plans) sans redéploiement. Mappe les lignes vers le

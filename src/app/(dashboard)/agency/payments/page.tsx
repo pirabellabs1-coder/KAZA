@@ -7,7 +7,7 @@ import { listOwnerPayments } from "@/lib/queries/owner-activity";
 import { OwnerPaymentsView } from "../../owner/payments/payments-view";
 
 export const metadata: Metadata = {
-  title: "Loyers & encaissements — KAZA Pro",
+  title: "Loyers & encaissements — Kaabo Pro",
   description:
     "Suivez les loyers et encaissements des biens gérés par votre agence.",
 };

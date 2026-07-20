@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server Actions Feature Flags (upsert + toggle sur `feature_flags`)
+// Kaabo — Server Actions Feature Flags (upsert + toggle sur `feature_flags`)
 //
 // Toutes les actions :
 //   1. Vérifient que l'utilisateur courant a le rôle ADMIN

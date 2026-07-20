@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Queries Admin (server-side)
+// Kaabo — Queries Admin (server-side)
 // Toutes les fonctions retournent des données prêtes à afficher (jamais throw).
 // Tableaux vides ou compteurs à 0 en cas d'erreur / aucune donnée.
 // =============================================================================

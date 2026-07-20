@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Annonces de colocation (roommate_listings) + demandes de visite
+// Kaabo — Annonces de colocation (roommate_listings) + demandes de visite
 // (roommate_visit_requests, migration 00042).
 // =============================================================================
 

@@ -20,8 +20,8 @@ import { getPlatformAnalytics30d } from "@/lib/queries/analytics";
 import { formatNumber } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Analytics — KAZA Admin",
-  description: "Analytics live de la plateforme KAZA (30 derniers jours).",
+  title: "Analytics — Kaabo Admin",
+  description: "Analytics live de la plateforme Kaabo (30 derniers jours).",
 };
 
 // =============================================================================
@@ -114,7 +114,7 @@ export default async function AdminAnalyticsPage() {
               Données live
             </Badge>
             <span className="text-xs uppercase tracking-wide text-muted-foreground">
-              Console KAZA · Analytics
+              Console Kaabo · Analytics
             </span>
           </div>
           <h1 className="font-heading text-3xl font-bold text-kaza-navy lg:text-4xl">

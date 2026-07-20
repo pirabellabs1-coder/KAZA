@@ -25,7 +25,7 @@ import { notifyRentPayment } from "@/lib/rentals/notify-payment";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // =============================================================================
-// KAZA - Server Actions Paiements
+// Kaabo - Server Actions Paiements
 // =============================================================================
 
 export interface InitiateRentPaymentInput extends MomoCheckoutFields {
@@ -286,7 +286,7 @@ export async function checkPaymentStatus(
   }
 }
 
-/** Solde KAZA de l'utilisateur courant (pour le tunnel de paiement). */
+/** Solde Kaabo de l'utilisateur courant (pour le tunnel de paiement). */
 export async function getMyWalletBalance(): Promise<{
   balance: number;
   frozen: boolean;
@@ -300,7 +300,7 @@ export async function getMyWalletBalance(): Promise<{
 }
 
 /**
- * Paie le loyer DEPUIS le solde KAZA (wallet) — alternative à FeexPay.
+ * Paie le loyer DEPUIS le solde Kaabo (wallet) — alternative à FeexPay.
  * Débit atomique (pas de double-débit), puis mise en séquestre. Si la mise en
  * séquestre échoue, le solde est recrédité automatiquement.
  */

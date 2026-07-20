@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Property & Related Types
+// Kaabo - Property & Related Types
 // Aligned with the SQL schema defined in PRD
 // =============================================================================
 

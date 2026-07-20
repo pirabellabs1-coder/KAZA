@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Favorites (Server Actions)
+// Kaabo - Favorites (Server Actions)
 //
 // Gestion des annonces favorites (`saved_properties`). La contrainte UNIQUE
 // (user_id, property_id) garantit qu'il n'y a pas de doublon.

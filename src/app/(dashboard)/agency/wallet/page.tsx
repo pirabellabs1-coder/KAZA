@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Wallet agence
+// Kaabo — Wallet agence
 // Mêmes composants que le wallet propriétaire (l'agence est un OWNER étendu).
 // =============================================================================
 
@@ -15,7 +15,7 @@ import {
 import { WalletView } from "@/components/wallet/wallet-view";
 
 export const metadata: Metadata = {
-  title: "Wallet & retraits — KAZA",
+  title: "Wallet & retraits — Kaabo",
 };
 
 export default async function AgencyWalletPage() {
@@ -41,7 +41,7 @@ export default async function AgencyWalletPage() {
           Wallet & retraits
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Suivi consolidé de la trésorerie de votre agence sur KAZA.
+          Suivi consolidé de la trésorerie de votre agence sur Kaabo.
         </p>
       </div>
 

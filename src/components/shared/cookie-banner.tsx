@@ -44,7 +44,7 @@ export function CookieBanner() {
             Cookies et confidentialité
           </h2>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            KAZA utilise des cookies essentiels pour le bon fonctionnement du
+            Kaabo utilise des cookies essentiels pour le bon fonctionnement du
             site et, avec votre accord, des cookies de mesure d&apos;audience
             anonyme.{" "}
             <Link

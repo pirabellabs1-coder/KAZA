@@ -25,7 +25,7 @@ import { getAgencyTenantDetail } from "@/lib/queries/agency-b2b";
 import { formatFcfa, getInitials } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Fiche locataire — KAZA",
+  title: "Fiche locataire — Kaabo",
 };
 
 export const dynamic = "force-dynamic";

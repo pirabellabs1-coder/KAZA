@@ -19,7 +19,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listOffersForBuyer } from "@/lib/queries/offers";
 import { formatPrice, formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Espace acheteur — KAZA" };
+export const metadata: Metadata = { title: "Espace acheteur — Kaabo" };
 export const dynamic = "force-dynamic";
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {

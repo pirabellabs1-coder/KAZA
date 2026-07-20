@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Admin : toutes les demandes de visite (supervision / sécurité)
+// Kaabo — Admin : toutes les demandes de visite (supervision / sécurité)
 // Lecture service-role (page réservée aux ADMIN par le middleware + layout).
 // =============================================================================
 

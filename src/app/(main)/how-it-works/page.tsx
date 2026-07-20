@@ -19,13 +19,13 @@ import { GlassPanel } from "@/components/shared/glass-panel";
 import { HowItWorksTabs } from "./how-it-works-tabs";
 
 export const metadata: Metadata = {
-  title: "Comment ça marche — KAZA",
+  title: "Comment ça marche — Kaabo",
   description:
-    "Découvrez comment fonctionne KAZA pour les locataires, propriétaires et étudiants. 4 étapes simples pour louer, publier ou trouver une colocation en toute sécurité.",
+    "Découvrez comment fonctionne Kaabo pour les locataires, propriétaires et étudiants. 4 étapes simples pour louer, publier ou trouver une colocation en toute sécurité.",
   openGraph: {
-    title: "Comment fonctionne KAZA — Louer, publier, partager",
+    title: "Comment fonctionne Kaabo — Louer, publier, partager",
     description:
-      "Recherchez, visitez, réservez, emménagez. Découvrez le parcours KAZA pour chaque profil utilisateur.",
+      "Recherchez, visitez, réservez, emménagez. Découvrez le parcours Kaabo pour chaque profil utilisateur.",
     type: "website",
   },
 };
@@ -54,7 +54,7 @@ const securityPillars = [
   },
 ];
 
-// Grandes villes africaines couvertes par le référentiel KAZA (panafricain).
+// Grandes villes africaines couvertes par le référentiel Kaabo (panafricain).
 const KAZA_CITIES = [
   { name: "Cotonou", country: "Bénin", active: true, lat: "" },
   { name: "Abidjan", country: "Côte d'Ivoire", active: true, lat: "" },
@@ -83,7 +83,7 @@ export default function HowItWorksPage() {
             <h1 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-kaza-navy sm:text-5xl lg:text-7xl">
               Comment fonctionne{" "}
               <span className="bg-gradient-to-r from-kaza-blue via-kaza-green to-kaza-blue bg-clip-text text-transparent">
-                KAZA en 4 étapes
+                Kaabo en 4 étapes
               </span>
             </h1>
           </FadeIn>
@@ -142,19 +142,19 @@ export default function HowItWorksPage() {
       {/* Section vidéo retirée — sera réactivée quand une vraie vidéo de
           présentation sera disponible (évite un lecteur factice). */}
 
-      {/* ===== SÉCURITÉ CHEZ KAZA ==================================== */}
+      {/* ===== SÉCURITÉ CHEZ Kaabo ==================================== */}
       <section className="bg-white py-24">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <RevealOnScroll>
             <div className="mb-16 text-center">
               <p className="mb-3 text-xs font-semibold tracking-widest text-kaza-blue uppercase">
-                Sécurité KAZA
+                Sécurité Kaabo
               </p>
               <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
                 Trois piliers pour protéger chaque transaction
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-                La sécurité n&apos;est pas une option chez KAZA — c&apos;est notre
+                La sécurité n&apos;est pas une option chez Kaabo — c&apos;est notre
                 fondation.
               </p>
             </div>
@@ -181,7 +181,7 @@ export default function HowItWorksPage() {
               <span>
                 Déjà plus de{" "}
                 <strong className="font-semibold text-kaza-navy">10 000</strong>{" "}
-                utilisateurs vérifiés sur KAZA
+                utilisateurs vérifiés sur Kaabo
               </span>
             </div>
           </RevealOnScroll>
@@ -267,7 +267,7 @@ export default function HowItWorksPage() {
 
       {/* ===== CTA FINAL ============================================== */}
       <CtaBanner
-        title="Prêt à essayer KAZA ?"
+        title="Prêt à essayer Kaabo ?"
         description="Inscription gratuite en moins de 2 minutes. Sans engagement, sans carte bancaire."
         primaryAction={{ label: "Créer mon compte", href: "/signup" }}
         secondaryAction={{ label: "Voir les tarifs", href: "/pricing" }}

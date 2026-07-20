@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Réinitialisation du mot de passe
+// Kaabo — Réinitialisation du mot de passe
 // L'utilisateur arrive ici via le lien de l'email (Supabase pose une session
 // de récupération via le hash). On affiche un formulaire de nouveau mot de
 // passe et on appelle supabase.auth.updateUser({ password }).

@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Locations côté propriétaire (Server Actions)
+// Kaabo — Locations côté propriétaire (Server Actions)
 //
 // Résiliation d'un bail par le PROPRIÉTAIRE (owner_id du bien). Met fin à la
 // location, libère le bien (RENTED -> AVAILABLE) et notifie les deux parties.

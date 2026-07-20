@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Trackers analytics côté client (fire-and-forget)
+// Kaabo — Trackers analytics côté client (fire-and-forget)
 //
 // Composants invisibles qui envoient un évènement vers /api/track au mount.
 // Best-effort : aucun throw, aucune erreur affichée, aucun blocage du rendu.

@@ -215,7 +215,7 @@ export function PrivacyClient({
             Visibilité du profil
           </CardTitle>
           <CardDescription>
-            Contrôlez qui peut voir votre profil et votre activité sur KAZA.
+            Contrôlez qui peut voir votre profil et votre activité sur Kaabo.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -281,12 +281,12 @@ export function PrivacyClient({
         </CardContent>
       </Card>
 
-      {/* 1. Vos données chez KAZA */}
+      {/* 1. Vos données chez Kaabo */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-kaza-navy">
             <ShieldCheck className="size-5 text-kaza-green" />
-            Vos données chez KAZA
+            Vos données chez Kaabo
           </CardTitle>
           <CardDescription>
             Nous collectons uniquement ce qui est nécessaire pour vous servir.
@@ -335,7 +335,7 @@ export function PrivacyClient({
             Suppression de compte
           </CardTitle>
           <CardDescription>
-            Si vous souhaitez ne plus utiliser KAZA, vous pouvez demander la
+            Si vous souhaitez ne plus utiliser Kaabo, vous pouvez demander la
             suppression définitive de votre compte.
           </CardDescription>
         </CardHeader>
@@ -416,7 +416,7 @@ export function PrivacyClient({
                 Partager mes données anonymisées
               </Label>
               <p className="text-xs text-muted-foreground">
-                Aidez-nous à améliorer KAZA en partageant des données 100%
+                Aidez-nous à améliorer Kaabo en partageant des données 100%
                 anonymes sur votre usage.
               </p>
             </div>
@@ -440,7 +440,7 @@ export function PrivacyClient({
             Cookies
           </CardTitle>
           <CardDescription>
-            Gérez les cookies utilisés sur KAZA.
+            Gérez les cookies utilisés sur Kaabo.
           </CardDescription>
         </CardHeader>
         <CardContent>

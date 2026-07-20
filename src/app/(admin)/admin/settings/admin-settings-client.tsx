@@ -211,7 +211,7 @@ export function AdminSettingsClient({
           Paramètres de la plateforme
         </h1>
         <p className="text-sm text-muted-foreground">
-          Configurez le comportement global de KAZA — toutes les modifications
+          Configurez le comportement global de Kaabo — toutes les modifications
           impactent l&apos;ensemble des utilisateurs.
         </p>
       </div>
@@ -295,10 +295,10 @@ export function AdminSettingsClient({
           <form onSubmit={handleSubmit("payments")}>
             <SettingsSection
               title="Configuration des paiements"
-              description="Commissions, seuils et délais de l'escrow KAZA."
+              description="Commissions, seuils et délais de l'escrow Kaabo."
             >
               <FormRow
-                label="Commission KAZA (%)"
+                label="Commission Kaabo (%)"
                 htmlFor="commission"
                 hint="Pourcentage prélevé sur chaque transaction"
               >

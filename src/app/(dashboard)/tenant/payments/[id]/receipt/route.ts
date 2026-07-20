@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Locataire / Reçu de paiement (Route Handler GET)
+// Kaabo — Locataire / Reçu de paiement (Route Handler GET)
 // =============================================================================
 // Renvoie un reçu HTML imprimable pour un paiement donné.
 //   - Auth requise (session Supabase).
@@ -22,7 +22,7 @@ const METHOD_LABELS: Record<string, string> = {
   MOBILE_MONEY: "Mobile Money",
   BANK_TRANSFER: "Virement bancaire",
   CARD: "Carte bancaire",
-  WALLET: "Portefeuille KAZA",
+  WALLET: "Portefeuille Kaabo",
   CASH: "Espèces",
 };
 
@@ -96,7 +96,7 @@ export async function GET(
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Reçu de paiement — KAZA</title>
+  <title>Reçu de paiement — Kaabo</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -172,7 +172,7 @@ export async function GET(
   <div class="receipt">
     <div class="head">
       <div>
-        <div class="brand">KAZA<span>.</span></div>
+        <div class="brand">Kaabo<span>.</span></div>
         <p class="muted">Reçu de paiement de loyer</p>
       </div>
       <span class="badge">Payé</span>
@@ -202,8 +202,8 @@ export async function GET(
     </div>
 
     <p class="footer">
-      Ce reçu est généré automatiquement par KAZA et fait foi du paiement.
-      Pour toute question, contactez le support KAZA.
+      Ce reçu est généré automatiquement par Kaabo et fait foi du paiement.
+      Pour toute question, contactez le support Kaabo.
     </p>
   </div>
 

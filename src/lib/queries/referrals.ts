@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Queries Referrals (server-side)
+// Kaabo - Queries Referrals (server-side)
 //
 // Tables ciblees :
 //   - public.referral_codes(user_id PK, code unique)

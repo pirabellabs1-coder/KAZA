@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries calendrier multi-agents (server-side)
+// Kaabo — Queries calendrier multi-agents (server-side)
 // Lit `calendar_events` filtré par agency_id + fenêtre temporelle, et
 // joint l'agent assigné + la propriété si applicable.
 // =============================================================================

@@ -10,7 +10,7 @@ import { sendEmail } from "@/lib/notifications/resend";
 import { buildEmail } from "@/lib/notifications/email-template";
 
 // =============================================================================
-// KAZA - Server Action : messages de contact public
+// Kaabo - Server Action : messages de contact public
 //
 // Persiste un message de contact dans `contact_messages` (RLS public INSERT)
 // puis :
@@ -85,14 +85,14 @@ function buildAdminHtml(args: {
 
 function buildConfirmationHtml(name: string, subject: string): string {
   return buildEmail({
-    preheader: "Votre message KAZA a bien été reçu",
+    preheader: "Votre message Kaabo a bien été reçu",
     heading: "Votre message a bien été reçu",
     intro: `Bonjour ${name},`,
     paragraphs: [
       "Merci de nous avoir contactés. Notre équipe revient vers vous sous 24 à 48h ouvrées.",
     ],
     rows: [{ label: "Sujet", value: subject }],
-    outro: "L'équipe KAZA",
+    outro: "L'équipe Kaabo",
   });
 }
 
@@ -173,7 +173,7 @@ export async function sendContactMessage(
   try {
     await sendEmail(
       recipient,
-      `[Contact KAZA] ${subjectLabel} — ${data.name}`,
+      `[Contact Kaabo] ${subjectLabel} — ${data.name}`,
       buildAdminHtml({
         name: data.name,
         email: data.email,
@@ -185,7 +185,7 @@ export async function sendContactMessage(
     // 3. Confirmation expéditeur ---------------------------------------------
     await sendEmail(
       data.email,
-      "Votre message KAZA a bien été reçu",
+      "Votre message Kaabo a bien été reçu",
       buildConfirmationHtml(data.name, subjectLabel),
     );
   } catch (err) {
@@ -238,7 +238,7 @@ export async function submitContactMessage(
   try {
     await sendEmail(
       recipient,
-      `[KAZA Contact] ${data.subject}`,
+      `[Kaabo Contact] ${data.subject}`,
       buildAdminHtml({
         name: data.fullName,
         email: data.email,
@@ -249,7 +249,7 @@ export async function submitContactMessage(
     );
     await sendEmail(
       data.email,
-      "Votre message KAZA a bien été reçu",
+      "Votre message Kaabo a bien été reçu",
       buildConfirmationHtml(data.fullName, data.subject),
     );
   } catch (err) {

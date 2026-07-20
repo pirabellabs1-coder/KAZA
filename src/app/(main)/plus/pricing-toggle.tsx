@@ -34,9 +34,9 @@ interface PlusPricingToggleProps {
   isAuthenticated: boolean;
   currentPlan?: string | null;
   manageHref?: string;
-  /** Prix mensuel KAZA Plus (PLUS_MONTHLY) — issu de la DB. */
+  /** Prix mensuel Kaabo Plus (PLUS_MONTHLY) — issu de la DB. */
   monthlyPriceFcfa?: number;
-  /** Prix annuel KAZA Plus (PLUS_YEARLY) — issu de la DB. */
+  /** Prix annuel Kaabo Plus (PLUS_YEARLY) — issu de la DB. */
   yearlyPriceFcfa?: number;
   /** Équivalent mensuel du plan annuel (PLUS_YEARLY.priceMonthly) — DB. */
   yearlyMonthlyEquivalentFcfa?: number;

@@ -33,12 +33,12 @@ const formatFcfaPrice = (value: number) =>
   `${new Intl.NumberFormat("fr-FR").format(value)} FCFA`;
 
 export const metadata: Metadata = {
-  title: "Tarifs — KAZA",
+  title: "Tarifs — Kaabo",
   description:
     "Une tarification limpide pour chaque profil. Gratuit pour les locataires et étudiants. Commission uniquement sur loyer perçu pour les propriétaires.",
   alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Tarifs KAZA — Transparent, sans frais cachés",
+    title: "Tarifs Kaabo — Transparent, sans frais cachés",
     description:
       "Locataires : gratuit. Propriétaires : 0 FCFA + 5% sur loyer perçu ou Pro illimité à 15 000 FCFA/mois.",
     url: "/pricing",
@@ -154,7 +154,7 @@ const pricingFaq = [
   },
   {
     q: "Comment fonctionne la commission de 5 % ou 3 % ?",
-    a: "La commission est prélevée automatiquement à chaque encaissement de loyer via la plateforme. Vous recevez 95 % (Starter) ou 97 % (Pro) sur votre wallet KAZA Pay ou votre compte bancaire, et nous nous occupons du reste.",
+    a: "La commission est prélevée automatiquement à chaque encaissement de loyer via la plateforme. Vous recevez 95 % (Starter) ou 97 % (Pro) sur votre wallet Kaabo Pay ou votre compte bancaire, et nous nous occupons du reste.",
   },
   {
     q: "Puis-je changer d'abonnement à tout moment ?",
@@ -169,7 +169,7 @@ const pricingFaq = [
     a: "Aucune commission n'est facturée tant que le loyer n'est pas effectivement perçu. Notre système d'escrow et de relances automatiques protège vos revenus.",
   },
   {
-    q: "Puis-je tester KAZA avant de m'engager ?",
+    q: "Puis-je tester Kaabo avant de m'engager ?",
     a: "Bien sûr. Le plan Starter est entièrement gratuit. Vous ne payez la commission qu'au premier loyer perçu — testez la plateforme sans aucun engagement.",
   },
 ];
@@ -254,7 +254,7 @@ export default async function PricingPage() {
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
                 Trois formules pour trois profils. Toutes incluent l&apos;essentiel
-                KAZA.
+                Kaabo.
               </p>
             </div>
           </RevealOnScroll>
@@ -368,7 +368,7 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      {/* ===== ABONNEMENTS RÉELS (KAZA Pro + KAZA Plus) ============== */}
+      {/* ===== ABONNEMENTS RÉELS (Kaabo Pro + Kaabo Plus) ============== */}
       <section
         id="souscrire"
         className="relative bg-white py-24"
@@ -380,7 +380,7 @@ export default async function PricingPage() {
                 Souscription directe
               </p>
               <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                Choisissez votre abonnement KAZA
+                Choisissez votre abonnement Kaabo
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
                 Activation immédiate. Résiliable à tout moment depuis votre
@@ -389,12 +389,12 @@ export default async function PricingPage() {
             </div>
           </RevealOnScroll>
 
-          {/* KAZA Pro (agences) */}
+          {/* Kaabo Pro (agences) */}
           <RevealOnScroll>
             <div className="mb-6 flex items-center gap-2">
               <Crown className="size-5 text-kaza-blue" />
               <h3 className="font-heading text-xl font-bold text-kaza-navy">
-                KAZA Pro — Agences &amp; investisseurs
+                Kaabo Pro — Agences &amp; investisseurs
               </h3>
             </div>
           </RevealOnScroll>
@@ -439,7 +439,7 @@ export default async function PricingPage() {
                     </ul>
                     <SubscribeButton
                       plan={planKey}
-                      label={`Choisir ${plan.name.replace(/^KAZA Pro /, "")}`}
+                      label={`Choisir ${plan.name.replace(/^Kaabo Pro /, "")}`}
                       isAuthenticated={isAuthenticated}
                       isCurrentPlan={isCurrent}
                       signupRoleSuffix="&role=agency"
@@ -456,12 +456,12 @@ export default async function PricingPage() {
             })}
           </div>
 
-          {/* KAZA Plus (locataires) */}
+          {/* Kaabo Plus (locataires) */}
           <RevealOnScroll>
             <div className="mb-6 flex items-center gap-2">
               <Sparkles className="size-5 text-amber-500" />
               <h3 className="font-heading text-xl font-bold text-kaza-navy">
-                KAZA Plus — Locataires &amp; étudiants
+                Kaabo Plus — Locataires &amp; étudiants
               </h3>
             </div>
           </RevealOnScroll>
@@ -625,7 +625,7 @@ export default async function PricingPage() {
         </div>
       </section>
 
-      {/* Sections "Témoignages propriétaires" et "Pourquoi KAZA" retirées —
+      {/* Sections "Témoignages propriétaires" et "Pourquoi Kaabo" retirées —
           réactivées quand le contenu marketing réel sera prêt. */}
 
       {/* ===== FAQ TARIFICATION ====================================== */}
@@ -668,7 +668,7 @@ export default async function PricingPage() {
       {/* ===== CTA FINAL ============================================== */}
       <CtaBanner
         title="Prêt à publier votre premier bien ?"
-        description="KAZA vous accompagne pour gérer vos biens en toute simplicité, avec des paiements sécurisés et des contrats juridiques."
+        description="Kaabo vous accompagne pour gérer vos biens en toute simplicité, avec des paiements sécurisés et des contrats juridiques."
         primaryAction={{ label: "Créer un compte", href: "/signup" }}
         secondaryAction={{ label: "Parler à un expert", href: "/contact" }}
       />

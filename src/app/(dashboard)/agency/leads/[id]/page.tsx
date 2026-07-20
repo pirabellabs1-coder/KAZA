@@ -40,8 +40,8 @@ export async function generateMetadata({
   const lead = await getLead(id);
   return {
     title: lead
-      ? `${lead.fullName} — Lead KAZA Agence`
-      : "Lead introuvable — KAZA Agence",
+      ? `${lead.fullName} — Lead Kaabo Agence`
+      : "Lead introuvable — Kaabo Agence",
     description: lead?.notes ?? undefined,
   };
 }
@@ -71,7 +71,7 @@ const STAGE_COLORS: Record<LeadStage, string> = {
 };
 
 const SOURCE_LABELS: Record<LeadSource, string> = {
-  SITE_KAZA: "Site KAZA",
+  SITE_KAZA: "Site Kaabo",
   SOCIAL: "Réseaux sociaux",
   WORD_OF_MOUTH: "Bouche-à-oreille",
   GOOGLE_ADS: "Pub Google",

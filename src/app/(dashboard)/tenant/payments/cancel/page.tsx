@@ -4,7 +4,7 @@ import { XCircle, ArrowLeft, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // =============================================================================
-// KAZA - Page Annulation paiement
+// Kaabo - Page Annulation paiement
 // =============================================================================
 
 export const metadata: Metadata = {
@@ -82,7 +82,7 @@ export default async function PaymentCancelPage({
       </div>
 
       <Button asChild variant="link" size="sm" className="mt-4">
-        <Link href="/help">Contacter le support KAZA</Link>
+        <Link href="/help">Contacter le support Kaabo</Link>
       </Button>
     </div>
   );

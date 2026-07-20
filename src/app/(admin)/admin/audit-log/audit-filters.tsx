@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Filter } from "lucide-react";
 
 // =============================================================================
-// KAZA — Filtres du journal d'audit (client)
+// Kaabo — Filtres du journal d'audit (client)
 //
 // Selects contrôlés qui poussent les filtres dans l'URL (?admin=&action=&target=).
 // La page serveur relit ces searchParams et requête `listAuditLogs` en

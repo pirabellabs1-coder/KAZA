@@ -56,7 +56,7 @@ export default async function StudentChatPage() {
             </p>
             <p className="max-w-md text-xs text-muted-foreground">
               En attendant la messagerie de groupe dédiée, utilisez la
-              messagerie KAZA pour contacter individuellement vos colocataires.
+              messagerie Kaabo pour contacter individuellement vos colocataires.
             </p>
             <Button asChild variant="outline" className="mt-2">
               <Link href="/messages">

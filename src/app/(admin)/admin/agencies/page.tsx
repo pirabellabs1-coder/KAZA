@@ -36,7 +36,7 @@ import { KycReviewActions } from "./kyc-review-actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Gestion des agences B2B — Admin KAZA",
+  title: "Gestion des agences B2B — Admin Kaabo",
   description:
     "Pilotage des agences immobilières partenaires : KYC, plans, audit, performance et compliance.",
 };
@@ -320,7 +320,7 @@ export default async function AdminAgenciesPage() {
           </h2>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
             Les agences B2B (rôle <code className="rounded bg-slate-200 px-1">AGENCY</code>) inscrites
-            sur KAZA apparaîtront ici avec leur abonnement et leur portefeuille d&apos;annonces actives.
+            sur Kaabo apparaîtront ici avec leur abonnement et leur portefeuille d&apos;annonces actives.
           </p>
         </section>
       )}

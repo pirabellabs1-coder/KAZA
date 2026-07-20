@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Messages de contact (back-office admin)
+// Kaabo — Queries Messages de contact (back-office admin)
 // Lecture de `contact_messages` (formulaire public /contact).
 // - `listContactMessages` : page admin /admin/messages
 //

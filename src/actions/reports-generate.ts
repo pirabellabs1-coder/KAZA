@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Génération de rapports réels (CSV/Excel) à partir des données Supabase.
+// Kaabo — Génération de rapports réels (CSV/Excel) à partir des données Supabase.
 // Espaces : agency, owner, student. Types selon l'espace. Renvoie un contenu
 // CSV (BOM Excel) que le client télécharge.
 // =============================================================================

@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server actions Litiges agence (table disputes, migration 00037)
+// Kaabo — Server actions Litiges agence (table disputes, migration 00037)
 // Réservé au rôle AGENCY. RLS : agency_id = auth.uid().
 // =============================================================================
 

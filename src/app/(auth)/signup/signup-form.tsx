@@ -154,7 +154,7 @@ export function SignupForm() {
       <div className="animate-fade-in space-y-6">
         <div className="space-y-2">
           <h1 className="font-heading text-2xl font-bold tracking-tight text-kaza-navy sm:text-3xl">
-            Créez votre compte KAZA
+            Créez votre compte Kaabo
           </h1>
           <p className="text-sm text-muted-foreground">
             Pour commencer, dites-nous qui vous êtes. Votre espace s&apos;adapte
@@ -463,7 +463,7 @@ export function SignupForm() {
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          Recevez 500 KAZA Points de bienvenue en utilisant un code.
+          Recevez 500 Kaabo Points de bienvenue en utilisant un code.
         </p>
       </div>
 

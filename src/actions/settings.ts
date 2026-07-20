@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Paramètres (Server Actions)
+// Kaabo - Paramètres (Server Actions)
 //
 // Persistance réelle des écrans de paramètres (migration 00026_settings.sql) :
 //   - updateNotificationPrefs  → users.notification_prefs (JSONB)

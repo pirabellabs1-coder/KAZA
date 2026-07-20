@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Recherches sauvegardées & alertes (Server Actions)
+// Kaabo — Recherches sauvegardées & alertes (Server Actions)
 //
 // "Sauvegarder" et "Alerte" sur la page recherche persistent les critères de
 // l'utilisateur dans `public.saved_searches`. Une alerte = ligne avec

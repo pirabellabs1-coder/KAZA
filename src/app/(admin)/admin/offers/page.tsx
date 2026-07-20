@@ -12,7 +12,7 @@ import {
 import { listAllOffersAdmin } from "@/lib/queries/offers";
 import { formatFcfa, formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Ventes & offres — Admin KAZA" };
+export const metadata: Metadata = { title: "Ventes & offres — Admin Kaabo" };
 export const dynamic = "force-dynamic";
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {

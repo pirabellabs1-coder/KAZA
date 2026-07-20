@@ -38,10 +38,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const article = await getBlogArticle(slug);
-  if (!article) return { title: "Article introuvable | KAZA" };
+  if (!article) return { title: "Article introuvable | Kaabo" };
   const canonical = `/blog/${slug}`;
   return {
-    title: `${article.title} — Journal KAZA`,
+    title: `${article.title} — Journal Kaabo`,
     description: article.excerpt,
     alternates: { canonical },
     openGraph: {
@@ -242,7 +242,7 @@ export default async function BlogArticlePage({
                       {article.authorRole}
                     </p>
                     <p className="mt-3 text-sm leading-relaxed text-foreground">
-                      Contributeur·rice régulier·ère du journal KAZA. Suivez nos
+                      Contributeur·rice régulier·ère du journal Kaabo. Suivez nos
                       publications pour des analyses de terrain et des conseils
                       pratiques.
                     </p>
@@ -298,7 +298,7 @@ export default async function BlogArticlePage({
         </section>
       )}
 
-      {/* ============== CTA REJOINDRE KAZA ================================= */}
+      {/* ============== CTA REJOINDRE Kaabo ================================= */}
       <section className="relative overflow-hidden bg-gradient-to-br from-kaza-navy via-[#0F2A40] to-kaza-blue py-24 text-white">
         <div
           aria-hidden="true"
@@ -313,7 +313,7 @@ export default async function BlogArticlePage({
             Passez à l&apos;action
           </Badge>
           <h2 className="font-heading text-4xl font-bold sm:text-5xl lg:text-6xl">
-            Prêt à rejoindre KAZA ?
+            Prêt à rejoindre Kaabo ?
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80 sm:text-xl">
             Trouvez votre logement, publiez votre bien ou pilotez votre

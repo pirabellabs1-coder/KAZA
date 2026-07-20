@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Query admin : utilisateurs pouvant devenir contributeurs (CMS).
+// Kaabo — Query admin : utilisateurs pouvant devenir contributeurs (CMS).
 // =============================================================================
 
 export interface ContributorUser {

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Transactions globales (server-only)
+// Kaabo — Admin / Transactions globales (server-only)
 // Lecture agrégée de la table `payments` pour la vue admin. Best-effort :
 // en cas d'erreur Supabase on logge et on retourne un tableau vide.
 // =============================================================================

@@ -494,7 +494,7 @@ export default async function OwnerFinancePage() {
             <div>
               <CardTitle className="font-heading text-base">Mes payouts</CardTitle>
               <p className="mt-1 text-sm text-muted-foreground">
-                Versements depuis votre KAZA Wallet vers compte bancaire
+                Versements depuis votre Kaabo Wallet vers compte bancaire
               </p>
             </div>
             <Badge variant="outline" className="border-kaza-green text-kaza-green">
@@ -609,7 +609,7 @@ export default async function OwnerFinancePage() {
             <p className="font-semibold">À retenir — Fiscalité immobilière Bénin</p>
             <p className="mt-1 text-amber-800">
               Au Bénin, les revenus fonciers sont imposés au taux de 25%.
-              Déclaration annuelle à la DGI avant le 31 mars. KAZA vous
+              Déclaration annuelle à la DGI avant le 31 mars. Kaabo vous
               accompagne dans la préparation de votre déclaration.
             </p>
           </div>
@@ -652,7 +652,7 @@ export default async function OwnerFinancePage() {
       <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <ClipboardList className="size-3.5" />
-          Données issues de votre activité KAZA Wallet
+          Données issues de votre activité Kaabo Wallet
         </span>
         <span className="flex items-center gap-1.5">
           <TrendingUp className="size-3.5 text-kaza-green" />

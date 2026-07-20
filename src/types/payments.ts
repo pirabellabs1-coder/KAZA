@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Payment Types
+// Kaabo - Payment Types
 // Aligned with the SQL schema defined in PRD (payments, escrow_payments tables)
 // =============================================================================
 

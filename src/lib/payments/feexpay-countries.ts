@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Catalogue pays / reseaux Mobile Money (FeexPay)
+// Kaabo - Catalogue pays / reseaux Mobile Money (FeexPay)
 // =============================================================================
 // Source de verite des pays couverts par l'integration API FeexPay et des
 // reseaux Mobile Money disponibles dans chacun. Partage entre le serveur

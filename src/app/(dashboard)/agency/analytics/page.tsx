@@ -34,7 +34,7 @@ const AGENCY_PROFILE = {
 };
 
 export const metadata: Metadata = {
-  title: "Analytics — KAZA Pro Agence",
+  title: "Analytics — Kaabo Pro Agence",
   description:
     "Analytics avancées de l'agence : revenus, conversion, occupation, sources de leads et performance des agents.",
 };
@@ -142,7 +142,7 @@ export default function AgencyAnalyticsPage() {
           </CardTitle>
           <CardDescription>
             CA cumulé sur 12 mois — branché sur les paiements encaissés via
-            KAZA.
+            Kaabo.
           </CardDescription>
         </CardHeader>
         <CardContent>

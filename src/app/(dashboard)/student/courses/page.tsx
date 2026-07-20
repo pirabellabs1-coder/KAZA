@@ -54,7 +54,7 @@ export default async function StudentCoursesPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <MapPin className="size-4 text-kaza-blue" />
-            Distance aux logements KAZA
+            Distance aux logements Kaabo
           </CardTitle>
         </CardHeader>
         <CardContent>

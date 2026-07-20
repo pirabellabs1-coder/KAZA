@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Types et constantes UI pour la page Admin > Utilisateurs.
+// Kaabo — Types et constantes UI pour la page Admin > Utilisateurs.
 // Source réelle des comptes : table public.users (via @/lib/queries/admin).
 // =============================================================================
 

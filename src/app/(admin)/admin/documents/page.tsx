@@ -44,7 +44,7 @@ import { listGdprRequests } from "@/lib/queries/gdpr";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Documents & RGPD — KAZA Admin",
+  title: "Documents & RGPD — Kaabo Admin",
   description:
     "Modération des documents utilisateurs, gestion RGPD et conformité APDP.",
 };

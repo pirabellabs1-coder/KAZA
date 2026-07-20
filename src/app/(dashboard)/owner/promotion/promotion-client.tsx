@@ -144,7 +144,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   NOT_OWNER: "Cette annonce ne vous appartient pas.",
   NOT_FOUND: "Annonce introuvable.",
   INSUFFICIENT_FUNDS:
-    "Solde KAZA Wallet insuffisant. Rechargez votre wallet pour activer ce boost.",
+    "Solde Kaabo Wallet insuffisant. Rechargez votre wallet pour activer ce boost.",
   WALLET_FROZEN: "Votre wallet est gelé. Contactez le support.",
   INVALID_INPUT: "Données invalides.",
 };
@@ -206,7 +206,7 @@ export function PromotionClient({
       return;
     }
 
-    // --- Paiement par solde KAZA Wallet -----------------------------------
+    // --- Paiement par solde Kaabo Wallet -----------------------------------
     const target = property;
     startTransition(async () => {
       const res = await activateBoost({
@@ -410,7 +410,7 @@ export function PromotionClient({
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                KAZA Wallet
+                Kaabo Wallet
               </button>
             </div>
             <Button

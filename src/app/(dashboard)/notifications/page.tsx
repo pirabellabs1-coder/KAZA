@@ -24,7 +24,7 @@ export default async function NotificationsPage() {
             Notifications
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Suivez l&apos;activité de votre compte KAZA en temps réel.
+            Suivez l&apos;activité de votre compte Kaabo en temps réel.
           </p>
         </div>
       </header>

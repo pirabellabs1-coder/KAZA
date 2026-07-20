@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - useTranslation + LocaleProvider
+// Kaabo - useTranslation + LocaleProvider
 // Wave 10 - Olamide Adesanya (Mobile/PWA Specialist)
 //
 // Context React minimaliste pour gerer la locale active cote client.

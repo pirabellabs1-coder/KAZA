@@ -8,7 +8,7 @@ import { cn, formatDate } from "@/lib/utils";
 import type { PropertyReview } from "@/lib/queries/reviews";
 
 // =============================================================================
-// KAZA — ReviewsSection (client)
+// Kaabo — ReviewsSection (client)
 // Affiche les avis Supabase déjà chargés côté serveur par le parent.
 // Les données viennent de `getPropertyReviews()` (cf. `@/lib/queries/reviews`)
 // et sont transmises via la prop `reviews`. Aucune donnée fictive.

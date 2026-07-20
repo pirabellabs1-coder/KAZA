@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Contrôles client du détail lead : changer stage / assigner agent / delete
+// Kaabo — Contrôles client du détail lead : changer stage / assigner agent / delete
 // =============================================================================
 
 import { useState, useTransition } from "react";

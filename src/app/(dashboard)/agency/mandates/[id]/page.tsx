@@ -23,7 +23,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { getAgencyMandate } from "@/lib/queries/agency-b2b";
 
 export const metadata: Metadata = {
-  title: "Détail du mandat — KAZA Pro",
+  title: "Détail du mandat — Kaabo Pro",
 };
 
 export const dynamic = "force-dynamic";

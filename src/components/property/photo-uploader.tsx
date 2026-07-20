@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - Composant d'upload de photos vers Supabase Storage
+// Kaabo - Composant d'upload de photos vers Supabase Storage
 //
 // Convention de path : `temp/{userId}/{uuid}.{ext}` (bucket public
 // `property-photos`). Les fichiers sont uploadés AVANT que la propriété

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Offres d'emploi (liste)
+// Kaabo — Admin / Offres d'emploi (liste)
 // Server component. Les actions Publier / Dépublier / Supprimer sont
 // branchées via des <form action={serverAction}> ; aucun composant client
 // nécessaire.

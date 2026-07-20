@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries propriétés par owner (server-side)
+// Kaabo — Queries propriétés par owner (server-side)
 // Utilisé par les dashboards Owner et Agency pour lister/agréger leur portefeuille.
 // =============================================================================
 

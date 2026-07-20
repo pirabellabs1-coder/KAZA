@@ -24,7 +24,7 @@ import { computeAgencyCommissions } from "@/lib/queries/agency-b2b";
 import { formatFcfa } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Commissions — KAZA Pro",
+  title: "Commissions — Kaabo Pro",
   description:
     "Estimation de vos commissions mensuelles à partir de vos mandats actifs.",
 };

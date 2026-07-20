@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Éditeur de notes lead (client)
+// Kaabo — Éditeur de notes lead (client)
 // Auto-save brouillon (localStorage) + persistence Supabase au clic "Enregistrer".
 // =============================================================================
 

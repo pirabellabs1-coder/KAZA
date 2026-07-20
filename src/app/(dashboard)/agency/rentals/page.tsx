@@ -7,7 +7,7 @@ import { listOwnerRentals } from "@/lib/queries/owner-activity";
 import { OwnerRentalsView } from "../../owner/rentals/rentals-view";
 
 export const metadata: Metadata = {
-  title: "Baux & locations — KAZA Pro",
+  title: "Baux & locations — Kaabo Pro",
   description:
     "Gérez les baux en cours de votre agence : locataires, loyers, échéances et statut.",
 };

@@ -21,7 +21,7 @@ import { listTenantRentals } from "@/lib/queries/tenant-activity";
 import { getContractsForRentals } from "@/lib/rentals/lifecycle";
 import { formatPrice, formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Détail de ma location — KAZA" };
+export const metadata: Metadata = { title: "Détail de ma location — Kaabo" };
 
 export const dynamic = "force-dynamic";
 

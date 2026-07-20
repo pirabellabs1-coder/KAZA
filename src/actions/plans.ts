@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server Actions Plans (édition admin des tarifs d'abonnement)
+// Kaabo — Server Actions Plans (édition admin des tarifs d'abonnement)
 //
 // Met à jour la table `public.plans` (migration 00031), source de vérité des
 // tarifs Pro/Plus pilotables sans redéploiement. Toutes les actions :

@@ -6,7 +6,7 @@ const AUTH_BG_IMAGE =
 
 const AUTH_QUOTE = {
   text: "La plus grande plateforme d'immobilier en Afrique. Annonces vérifiées, paiements sécurisés et contrats numériques — partout sur le continent.",
-  author: "KAZA",
+  author: "Kaabo",
   role: "Louez, en toute confiance",
 };
 
@@ -40,7 +40,7 @@ export default function AuthLayout({
             href="/"
             className="font-heading text-2xl font-bold text-white transition-opacity hover:opacity-90"
           >
-            KAZA
+            Kaabo
           </Link>
         </div>
 
@@ -87,7 +87,7 @@ export default function AuthLayout({
               href="/"
               className="font-heading text-lg font-bold text-white"
             >
-              KAZA
+              Kaabo
             </Link>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function AuthLayout({
 
         {/* Footer auth */}
         <footer className="border-t border-border bg-muted/30 px-6 py-4 text-center text-xs text-muted-foreground lg:px-12">
-          © 2026 KAZA — Tous droits réservés.{" "}
+          © 2026 Kaabo — Tous droits réservés.{" "}
           <Link href="/legal/cgu" className="hover:underline">
             CGU
           </Link>{" "}

@@ -35,7 +35,7 @@ const EMPTY_AUDIT_STATS: AuditStats = {
 };
 
 export const metadata: Metadata = {
-  title: "Journal d'audit — KAZA Admin",
+  title: "Journal d'audit — Kaabo Admin",
   description: "Traçabilité de toutes les actions administratives.",
 };
 

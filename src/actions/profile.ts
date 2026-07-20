@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Profile (Server Actions)
+// Kaabo - Profile (Server Actions)
 //
 // Mise a jour du profil utilisateur dans `public.users`. Les regles RLS
 // (`users_update_own`) imposent `auth.uid() = id`, donc nul besoin de

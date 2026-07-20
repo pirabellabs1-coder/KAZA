@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server actions Frais partagés (colocation)
+// Kaabo — Server actions Frais partagés (colocation)
 // Réservé aux membres ACCEPTED du groupe (RLS + vérif applicative).
 // =============================================================================
 
@@ -285,7 +285,7 @@ export async function initiateExpenseShareCheckout(
 }
 
 // ---------------------------------------------------------------------------
-// Règlement d'une part DEPUIS le solde KAZA (wallet) — alternative à FeexPay.
+// Règlement d'une part DEPUIS le solde Kaabo (wallet) — alternative à FeexPay.
 // Débit atomique, marque la part réglée + rembourse le payeur. Idempotent et
 // recrédite le solde si une étape échoue.
 // ---------------------------------------------------------------------------
@@ -391,7 +391,7 @@ export async function payExpenseShareFromWallet(
 }
 
 // ---------------------------------------------------------------------------
-// Paiement par TRANCHES depuis le solde KAZA (« payer doucement »).
+// Paiement par TRANCHES depuis le solde Kaabo (« payer doucement »).
 // Règle une PARTIE d'une part ; cumule jusqu'au règlement total. Rembourse le
 // payeur (paid_by) au fur et à mesure des tranches encaissées.
 // ---------------------------------------------------------------------------

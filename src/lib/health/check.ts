@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Healthcheck live des services plateforme
+// Kaabo — Healthcheck live des services plateforme
 // =============================================================================
 
 export type ServiceHealth = "OK" | "DEGRADED" | "DOWN" | "UNKNOWN";

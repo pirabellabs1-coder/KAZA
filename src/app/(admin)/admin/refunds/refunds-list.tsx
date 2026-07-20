@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin / Liste des remboursements — client
+// Kaabo - Admin / Liste des remboursements — client
 // =============================================================================
 
 "use client";

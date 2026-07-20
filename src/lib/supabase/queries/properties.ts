@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Properties Queries (Server Components)
+// Kaabo - Properties Queries (Server Components)
 //
 // Helpers de lecture utilisables dans les Server Components (PAS de
 // `'use server'`). Aucun side-effect, retour direct ou throw en cas d'erreur.

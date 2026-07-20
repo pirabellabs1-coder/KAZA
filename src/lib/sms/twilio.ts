@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Twilio SMS Helper
+// Kaabo - Twilio SMS Helper
 // Wave 2 - Aminata Traoré
 //
 // Helper d'envoi de SMS via l'API Twilio Programmable Messaging

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Constantes partenaires (module non-"use server", importable partout)
+// Kaabo — Constantes partenaires (module non-"use server", importable partout)
 // Séparé de src/actions/partners.ts car un fichier "use server" ne peut
 // exporter que des fonctions async.
 // =============================================================================

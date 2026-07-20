@@ -11,7 +11,7 @@ import { VerificationWizard } from "./verification-wizard";
 
 export const metadata = {
   title: "Vérification d'identité",
-  description: "Sécurisez votre compte KAZA en vérifiant votre identité.",
+  description: "Sécurisez votre compte Kaabo en vérifiant votre identité.",
 };
 
 export default async function VerifyIdentityPage() {
@@ -52,7 +52,7 @@ export default async function VerifyIdentityPage() {
           <CardContent className="space-y-4 text-center">
             <p className="text-muted-foreground">
               Votre identité a été validée. Vous pouvez maintenant accéder à toutes
-              les fonctionnalités de KAZA.
+              les fonctionnalités de Kaabo.
             </p>
             <Button asChild className="bg-kaza-blue hover:bg-kaza-blue/90">
               <Link href="/dashboard">Retour au tableau de bord</Link>

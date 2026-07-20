@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Agrégation mensuelle des revenus & occupation du propriétaire
+// Kaabo — Agrégation mensuelle des revenus & occupation du propriétaire
 // (12 mois glissants), branchée sur payments + rentals + properties réels.
 // =============================================================================
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Analytics consolidées du tableau de bord propriétaire
+// Kaabo — Analytics consolidées du tableau de bord propriétaire
 // Assemble des briques déjà branchées sur Supabase (revenus mensuels, avis
 // reçus, vues par bien, visites, paiements) pour alimenter les graphes du
 // dashboard owner avec des données 100% réelles. Best-effort : toute erreur

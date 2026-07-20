@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Server actions CMS Articles (rédaction enrichie + contributeurs)
+// Kaabo — Server actions CMS Articles (rédaction enrichie + contributeurs)
 // Permissions : ADMIN (tout) ou contributeur (ses propres articles).
 // Les policies RLS (migration 00044) appliquent l'autorisation côté DB ;
 // on les double d'une vérification applicative.

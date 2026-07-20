@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server actions Mandats d'agence (table agency_mandates, migration 00037)
+// Kaabo — Server actions Mandats d'agence (table agency_mandates, migration 00037)
 // Réservé au rôle AGENCY. RLS : agency_id = auth.uid().
 // =============================================================================
 
@@ -108,16 +108,16 @@ export async function createMandate(input: MandateInput): Promise<ActionResult> 
   if (error) return { success: false, error: error.message };
 
   // Email de confirmation au mandant (best-effort — le mandant peut ne pas être
-  // un utilisateur KAZA, d'où l'envoi direct à l'email saisi).
+  // un utilisateur Kaabo, d'où l'envoi direct à l'email saisi).
   if (d.ownerEmail) {
     try {
       const agencyName = guard.agencyName;
       const html = buildEmail({
-        preheader: "Votre mandat de gestion KAZA",
+        preheader: "Votre mandat de gestion Kaabo",
         heading: "Mandat de gestion enregistré",
         intro: `Bonjour ${d.ownerName},`,
         paragraphs: [
-          `${agencyName} a enregistré un mandat de gestion (${d.mandateType}) pour votre bien sur KAZA.`,
+          `${agencyName} a enregistré un mandat de gestion (${d.mandateType}) pour votre bien sur Kaabo.`,
         ],
         rows: [
           { label: "Type de mandat", value: d.mandateType },
@@ -126,9 +126,9 @@ export async function createMandate(input: MandateInput): Promise<ActionResult> 
         ],
         highlight:
           "Vous recevrez prochainement le contrat de mandat à signer pour officialiser la gestion.",
-        outro: "L'équipe KAZA",
+        outro: "L'équipe Kaabo",
       });
-      await sendEmail(d.ownerEmail, "Votre mandat de gestion KAZA", html);
+      await sendEmail(d.ownerEmail, "Votre mandat de gestion Kaabo", html);
     } catch (err) {
       console.warn("[mandates] email mandant échec:", err);
     }

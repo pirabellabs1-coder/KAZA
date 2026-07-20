@@ -99,7 +99,7 @@ export function AdminLoginForm() {
 
       <p className="flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
         <ShieldCheck className="size-3.5 text-kaza-green" />
-        Accès strictement réservé aux administrateurs KAZA.
+        Accès strictement réservé aux administrateurs Kaabo.
       </p>
     </form>
   );

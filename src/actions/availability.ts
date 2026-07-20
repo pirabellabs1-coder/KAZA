@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Blocages de disponibilité (Server Actions)
+// Kaabo — Blocages de disponibilité (Server Actions)
 //
 // Persiste les blocages de disponibilité d'un bien dans
 // `public.availability_blocks` (migration 00055).

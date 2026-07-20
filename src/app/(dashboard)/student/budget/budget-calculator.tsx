@@ -92,12 +92,12 @@ export function BudgetCalculator() {
 
   const handleShare = async () => {
     const summary =
-      `Budget colocation KAZA\n` +
+      `Budget colocation Kaabo\n` +
       `Total mensuel : ${formatPrice(totals.total)}\n` +
       `Par personne : ${formatPrice(totals.perPerson)}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Budget colocation KAZA", text: summary });
+        await navigator.share({ title: "Budget colocation Kaabo", text: summary });
       } else {
         await navigator.clipboard.writeText(summary);
         toast.success("Récapitulatif copié dans le presse-papiers.");

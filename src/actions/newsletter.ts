@@ -12,7 +12,7 @@ const SITE_URL = (
 ).replace(/\/$/, "");
 
 // =============================================================================
-// KAZA - Server Action : inscription newsletter
+// Kaabo - Server Action : inscription newsletter
 //
 // Persiste l'inscription dans `newsletter_subscribers` (RLS public INSERT),
 // envoie un email de confirmation à l'abonné et notifie l'équipe interne.
@@ -78,14 +78,14 @@ export async function subscribeNewsletter(
     if (!alreadySubscribed) {
       await sendEmail(
         normalizedEmail,
-        "Bienvenue dans la newsletter KAZA",
+        "Bienvenue dans la newsletter Kaabo",
         buildEmail({
-          preheader: "Merci pour votre inscription à la newsletter KAZA.",
-          heading: "Bienvenue chez KAZA 🏠",
+          preheader: "Merci pour votre inscription à la newsletter Kaabo.",
+          heading: "Bienvenue chez Kaabo 🏠",
           intro: "Bonjour,",
           paragraphs: [
-            "Merci de vous être inscrit à la newsletter KAZA ! Vous recevrez chaque mois nos meilleures annonces et nos analyses du marché immobilier africain.",
-            "À très vite, l'équipe KAZA.",
+            "Merci de vous être inscrit à la newsletter Kaabo ! Vous recevrez chaque mois nos meilleures annonces et nos analyses du marché immobilier africain.",
+            "À très vite, l'équipe Kaabo.",
           ],
           button: { label: "Découvrir les annonces", url: `${SITE_URL}/search` },
         }),
@@ -97,13 +97,13 @@ export async function subscribeNewsletter(
       process.env.NOTIFICATIONS_CONTACT_EMAIL ?? "immobilierkaza@gmail.com";
     await sendEmail(
       adminEmail,
-      `[KAZA] ${alreadySubscribed ? "Tentative ré-inscription" : "Nouvel abonné"} newsletter (source: ${finalSource})`,
+      `[Kaabo] ${alreadySubscribed ? "Tentative ré-inscription" : "Nouvel abonné"} newsletter (source: ${finalSource})`,
       buildEmail({
         heading: alreadySubscribed
           ? "Tentative de ré-inscription newsletter"
           : "Nouvel abonné à la newsletter",
         paragraphs: [
-          `${normalizedEmail} ${alreadySubscribed ? "était déjà inscrit" : "vient de s'abonner"} à la newsletter KAZA.`,
+          `${normalizedEmail} ${alreadySubscribed ? "était déjà inscrit" : "vient de s'abonner"} à la newsletter Kaabo.`,
         ],
         rows: [{ label: "Source", value: finalSource }],
       }),
@@ -116,6 +116,6 @@ export async function subscribeNewsletter(
     success: true,
     message: alreadySubscribed
       ? "Vous êtes déjà inscrit à notre newsletter."
-      : "Inscription confirmée. Bienvenue chez KAZA !",
+      : "Inscription confirmée. Bienvenue chez Kaabo !",
   };
 }

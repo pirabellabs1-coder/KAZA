@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - LanguageSwitcher (Client)
+// Kaabo - LanguageSwitcher (Client)
 // Wave 10 - Olamide Adesanya (Mobile/PWA Specialist)
 //
 // Dropdown shadcn (Radix) pour basculer entre FR et EN. S'appuie sur

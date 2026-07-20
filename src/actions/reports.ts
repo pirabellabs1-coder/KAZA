@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Signalements de contenu (Server Actions)
+// Kaabo — Signalements de contenu (Server Actions)
 //
 // Persiste les signalements dans `public.reports` (migration 00030).
 // RLS :

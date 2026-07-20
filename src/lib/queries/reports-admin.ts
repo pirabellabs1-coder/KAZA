@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Signalements (back-office admin, server-side)
+// Kaabo — Queries Signalements (back-office admin, server-side)
 // Lecture de `public.reports` pour la page /admin/reports.
 // RLS : SELECT réservé aux ADMIN (et au reporter pour ses propres signalements).
 // L'INSERT public est géré par la server action `reportContent`.

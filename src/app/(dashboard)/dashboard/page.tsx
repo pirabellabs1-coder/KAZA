@@ -1111,7 +1111,7 @@ async function StudentOverview({
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Bienvenue dans la communauté KAZA Étudiant</CardTitle>
+            <CardTitle>Bienvenue dans la communauté Kaabo Étudiant</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
@@ -1168,7 +1168,7 @@ async function AdminOverview({ firstName }: { firstName: string }) {
     <div className="space-y-6">
       <WelcomeBanner
         firstName={firstName}
-        subtitle="Tableau de bord administrateur KAZA."
+        subtitle="Tableau de bord administrateur Kaabo."
         roleLabel="Administrateur"
         color="navy"
       />

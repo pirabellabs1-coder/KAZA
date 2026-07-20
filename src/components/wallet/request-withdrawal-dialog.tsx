@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Dialog : demande de retrait (client)
+// Kaabo — Dialog : demande de retrait (client)
 // =============================================================================
 
 "use client";
@@ -51,7 +51,7 @@ const methodOptions: {
   },
   {
     value: "CASH",
-    label: "Espèces (agence KAZA)",
+    label: "Espèces (agence Kaabo)",
     description: "Récupération en agence Cotonou",
     icon: Banknote,
     placeholder: "Ex : Agence Cotonou Cadjèhoun",
@@ -143,7 +143,7 @@ export function RequestWithdrawalDialog({
             <span className="font-semibold text-kaza-navy">
               {formatFcfa(availableBalance)}
             </span>{" "}
-            · Commission KAZA : 1%
+            · Commission Kaabo : 1%
           </DialogDescription>
         </DialogHeader>
 
@@ -233,7 +233,7 @@ export function RequestWithdrawalDialog({
               {method === "MOBILE_MONEY" &&
                 "Numéro Mobile Money avec opérateur entre parenthèses."}
               {method === "CASH" &&
-                "Indiquez l'agence KAZA où récupérer les fonds."}
+                "Indiquez l'agence Kaabo où récupérer les fonds."}
             </p>
           </div>
 
@@ -248,7 +248,7 @@ export function RequestWithdrawalDialog({
               </div>
               <div className="mt-1 flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  Commission KAZA (1%)
+                  Commission Kaabo (1%)
                 </span>
                 <span className="font-mono text-kaza-error">
                   - {formatFcfa(fee)}

@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Crédit du wallet après recharge Mobile Money (purpose = WALLET_TOPUP).
+// Kaabo — Crédit du wallet après recharge Mobile Money (purpose = WALLET_TOPUP).
 // Insère une wallet_transactions positive de type TOPUP ; le trigger
 // `on_wallet_tx_insert` met à jour balance_fcfa / total_in_fcfa.
 // =============================================================================
@@ -36,7 +36,7 @@ export async function creditWalletTopUp(
       user_id: params.userId,
       type: "TOPUP",
       amount_fcfa: amount,
-      description: `Recharge KAZA Wallet — ${amount.toLocaleString("fr-FR")} FCFA`,
+      description: `Recharge Kaabo Wallet — ${amount.toLocaleString("fr-FR")} FCFA`,
       reference_id: params.paymentId ?? null,
     });
     if (error) return { ok: false, error: error.message };

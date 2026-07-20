@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA - Requête admin : liste de TOUS les litiges (table public.disputes)
+// Kaabo - Requête admin : liste de TOUS les litiges (table public.disputes)
 // =============================================================================
 // La RLS de `disputes` ne laisse voir qu'à l'agence ou au locataire concerné.
 // L'admin passe donc par le client service-role (bypass RLS) pour tout voir.

@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Paramètres agence (Server Action)
+// Kaabo — Paramètres agence (Server Action)
 //
 // Persistance réelle des onglets « Page publique » et « Notifications » de
 // /agency/settings (migration 00035_agency_settings.sql) dans la colonne

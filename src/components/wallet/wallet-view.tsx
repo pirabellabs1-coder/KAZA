@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Vue Wallet partagée (Owner / Agency)
+// Kaabo — Vue Wallet partagée (Owner / Agency)
 // Composant serveur ; affiche solde, transactions, retraits, RIB.
 // =============================================================================
 
@@ -99,7 +99,7 @@ const TX_TYPE_META: Record<
     className: "bg-red-100 text-red-700",
   },
   PLATFORM_FEE: {
-    label: "Commission KAZA",
+    label: "Commission Kaabo",
     className: "bg-slate-100 text-slate-700",
   },
   BONUS: { label: "Bonus", className: "bg-purple-100 text-purple-700" },
@@ -231,7 +231,7 @@ export function WalletView({
               Votre wallet est prêt
             </p>
             <p className="max-w-md text-sm text-muted-foreground">
-              Votre wallet sera crédité dès le premier loyer reçu via KAZA.
+              Votre wallet sera crédité dès le premier loyer reçu via Kaabo.
               Pensez à enregistrer vos coordonnées bancaires pour faciliter
               vos futurs retraits.
             </p>

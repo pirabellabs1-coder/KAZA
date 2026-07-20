@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Audit log queries (server-side)
+// Kaabo — Audit log queries (server-side)
 // Wave 9 — Yaw
 //
 // Lectures consommées par /admin/audit-log : flux chronologique, agrégats

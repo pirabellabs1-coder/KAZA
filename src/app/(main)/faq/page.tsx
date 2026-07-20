@@ -29,14 +29,14 @@ import { AnimatedGradientBg } from "@/components/shared/animated-gradient-bg";
 import { FaqAccordion, type FaqItem } from "./faq-accordion";
 
 export const metadata: Metadata = {
-  title: "FAQ — Questions fréquentes | KAZA",
+  title: "FAQ — Questions fréquentes | Kaabo",
   description:
-    "Trouvez les réponses aux questions les plus fréquentes sur KAZA : fonctionnement, sécurité, paiements, colocations, contrats et plus.",
+    "Trouvez les réponses aux questions les plus fréquentes sur Kaabo : fonctionnement, sécurité, paiements, colocations, contrats et plus.",
   alternates: { canonical: "/faq" },
   openGraph: {
-    title: "FAQ KAZA — Toutes vos questions, nos réponses",
+    title: "FAQ Kaabo — Toutes vos questions, nos réponses",
     description:
-      "Tout ce que vous devez savoir sur KAZA, la plateforme immobilière de référence en Afrique de l'Ouest.",
+      "Tout ce que vous devez savoir sur Kaabo, la plateforme immobilière de référence en Afrique de l'Ouest.",
     url: "/faq",
     type: "website",
     images: ["/images/hero-bg.jpg"],
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 
 const accountFaq: FaqItem[] = [
   {
-    q: "Comment créer un compte KAZA ?",
+    q: "Comment créer un compte Kaabo ?",
     a: "Cliquez sur « S'inscrire » en haut à droite, choisissez votre profil (locataire, propriétaire ou étudiant), renseignez votre email et un mot de passe. Vous recevrez un code de vérification par SMS.",
   },
   {
@@ -131,15 +131,15 @@ const visitFaq: FaqItem[] = [
 const paymentFaq: FaqItem[] = [
   {
     q: "Quels modes de paiement acceptez-vous ?",
-    a: "KAZA Pay, KAZA Wallet, cartes Visa et Mastercard. Toutes les transactions sont chiffrées de bout en bout et conformes aux standards PCI-DSS.",
+    a: "Kaabo Pay, Kaabo Wallet, cartes Visa et Mastercard. Toutes les transactions sont chiffrées de bout en bout et conformes aux standards PCI-DSS.",
   },
   {
-    q: "Qu'est-ce que l'escrow KAZA ?",
-    a: "L'escrow est un compte séquestre sécurisé : vos fonds (caution, premier loyer) sont bloqués chez KAZA, puis libérés au propriétaire uniquement après la remise effective des clés.",
+    q: "Qu'est-ce que l'escrow Kaabo ?",
+    a: "L'escrow est un compte séquestre sécurisé : vos fonds (caution, premier loyer) sont bloqués chez Kaabo, puis libérés au propriétaire uniquement après la remise effective des clés.",
   },
   {
     q: "Les paiements sont-ils sécurisés ?",
-    a: "Oui. Nous utilisons KAZA Pay (PCI-DSS niveau 1) et KAZA Wallet comme fallback. Vos données bancaires ne transitent jamais par nos serveurs.",
+    a: "Oui. Nous utilisons Kaabo Pay (PCI-DSS niveau 1) et Kaabo Wallet comme fallback. Vos données bancaires ne transitent jamais par nos serveurs.",
   },
   {
     q: "Puis-je payer mon loyer en plusieurs fois ?",
@@ -155,7 +155,7 @@ const paymentFaq: FaqItem[] = [
   },
   {
     q: "Y a-t-il des frais sur les paiements ?",
-    a: "Aucun frais pour le locataire. Les propriétaires ne paient que la commission KAZA (5 % Starter ou 3 % Pro) sur les loyers effectivement perçus.",
+    a: "Aucun frais pour le locataire. Les propriétaires ne paient que la commission Kaabo (5 % Starter ou 3 % Pro) sur les loyers effectivement perçus.",
   },
 ];
 
@@ -170,15 +170,15 @@ const contractFaq: FaqItem[] = [
   },
   {
     q: "Puis-je résilier mon contrat ?",
-    a: "Oui, depuis votre dashboard. Le préavis légal s'applique (1 à 3 mois selon le bail). KAZA accompagne la procédure et gère l'état des lieux numérique.",
+    a: "Oui, depuis votre dashboard. Le préavis légal s'applique (1 à 3 mois selon le bail). Kaabo accompagne la procédure et gère l'état des lieux numérique.",
   },
   {
     q: "Qui rédige le contrat de bail ?",
-    a: "KAZA propose un modèle conforme au droit béninois, validé par nos avocats partenaires. Vous pouvez ajouter des clauses spécifiques avec l'accord des deux parties.",
+    a: "Kaabo propose un modèle conforme au droit béninois, validé par nos avocats partenaires. Vous pouvez ajouter des clauses spécifiques avec l'accord des deux parties.",
   },
   {
     q: "Le garant est-il obligatoire ?",
-    a: "Cela dépend du propriétaire. Pour les étudiants, un garant est généralement requis. KAZA propose aussi sa garantie locative en option.",
+    a: "Cela dépend du propriétaire. Pour les étudiants, un garant est généralement requis. Kaabo propose aussi sa garantie locative en option.",
   },
   {
     q: "Comment renouveler mon bail ?",
@@ -188,7 +188,7 @@ const contractFaq: FaqItem[] = [
 
 const securityFaq: FaqItem[] = [
   {
-    q: "Comment KAZA vérifie les identités ?",
+    q: "Comment Kaabo vérifie les identités ?",
     a: "Pièce d'identité officielle (CNI, passeport, permis) + selfie de validation. Notre partenaire KYC analyse l'authenticité du document et compare biométriquement.",
   },
   {
@@ -209,14 +209,14 @@ const securityFaq: FaqItem[] = [
   },
   {
     q: "Comment reconnaître une arnaque ?",
-    a: "Méfiez-vous de tout paiement hors plateforme, de prix anormalement bas, de propriétaires pressés. Restez toujours sur KAZA — votre escrow vous protège.",
+    a: "Méfiez-vous de tout paiement hors plateforme, de prix anormalement bas, de propriétaires pressés. Restez toujours sur Kaabo — votre escrow vous protège.",
   },
 ];
 
 const studentFaq: FaqItem[] = [
   {
     q: "Comment trouver une colocation étudiante ?",
-    a: "Filtrez par université, budget et style de vie dans KAZA Academia. Vous voyez les profils des colocataires actuels et postulez en un clic.",
+    a: "Filtrez par université, budget et style de vie dans Kaabo Academia. Vous voyez les profils des colocataires actuels et postulez en un clic.",
   },
   {
     q: "Comment vérifier mon statut étudiant ?",
@@ -236,7 +236,7 @@ const studentFaq: FaqItem[] = [
   },
   {
     q: "Que se passe-t-il en fin d'année universitaire ?",
-    a: "Vous pouvez résilier avec un préavis d'1 mois en juin/juillet sans pénalité. KAZA Academia respecte le calendrier universitaire.",
+    a: "Vous pouvez résilier avec un préavis d'1 mois en juin/juillet sans pénalité. Kaabo Academia respecte le calendrier universitaire.",
   },
 ];
 
@@ -246,7 +246,7 @@ const ownerFaq: FaqItem[] = [
     a: "Créez un compte propriétaire, ajoutez photos et détails, fixez votre loyer. Notre équipe valide en moins de 24h.",
   },
   {
-    q: "Combien KAZA prélève sur mes loyers ?",
+    q: "Combien Kaabo prélève sur mes loyers ?",
     a: "5 % sur le plan Starter (gratuit) et 3 % sur le plan Pro (15 000 FCFA/mois). Commission uniquement quand un loyer est perçu.",
   },
   {
@@ -255,7 +255,7 @@ const ownerFaq: FaqItem[] = [
   },
   {
     q: "Quand vais-je recevoir mes loyers ?",
-    a: "Les loyers sont versés sous 48h ouvrées suivant le paiement, après déduction de la commission KAZA.",
+    a: "Les loyers sont versés sous 48h ouvrées suivant le paiement, après déduction de la commission Kaabo.",
   },
   {
     q: "Puis-je gérer plusieurs biens ?",
@@ -263,7 +263,7 @@ const ownerFaq: FaqItem[] = [
   },
   {
     q: "Que faire si mon locataire ne paie pas ?",
-    a: "KAZA déclenche automatiquement des relances par SMS, email et WhatsApp. Notre équipe peut accompagner la médiation.",
+    a: "Kaabo déclenche automatiquement des relances par SMS, email et WhatsApp. Notre équipe peut accompagner la médiation.",
   },
 ];
 
@@ -308,7 +308,7 @@ const CATEGORIES: Category[] = [
   {
     id: "paiement",
     title: "Paiements & loyers",
-    description: "KAZA Pay, KAZA Wallet, escrow, factures, reçus.",
+    description: "Kaabo Pay, Kaabo Wallet, escrow, factures, reçus.",
     icon: CreditCard,
     color: "from-rose-100 to-rose-50",
     iconColor: "text-rose-700",
@@ -335,7 +335,7 @@ const CATEGORIES: Category[] = [
   {
     id: "etudiant",
     title: "Colocation étudiante",
-    description: "KAZA Academia, matching, charges partagées.",
+    description: "Kaabo Academia, matching, charges partagées.",
     icon: GraduationCap,
     color: "from-indigo-100 to-indigo-50",
     iconColor: "text-indigo-700",
@@ -688,7 +688,7 @@ export default async function FaqPage({
                 Restez informé des nouveautés
               </h2>
               <p className="mx-auto mt-3 max-w-xl text-base text-white/75 sm:text-lg">
-                Conseils, actualités et nouveautés KAZA, directement dans votre
+                Conseils, actualités et nouveautés Kaabo, directement dans votre
                 boîte mail.
               </p>
             </div>

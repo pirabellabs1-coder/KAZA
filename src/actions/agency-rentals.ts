@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server actions Baux agence
+// Kaabo — Server actions Baux agence
 // - terminateRental : résiliation d'un bail (statut TERMINATED + date de fin)
 // - remindLatePayment : relance d'un loyer en retard (email + SMS + notif)
 // Réservé au rôle AGENCY, et strictement scopé aux biens de l'agence.
@@ -211,14 +211,14 @@ export async function remindLatePayment(
   // Email
   if (tenant?.email) {
     const html = buildEmail({
-      preheader: "Un loyer reste à régler pour votre logement KAZA.",
+      preheader: "Un loyer reste à régler pour votre logement Kaabo.",
       heading: "Rappel de loyer",
       intro: `Bonjour ${prenom},`,
       paragraphs: [
-        `Nous vous rappelons qu'un loyer de ${amount} reste à régler pour votre logement géré via KAZA.`,
+        `Nous vous rappelons qu'un loyer de ${amount} reste à régler pour votre logement géré via Kaabo.`,
         "Merci de procéder au règlement dans les meilleurs délais depuis votre espace locataire.",
       ],
-      outro: "Votre agence, via KAZA",
+      outro: "Votre agence, via Kaabo",
     });
     await sendEmail(tenant.email, "Rappel : loyer en attente de règlement", html);
   }
@@ -227,7 +227,7 @@ export async function remindLatePayment(
   if (tenant?.phone) {
     await sendSms(
       tenant.phone,
-      `KAZA : rappel — un loyer de ${amount} reste a regler. Merci de regulariser depuis votre espace locataire.`,
+      `Kaabo : rappel — un loyer de ${amount} reste a regler. Merci de regulariser depuis votre espace locataire.`,
     );
   }
 

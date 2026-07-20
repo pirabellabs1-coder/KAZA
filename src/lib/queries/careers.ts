@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Careers (server-side)
+// Kaabo — Queries Careers (server-side)
 // Lecture des offres d'emploi `job_offers`.
 // - `listPublishedJobOffers`  : page publique /carrieres
 // - `getJobOfferBySlug`       : page publique /carrieres/[slug]

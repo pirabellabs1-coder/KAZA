@@ -11,7 +11,7 @@ import { formatPrice, formatDate } from "@/lib/utils";
 
 import { OfferDecisionButtons, MarkSoldButton } from "./offer-actions";
 
-export const metadata: Metadata = { title: "Offres d'achat reçues — KAZA" };
+export const metadata: Metadata = { title: "Offres d'achat reçues — Kaabo" };
 export const dynamic = "force-dynamic";
 
 const OWNER_ROLES = new Set(["OWNER", "AGENCY", "ADMIN"]);

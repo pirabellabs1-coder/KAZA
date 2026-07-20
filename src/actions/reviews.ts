@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Reviews / Ratings (Server Actions)
+// Kaabo - Reviews / Ratings (Server Actions)
 //
 // Un utilisateur peut noter une autre partie a l'issue d'une location
 // (rental). Contrainte applicative : 1 review par (rater_id, rental_id).

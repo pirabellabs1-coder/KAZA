@@ -12,7 +12,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 
 // =============================================================================
-// KAZA - Server Actions Contrats (génération + signature électronique)
+// Kaabo - Server Actions Contrats (génération + signature électronique)
 // =============================================================================
 // Toutes les actions ici sont 'use server' + 'server-only'. Aucun SECRET ni
 // service_role_key n'est jamais exposé au client.

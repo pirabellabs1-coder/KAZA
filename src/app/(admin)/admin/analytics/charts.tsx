@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin / Analytics — graphiques SVG natifs (mode démo)
+// Kaabo - Admin / Analytics — graphiques SVG natifs (mode démo)
 // Wave 9 - Yaw Boateng
 // Pas de dépendance graphique externe : SVG calculé à la main.
 // =============================================================================

@@ -36,7 +36,7 @@ import { formatFcfa } from "@/lib/utils";
 import { TerminateRentalButton, RemindPaymentButton } from "./rental-actions";
 
 export const metadata: Metadata = {
-  title: "Détail du bail — KAZA Pro",
+  title: "Détail du bail — Kaabo Pro",
 };
 
 export const dynamic = "force-dynamic";

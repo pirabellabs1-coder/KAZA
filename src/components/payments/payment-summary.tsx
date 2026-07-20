@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 
 // =============================================================================
-// KAZA - Récapitulatif du paiement (server component)
+// Kaabo - Récapitulatif du paiement (server component)
 // =============================================================================
 
 interface PaymentSummaryProps {
@@ -79,7 +79,7 @@ export function PaymentSummary({
           </div>
           {serviceFee > 0 && (
             <div className="flex items-center justify-between text-muted-foreground">
-              <span>Frais de service KAZA</span>
+              <span>Frais de service Kaabo</span>
               <span className="text-foreground">{formatPrice(serviceFee)}</span>
             </div>
           )}
@@ -101,7 +101,7 @@ export function PaymentSummary({
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-kaza-green" />
           <p className="text-xs leading-relaxed text-foreground">
             <span className="font-semibold">Paiement sécurisé.</span> Les fonds
-            sont conservés par KAZA en séquestre (escrow) et libérés au
+            sont conservés par Kaabo en séquestre (escrow) et libérés au
             propriétaire après confirmation, garantissant votre protection.
           </p>
         </div>

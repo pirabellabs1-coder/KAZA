@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Surveys (Server Actions)
+// Kaabo — Surveys (Server Actions)
 //
 // `submitSurveyResponse` :
 //   - vérifie l'auth user

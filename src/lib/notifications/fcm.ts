@@ -1,7 +1,7 @@
 import 'server-only';
 
 // =============================================================================
-// KAZA - Firebase Cloud Messaging (FCM) helper
+// Kaabo - Firebase Cloud Messaging (FCM) helper
 // Wave 3 - Kwame Asante
 //
 // Envoi de notifications push via l'API HTTP legacy FCM. En l'absence de

@@ -23,8 +23,8 @@ import { runHealthchecks } from "@/lib/health/check";
 import { listOpenIncidents } from "@/lib/health/check";
 
 export const metadata: Metadata = {
-  title: "Monitoring temps réel — KAZA Admin",
-  description: "Supervision live de l'infrastructure KAZA.",
+  title: "Monitoring temps réel — Kaabo Admin",
+  description: "Supervision live de l'infrastructure Kaabo.",
 };
 
 export const dynamic = "force-dynamic";
@@ -56,7 +56,7 @@ export default async function AdminMonitoringPage() {
           Monitoring infrastructure
         </h1>
         <p className="text-sm text-muted-foreground">
-          Santé des services KAZA en temps réel.
+          Santé des services Kaabo en temps réel.
         </p>
       </header>
 

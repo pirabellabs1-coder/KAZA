@@ -30,7 +30,7 @@ import {
 } from "@/lib/queries/tenant-activity";
 
 export const metadata: Metadata = {
-  title: "Mes analyses · KAZA",
+  title: "Mes analyses · Kaabo",
   description: "Suivi réel de votre budget logement, paiements et activité.",
 };
 
@@ -70,7 +70,7 @@ export default async function TenantAnalyticsPage() {
           Mes analyses
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Votre activité KAZA en chiffres réels — budget, paiements, recherche.
+          Votre activité Kaabo en chiffres réels — budget, paiements, recherche.
         </p>
       </div>
 
@@ -148,7 +148,7 @@ export default async function TenantAnalyticsPage() {
                 Évolution de vos paiements
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Loyers réglés via KAZA — 12 derniers mois
+                Loyers réglés via Kaabo — 12 derniers mois
               </p>
             </CardHeader>
             <CardContent>

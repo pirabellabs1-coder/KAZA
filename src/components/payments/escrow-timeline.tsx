@@ -2,7 +2,7 @@ import { Check, Lock, Unlock, AlertTriangle, Clock } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 
 // =============================================================================
-// KAZA - Timeline Escrow (séquestre)
+// Kaabo - Timeline Escrow (séquestre)
 // =============================================================================
 
 export type EscrowStatus = "held" | "released" | "disputed";

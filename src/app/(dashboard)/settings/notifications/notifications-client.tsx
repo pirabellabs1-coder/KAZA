@@ -48,7 +48,7 @@ const CATEGORIES: { key: Category; label: string; description: string }[] = [
   {
     key: "marketing",
     label: "Marketing",
-    description: "Nouveautés, conseils et offres promotionnelles KAZA.",
+    description: "Nouveautés, conseils et offres promotionnelles Kaabo.",
   },
 ];
 

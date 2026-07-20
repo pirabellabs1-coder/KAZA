@@ -4,7 +4,7 @@ import { CheckCircle2, Download, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // =============================================================================
-// KAZA - Page Succès paiement
+// Kaabo - Page Succès paiement
 // =============================================================================
 
 export const metadata: Metadata = {
@@ -68,7 +68,7 @@ export default async function PaymentSuccessPage({
             <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-kaza-green/15 text-xs font-bold text-kaza-green">
               1
             </span>
-            <span>Vos fonds sont conservés en sécurité par KAZA.</span>
+            <span>Vos fonds sont conservés en sécurité par Kaabo.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-kaza-green/15 text-xs font-bold text-kaza-green">

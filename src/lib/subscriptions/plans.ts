@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Catalogue des plans d'abonnement (wallet-based billing)
+// Kaabo — Catalogue des plans d'abonnement (wallet-based billing)
 //
 // Source de vérité pour les plans wallet-based MVP. Le catalogue historique
 // `PLAN_DETAILS` (cf. `src/lib/queries/subscriptions.ts`) reste utilisé par la

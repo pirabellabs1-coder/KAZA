@@ -51,7 +51,7 @@ export default async function StudentFinancePage() {
           Mes finances
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Budget logement, loyer et solde KAZA — données réelles.
+          Budget logement, loyer et solde Kaabo — données réelles.
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export default async function StudentFinancePage() {
           <CardContent className="p-5">
             <Wallet className="size-5 text-kaza-blue" />
             <p className="mt-3 text-xs uppercase tracking-wide text-muted-foreground">
-              Solde KAZA
+              Solde Kaabo
             </p>
             <p className="font-heading text-2xl font-bold text-kaza-navy">
               {formatFcfa(fin.walletBalance)}
@@ -108,7 +108,7 @@ export default async function StudentFinancePage() {
         <CardHeader>
           <CardTitle className="text-lg">Paiements par mois</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Loyers réglés via KAZA — 12 derniers mois
+            Loyers réglés via Kaabo — 12 derniers mois
           </p>
         </CardHeader>
         <CardContent>
@@ -119,7 +119,7 @@ export default async function StudentFinancePage() {
                 Aucun paiement enregistré
               </p>
               <p className="max-w-sm text-xs text-muted-foreground">
-                Vos paiements de loyer via KAZA apparaîtront ici.
+                Vos paiements de loyer via Kaabo apparaîtront ici.
               </p>
             </div>
           ) : (
@@ -159,7 +159,7 @@ export default async function StudentFinancePage() {
               </p>
               <p className="text-xs text-muted-foreground">
                 Réglez votre part de loyer et les dépenses (courses, factures)
-                avec vos colocataires — depuis votre solde KAZA ou par Mobile
+                avec vos colocataires — depuis votre solde Kaabo ou par Mobile
                 Money, en une fois ou en plusieurs tranches.
               </p>
             </div>

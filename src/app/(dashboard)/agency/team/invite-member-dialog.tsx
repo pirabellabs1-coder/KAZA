@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Dialog client : inviter un nouveau membre dans l'équipe agence
+// Kaabo — Dialog client : inviter un nouveau membre dans l'équipe agence
 // =============================================================================
 
 import { useState, useTransition } from "react";

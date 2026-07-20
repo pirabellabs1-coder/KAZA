@@ -105,7 +105,7 @@ async function requestToPay(
     amount: Math.round(input.amount),
     reseau: input.network,
     shop: shopId,
-    first_name: input.metadata?.first_name || "Client KAZA",
+    first_name: input.metadata?.first_name || "Client Kaabo",
     email: input.customerEmail || undefined,
     // callback_info est renvoye tel quel dans le webhook -> on y encode nos
     // metadonnees (user_id, purpose, promo_code...).
@@ -182,7 +182,7 @@ async function initCardCheckout(
     reseau: "VISA",
     shop: shopId,
     first_name: input.firstName || input.metadata?.first_name || "Client",
-    last_name: input.lastName || input.metadata?.last_name || "KAZA",
+    last_name: input.lastName || input.metadata?.last_name || "Kaabo",
     email: input.customerEmail || undefined,
     country: "Benin",
     currency: "XOF",

@@ -31,11 +31,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Carrières — Construisons l'avenir de l'immobilier africain",
   description:
-    "Rejoignez la révolution immobilière en Afrique. Équipe panafricaine, remote-first, BSPCE pour tous. Découvrez nos postes ouverts chez KAZA.",
+    "Rejoignez la révolution immobilière en Afrique. Équipe panafricaine, remote-first, BSPCE pour tous. Découvrez nos postes ouverts chez Kaabo.",
   openGraph: {
-    title: "Carrières chez KAZA",
+    title: "Carrières chez Kaabo",
     description:
-      "Rejoignez l'équipe KAZA et construisez la plus grande plateforme d'immobilier d'Afrique.",
+      "Rejoignez l'équipe Kaabo et construisez la plus grande plateforme d'immobilier d'Afrique.",
     type: "website",
   },
 };
@@ -61,7 +61,7 @@ export const JOBS = [
     type: "CDI",
     team: "Engineering",
     summary:
-      "Vous concevez nos API, schémas Postgres/PostGIS et l'intégration avec KAZA Pay, Twilio et Resend.",
+      "Vous concevez nos API, schémas Postgres/PostGIS et l'intégration avec Kaabo Pay, Twilio et Resend.",
   },
   {
     slug: "product-designer",
@@ -79,7 +79,7 @@ export const JOBS = [
     type: "CDI",
     team: "Marketing",
     summary:
-      "Vous pilotez l'acquisition, la rétention et nos partenariats locaux pour faire passer KAZA à l'échelle.",
+      "Vous pilotez l'acquisition, la rétention et nos partenariats locaux pour faire passer Kaabo à l'échelle.",
   },
   {
     slug: "customer-success",
@@ -193,7 +193,7 @@ export default async function CarrieresPage() {
       <section className="relative h-[80vh] min-h-[640px] w-full overflow-hidden">
         <Image
           src={TEAM_HERO_IMAGE}
-          alt="L'équipe KAZA en réunion"
+          alt="L'équipe Kaabo en réunion"
           fill
           priority
           sizes="100vw"
@@ -296,7 +296,7 @@ export default async function CarrieresPage() {
                   Participation au capital
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  BSPCE pour chaque recrue : vous construisez KAZA, vous en
+                  BSPCE pour chaque recrue : vous construisez Kaabo, vous en
                   partagez la réussite.
                 </p>
               </div>
@@ -305,7 +305,7 @@ export default async function CarrieresPage() {
         </div>
       </section>
 
-      {/* ============== POURQUOI KAZA ====================================== */}
+      {/* ============== POURQUOI Kaabo ====================================== */}
       <section className="bg-gradient-to-b from-[#F4F7FB] to-white py-24">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <FadeIn>
@@ -314,7 +314,7 @@ export default async function CarrieresPage() {
                 Notre proposition
               </p>
               <h2 className="font-heading text-3xl font-bold text-kaza-navy sm:text-4xl lg:text-5xl">
-                Pourquoi rejoindre KAZA
+                Pourquoi rejoindre Kaabo
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground">
                 Six raisons concrètes qui font la différence au quotidien.

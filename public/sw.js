@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Service Worker (PWA mode hors-ligne)
+// Kaabo - Service Worker (PWA mode hors-ligne)
 // Wave 10 - Olamide Adesanya (Mobile/PWA Specialist)
 //
 // Strategie : network-first avec fallback cache.

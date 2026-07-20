@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Tarifs des abonnements
+// Kaabo — Admin / Tarifs des abonnements
 // Server Component. Charge les plans depuis la table `plans` (via getAllPlans,
 // avec fallback statique) et affiche un éditeur de prix par plan (mensuel +
 // annuel). L'édition est branchée sur l'action serveur `updatePlan`.
@@ -114,32 +114,32 @@ export default async function AdminPlansPage() {
           Tarifs des abonnements
         </h1>
         <p className="text-sm text-muted-foreground">
-          Modifiez les prix des plans KAZA Pro et KAZA Plus. Les changements
+          Modifiez les prix des plans Kaabo Pro et Kaabo Plus. Les changements
           sont appliqués immédiatement sur les pages publiques de tarifs, sans
           redéploiement.
         </p>
       </div>
 
-      {/* KAZA Pro (agences) */}
+      {/* Kaabo Pro (agences) */}
       {agencyKeys.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Building2 className="size-5 text-kaza-blue" />
             <h2 className="font-heading text-xl font-bold text-kaza-navy">
-              KAZA Pro — Agences
+              Kaabo Pro — Agences
             </h2>
           </div>
           {renderGroup(agencyKeys)}
         </section>
       )}
 
-      {/* KAZA Plus (locataires) */}
+      {/* Kaabo Plus (locataires) */}
       {tenantKeys.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="size-5 text-amber-500" />
             <h2 className="font-heading text-xl font-bold text-kaza-navy">
-              KAZA Plus — Locataires &amp; étudiants
+              Kaabo Plus — Locataires &amp; étudiants
             </h2>
           </div>
           {renderGroup(tenantKeys)}

@@ -22,7 +22,7 @@ import type { MomoCheckoutFields, PaymentProvider } from "@/lib/payments/types";
 import { cn, formatPrice } from "@/lib/utils";
 
 // =============================================================================
-// KAZA — Panneau de paiement Mobile Money on-page (FeexPay)
+// Kaabo — Panneau de paiement Mobile Money on-page (FeexPay)
 // =============================================================================
 // Brique reutilisable par tous les tunnels d'encaissement (loyer, recharge
 // wallet, abonnement, boost, frais partages, acompte de vente).

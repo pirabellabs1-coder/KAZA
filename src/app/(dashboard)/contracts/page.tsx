@@ -98,7 +98,7 @@ export default async function ContractsListPage({
             Mes Contrats
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Gérez, rédigez et faites signer tous vos baux KAZA en un seul endroit.
+            Gérez, rédigez et faites signer tous vos baux Kaabo en un seul endroit.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

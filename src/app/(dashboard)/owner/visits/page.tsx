@@ -7,7 +7,7 @@ import { listOwnerVisits } from "@/lib/queries/owner-activity";
 import { OwnerVisitsView } from "./visits-list";
 
 export const metadata: Metadata = {
-  title: "Demandes de Visite — KAZA",
+  title: "Demandes de Visite — Kaabo",
   description: "Gérez les demandes de visite reçues sur vos annonces.",
 };
 

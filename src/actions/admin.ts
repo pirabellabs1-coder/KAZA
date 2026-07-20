@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Admin Actions (Server Actions)
+// Kaabo - Admin Actions (Server Actions)
 // Wave 8 - Ibrahima Sow
 //
 // Décisions de modération admin pour le MVP (mode démo) :
@@ -57,7 +57,7 @@ function esc(input: unknown): string {
 }
 
 function layout(bodyHtml: string, preheader?: string): string {
-  // Délègue au gabarit email unifié KAZA. Le `bodyHtml` (titre <h2> + contenu)
+  // Délègue au gabarit email unifié Kaabo. Le `bodyHtml` (titre <h2> + contenu)
   // est inséré tel quel dans la carte.
   return buildEmail({ preheader, rawHtml: bodyHtml });
 }
@@ -114,14 +114,14 @@ export async function suspendUser(
   const guard = await assertAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
 
-  const subject = "Votre compte KAZA a été suspendu";
+  const subject = "Votre compte Kaabo a été suspendu";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Suspension de votre compte</h2>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
       Bonjour ${esc(input.userName)},
     </p>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
-      Nous vous informons que votre compte KAZA a été temporairement suspendu suite à un manquement
+      Nous vous informons que votre compte Kaabo a été temporairement suspendu suite à un manquement
       à nos conditions d'utilisation. Pendant cette période, vous ne pourrez plus vous connecter ni
       utiliser nos services.
     </p>
@@ -131,7 +131,7 @@ export async function suspendUser(
       notre équipe support pour ouvrir une demande de révision.
     </p>
     ${ctaButton("Contacter le support", `${APP_URL}/contact`)}`,
-    "Suspension de votre compte KAZA",
+    "Suspension de votre compte Kaabo",
   );
 
   const emailSent = await trySendEmail(input.userEmail, subject, html);
@@ -183,7 +183,7 @@ export async function approveProperty(
     </p>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
       Bonne nouvelle : votre annonce a été approuvée par notre équipe et est désormais visible
-      sur KAZA. Les locataires intéressés peuvent dès maintenant vous contacter.
+      sur Kaabo. Les locataires intéressés peuvent dès maintenant vous contacter.
     </p>
     <div style="background-color:#ecfdf5; border-left:4px solid ${BRAND_GREEN}; padding:16px; margin:16px 0; border-radius:4px;">
       <p style="margin:0 0 4px; font-size:13px; color:#065f46; font-weight:600;">Annonce publiée</p>
@@ -279,7 +279,7 @@ export async function approveIdentity(
   const guard = await assertAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
 
-  const subject = "Identité vérifiée — badge de confiance KAZA";
+  const subject = "Identité vérifiée — badge de confiance Kaabo";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre identité est vérifiée</h2>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
@@ -321,7 +321,7 @@ export async function rejectIdentity(
   const guard = await assertAdmin();
   if (!guard.ok) return { success: false, error: guard.error };
 
-  const subject = "Pièce d'identité non conforme — KAZA";
+  const subject = "Pièce d'identité non conforme — Kaabo";
   const html = layout(
     `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Votre pièce d'identité n'a pas été validée</h2>
     <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
@@ -533,7 +533,7 @@ export async function setAgencyVerified(
     verified ? "agency_verified" : "agency_unverified",
     verified ? "Agence vérifiée" : "Vérification retirée",
     verified
-      ? "Votre agence a été vérifiée par l'équipe KAZA. Le badge de confiance est activé."
+      ? "Votre agence a été vérifiée par l'équipe Kaabo. Le badge de confiance est activé."
       : "Le badge de vérification de votre agence a été retiré. Contactez le support pour en savoir plus.",
   );
 
@@ -603,20 +603,20 @@ export async function setAgencyStatus(
     suspend
       ? trimmedReason
         ? `Votre agence a été suspendue. Motif : ${trimmedReason}`
-        : "Votre agence a été suspendue par l'équipe KAZA. Contactez le support."
-      : "Votre agence a été réactivée. Vous pouvez de nouveau utiliser tous les services KAZA.",
+        : "Votre agence a été suspendue par l'équipe Kaabo. Contactez le support."
+      : "Votre agence a été réactivée. Vous pouvez de nouveau utiliser tous les services Kaabo.",
   );
 
   // Email best-effort à l'agence lors d'une suspension (template existant).
   if (suspend && agency.email) {
-    const subject = "Votre agence KAZA a été suspendue";
+    const subject = "Votre agence Kaabo a été suspendue";
     const html = layout(
       `<h2 style="margin:0 0 16px; color:${BRAND_NAVY}; font-size:22px;">Suspension de votre agence</h2>
       <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
         Bonjour ${esc(agency.name)},
       </p>
       <p style="margin:0 0 16px; line-height:1.6; font-size:15px;">
-        Nous vous informons que votre agence a été suspendue sur KAZA. Pendant cette période,
+        Nous vous informons que votre agence a été suspendue sur Kaabo. Pendant cette période,
         vos annonces ne sont plus mises en avant et certains services sont restreints.
       </p>
       ${trimmedReason ? reasonBlock(trimmedReason) : ""}
@@ -624,7 +624,7 @@ export async function setAgencyStatus(
         Pour contester cette décision ou obtenir des précisions, contactez notre équipe.
       </p>
       ${ctaButton("Contacter le support", `${APP_URL}/contact`)}`,
-      "Suspension de votre agence KAZA",
+      "Suspension de votre agence Kaabo",
     );
     await trySendEmail(agency.email, subject, html);
   }

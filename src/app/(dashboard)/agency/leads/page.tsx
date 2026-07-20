@@ -34,7 +34,7 @@ import { listTeamMembers } from "@/lib/queries/agency-team";
 import { NewLeadDialog } from "./new-lead-dialog";
 
 export const metadata: Metadata = {
-  title: "Leads & prospects — KAZA Agence",
+  title: "Leads & prospects — Kaabo Agence",
   description:
     "Pilotez votre pipeline commercial : prospects, scoring, conversions.",
 };
@@ -84,7 +84,7 @@ const STAGE_BORDER: Record<LeadStage, string> = {
 };
 
 const SOURCE_LABELS: Record<LeadSource, string> = {
-  SITE_KAZA: "Site KAZA",
+  SITE_KAZA: "Site Kaabo",
   SOCIAL: "Réseaux sociaux",
   WORD_OF_MOUTH: "Bouche-à-oreille",
   GOOGLE_ADS: "Pub Google",

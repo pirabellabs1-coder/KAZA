@@ -41,8 +41,8 @@ export interface WalletTransaction {
 }
 
 const METHOD_LABEL: Record<TxMethod, string> = {
-  MTN_MOMO: "KAZA Pay",
-  MOOV_MONEY: "KAZA Wallet",
+  MTN_MOMO: "Kaabo Pay",
+  MOOV_MONEY: "Kaabo Wallet",
   VISA: "Carte VISA",
   BANK: "Virement bancaire",
   WALLET: "Solde portefeuille",

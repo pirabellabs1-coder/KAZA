@@ -7,7 +7,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { ReportGenerator } from "@/components/reports/report-generator";
 
 export const metadata: Metadata = {
-  title: "Rapports — KAZA Étudiant",
+  title: "Rapports — Kaabo Étudiant",
   description: "Générez le rapport de vos dépenses de colocation.",
 };
 

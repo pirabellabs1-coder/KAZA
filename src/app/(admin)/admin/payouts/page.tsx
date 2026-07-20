@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Demandes de retrait
+// Kaabo — Admin / Demandes de retrait
 // Liste, approbation, refus des demandes de payout des proprios/agences.
 // =============================================================================
 
@@ -12,7 +12,7 @@ import { listAllWithdrawalRequests } from "@/lib/queries/wallet";
 import { PayoutsList } from "./payouts-list";
 
 export const metadata: Metadata = {
-  title: "Demandes de retrait — Admin KAZA",
+  title: "Demandes de retrait — Admin Kaabo",
 };
 
 export default async function AdminPayoutsPage() {

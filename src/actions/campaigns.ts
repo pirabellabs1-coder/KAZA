@@ -10,7 +10,7 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import type { SegmentKey } from "@/lib/queries/campaigns";
 
 // =============================================================================
-// KAZA — Envoi de campagnes (admin)
+// Kaabo — Envoi de campagnes (admin)
 // Canal "IN_APP" pleinement fonctionnel : insère une notification réelle pour
 // chaque utilisateur du segment ciblé. Email/Push : enregistrés mais marqués
 // comme à configurer (Resend/FCM bulk) — pas de faux "envoyé".

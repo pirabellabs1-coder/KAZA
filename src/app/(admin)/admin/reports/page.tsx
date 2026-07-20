@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Signalements (liste)
+// Kaabo — Admin / Signalements (liste)
 // Server component. Affiche les signalements de contenu soumis via le bouton
 // public `ReportButton` (table `reports`). L'admin peut marquer un signalement
 // comme traité (statut RESOLVED) via la server action `resolveReport`.

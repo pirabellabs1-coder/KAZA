@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Admin / Édition des tarifs d'un plan (mensuel + annuel)
+// Kaabo — Admin / Édition des tarifs d'un plan (mensuel + annuel)
 //
 // Composant client : champs prix éditables, appel à `updatePlan`, puis
 // `router.refresh()` + toast. Le prix annuel n'est affiché que pour les plans

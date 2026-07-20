@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Règlement d'une part de frais partagés après paiement Mobile Money
+// Kaabo — Règlement d'une part de frais partagés après paiement Mobile Money
 // (purpose = EXPENSE_SHARE). Marque la part réglée et crédite le wallet du
 // colocataire qui a avancé l'argent (paid_by). Idempotent.
 // =============================================================================

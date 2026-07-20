@@ -1,6 +1,6 @@
 // =============================================================================
-// KAZA - Blog Data
-// Articles complets pour le blog magazine KAZA. Stockés en HTML formaté
+// Kaabo - Blog Data
+// Articles complets pour le blog magazine Kaabo. Stockés en HTML formaté
 // pour rendu direct via dangerouslySetInnerHTML dans la page article.
 //
 // Source unique : src/lib/blog/seed/articles.json (10 articles enrichis ≥ 2000

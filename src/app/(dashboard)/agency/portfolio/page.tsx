@@ -48,7 +48,7 @@ import {
 } from "@/lib/queries/owner-properties";
 
 export const metadata: Metadata = {
-  title: "Portefeuille — KAZA Agence",
+  title: "Portefeuille — Kaabo Agence",
   description:
     "Visualisez et pilotez toutes les annonces gérées par votre agence.",
 };

@@ -37,9 +37,9 @@ import {
 } from "@/lib/health/check";
 
 export const metadata: Metadata = {
-  title: "Statut plateforme — KAZA",
+  title: "Statut plateforme — Kaabo",
   description:
-    "Surveillance en temps réel de l'ensemble des services KAZA. Transparence totale, mises à jour automatiques.",
+    "Surveillance en temps réel de l'ensemble des services Kaabo. Transparence totale, mises à jour automatiques.",
 };
 
 // Force dynamic + revalidate toutes les 60 secondes
@@ -273,7 +273,7 @@ export default async function StatusPage() {
             Statut de la plateforme
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 sm:text-lg">
-            Surveillance en temps réel de l&apos;ensemble des services KAZA.
+            Surveillance en temps réel de l&apos;ensemble des services Kaabo.
             Mises à jour automatiques toutes les 60 secondes.
           </p>
           <div className="mt-8 flex justify-center">
@@ -1021,7 +1021,7 @@ export default async function StatusPage() {
             </p>
             <p>
               Cette page interroge en direct chaque dépendance critique de
-              KAZA (frontend, API, base de données, authentification,
+              Kaabo (frontend, API, base de données, authentification,
               stockage, temps réel, emails). Les incidents et maintenances
               sont publiés par l&apos;équipe technique depuis le tableau de
               bord administrateur et apparaissent ici immédiatement.

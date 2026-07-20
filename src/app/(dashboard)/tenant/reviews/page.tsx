@@ -47,7 +47,7 @@ export default async function TenantReviewsPage() {
           Mes évaluations
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Partagez votre expérience pour aider la communauté KAZA.
+          Partagez votre expérience pour aider la communauté Kaabo.
         </p>
       </div>
 

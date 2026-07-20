@@ -7,7 +7,7 @@ import { listOwnerRentals } from "@/lib/queries/owner-activity";
 import { OwnerRentalsView } from "./rentals-view";
 
 export const metadata: Metadata = {
-  title: "Locations en Cours — KAZA",
+  title: "Locations en Cours — Kaabo",
   description: "Suivi de vos baux actifs, à venir et passés.",
 };
 

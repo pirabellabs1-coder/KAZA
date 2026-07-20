@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Boutons "Sauvegarder" et "Alerte" de la page recherche
+// Kaabo — Boutons "Sauvegarder" et "Alerte" de la page recherche
 //
 // Persistent les critères courants via les server actions saveSearch().
 // Si l'utilisateur n'est pas connecté, on le redirige vers /login.

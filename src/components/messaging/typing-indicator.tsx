@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - TypingIndicator (server component)
+// Kaabo - TypingIndicator (server component)
 //
 // Trois points animes + libelle « {name} est en train d'ecrire... ». Les
 // animations vivent dans styles/animations.css (.typing-dot) et respectent

@@ -6,20 +6,20 @@ import { Separator } from "@/components/ui/separator";
 import { LegalToc } from "@/components/marketing/legal-toc";
 
 export const metadata: Metadata = {
-  title: "Mentions légales — KAZA",
+  title: "Mentions légales — Kaabo",
   description:
-    "Mentions légales de KAZA : éditeur PIRABEL LABS SARL, hébergeurs, propriété intellectuelle et coordonnées juridiques selon le droit béninois et OHADA.",
+    "Mentions légales de Kaabo : éditeur PIRABEL LABS SARL, hébergeurs, propriété intellectuelle et coordonnées juridiques selon le droit béninois et OHADA.",
   openGraph: {
-    title: "Mentions légales — KAZA",
+    title: "Mentions légales — Kaabo",
     description:
-      "Informations légales relatives à PIRABEL LABS SARL, éditeur de la plateforme KAZA, selon le droit béninois et l'OHADA.",
+      "Informations légales relatives à PIRABEL LABS SARL, éditeur de la plateforme Kaabo, selon le droit béninois et l'OHADA.",
     type: "article",
   },
 };
 
 const sections = [
   { id: "editeur", label: "1. Éditeur du site" },
-  { id: "marque", label: "2. Marque KAZA" },
+  { id: "marque", label: "2. Marque Kaabo" },
   { id: "publication", label: "3. Directeur de la publication" },
   { id: "hebergement", label: "4. Hébergement" },
   { id: "pi", label: "5. Propriété intellectuelle" },
@@ -47,7 +47,7 @@ export default function MentionsLegalesPage() {
           </h1>
           <p className="mt-3 text-muted-foreground">
             Informations relatives à l&apos;éditeur, à l&apos;hébergeur et au
-            régime juridique applicable à la plateforme KAZA.
+            régime juridique applicable à la plateforme Kaabo.
           </p>
         </header>
 
@@ -71,7 +71,7 @@ export default function MentionsLegalesPage() {
               1. Éditeur du site
             </h2>
             <p className="mt-3 text-muted-foreground">
-              La plateforme KAZA, accessible à l&apos;adresse{" "}
+              La plateforme Kaabo, accessible à l&apos;adresse{" "}
               <span className="font-medium">https://kaza.africa</span>, est
               éditée et exploitée exclusivement par la société :
             </p>
@@ -127,7 +127,7 @@ export default function MentionsLegalesPage() {
 
           <section id="marque" className="scroll-mt-28">
             <h2 className="font-heading text-2xl font-bold text-kaza-navy">
-              2. Marque KAZA
+              2. Marque Kaabo
             </h2>
             <div className="mt-4 rounded-lg border border-kaza-green/30 bg-kaza-green/5 p-5">
               <div className="flex items-start gap-3">
@@ -140,9 +140,9 @@ export default function MentionsLegalesPage() {
                     conformément à l&apos;Accord de Bangui révisé de 2015.
                   </p>
                   <p className="text-muted-foreground">
-                    KAZA est une plateforme Proptech éditée et exploitée
+                    Kaabo est une plateforme Proptech éditée et exploitée
                     exclusivement par PIRABEL LABS SARL. Toute reproduction,
-                    représentation ou utilisation de la marque KAZA sans
+                    représentation ou utilisation de la marque Kaabo sans
                     autorisation écrite préalable est strictement interdite et
                     constitue une contrefaçon au sens des dispositions de
                     l&apos;Annexe III de l&apos;Accord de Bangui révisé.
@@ -179,7 +179,7 @@ export default function MentionsLegalesPage() {
               4. Hébergement
             </h2>
             <p className="mt-3 text-muted-foreground">
-              L&apos;application web et les services techniques de KAZA sont
+              L&apos;application web et les services techniques de Kaabo sont
               hébergés par les prestataires suivants, dont les datacenters sont
               situés en Union européenne et aux États-Unis :
             </p>
@@ -240,7 +240,7 @@ export default function MentionsLegalesPage() {
               5. Propriété intellectuelle
             </h2>
             <p className="mt-3 text-muted-foreground">
-              L&apos;ensemble des éléments composant la plateforme KAZA — sans
+              L&apos;ensemble des éléments composant la plateforme Kaabo — sans
               que cette énumération soit limitative : marques, dénominations,
               logos, identité visuelle, charte graphique, textes, photographies,
               illustrations, vidéos, sons, interfaces, code source, bases de
@@ -270,13 +270,13 @@ export default function MentionsLegalesPage() {
               6. Crédits & contributions
             </h2>
             <p className="mt-3 text-muted-foreground">
-              La plateforme KAZA a été conçue, développée et est maintenue par
+              La plateforme Kaabo a été conçue, développée et est maintenue par
               les équipes Produit, Design, Ingénierie et Trust &amp; Safety de
               PIRABEL LABS SARL. Elle s&apos;appuie sur des bibliothèques open
               source dont la liste détaillée est disponible sur demande.
             </p>
             <p className="mt-3 text-muted-foreground">
-              Crédits photographiques et illustrations : équipe Design KAZA,
+              Crédits photographiques et illustrations : équipe Design Kaabo,
               partenaires propriétaires (visuels d&apos;annonces) et
               bibliothèques sous licence libre.
             </p>
@@ -373,7 +373,7 @@ export default function MentionsLegalesPage() {
               Conformément à la réglementation béninoise relative à la
               protection du consommateur, les utilisateurs ont la possibilité de
               recourir gratuitement au service de médiation institutionnel
-              suivant en cas de litige non résolu amiablement avec KAZA :
+              suivant en cas de litige non résolu amiablement avec Kaabo :
             </p>
             <div className="mt-4 rounded-lg border border-border bg-gray-50 p-5 text-sm">
               <p className="font-semibold text-foreground">

@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 
 // =============================================================================
-// KAZA — Fin de bail automatique
+// Kaabo — Fin de bail automatique
 //
 // Passe les locations ACTIVE dont la date de fin est dépassée à COMPLETED et
 // libère le bien (RENTED → AVAILABLE). Notifie les deux parties. Idempotent.

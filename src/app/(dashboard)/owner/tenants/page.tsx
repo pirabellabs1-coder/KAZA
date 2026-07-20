@@ -7,7 +7,7 @@ import { listOwnerTenants } from "@/lib/queries/owner-activity";
 import { OwnerTenantsView } from "./tenants-view";
 
 export const metadata: Metadata = {
-  title: "Mes Locataires — KAZA",
+  title: "Mes Locataires — Kaabo",
   description: "Liste de vos locataires actifs et historique.",
 };
 

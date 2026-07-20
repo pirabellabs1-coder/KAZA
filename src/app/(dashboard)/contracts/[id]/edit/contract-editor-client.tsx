@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Éditeur de contrat (sections éditables, client)
+// Kaabo — Éditeur de contrat (sections éditables, client)
 // Wrapper client autour des sections du template pour gérer l'auto-save
 // (brouillon localStorage) et afficher un indicateur visuel.
 // =============================================================================

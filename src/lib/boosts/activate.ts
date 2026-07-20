@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Activation d'un boost d'annonce payé par moyen de paiement.
+// Kaabo — Activation d'un boost d'annonce payé par moyen de paiement.
 // Réutilisé par le webhook après paiement COMPLETED (purpose = BOOST).
 // =============================================================================
 

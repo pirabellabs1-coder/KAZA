@@ -10,7 +10,7 @@ import {
 import { DisputesView } from "./disputes-view";
 
 export const metadata: Metadata = {
-  title: "Litiges & signalements — KAZA Pro",
+  title: "Litiges & signalements — Kaabo Pro",
   description:
     "Suivez les impayés, dégâts et plaintes liés aux biens gérés par votre agence.",
 };

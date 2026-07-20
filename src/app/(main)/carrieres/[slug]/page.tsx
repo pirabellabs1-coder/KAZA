@@ -35,7 +35,7 @@ interface JobDetail {
 const DETAILS: Record<string, JobDetail> = {
   "senior-frontend-engineer": {
     about: [
-      "Vous rejoignez une équipe ingénierie de 4 personnes et prenez en main l'architecture frontend de KAZA : Next.js 15 App Router, React 19 Server Components, Tailwind CSS, shadcn/ui.",
+      "Vous rejoignez une équipe ingénierie de 4 personnes et prenez en main l'architecture frontend de Kaabo : Next.js 15 App Router, React 19 Server Components, Tailwind CSS, shadcn/ui.",
       "Vous travaillez main dans la main avec notre Tech Lead et notre Product Designer pour livrer des fonctionnalités qui touchent des dizaines de milliers d'utilisateurs au Bénin et bientôt en Afrique de l'Ouest.",
     ],
     responsibilities: [
@@ -118,7 +118,7 @@ const DETAILS: Record<string, JobDetail> = {
   },
   "growth-marketing-manager": {
     about: [
-      "Vous pilotez l'acquisition, la rétention et les partenariats locaux. Vous transformez KAZA en référence du logement en Afrique de l'Ouest.",
+      "Vous pilotez l'acquisition, la rétention et les partenariats locaux. Vous transformez Kaabo en référence du logement en Afrique de l'Ouest.",
     ],
     responsibilities: [
       "Définir et exécuter la stratégie d'acquisition multi-canale (SEO, paid, organic, partenariats).",
@@ -176,7 +176,7 @@ const DETAILS: Record<string, JobDetail> = {
       "Identifier et prospecter les comptes cibles (agences, résidences, gestionnaires).",
       "Conduire le cycle de vente complet de la prospection au closing.",
       "Onboarder les nouveaux comptes en collaboration avec Customer Success.",
-      "Représenter KAZA lors d'événements professionnels et institutionnels.",
+      "Représenter Kaabo lors d'événements professionnels et institutionnels.",
       "Remonter les attentes du marché ivoirien à l'équipe produit.",
       "Atteindre et dépasser les objectifs commerciaux trimestriels.",
     ],
@@ -211,12 +211,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const job = JOBS.find((j) => j.slug === slug);
-  if (!job) return { title: "Poste introuvable | KAZA" };
+  if (!job) return { title: "Poste introuvable | Kaabo" };
   return {
-    title: `${job.title} — Carrières KAZA`,
+    title: `${job.title} — Carrières Kaabo`,
     description: job.summary,
     openGraph: {
-      title: `${job.title} chez KAZA`,
+      title: `${job.title} chez Kaabo`,
       description: job.summary,
       type: "article",
     },
@@ -240,7 +240,7 @@ export default async function CarrierePostePage({
   const otherJobs = JOBS.filter((j) => j.slug !== slug).slice(0, 3);
   const mailSubject = encodeURIComponent(`Candidature — ${job.title}`);
   const mailBody = encodeURIComponent(
-    `Bonjour l'équipe KAZA,\n\nJe souhaite postuler au poste de ${job.title} (${job.location}).\n\nVous trouverez ci-joint mon CV. Quelques lignes sur ma motivation :\n\n— ...\n\nMerci pour votre retour.`,
+    `Bonjour l'équipe Kaabo,\n\nJe souhaite postuler au poste de ${job.title} (${job.location}).\n\nVous trouverez ci-joint mon CV. Quelques lignes sur ma motivation :\n\n— ...\n\nMerci pour votre retour.`,
   );
   const mailtoHref = `mailto:immobilierkaza@gmail.com?subject=${mailSubject}&body=${mailBody}`;
 

@@ -112,9 +112,9 @@ export function SurveysClient({ userFirstName, surveys }: SurveysClientProps) {
           Vos avis comptent
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          Votre retour nous aide a ameliorer KAZA chaque jour. Chaque sondage
+          Votre retour nous aide a ameliorer Kaabo chaque jour. Chaque sondage
           complete vous rapporte des{" "}
-          <span className="font-semibold text-[#4CAF50]">KAZA Points</span>.
+          <span className="font-semibold text-[#4CAF50]">Kaabo Points</span>.
         </p>
       </div>
 
@@ -156,7 +156,7 @@ export function SurveysClient({ userFirstName, surveys }: SurveysClientProps) {
                     variant="outline"
                     className="w-fit border-blue-200 bg-blue-50 text-xs text-blue-700"
                   >
-                    Sondage KAZA
+                    Sondage Kaabo
                   </Badge>
                   <CardTitle className="mt-2 text-base text-[#1A3A52]">
                     {s.title}

@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - VisitRequestDialog (client component)
+// Kaabo - VisitRequestDialog (client component)
 //
 // Modal de demande de visite pour un locataire connecte. Appelle la server
 // action `requestVisit()` (Supabase + email best-effort cote serveur) puis

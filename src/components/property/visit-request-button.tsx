@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - VisitRequestButton (client component)
+// Kaabo - VisitRequestButton (client component)
 //
 // Bouton "Demander une visite" + dialog associe. Si l'utilisateur n'est pas
 // connecte, on redirige vers /login en preservant le retour vers la page

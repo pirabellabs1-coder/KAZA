@@ -12,7 +12,7 @@ import {
 } from "./types";
 
 // =============================================================================
-// KAZA - Facade unifiee du provider de paiement (FeexPay)
+// Kaabo - Facade unifiee du provider de paiement (FeexPay)
 // =============================================================================
 // Tous les appels paiement de l'application passent par cette facade pour :
 // - Une interface unique pour les server actions

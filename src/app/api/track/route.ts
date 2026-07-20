@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — API route /api/track
+// Kaabo — API route /api/track
 //
 // Endpoint best-effort qui reçoit les évènements client (PAGE_VIEW,
 // PROPERTY_VIEW, etc.) depuis les trackers et les enregistre via

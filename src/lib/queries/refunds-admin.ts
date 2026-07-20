@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries Remboursements (back-office admin, server-side)
+// Kaabo — Queries Remboursements (back-office admin, server-side)
 // Lecture de `refund_requests` pour la page /admin/refunds.
 // RLS : SELECT reserve aux ADMIN (et au demandeur). La page admin etant deja
 // protegee par le layout, on lit ici toutes les lignes visibles.

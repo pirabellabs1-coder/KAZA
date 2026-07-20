@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Requêtes Candidatures (rental_applications, migration 00039)
+// Kaabo — Requêtes Candidatures (rental_applications, migration 00039)
 // =============================================================================
 
 import type { SupabaseClient } from "@supabase/supabase-js";

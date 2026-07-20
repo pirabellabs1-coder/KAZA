@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin / Transactions globales
+// Kaabo - Admin / Transactions globales
 // =============================================================================
 
 import { Wallet, ArrowLeftRight, Percent, Landmark } from "lucide-react";
@@ -48,7 +48,7 @@ export default async function AdminPaymentsPage() {
           trend={{ label: "Toutes périodes confondues", type: "neutral" }}
         />
         <StatsCard
-          title="Commission KAZA (3%)"
+          title="Commission Kaabo (3%)"
           value={formatPrice(commission)}
           icon={Percent}
           trend={{ label: "Sur transactions réussies", type: "neutral" }}

@@ -37,7 +37,7 @@ type AuthResult = {
 const EMAIL_OTP_ENABLED = process.env.EMAIL_OTP_ENABLED === "true";
 
 /**
- * Rôles supportés par l'auth KAZA. AGENCY est conservé pour la sélection à
+ * Rôles supportés par l'auth Kaabo. AGENCY est conservé pour la sélection à
  * l'inscription (le profil agence partage les droits OWNER côté RBAC) même
  * si la colonne `users.role` ne le matérialise pas encore en base.
  */
@@ -91,7 +91,7 @@ async function findUserIdByEmail(email: string): Promise<string | null> {
 }
 
 // ---------------------------------------------------------------------------
-// Email — code de vérification (gabarit KAZA)
+// Email — code de vérification (gabarit Kaabo)
 // ---------------------------------------------------------------------------
 
 function otpCodeBlock(code: string): string {
@@ -105,7 +105,7 @@ function otpCodeBlock(code: string): string {
     </tr>
   </table>
   <p style="margin:0 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#6B7280;text-align:center;">
-    Ce code expire dans 10 minutes. Ne le partagez avec personne — l'équipe KAZA ne vous le demandera jamais.
+    Ce code expire dans 10 minutes. Ne le partagez avec personne — l'équipe Kaabo ne vous le demandera jamais.
   </p>`;
 }
 
@@ -117,31 +117,31 @@ async function sendOtpEmail(
 ): Promise<void> {
   const isSignup = purpose === "SIGNUP";
   const html = buildEmail({
-    preheader: `Votre code de vérification KAZA : ${code}`,
+    preheader: `Votre code de vérification Kaabo : ${code}`,
     heading: isSignup
       ? "Confirmez votre inscription"
       : "Réinitialisation de votre mot de passe",
     intro: firstName ? `Bonjour ${firstName},` : "Bonjour,",
     paragraphs: [
       isSignup
-        ? "Bienvenue sur KAZA ! Saisissez le code ci-dessous dans la page d'inscription pour activer votre compte."
+        ? "Bienvenue sur Kaabo ! Saisissez le code ci-dessous dans la page d'inscription pour activer votre compte."
         : "Vous avez demandé à réinitialiser votre mot de passe. Saisissez le code ci-dessous, puis choisissez un nouveau mot de passe.",
     ],
     rawHtml: otpCodeBlock(code),
     outro:
-      "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.\n— L'équipe KAZA",
+      "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.\n— L'équipe Kaabo",
   });
   await sendEmail(
     email,
     isSignup
-      ? "Votre code de confirmation KAZA"
-      : "Votre code de réinitialisation KAZA",
+      ? "Votre code de confirmation Kaabo"
+      : "Votre code de réinitialisation Kaabo",
     html,
   );
 }
 
 /**
- * Notification interne (best-effort) à l'équipe KAZA pour chaque inscription.
+ * Notification interne (best-effort) à l'équipe Kaabo pour chaque inscription.
  */
 async function notifyTeamOfSignup(data: SignupFormData) {
   const recipient = process.env.NOTIFICATIONS_CONTACT_EMAIL;
@@ -149,7 +149,7 @@ async function notifyTeamOfSignup(data: SignupFormData) {
   try {
     const html = buildEmail({
       preheader: `Nouvelle inscription : ${data.firstName} ${data.lastName}`,
-      heading: "Nouvelle inscription KAZA",
+      heading: "Nouvelle inscription Kaabo",
       rows: [
         { label: "Nom", value: `${data.firstName} ${data.lastName}` },
         { label: "Email", value: data.email },
@@ -160,7 +160,7 @@ async function notifyTeamOfSignup(data: SignupFormData) {
     });
     await sendEmail(
       recipient,
-      `[KAZA] Nouvelle inscription : ${data.firstName} ${data.lastName}`,
+      `[Kaabo] Nouvelle inscription : ${data.firstName} ${data.lastName}`,
       html,
     );
   } catch (err) {

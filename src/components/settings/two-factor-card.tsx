@@ -78,7 +78,7 @@ export function TwoFactorCard() {
 
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: `KAZA ${new Date().toISOString().slice(0, 19)}`,
+        friendlyName: `Kaabo ${new Date().toISOString().slice(0, 19)}`,
       });
       if (error || !data) {
         toast.error(error?.message ?? "Impossible de démarrer l'activation.");

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Demandes de partenariat (liste)
+// Kaabo — Admin / Demandes de partenariat (liste)
 // Server component. Affiche les candidatures soumises via /partners#candidature
 // (table `partner_applications`). Lecture seule : la prise de contact se fait
 // par email (l'action publique notifie déjà l'équipe + le candidat).

@@ -14,7 +14,7 @@ import { formatPrice, formatDate } from "@/lib/utils";
 
 import { DepositPaymentButton } from "./deposit-payment";
 
-export const metadata: Metadata = { title: "Mes offres d'achat — KAZA" };
+export const metadata: Metadata = { title: "Mes offres d'achat — Kaabo" };
 export const dynamic = "force-dynamic";
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {

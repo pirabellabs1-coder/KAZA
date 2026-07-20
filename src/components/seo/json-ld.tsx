@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - JSON-LD structured data (SEO racine)
+// Kaabo - JSON-LD structured data (SEO racine)
 //
 // Injecte deux blocs schema.org au niveau root :
 //  - Organization : identite de la marque + reseaux sociaux (sameAs).
@@ -25,7 +25,7 @@ export function JsonLd({ baseUrl }: JsonLdProps) {
   const organization = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "KAZA",
+    name: "Kaabo",
     url: baseUrl,
     logo: `${baseUrl}/icons/icon-512.svg`,
     description:
@@ -37,7 +37,7 @@ export function JsonLd({ baseUrl }: JsonLdProps) {
   const website = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "KAZA",
+    name: "Kaabo",
     url: baseUrl,
     potentialAction: {
       "@type": "SearchAction",

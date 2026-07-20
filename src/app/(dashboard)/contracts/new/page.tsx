@@ -55,7 +55,7 @@ export default async function NewContractPage() {
 
       <div>
         <h1 className="font-heading text-3xl font-bold text-foreground">
-          Contrats de bail KAZA
+          Contrats de bail Kaabo
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Modèles conformes à la Loi 2018-12 (Bénin) et au droit OHADA.

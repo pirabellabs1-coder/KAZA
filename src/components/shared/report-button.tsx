@@ -38,7 +38,7 @@ type ReportTargetType = "property" | "user" | "review" | "message" | "listing";
 const REASON_META: Record<ReportReason, { label: string; description: string }> = {
   inappropriate: {
     label: "Contenu inapproprié",
-    description: "Propos ou images non conformes aux règles KAZA.",
+    description: "Propos ou images non conformes aux règles Kaabo.",
   },
   spam: {
     label: "Spam",
@@ -163,7 +163,7 @@ export function ReportButton({
               </Badge>
             </span>
             <span className="mt-1 block text-xs">
-              Aidez-nous à maintenir KAZA sûr. Les abus de signalement peuvent
+              Aidez-nous à maintenir Kaabo sûr. Les abus de signalement peuvent
               entraîner une suspension.
             </span>
           </DialogDescription>

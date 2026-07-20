@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server Actions Codes promo
+// Kaabo — Server Actions Codes promo
 //
 // Admin (gardé par un check role ADMIN) :
 //   - listPromoCodes()      : liste tous les codes

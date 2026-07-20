@@ -82,7 +82,7 @@ export function InlineNewsletter({
     <form
       onSubmit={onSubmit}
       className={cn("flex w-full flex-col gap-3 sm:flex-row", className)}
-      aria-label="Inscription à la newsletter KAZA"
+      aria-label="Inscription à la newsletter Kaabo"
     >
       <input
         type="email"

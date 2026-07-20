@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Requêtes annonces de colocation (roommate_listings) + visites.
+// Kaabo — Requêtes annonces de colocation (roommate_listings) + visites.
 // =============================================================================
 
 import type { SupabaseClient } from "@supabase/supabase-js";

@@ -6,7 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Codes de vérification email (OTP) : génération + vérification.
+// Kaabo — Codes de vérification email (OTP) : génération + vérification.
 // Codes à 6 chiffres, valables 10 minutes, 5 tentatives max. Stockés hachés
 // (HMAC-SHA256) dans `email_otps`. Accès via service role uniquement.
 // =============================================================================

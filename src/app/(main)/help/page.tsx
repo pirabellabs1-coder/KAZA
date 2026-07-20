@@ -29,13 +29,13 @@ import { AnimatedGradientBg } from "@/components/shared/animated-gradient-bg";
 import { BLOG_ARTICLES } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
-  title: "Centre d'aide — KAZA",
+  title: "Centre d'aide — Kaabo",
   description:
-    "Trouvez en quelques secondes les réponses à vos questions sur KAZA : compte, recherche, visite, paiement, contrat, sécurité et colocation étudiante.",
+    "Trouvez en quelques secondes les réponses à vos questions sur Kaabo : compte, recherche, visite, paiement, contrat, sécurité et colocation étudiante.",
   openGraph: {
-    title: "Centre d'aide KAZA",
+    title: "Centre d'aide Kaabo",
     description:
-      "Toutes les réponses pour utiliser KAZA en toute sérénité. Articles, contact direct et support 7j/7.",
+      "Toutes les réponses pour utiliser Kaabo en toute sérénité. Articles, contact direct et support 7j/7.",
     type: "website",
   },
 };
@@ -94,7 +94,7 @@ const HELP_CATEGORIES: HelpCategory[] = [
   {
     slug: "paiement",
     title: "Paiements & loyers",
-    description: "KAZA Pay, KAZA Wallet, escrow, factures, reçus.",
+    description: "Kaabo Pay, Kaabo Wallet, escrow, factures, reçus.",
     articles: 22,
     icon: CreditCard,
     color: "from-rose-100 to-rose-50",
@@ -196,7 +196,7 @@ export default function HelpPage() {
           <FadeIn delay={200}>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
               Articles, guides, support 7j/7 — tout ce qu&apos;il faut pour
-              utiliser KAZA en toute sérénité.
+              utiliser Kaabo en toute sérénité.
             </p>
           </FadeIn>
 

@@ -17,7 +17,7 @@ import { toast } from "@/components/ui/toast-helper";
 import { formatPrice } from "@/lib/utils";
 
 // =============================================================================
-// KAZA - Filtres recherche colocataire (client)
+// Kaabo - Filtres recherche colocataire (client)
 // =============================================================================
 
 const HABITS = [

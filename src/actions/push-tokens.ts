@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Push Tokens (Server Actions)
+// Kaabo - Push Tokens (Server Actions)
 // Wave 4 - Aminata Traore
 //
 // Enregistrement et desinscription des tokens FCM (web / iOS / android).

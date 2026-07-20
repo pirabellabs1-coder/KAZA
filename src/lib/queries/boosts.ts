@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries boosts d'annonce (server-side)
+// Kaabo — Queries boosts d'annonce (server-side)
 //
 // Un boost actif (status = ACTIVE et ends_at > now) doit avoir un effet visible :
 // l'annonce remonte en tête de la recherche / des listings publics et reçoit un

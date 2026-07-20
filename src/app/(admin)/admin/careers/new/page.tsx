@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Admin / Nouvelle offre d'emploi
+// Kaabo — Admin / Nouvelle offre d'emploi
 // Formulaire client (react-hook-form + Zod). Submit → server action
 // `createJobOffer` puis redirect vers /admin/careers en cas de succès.
 // =============================================================================

@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Feature Flags (server-side)
+// Kaabo — Queries Feature Flags (server-side)
 // Lecture de la table `public.feature_flags` (RLS : SELECT public, write ADMIN).
 //   - `listFeatureFlags` : back-office admin /admin/feature-flags
 //   - `isFeatureEnabled` : helper de garde côté serveur (kill-switch)

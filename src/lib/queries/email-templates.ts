@@ -11,7 +11,7 @@ import {
 } from "@/lib/notifications/templates";
 
 // =============================================================================
-// KAZA — Queries Email Templates (server-side)
+// Kaabo — Queries Email Templates (server-side)
 // Lecture de la table `public.email_templates` (RLS : ADMIN only).
 //   - `listEmailTemplates` : back-office admin /admin/email-templates
 //

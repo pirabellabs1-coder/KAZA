@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Helper de tracking analytics (server-side)
+// Kaabo — Helper de tracking analytics (server-side)
 // Insère un évènement dans analytics_events. Best-effort, ne throw jamais.
 // =============================================================================
 

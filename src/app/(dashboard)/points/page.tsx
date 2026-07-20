@@ -26,9 +26,9 @@ import {
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "KAZA Points",
+  title: "Kaabo Points",
   description:
-    "Suivez votre solde de KAZA Points, l'historique de vos transactions et le catalogue de recompenses.",
+    "Suivez votre solde de Kaabo Points, l'historique de vos transactions et le catalogue de recompenses.",
 };
 
 interface Reward {
@@ -43,7 +43,7 @@ const REWARDS: Reward[] = [
   {
     id: "r1",
     title: "Credit Wallet 500 FCFA",
-    description: "Ajoutez 500 FCFA a votre wallet KAZA",
+    description: "Ajoutez 500 FCFA a votre wallet Kaabo",
     cost: 100,
     icon: Gift,
   },
@@ -71,7 +71,7 @@ const REWARDS: Reward[] = [
   {
     id: "r5",
     title: "Mois Premium offert",
-    description: "Tous les avantages KAZA Plus",
+    description: "Tous les avantages Kaabo Plus",
     cost: 2500,
     icon: Award,
   },
@@ -92,7 +92,7 @@ const REWARDS: Reward[] = [
   {
     id: "r8",
     title: "Annee Premium offerte",
-    description: "KAZA Plus pendant 12 mois",
+    description: "Kaabo Plus pendant 12 mois",
     cost: 15000,
     icon: Award,
   },
@@ -117,7 +117,7 @@ const TYPE_LABELS: Record<string, string> = {
   PROFILE_COMPLETED: "Profil complete",
   KYC_APPROVED: "Identite verifiee",
   REDEEMED: "Recompense echangee",
-  ADMIN_ADJUSTMENT: "Ajustement KAZA",
+  ADMIN_ADJUSTMENT: "Ajustement Kaabo",
 };
 
 function formatTransactionLabel(tx: PointsTransaction): string {
@@ -145,7 +145,7 @@ export default async function PointsPage() {
             <div>
               <div className="flex items-center gap-2 text-sm uppercase tracking-widest text-white/70">
                 <Star className="size-4" />
-                Mon solde KAZA Points
+                Mon solde Kaabo Points
               </div>
               <div className="mt-2 flex items-baseline gap-3">
                 <span className="font-heading text-3xl font-bold tabular-nums sm:text-4xl">
@@ -196,7 +196,7 @@ export default async function PointsPage() {
                     Aucune transaction pour le moment
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Vos prochains gains de KAZA Points apparaitront ici.
+                    Vos prochains gains de Kaabo Points apparaitront ici.
                   </p>
                 </div>
               ) : (

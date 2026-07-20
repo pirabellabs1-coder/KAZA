@@ -40,7 +40,7 @@ import { InviteMemberDialog } from "./invite-member-dialog";
 import { MemberActions } from "./member-actions";
 
 export const metadata: Metadata = {
-  title: "Équipe — KAZA Agence",
+  title: "Équipe — Kaabo Agence",
   description:
     "Pilotez les membres de votre agence, leurs permissions et leurs invitations.",
 };

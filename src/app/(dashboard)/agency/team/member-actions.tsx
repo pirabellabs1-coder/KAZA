@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Actions client par membre : changer rôle / retirer
+// Kaabo — Actions client par membre : changer rôle / retirer
 // =============================================================================
 
 import { useState, useTransition } from "react";

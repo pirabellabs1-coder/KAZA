@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { getMyKazaPoints } from "@/actions/points";
 
 // =============================================================================
-// Badge KAZA Points : lit le solde réel via la server action `getMyKazaPoints`
+// Badge Kaabo Points : lit le solde réel via la server action `getMyKazaPoints`
 // (table kaza_points_balance). Se rafraîchit sur l'event `kaza-points-updated`.
 // =============================================================================
 function formatPoints(value: number): string {
@@ -17,7 +17,7 @@ function formatPoints(value: number): string {
 interface PointsBadgeProps {
   /**
    * - `compact` : icône + nombre seul (pour une barre d'outils dense).
-   * - `full`    : icône + nombre + libellé "KAZA Points".
+   * - `full`    : icône + nombre + libellé "Kaabo Points".
    */
   variant?: "compact" | "full";
   className?: string;
@@ -28,7 +28,7 @@ interface PointsBadgeProps {
 }
 
 /**
- * Badge réutilisable affichant le solde courant de KAZA Points.
+ * Badge réutilisable affichant le solde courant de Kaabo Points.
  * Lit depuis localStorage côté client ; rend un placeholder neutre en SSR.
  */
 export function PointsBadge({
@@ -77,7 +77,7 @@ export function PointsBadge({
       <span>{display}</span>
       {variant === "full" && (
         <span className="text-xs font-medium text-muted-foreground">
-          KAZA Points
+          Kaabo Points
         </span>
       )}
     </span>
@@ -85,7 +85,7 @@ export function PointsBadge({
 
   if (asLink) {
     return (
-      <Link href="/points" aria-label="Voir mes KAZA Points">
+      <Link href="/points" aria-label="Voir mes Kaabo Points">
         {content}
       </Link>
     );

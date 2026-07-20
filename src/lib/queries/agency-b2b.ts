@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Requêtes B2B agence (mandats, commissions, litiges, fiche locataire)
+// Kaabo — Requêtes B2B agence (mandats, commissions, litiges, fiche locataire)
 //
 // Tables : agency_mandates, disputes (migration 00037), rentals, payments,
 // properties, users. Le client typé ne connaît pas encore agency_mandates /

@@ -187,7 +187,7 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
     startTransition(async () => {
       const res = await payExpenseShareFromWallet(shareId);
       if (res.success) {
-        toast.success("Part réglée depuis votre solde KAZA.");
+        toast.success("Part réglée depuis votre solde Kaabo.");
         router.refresh();
         return;
       }
@@ -211,7 +211,7 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
     startTransition(async () => {
       const res = await payExpenseShareInstallmentFromWallet(shareId, amount);
       if (res.success) {
-        toast.success("Tranche payée depuis votre solde KAZA.");
+        toast.success("Tranche payée depuis votre solde Kaabo.");
         setInstallment(shareId, "");
         router.refresh();
         return;

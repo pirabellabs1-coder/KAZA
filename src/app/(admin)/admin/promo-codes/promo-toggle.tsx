@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Admin / Interrupteur actif-inactif d'un code promo
+// Kaabo — Admin / Interrupteur actif-inactif d'un code promo
 // =============================================================================
 
 import { useTransition } from "react";

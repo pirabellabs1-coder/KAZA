@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin / Demandes de remboursement
+// Kaabo - Admin / Demandes de remboursement
 // =============================================================================
 
 import { getCurrentDisplayUser } from "@/lib/auth/current-user";

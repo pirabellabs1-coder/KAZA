@@ -35,11 +35,11 @@ import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { GlassPanel } from "@/components/shared/glass-panel";
 
 export const metadata: Metadata = {
-  title: "Sécurité — KAZA",
+  title: "Sécurité — Kaabo",
   description:
-    "Vérification d'identité, escrow KAZA, contrats numériques OHADA, chiffrement AES-256. Découvrez les 6 piliers qui font de KAZA la plateforme la plus sûre d'Afrique.",
+    "Vérification d'identité, escrow Kaabo, contrats numériques OHADA, chiffrement AES-256. Découvrez les 6 piliers qui font de Kaabo la plateforme la plus sûre d'Afrique.",
   openGraph: {
-    title: "La sécurité KAZA — 6 piliers, 0 fraude",
+    title: "La sécurité Kaabo — 6 piliers, 0 fraude",
     description:
       "KYC, escrow, signature électronique, chiffrement bout-en-bout, modération humaine et conformité APDP.",
     type: "website",
@@ -64,9 +64,9 @@ const pillars = [
   },
   {
     icon: Wallet,
-    title: "Paiements sécurisés (Escrow KAZA)",
+    title: "Paiements sécurisés (Escrow Kaabo)",
     description:
-      "Caution et premier loyer sont bloqués sur un compte séquestre KAZA et libérés uniquement à la remise effective des clés. Vos fonds sont protégés à 100 %.",
+      "Caution et premier loyer sont bloqués sur un compte séquestre Kaabo et libérés uniquement à la remise effective des clés. Vos fonds sont protégés à 100 %.",
     accent: "from-kaza-green/20 to-kaza-green/5",
     iconColor: "text-kaza-green",
   },
@@ -107,9 +107,9 @@ const pillars = [
 const tips = [
   {
     icon: Wallet,
-    title: "Ne payez jamais en dehors de KAZA",
+    title: "Ne payez jamais en dehors de Kaabo",
     description:
-      "Toute demande de paiement par Mobile Money personnel, Western Union ou cash est suspecte. Utilisez exclusivement l'escrow KAZA.",
+      "Toute demande de paiement par Mobile Money personnel, Western Union ou cash est suspecte. Utilisez exclusivement l'escrow Kaabo.",
   },
   {
     icon: BadgeCheck,
@@ -119,9 +119,9 @@ const tips = [
   },
   {
     icon: MessagesSquare,
-    title: "Communiquez via la messagerie KAZA",
+    title: "Communiquez via la messagerie Kaabo",
     description:
-      "Évitez WhatsApp et numéros personnels avant signature : la messagerie KAZA est chiffrée, archivée et opposable.",
+      "Évitez WhatsApp et numéros personnels avant signature : la messagerie Kaabo est chiffrée, archivée et opposable.",
   },
   {
     icon: ShieldAlert,
@@ -133,7 +133,7 @@ const tips = [
     icon: ScrollText,
     title: "Lisez le contrat avant signature",
     description:
-      "Vérifiez durée, loyer, charges, dépôt, clauses particulières. En cas de doute, l'équipe juridique KAZA vous accompagne.",
+      "Vérifiez durée, loyer, charges, dépôt, clauses particulières. En cas de doute, l'équipe juridique Kaabo vous accompagne.",
   },
   {
     icon: KeyRound,
@@ -154,7 +154,7 @@ const incidentSteps = [
   {
     number: "02",
     icon: Headphones,
-    title: "Médiation KAZA",
+    title: "Médiation Kaabo",
     description:
       "Notre équipe litiges contacte les deux parties sous 24 h, examine les preuves et propose une résolution amiable équitable.",
   },
@@ -163,7 +163,7 @@ const incidentSteps = [
     icon: Gavel,
     title: "Recours juridique",
     description:
-      "Si nécessaire, KAZA fournit l'ensemble du dossier (contrat, messages, paiements) et oriente vers nos avocats partenaires OHADA.",
+      "Si nécessaire, Kaabo fournit l'ensemble du dossier (contrat, messages, paiements) et oriente vers nos avocats partenaires OHADA.",
   },
 ];
 
@@ -220,7 +220,7 @@ export default function SecuritePage() {
               KYC obligatoire, escrow garanti, contrats numériques OHADA,
               chiffrement AES-256, modération humaine et conformité APDP.
               <br />
-              Six piliers qui font de KAZA une plateforme immobilière sûre,
+              Six piliers qui font de Kaabo une plateforme immobilière sûre,
               partout en Afrique.
               <br />
               Surveillance anti-fraude permanente.
@@ -363,7 +363,7 @@ export default function SecuritePage() {
               Trois étapes, un seul interlocuteur
             </h2>
             <p className="mt-4 text-base text-white/70">
-              KAZA vous accompagne du signalement à la résolution, y compris
+              Kaabo vous accompagne du signalement à la résolution, y compris
               juridique.
             </p>
           </div>
@@ -407,7 +407,7 @@ export default function SecuritePage() {
               Conformes aux standards les plus exigeants
             </h2>
             <p className="mt-4 text-base text-muted-foreground">
-              KAZA respecte toutes les obligations légales en vigueur au Bénin,
+              Kaabo respecte toutes les obligations légales en vigueur au Bénin,
               dans l&apos;espace OHADA et à l&apos;international.
             </p>
           </div>

@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries équipe agence (server-side)
+// Kaabo — Queries équipe agence (server-side)
 // Lit `agency_members` filtré par agency_id (= user_id de l'agence) et joint
 // `users` pour enrichir email/avatar quand le membre a accepté l'invitation.
 // =============================================================================

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Owner / Booster vos annonces (server)
+// Kaabo — Owner / Booster vos annonces (server)
 // Charge les annonces du propriétaire + ses boosts actifs depuis Supabase,
 // puis délègue l'UI interactive au client component <PromotionClient>.
 // =============================================================================

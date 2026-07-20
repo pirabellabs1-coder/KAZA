@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Page publique d'une agence : /agences/[slug]
+// Kaabo — Page publique d'une agence : /agences/[slug]
 //
 // Profil public consultable par n'importe quel visiteur. Lit l'agence par son
 // `slug` personnalisé (agency_settings.public.slug) puis affiche bannière,
@@ -171,18 +171,18 @@ export async function generateMetadata({
   const { slug } = await params;
   const data = await loadAgencyBySlug(slug);
   if (!data) {
-    return { title: "Agence introuvable — KAZA" };
+    return { title: "Agence introuvable — Kaabo" };
   }
   const description =
     (data.publicSettings.about || data.profile.description || "").slice(0, 160) ||
-    `Découvrez les biens proposés par ${data.displayName} sur KAZA.`;
+    `Découvrez les biens proposés par ${data.displayName} sur Kaabo.`;
 
   return {
-    title: `${data.displayName} — Agence immobilière sur KAZA`,
+    title: `${data.displayName} — Agence immobilière sur Kaabo`,
     description,
     alternates: { canonical: `/agences/${slug}` },
     openGraph: {
-      title: `${data.displayName} — KAZA`,
+      title: `${data.displayName} — Kaabo`,
       description,
       url: `/agences/${slug}`,
       type: "profile",

@@ -120,7 +120,7 @@ export function VerificationsClient({ pending, approved, rejected }: Props) {
         const res = await approveVerification(confirm.item.id);
         if (res.success) {
           toast.success(
-            `${confirm.item.userName} — identité approuvée (+500 KAZA Points).`,
+            `${confirm.item.userName} — identité approuvée (+500 Kaabo Points).`,
           );
           close();
         } else {
@@ -216,7 +216,7 @@ export function VerificationsClient({ pending, approved, rejected }: Props) {
           {confirm?.type === "approve" && (
             <p className="text-sm text-muted-foreground">
               L&apos;utilisateur recevra le badge <strong>Identité vérifiée</strong>{" "}
-              et un bonus de <strong>+500 KAZA Points</strong>. Action immédiate.
+              et un bonus de <strong>+500 Kaabo Points</strong>. Action immédiate.
             </p>
           )}
 

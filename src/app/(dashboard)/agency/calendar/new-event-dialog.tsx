@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Dialog client : créer un rendez-vous (calendrier agence)
+// Kaabo — Dialog client : créer un rendez-vous (calendrier agence)
 // =============================================================================
 
 import { useState, useTransition } from "react";

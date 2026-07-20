@@ -63,7 +63,7 @@ export default async function StudentAnalyticsPage() {
           Mes analyses
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Votre activité étudiante KAZA en chiffres réels.
+          Votre activité étudiante Kaabo en chiffres réels.
         </p>
       </div>
 
@@ -139,7 +139,7 @@ export default async function StudentAnalyticsPage() {
                 Évolution de vos paiements
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Loyers réglés via KAZA — 12 derniers mois
+                Loyers réglés via Kaabo — 12 derniers mois
               </p>
             </CardHeader>
             <CardContent>

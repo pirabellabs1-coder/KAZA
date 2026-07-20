@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // =============================================================================
-// KAZA — Mot de passe oublié (flux natif Supabase, lien par email)
+// Kaabo — Mot de passe oublié (flux natif Supabase, lien par email)
 // On envoie un lien de réinitialisation via supabase.auth.resetPasswordForEmail.
 // Le lien renvoie vers /reset-password où l'utilisateur choisit un nouveau
 // mot de passe (voir reset-password-form.tsx).

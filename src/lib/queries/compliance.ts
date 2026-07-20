@@ -3,7 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Conformité (server-side)
+// Kaabo — Queries Conformité (server-side)
 // Alimente /admin/compliance avec des métriques RÉELLES calculées sur la base
 // (users, properties). Jamais de throw : en cas d'erreur on retombe sur des
 // valeurs neutres (compteurs à 0, tableaux vides) plutôt que de casser la page.

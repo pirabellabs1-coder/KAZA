@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries leads CRM agence (server-side)
+// Kaabo — Queries leads CRM agence (server-side)
 // Lit `agency_leads` filtré par agency_id avec join sur agency_members
 // (agent assigné) et properties (bien d'intérêt éventuel).
 // =============================================================================

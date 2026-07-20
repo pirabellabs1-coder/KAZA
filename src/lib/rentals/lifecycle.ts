@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Cycle de vie d'une location (rentals)
+// Kaabo — Cycle de vie d'une location (rentals)
 // -----------------------------------------------------------------------------
 // Une location naît PENDING (candidature acceptée par le propriétaire), puis
 // devient ACTIVE dès que le 1er loyer est payé. À ce moment :

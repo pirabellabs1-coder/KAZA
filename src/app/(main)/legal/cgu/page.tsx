@@ -5,13 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import { LegalToc } from "@/components/marketing/legal-toc";
 
 export const metadata: Metadata = {
-  title: "Conditions Générales d'Utilisation — KAZA",
+  title: "Conditions Générales d'Utilisation — Kaabo",
   description:
-    "Conditions Générales d'Utilisation de la plateforme KAZA, éditée par PIRABEL LABS SARL — droit béninois, OHADA, paiements, escrow, bail et résolution des litiges.",
+    "Conditions Générales d'Utilisation de la plateforme Kaabo, éditée par PIRABEL LABS SARL — droit béninois, OHADA, paiements, escrow, bail et résolution des litiges.",
   openGraph: {
-    title: "CGU — KAZA",
+    title: "CGU — Kaabo",
     description:
-      "Conditions Générales d'Utilisation de la plateforme KAZA selon le droit béninois et OHADA.",
+      "Conditions Générales d'Utilisation de la plateforme Kaabo selon le droit béninois et OHADA.",
     type: "article",
   },
 };
@@ -22,7 +22,7 @@ const sections = [
   { id: "inscription", label: "3. Inscription et compte" },
   { id: "services", label: "4. Description des services" },
   { id: "engagements-users", label: "5. Engagements des Utilisateurs" },
-  { id: "engagements-kaza", label: "6. Engagements de KAZA" },
+  { id: "engagements-kaza", label: "6. Engagements de Kaabo" },
   { id: "moderation", label: "7. Politique de modération" },
   { id: "paiements", label: "8. Paiements, escrow et commissions" },
   { id: "bail", label: "9. Bail et obligations" },
@@ -81,15 +81,15 @@ export default function CguPage() {
             <p className="mt-3 text-muted-foreground">
               Les présentes Conditions Générales d&apos;Utilisation (ci-après
               les «&nbsp;CGU&nbsp;») ont pour objet de définir les modalités
-              d&apos;accès et d&apos;utilisation de la plateforme KAZA,
+              d&apos;accès et d&apos;utilisation de la plateforme Kaabo,
               accessible à l&apos;adresse{" "}
               <span className="font-medium">https://kaza.africa</span> et sur
               son application mobile associée, éditée et exploitée par{" "}
-              <strong>PIRABEL LABS SARL</strong> (ci-après «&nbsp;KAZA&nbsp;»
+              <strong>PIRABEL LABS SARL</strong> (ci-après «&nbsp;Kaabo&nbsp;»
               ou «&nbsp;l&apos;Éditeur&nbsp;»).
             </p>
             <p className="mt-3 text-muted-foreground">
-              KAZA est une plateforme Proptech de mise en relation entre
+              Kaabo est une plateforme Proptech de mise en relation entre
               propriétaires de biens immobiliers, locataires et étudiants
               recherchant une colocation, opérant principalement au Bénin et
               destinée à s&apos;étendre aux pays d&apos;Afrique de l&apos;Ouest.
@@ -113,7 +113,7 @@ export default function CguPage() {
             <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground">
               <li>
                 <strong>Plateforme</strong> : ensemble des services numériques
-                édités par PIRABEL LABS SARL sous la marque KAZA (site web,
+                édités par PIRABEL LABS SARL sous la marque Kaabo (site web,
                 application mobile, API).
               </li>
               <li>
@@ -134,7 +134,7 @@ export default function CguPage() {
                 d&apos;études.
               </li>
               <li>
-                <strong>KAZA Pay</strong> : solution de paiement intégrée
+                <strong>Kaabo Pay</strong> : solution de paiement intégrée
                 permettant le règlement sécurisé des loyers, cautions et
                 commissions via Mobile Money et carte bancaire (FeexPay).
               </li>
@@ -183,17 +183,17 @@ export default function CguPage() {
               4. Description des services
             </h2>
             <p className="mt-3 text-muted-foreground">
-              KAZA met à disposition de ses Utilisateurs : publication et
+              Kaabo met à disposition de ses Utilisateurs : publication et
               consultation d&apos;annonces immobilières géolocalisées,
               messagerie sécurisée, prise de rendez-vous de visite, signature
               électronique de Contrats numériques, paiement de loyer et de
-              caution via KAZA Pay, escrow, gestion documentaire et recherche
+              caution via Kaabo Pay, escrow, gestion documentaire et recherche
               de colocataires pour les Étudiants.
             </p>
             <p className="mt-3 text-muted-foreground">
               Certains services sont gratuits, d&apos;autres font l&apos;objet
               de commissions ou d&apos;abonnements décrits sur la page Tarifs.
-              KAZA peut ajouter, modifier ou supprimer des services dans un
+              Kaabo peut ajouter, modifier ou supprimer des services dans un
               objectif d&apos;amélioration continue, après notification
               raisonnable aux Utilisateurs concernés.
             </p>
@@ -228,17 +228,17 @@ export default function CguPage() {
 
           <section id="engagements-kaza" className="scroll-mt-28">
             <h2 className="font-heading text-2xl font-bold text-kaza-navy">
-              6. Engagements de KAZA / PIRABEL LABS
+              6. Engagements de Kaabo / PIRABEL LABS
             </h2>
             <p className="mt-3 text-muted-foreground">
               PIRABEL LABS SARL s&apos;engage à fournir la Plateforme dans les
               meilleures conditions de disponibilité, de sécurité et de
-              transparence. KAZA met en œuvre les diligences raisonnables pour
+              transparence. Kaabo met en œuvre les diligences raisonnables pour
               vérifier l&apos;identité des Utilisateurs, modérer les contenus
-              et sécuriser les flux financiers via KAZA Pay et l&apos;escrow.
+              et sécuriser les flux financiers via Kaabo Pay et l&apos;escrow.
             </p>
             <p className="mt-3 text-muted-foreground">
-              KAZA agit en qualité d&apos;intermédiaire technique et de tiers
+              Kaabo agit en qualité d&apos;intermédiaire technique et de tiers
               de confiance, sans se substituer aux parties dans
               l&apos;exécution de leurs obligations contractuelles
               respectives.
@@ -250,7 +250,7 @@ export default function CguPage() {
               7. Politique de modération
             </h2>
             <p className="mt-3 text-muted-foreground">
-              KAZA opère une modération a priori et a posteriori sur les
+              Kaabo opère une modération a priori et a posteriori sur les
               annonces et les messages échangés. Une équipe Trust &amp; Safety
               dédiée examine les signalements et peut suspendre, retirer un
               contenu ou un compte en cas de manquement aux présentes CGU.
@@ -270,7 +270,7 @@ export default function CguPage() {
             <p className="mt-3 text-muted-foreground">
               Les paiements sont opérés via le prestataire agréé FeexPay,
               acceptant les principaux moyens Mobile Money (Wave, Orange Money,
-              MTN, Moov…) et carte bancaire en Afrique. KAZA ne stocke aucune
+              MTN, Moov…) et carte bancaire en Afrique. Kaabo ne stocke aucune
               donnée bancaire ou Mobile Money sensible : les numéros sont
               tokenisés par le prestataire.
             </p>
@@ -287,7 +287,7 @@ export default function CguPage() {
               d&apos;un éventuel litige.
             </p>
             <p className="mt-3 text-muted-foreground">
-              <strong>Commissions KAZA :</strong> entre 3 % et 5 % du loyer
+              <strong>Commissions Kaabo :</strong> entre 3 % et 5 % du loyer
               perçu selon le plan d&apos;abonnement souscrit par le
               Propriétaire. Les conditions tarifaires détaillées sont
               consultables sur la page Tarifs et acceptées explicitement avant
@@ -307,7 +307,7 @@ export default function CguPage() {
               électroniquement et archivé de manière sécurisée.
             </p>
             <p className="mt-3 text-muted-foreground">
-              Les baux d&apos;habitation conclus via KAZA respectent une durée
+              Les baux d&apos;habitation conclus via Kaabo respectent une durée
               minimale conforme à la pratique locale (généralement 12 mois pour
               un bail à usage d&apos;habitation, sauf clause spéciale). Le{" "}
               <strong>dépôt de garantie ne peut excéder deux (2) mois de
@@ -326,7 +326,7 @@ export default function CguPage() {
               10. Litiges et résolution amiable
             </h2>
             <p className="mt-3 text-muted-foreground">
-              En cas de litige entre Utilisateurs, KAZA met à disposition une{" "}
+              En cas de litige entre Utilisateurs, Kaabo met à disposition une{" "}
               <strong>procédure de médiation interne gratuite</strong> via son
               équipe Trust &amp; Safety. Les parties s&apos;engagent à coopérer
               de bonne foi durant toute la durée de l&apos;instruction.
@@ -383,7 +383,7 @@ export default function CguPage() {
               des biens visités ou loués.
             </p>
             <p className="mt-3 text-muted-foreground">
-              KAZA s&apos;engage à mettre en œuvre les meilleurs efforts pour
+              Kaabo s&apos;engage à mettre en œuvre les meilleurs efforts pour
               assurer la disponibilité de la Plateforme, sans toutefois
               garantir une absence totale d&apos;interruption ou
               d&apos;erreur. La responsabilité de PIRABEL LABS SARL ne saurait
@@ -403,7 +403,7 @@ export default function CguPage() {
               soldé tout engagement en cours (loyers dus, contrats actifs).
             </p>
             <p className="mt-3 text-muted-foreground">
-              KAZA pourra suspendre ou clôturer un compte en cas de manquement
+              Kaabo pourra suspendre ou clôturer un compte en cas de manquement
               grave ou répété aux présentes CGU, notamment : fraude, fausses
               informations, contournement des outils de paiement, publication
               de contenus illicites, comportements abusifs. Sauf urgence ou

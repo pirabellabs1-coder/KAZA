@@ -89,7 +89,7 @@ export function BillingClient({
 
   return (
     <div className="space-y-6">
-      {/* Moyens de paiement — KAZA Wallet + Mobile Money (pas de carte stockée) */}
+      {/* Moyens de paiement — Kaabo Wallet + Mobile Money (pas de carte stockée) */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -98,14 +98,14 @@ export function BillingClient({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* KAZA Wallet */}
+          {/* Kaabo Wallet */}
           <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
             <div className="flex size-10 items-center justify-center rounded-md bg-kaza-blue/10 text-kaza-blue">
               <Wallet className="size-5" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium">
-                KAZA Wallet
+                Kaabo Wallet
                 <Badge className="ml-2 bg-kaza-green/10 text-[10px] text-kaza-green">
                   Solde {formatPrice(walletBalance)}
                 </Badge>
@@ -133,7 +133,7 @@ export function BillingClient({
               <p className="text-xs text-muted-foreground">
                 MTN, Moov et autres opérateurs. Le numéro est saisi de façon
                 sécurisée au moment du paiement — rien n&apos;est stocké chez
-                KAZA.
+                Kaabo.
               </p>
             </div>
             <Badge variant="outline" className="text-[10px]">
@@ -161,7 +161,7 @@ export function BillingClient({
                 Aucune facture émise
               </p>
               <p className="mt-1 max-w-sm text-xs text-muted-foreground">
-                Vos quittances de loyer et factures KAZA s&apos;afficheront ici
+                Vos quittances de loyer et factures Kaabo s&apos;afficheront ici
                 après la première transaction.
               </p>
             </div>
@@ -190,7 +190,7 @@ export function BillingClient({
                           {inv.number}
                         </td>
                         <td className="px-3 py-2">
-                          {inv.description ?? "Service KAZA"}
+                          {inv.description ?? "Service Kaabo"}
                         </td>
                         <td className="px-3 py-2 text-right font-medium">
                           {formatPrice(inv.amount)}

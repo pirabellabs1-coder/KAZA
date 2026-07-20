@@ -12,7 +12,7 @@ import {
 } from "@/lib/partners/constants";
 
 // =============================================================================
-// KAZA - Server Action : candidatures partenaires (page /partners)
+// Kaabo - Server Action : candidatures partenaires (page /partners)
 //
 // Insère une candidature dans `partner_applications` (RLS public INSERT),
 // puis notifie l'équipe interne et envoie une confirmation au candidat.
@@ -69,15 +69,15 @@ function buildAdminHtml(input: PartnerApplicationInput): string {
 function buildConfirmationHtml(input: PartnerApplicationInput): string {
   const typeLabel = PARTNER_TYPE_LABELS[input.partnerType];
   return buildEmail({
-    preheader: "Votre candidature partenaire KAZA a bien été reçue.",
+    preheader: "Votre candidature partenaire Kaabo a bien été reçue.",
     heading: "Candidature reçue 🎉",
     intro: `Bonjour ${input.contactName},`,
     paragraphs: [
-      `Nous avons bien reçu la candidature de ${input.companyName} au programme partenaires KAZA.`,
+      `Nous avons bien reçu la candidature de ${input.companyName} au programme partenaires Kaabo.`,
       "Notre équipe partenariats examine votre dossier et reviendra vers vous sous 5 jours ouvrés.",
     ],
     rows: [{ label: "Catégorie", value: typeLabel }],
-    outro: "L'équipe Partenariats KAZA",
+    outro: "L'équipe Partenariats Kaabo",
   });
 }
 
@@ -133,12 +133,12 @@ export async function submitPartnerApplication(
   try {
     await sendEmail(
       recipient,
-      `[KAZA Partenariat] ${PARTNER_TYPE_LABELS[data.partnerType]} — ${data.companyName}`,
+      `[Kaabo Partenariat] ${PARTNER_TYPE_LABELS[data.partnerType]} — ${data.companyName}`,
       buildAdminHtml(data),
     );
     await sendEmail(
       data.email,
-      "Votre candidature partenaire KAZA a bien été reçue",
+      "Votre candidature partenaire Kaabo a bien été reçue",
       buildConfirmationHtml(data),
     );
   } catch (err) {

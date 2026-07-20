@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Server Actions leads CRM agence
+// Kaabo — Server Actions leads CRM agence
 // CRUD + opérations métier (changement de stage, assignation, notes).
 // agency_id est toujours l'utilisateur courant (rôle AGENCY).
 // =============================================================================

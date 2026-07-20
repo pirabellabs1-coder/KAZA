@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Codes promo (server-side queries)
+// Kaabo — Codes promo (server-side queries)
 //
 // Branche les tables `promo_codes` et `promo_redemptions` (migration 00028).
 // Validation d'un code (fenêtre de validité, quotas globaux / par utilisateur,

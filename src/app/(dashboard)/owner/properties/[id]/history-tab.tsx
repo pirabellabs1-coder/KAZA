@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 
 // =============================================================================
-// KAZA — Onglet « Historique » du détail d'une annonce (espace propriétaire)
+// Kaabo — Onglet « Historique » du détail d'une annonce (espace propriétaire)
 //
 // Tant que la table activity_logs / la vue agrégée des évènements (paiements,
 // visites, signatures, messages, avis, maintenance) n'est pas branchée, on
@@ -32,7 +32,7 @@ export function HistoryTab() {
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
             L&apos;historique de cette annonce (visites, signatures, paiements,
             messages, avis) s&apos;affichera ici dès qu&apos;une première
-            interaction sera enregistrée sur KAZA.
+            interaction sera enregistrée sur Kaabo.
           </p>
         </div>
       </CardContent>

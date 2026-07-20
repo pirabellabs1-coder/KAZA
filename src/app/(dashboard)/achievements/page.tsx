@@ -9,9 +9,9 @@ import {
 import { AchievementsClient } from "./achievements-client";
 
 export const metadata: Metadata = {
-  title: "Mes badges KAZA",
+  title: "Mes badges Kaabo",
   description:
-    "Découvrez l'ensemble des badges KAZA, suivez votre progression et collectionnez les récompenses.",
+    "Découvrez l'ensemble des badges Kaabo, suivez votre progression et collectionnez les récompenses.",
 };
 
 export default async function AchievementsPage() {

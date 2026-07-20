@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Queries Wallet & retraits (server-only)
+// Kaabo — Queries Wallet & retraits (server-only)
 // Lecture du wallet utilisateur, transactions et demandes de retrait.
 // =============================================================================
 

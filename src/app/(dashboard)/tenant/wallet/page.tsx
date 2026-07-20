@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Wallet locataire
+// Kaabo — Wallet locataire
 // Solde réel, transactions réelles. Données Supabase (user_wallets +
 // wallet_transactions). Aucune donnée démo.
 // =============================================================================
@@ -16,7 +16,7 @@ import {
 import { WalletView } from "@/components/wallet/wallet-view";
 
 export const metadata: Metadata = {
-  title: "Mon portefeuille — KAZA",
+  title: "Mon portefeuille — Kaabo",
 };
 
 export const dynamic = "force-dynamic";
@@ -38,7 +38,7 @@ export default async function TenantWalletPage() {
           Mon portefeuille
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gérez votre solde KAZA, recharges et historique de transactions.
+          Gérez votre solde Kaabo, recharges et historique de transactions.
         </p>
       </div>
 

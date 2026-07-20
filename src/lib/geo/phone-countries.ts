@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Pays + indicatifs téléphoniques (pour le sélecteur de numéro)
+// Kaabo — Pays + indicatifs téléphoniques (pour le sélecteur de numéro)
 // ISO alpha-2 (utilisé par <CountryFlag/>) + nom FR + indicatif international.
 // Bénin en tête (marché principal), puis ordre alphabétique. Couvre les 54 pays
 // africains + quelques pays de la diaspora.

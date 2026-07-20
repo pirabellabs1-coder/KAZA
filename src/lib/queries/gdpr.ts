@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries Demandes RGPD / APDP (server-side)
+// Kaabo — Queries Demandes RGPD / APDP (server-side)
 //
 // Lecture de `public.gdpr_requests` (migration 00056).
 // RLS :

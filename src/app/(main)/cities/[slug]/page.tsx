@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 // =============================================================================
-// KAZA — /cities/[slug]
+// Kaabo — /cities/[slug]
 // Page ville construite depuis le référentiel géographique (COUNTRIES). Affiche
 // les annonces réelles publiées dans la ville (via listPublicProperties). Si
 // aucune annonce, empty-state honnête + CTA recherche. SEO local par ville.
@@ -51,11 +51,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const resolved = resolveCity(slug);
-  if (!resolved) return { title: "Ville introuvable | KAZA" };
+  if (!resolved) return { title: "Ville introuvable | Kaabo" };
 
   const { city, country } = resolved;
-  const title = `Immobilier à ${city.name}, ${country.name} — Location | KAZA`;
-  const description = `Louez un appartement, une maison ou une chambre à ${city.name} (${country.name}). Annonces immobilières vérifiées et paiement sécurisé sur KAZA.`;
+  const title = `Immobilier à ${city.name}, ${country.name} — Location | Kaabo`;
+  const description = `Louez un appartement, une maison ou une chambre à ${city.name} (${country.name}). Annonces immobilières vérifiées et paiement sécurisé sur Kaabo.`;
   const canonical = `/cities/${slug}`;
 
   return {

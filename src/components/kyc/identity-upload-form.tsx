@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — IdentityUploadForm (alias)
+// Kaabo — IdentityUploadForm (alias)
 //
 // Wrapper de compatibilité : ré-exporte le composant `VerificationWizard`
 // (3 étapes : email → pièces → selfie & justificatifs) sous le nom

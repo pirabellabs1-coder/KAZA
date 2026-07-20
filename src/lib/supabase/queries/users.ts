@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Users Queries (Server Components)
+// Kaabo - Users Queries (Server Components)
 // =============================================================================
 
 import type { SupabaseClient } from "@supabase/supabase-js";

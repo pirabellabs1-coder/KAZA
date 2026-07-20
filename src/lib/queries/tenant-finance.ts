@@ -5,7 +5,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Finances locataire (données réelles)
+// Kaabo — Finances locataire (données réelles)
 // Source : payments (user_id = payeur), rentals (tenant_id), user_wallets.
 // =============================================================================
 

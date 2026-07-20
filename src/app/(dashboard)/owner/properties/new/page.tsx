@@ -5,9 +5,9 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { PropertyCreateWizard } from "./property-create-wizard";
 
 export const metadata: Metadata = {
-  title: "Publier un bien — KAZA",
+  title: "Publier un bien — Kaabo",
   description:
-    "Publiez votre bien immobilier en Afrique de l'Ouest sur KAZA en quelques minutes.",
+    "Publiez votre bien immobilier en Afrique de l'Ouest sur Kaabo en quelques minutes.",
 };
 
 export default async function NewPropertyPage() {

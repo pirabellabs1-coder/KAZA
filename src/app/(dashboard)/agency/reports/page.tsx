@@ -19,7 +19,7 @@ import {
 import { ReportGenerator } from "@/components/reports/report-generator";
 
 export const metadata: Metadata = {
-  title: "Rapports — KAZA Pro Agence",
+  title: "Rapports — Kaabo Pro Agence",
   description:
     "Générez et téléchargez vos rapports d'activité, financiers et de performance.",
 };

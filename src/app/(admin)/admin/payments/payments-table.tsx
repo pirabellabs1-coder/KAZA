@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Admin / Transactions globales — table client
+// Kaabo - Admin / Transactions globales — table client
 // =============================================================================
 
 "use client";
@@ -68,8 +68,8 @@ const methodConfig: Record<
   PaymentMethod,
   { label: string; icon: typeof CreditCard }
 > = {
-  kaza_pay: { label: "KAZA Pay", icon: Smartphone },
-  kaza_wallet: { label: "KAZA Wallet", icon: Wallet },
+  kaza_pay: { label: "Kaabo Pay", icon: Smartphone },
+  kaza_wallet: { label: "Kaabo Wallet", icon: Wallet },
   card: { label: "Carte", icon: CreditCard },
 };
 
@@ -356,7 +356,7 @@ export function PaymentsTable({ rows }: PaymentsTableProps) {
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-xs text-muted-foreground">
-                  Commission KAZA (3%)
+                  Commission Kaabo (3%)
                 </dt>
                 <dd className="font-medium">
                   {formatPrice(Math.round(detailRow.amount * 0.03))}

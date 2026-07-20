@@ -89,7 +89,7 @@ export default async function TemplatesGalleryPage() {
               <div className="flex items-center gap-2">
                 <BookOpen className="size-5" />
                 <span className="text-xs font-semibold uppercase tracking-wider text-white/80">
-                  Bibliothèque KAZA
+                  Bibliothèque Kaabo
                 </span>
               </div>
               <h1 className="font-heading text-3xl font-bold sm:text-4xl">
@@ -200,7 +200,7 @@ export default async function TemplatesGalleryPage() {
             conformes au cadre légal béninois en vigueur au 27 mai 2026. Ils ne
             constituent pas un conseil juridique personnalisé. Pour des
             situations complexes (baux mixtes, sociétés, viager, etc.), nous
-            vous recommandons de consulter un notaire ou un avocat. KAZA
+            vous recommandons de consulter un notaire ou un avocat. Kaabo
             propose un service de mise en relation avec des juristes
             partenaires.
           </p>

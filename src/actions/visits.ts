@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA - Visit Requests (Server Actions)
+// Kaabo - Visit Requests (Server Actions)
 //
 // Le locataire demande une visite, le proprietaire l'accepte ou la refuse.
 // Toute transition de statut declenche une notification a la contrepartie.

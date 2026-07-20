@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Dossier d'un candidat (vu par le propriétaire / agence / admin)
+// Kaabo — Dossier d'un candidat (vu par le propriétaire / agence / admin)
 // Permet au bailleur de consulter l'identité + les pièces du candidat AVANT de
 // rédiger et signer le bail. Autorisation stricte : seul le propriétaire du
 // bien concerné (ou un ADMIN) peut consulter le dossier d'une candidature.

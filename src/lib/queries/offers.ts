@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Offres d'achat (lectures)
+// Kaabo — Offres d'achat (lectures)
 // =============================================================================
 
 export interface OfferItem {

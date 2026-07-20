@@ -8,7 +8,7 @@ import { JOBS } from "@/app/(main)/carrieres/page";
 import { BLOG_ARTICLES } from "@/lib/blog-data";
 
 // =============================================================================
-// KAZA - Sitemap dynamique
+// Kaabo - Sitemap dynamique
 // Wave 4 - Aminata Traore
 //
 // Construit le sitemap a partir de :

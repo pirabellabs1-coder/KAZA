@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Server Actions Remboursements (decisions admin)
+// Kaabo — Server Actions Remboursements (decisions admin)
 //
 // `approveRefund` / `rejectRefund` : reserves aux ADMIN. Font passer la demande
 // `refund_requests` a APPROVED / REJECTED, renseignent resolved_at, resolved_by

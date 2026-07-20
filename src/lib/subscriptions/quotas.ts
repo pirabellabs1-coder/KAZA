@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Quotas par plan d'abonnement (source de vérité unique).
+// Kaabo — Quotas par plan d'abonnement (source de vérité unique).
 // Utilisé pour l'enforcement : annonces actives, boosts/mois, membres d'équipe.
 // `Infinity` = illimité. Aucune sous (plan null) = FREE.
 // =============================================================================
@@ -16,13 +16,13 @@ export interface PlanQuotas {
 const QUOTAS: Record<string, PlanQuotas> = {
   FREE: { label: "Gratuit", maxListings: 3, boostsPerMonth: 0, teamMembers: 1 },
   PLUS_MONTHLY: {
-    label: "KAZA Plus",
+    label: "Kaabo Plus",
     maxListings: 10,
     boostsPerMonth: 0,
     teamMembers: 1,
   },
   PLUS_YEARLY: {
-    label: "KAZA Plus",
+    label: "Kaabo Plus",
     maxListings: 10,
     boostsPerMonth: 0,
     teamMembers: 1,

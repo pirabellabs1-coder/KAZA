@@ -26,14 +26,14 @@ import { GlassPanel } from "@/components/shared/glass-panel";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact — KAZA",
+  title: "Contact — Kaabo",
   description:
-    "Une question, un partenariat ou une demande presse ? L'équipe KAZA vous répond en moins de 24h. Téléphone, email et formulaire de contact.",
+    "Une question, un partenariat ou une demande presse ? L'équipe Kaabo vous répond en moins de 24h. Téléphone, email et formulaire de contact.",
   alternates: { canonical: "/contact" },
   openGraph: {
-    title: "Contactez l'équipe KAZA",
+    title: "Contactez l'équipe Kaabo",
     description:
-      "Joignez l'équipe KAZA par email ou via notre formulaire de contact.",
+      "Joignez l'équipe Kaabo par email ou via notre formulaire de contact.",
     url: "/contact",
     type: "website",
     images: ["/images/hero-bg.jpg"],
@@ -91,7 +91,7 @@ const quickFaq = [
     a: "Pour toute urgence (litige, fraude, accès bloqué), écrivez à immobilierkaza@gmail.com ou utilisez le chat en direct.",
   },
   {
-    q: "Puis-je devenir partenaire de KAZA ?",
+    q: "Puis-je devenir partenaire de Kaabo ?",
     a: "Oui. Choisissez le sujet « Partenariat » dans le formulaire ou écrivez à immobilierkaza@gmail.com. Notre équipe revient vers vous sous 48h.",
   },
   {

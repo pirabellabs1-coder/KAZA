@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 // Valeurs de repli si une ligne `platform_settings` est manquante.
 const DEFAULTS: PlatformSettingsInitial = {
   general: {
-    platformName: "KAZA",
+    platformName: "Kaabo",
     contactEmail: "immobilierkaza@gmail.com",
     languages: { fr: true, en: false, fon: false },
     currency: "XOF",

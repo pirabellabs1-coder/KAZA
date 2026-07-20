@@ -50,7 +50,7 @@ export async function generateMetadata({
   const { id } = await params;
   const listing = await getRoommateListing(id);
   return {
-    title: listing ? `${listing.title} — Colocation KAZA` : "Colocation — KAZA",
+    title: listing ? `${listing.title} — Colocation Kaabo` : "Colocation — Kaabo",
   };
 }
 

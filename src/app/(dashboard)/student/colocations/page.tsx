@@ -66,7 +66,7 @@ export default async function StudentColocationsPage() {
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {colocations.length === 0
-              ? "Trouvez vos futurs colocataires sur KAZA"
+              ? "Trouvez vos futurs colocataires sur Kaabo"
               : `${colocations.length} coloc${colocations.length > 1 ? "s" : ""} active${colocations.length > 1 ? "s" : ""}`}
           </p>
         </div>
@@ -188,7 +188,7 @@ function EmptyStateColoc() {
         Aucune colocation pour le moment
       </h2>
       <p className="mx-auto mt-3 max-w-md px-6 text-sm text-muted-foreground">
-        Trouvez vos futurs colocataires sur KAZA et partagez plus
+        Trouvez vos futurs colocataires sur Kaabo et partagez plus
         qu&apos;un logement.
       </p>
       <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">

@@ -48,7 +48,7 @@ export async function generateMetadata({
   const images = property.primaryPhotoUrl ? [property.primaryPhotoUrl] : [];
 
   return {
-    title: `${property.title} - ${formatPrice(property.price)}${priceSuffix} | KAZA`,
+    title: `${property.title} - ${formatPrice(property.price)}${priceSuffix} | Kaabo`,
     description,
     alternates: { canonical },
     openGraph: {
@@ -204,7 +204,7 @@ export default async function PropertyDetailPage({
                       <VerificationBadge status={ownerVerificationStatus} />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Membre KAZA · annonce publiée le{" "}
+                      Membre Kaabo · annonce publiée le{" "}
                       {formatDate(property.createdAt)}
                     </p>
                   </div>
@@ -397,7 +397,7 @@ export default async function PropertyDetailPage({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        Commission KAZA
+                        Commission Kaabo
                       </span>
                       <span>{formatPrice(property.price * 0.05)}</span>
                     </div>

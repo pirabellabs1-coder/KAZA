@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Requêtes Frais partagés (colocation étudiante)
+// Kaabo — Requêtes Frais partagés (colocation étudiante)
 // Tables roommate_expenses + expense_shares (migration 00038), scopées aux
 // membres ACCEPTED du groupe (RLS). Lecture via le client serveur (loose cast).
 // =============================================================================

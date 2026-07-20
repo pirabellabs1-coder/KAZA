@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries notifications (server-side)
+// Kaabo — Queries notifications (server-side)
 //
 // La table `notifications` (migration 00004) stocke `read_at: timestamptz`
 // au lieu d'un booleen — on derive `isRead = read_at !== null`.

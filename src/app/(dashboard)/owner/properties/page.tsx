@@ -32,7 +32,7 @@ import {
 import { PropertyCardActions } from "./property-card-actions";
 
 export const metadata: Metadata = {
-  title: "Mes Propriétés — KAZA",
+  title: "Mes Propriétés — Kaabo",
   description: "Pilotez vos annonces et votre portefeuille immobilier.",
 };
 

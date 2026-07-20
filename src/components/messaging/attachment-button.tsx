@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - AttachmentButton (client component)
+// Kaabo - AttachmentButton (client component)
 //
 // Bouton trombone qui ouvre un menu dropdown : Photo / Document / Localisation
 // / Annonce. Les types qui declenchent un upload (photo, document) ouvrent un

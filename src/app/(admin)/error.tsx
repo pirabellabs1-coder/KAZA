@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - Error Boundary (segment admin)
+// Kaabo - Error Boundary (segment admin)
 //
 // Variante avec plus de contexte technique (digest, message brut) — utile
 // pour les operateurs internes qui pourront remonter l'incident a l'equipe

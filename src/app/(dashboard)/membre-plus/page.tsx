@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Espace Membre Plus — KAZA",
+  title: "Espace Membre Plus — Kaabo",
   description:
     "Pilotez vos avantages Plus, votre concierge personnel et votre abonnement Premium.",
 };
@@ -213,12 +213,12 @@ export default function PlusDashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Concierge KAZA — chat placeholder */}
+      {/* Concierge Kaabo — chat placeholder */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ConciergeBell className="size-5 text-amber-500" />
-            Concierge KAZA
+            Concierge Kaabo
           </CardTitle>
         </CardHeader>
         <CardContent>

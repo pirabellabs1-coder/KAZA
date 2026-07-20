@@ -49,7 +49,7 @@ const PROFILES: Profile[] = [
     badge: "Pour les locataires",
     title: "Trouvez le logement qui vous ressemble",
     intro:
-      "De la recherche à la remise des clés, KAZA simplifie chaque étape de votre installation.",
+      "De la recherche à la remise des clés, Kaabo simplifie chaque étape de votre installation.",
     icon: KeyRound,
     imageUrl:
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
@@ -72,7 +72,7 @@ const PROFILES: Profile[] = [
         icon: CalendarCheck,
         title: "Réservez",
         description:
-          "Bloquez le logement en payant la caution via l'escrow KAZA. Vos fonds restent sécurisés jusqu'à la remise effective des clés.",
+          "Bloquez le logement en payant la caution via l'escrow Kaabo. Vos fonds restent sécurisés jusqu'à la remise effective des clés.",
       },
       {
         icon: KeyRound,
@@ -88,7 +88,7 @@ const PROFILES: Profile[] = [
     badge: "Pour les propriétaires",
     title: "Louez votre bien plus vite, sans agence",
     intro:
-      "Publiez, sélectionnez, encaissez. KAZA s'occupe du reste pour que vous gardiez le contrôle de votre patrimoine.",
+      "Publiez, sélectionnez, encaissez. Kaabo s'occupe du reste pour que vous gardiez le contrôle de votre patrimoine.",
     icon: Building2,
     imageUrl:
       "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
@@ -127,12 +127,12 @@ const PROFILES: Profile[] = [
     badge: "Pour les étudiants",
     title: "La colocation pensée pour les étudiants",
     intro:
-      "KAZA Academia, le meilleur de la colocation étudiante en Afrique de l'Ouest.",
+      "Kaabo Academia, le meilleur de la colocation étudiante en Afrique de l'Ouest.",
     icon: GraduationCap,
     imageUrl:
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
     ctaHref: "/signup?role=student",
-    ctaLabel: "Rejoindre KAZA Academia",
+    ctaLabel: "Rejoindre Kaabo Academia",
     steps: [
       {
         icon: Search,
@@ -150,13 +150,13 @@ const PROFILES: Profile[] = [
         icon: Calculator,
         title: "Partagez les frais",
         description:
-          "Loyer, eau, électricité, internet : KAZA divise automatiquement et chaque coloc paie sa part directement. Zéro tension, zéro avance.",
+          "Loyer, eau, électricité, internet : Kaabo divise automatiquement et chaque coloc paie sa part directement. Zéro tension, zéro avance.",
       },
       {
         icon: Sparkles,
         title: "Vivez sereinement",
         description:
-          "Concentrez-vous sur vos études. KAZA gère la maintenance, les relations avec le propriétaire et l'organisation du foyer.",
+          "Concentrez-vous sur vos études. Kaabo gère la maintenance, les relations avec le propriétaire et l'organisation du foyer.",
       },
     ],
   },

@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/lib/supabase/queries/users";
 
 export const metadata: Metadata = {
   title: "Propriétés",
-  description: "Découvrez toutes les propriétés disponibles sur KAZA.",
+  description: "Découvrez toutes les propriétés disponibles sur Kaabo.",
 };
 
 export default async function PropertiesPage() {
@@ -74,7 +74,7 @@ function EmptyState({ canPublish }: { canPublish: boolean }) {
         Aucune annonce pour le moment
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-        Soyez le premier à publier sur KAZA — votre annonce sera visible
+        Soyez le premier à publier sur Kaabo — votre annonce sera visible
         immédiatement par des milliers de candidats locataires.
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">

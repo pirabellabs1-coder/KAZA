@@ -73,7 +73,7 @@ const adminNavSections: NavSection[] = [
     items: [
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
       { href: "/admin/agencies", label: "Agences", icon: Briefcase },
-      { href: "/admin/staff", label: "Staff KAZA", icon: Users },
+      { href: "/admin/staff", label: "Staff Kaabo", icon: Users },
       {
         href: "/admin/verifications",
         label: "Vérifications KYC",
@@ -162,7 +162,7 @@ export function AdminSidebar({
   className,
   user = {
     firstName: "Admin",
-    lastName: "KAZA",
+    lastName: "Kaabo",
     email: "immobilierkaza@gmail.com",
   },
   badges = {},
@@ -185,7 +185,7 @@ export function AdminSidebar({
         </div>
         <div className="flex flex-col">
           <span className="font-heading text-base font-bold leading-tight text-kaza-navy">
-            KAZA
+            Kaabo
           </span>
           <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
             Admin

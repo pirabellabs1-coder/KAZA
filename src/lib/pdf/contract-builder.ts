@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA - Constructeur de contrat de bail (Bénin)
+// Kaabo - Constructeur de contrat de bail (Bénin)
 // =============================================================================
 // Génère le HTML d'un bail conforme au droit OHADA / béninois, puis l'enveloppe
 // dans un Buffer pour upload Supabase Storage.
@@ -206,7 +206,7 @@ export function buildContractHtml(data: ContractData): string {
     <tr><td>Total mensuel à payer</td><td style="text-align:right">${esc(formatFcfa(totalMonthly))}</td></tr>
   </table>
   <p>Le loyer est payable d'avance, au plus tard le 5 de chaque mois, par Mobile Money
-  via la plateforme KAZA (FeexPay), virement bancaire ou tout autre moyen
+  via la plateforme Kaabo (FeexPay), virement bancaire ou tout autre moyen
   convenu entre les parties. Tout retard de paiement supérieur à quinze (15) jours
   donnera lieu à une majoration de 5 % du montant dû et pourra entraîner la résiliation
   du présent bail.</p>
@@ -215,7 +215,7 @@ export function buildContractHtml(data: ContractData): string {
   <p>À titre de garantie de la bonne exécution de ses obligations, le Preneur verse
   au Bailleur, le jour de la signature, un dépôt de garantie d'un montant de
   <strong>${esc(formatFcfa(data.securityDeposit))}</strong>. Cette somme est conservée
-  en séquestre (escrow) par la plateforme KAZA et sera restituée au Preneur dans un
+  en séquestre (escrow) par la plateforme Kaabo et sera restituée au Preneur dans un
   délai maximum d'un (1) mois après la restitution des clés, déduction faite des
   éventuelles sommes dues et des coûts de remise en état.</p>
 
@@ -223,7 +223,7 @@ export function buildContractHtml(data: ContractData): string {
   <p>Un état des lieux contradictoire, accompagné de photographies datées, sera dressé
   à l'entrée du Preneur dans les lieux, puis à sa sortie. Les deux états des lieux sont
   joints au présent contrat et signés électroniquement par les parties via la
-  plateforme KAZA.</p>
+  plateforme Kaabo.</p>
 
   <h2><span class="clause-num">6.</span>Obligations du Preneur</h2>
   <p>Le Preneur s'engage à : (a) payer le loyer et les charges aux dates convenues ;
@@ -255,7 +255,7 @@ export function buildContractHtml(data: ContractData): string {
 
   <h2><span class="clause-num">10.</span>Signature électronique</h2>
   <p>Les parties reconnaissent la valeur juridique de la signature électronique
-  apposée via la plateforme KAZA, conformément à la Loi n° 2017-20 du 20 avril 2018
+  apposée via la plateforme Kaabo, conformément à la Loi n° 2017-20 du 20 avril 2018
   portant Code du numérique en République du Bénin. Chaque signature est horodatée et
   scellée par un condensat cryptographique SHA-256 conservé en base de données.</p>
 
@@ -266,17 +266,17 @@ export function buildContractHtml(data: ContractData): string {
     <div class="box">
       <small>Le Bailleur</small>
       <em>${esc(data.owner.fullName)}</em>
-      <p style="margin-top:32px;font-size:9pt;color:#888">Signature électronique apposée<br/>via la plateforme KAZA</p>
+      <p style="margin-top:32px;font-size:9pt;color:#888">Signature électronique apposée<br/>via la plateforme Kaabo</p>
     </div>
     <div class="box">
       <small>Le Preneur</small>
       <em>${esc(data.tenant.fullName)}</em>
-      <p style="margin-top:32px;font-size:9pt;color:#888">Signature électronique apposée<br/>via la plateforme KAZA</p>
+      <p style="margin-top:32px;font-size:9pt;color:#888">Signature électronique apposée<br/>via la plateforme Kaabo</p>
     </div>
   </div>
 
   <footer>
-    Document généré par KAZA &middot; Référence ${esc(data.contractId)} &middot;
+    Document généré par Kaabo &middot; Référence ${esc(data.contractId)} &middot;
     Ce document a valeur légale une fois signé par les deux parties.
   </footer>
 </body>

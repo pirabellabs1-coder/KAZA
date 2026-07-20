@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Audit log writer
+// Kaabo — Audit log writer
 // Wave 9 — Yaw
 //
 // Helper unique pour persister une action admin dans `public.audit_logs`.

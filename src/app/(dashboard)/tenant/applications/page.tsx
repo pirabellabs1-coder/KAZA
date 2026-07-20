@@ -7,7 +7,7 @@ import { listTenantApplications } from "@/lib/queries/applications";
 import { ApplicationsView } from "./applications-view";
 
 export const metadata: Metadata = {
-  title: "Mes candidatures — KAZA",
+  title: "Mes candidatures — Kaabo",
   description: "Suivez l'état de vos candidatures de location.",
 };
 

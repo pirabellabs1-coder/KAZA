@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Candidatures locataires (rental_applications, migration 00039)
+// Kaabo — Candidatures locataires (rental_applications, migration 00039)
 // - applyToProperty / withdrawApplication : locataire
 // - decideApplication : propriétaire du bien (accepter / refuser)
 // =============================================================================

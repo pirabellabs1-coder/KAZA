@@ -59,7 +59,7 @@ function renderPlaceholders(
     durationMonths: String(template.defaultDurationMonths),
     place: "Cotonou, République du Bénin",
     signDate: formatDate(new Date().toISOString()),
-    contractNumber: `KAZA-2026-${contract.id.slice(-6).toUpperCase()}`,
+    contractNumber: `Kaabo-2026-${contract.id.slice(-6).toUpperCase()}`,
   };
   return body.replace(/\{\{([^}]+)\}\}/g, (_, key) => {
     const value = map[key.trim()];
@@ -233,7 +233,7 @@ export default async function ContractPreviewPage({
     CONTRACT_TEMPLATES[1];
 
   const isDraft = contract.status === "DRAFT" || !contract.signedAt;
-  const contractNumber = `KAZA-2026-${contract.id.slice(-6).toUpperCase()}`;
+  const contractNumber = `Kaabo-2026-${contract.id.slice(-6).toUpperCase()}`;
 
   return (
     <div className="space-y-6">
@@ -266,7 +266,7 @@ export default async function ContractPreviewPage({
             <div className="rounded-lg bg-kaza-blue/5 p-3 text-xs">
               <p className="font-semibold text-kaza-navy">
                 <ShieldCheck className="mr-1 inline size-3.5" /> Document
-                certifié KAZA
+                certifié Kaabo
               </p>
               <p className="mt-1 text-muted-foreground">
                 Sceau électronique conforme Loi 2017-20 (Code du numérique).
@@ -317,7 +317,7 @@ export default async function ContractPreviewPage({
                   </div>
                   <div>
                     <p className="font-sans text-sm font-bold text-kaza-navy">
-                      KAZA
+                      Kaabo
                     </p>
                     <p className="font-sans text-[10px] uppercase tracking-wider text-muted-foreground">
                       Plateforme immobilière du Bénin
@@ -390,7 +390,7 @@ export default async function ContractPreviewPage({
             {/* Footer */}
             <footer className="relative mt-10 border-t pt-4 text-center text-[10px] font-sans text-muted-foreground">
               <p>
-                KAZA — Plateforme immobilière agréée · Document généré
+                Kaabo — Plateforme immobilière agréée · Document généré
                 électroniquement
               </p>
               <p>

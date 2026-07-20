@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - /properties/compare (REFONTE LUXE — W11 Olamide)
+// Kaabo - /properties/compare (REFONTE LUXE — W11 Olamide)
 // Comparateur de biens (jusqu'à 4 colonnes). Persistance localStorage.
 // Export PDF via window.print().
 // =============================================================================
@@ -367,7 +367,7 @@ export default function ComparePage() {
                       slots={slots}
                     />
                     <ComparisonRow
-                      label="Vérifié KAZA"
+                      label="Vérifié Kaabo"
                       icon={ShieldCheck}
                       values={items.map((i) => (
                         <AmenityCheck key={i.id} on={i.isVerified} label="Vérifié" />

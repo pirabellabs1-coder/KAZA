@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries Achievements (server-side)
+// Kaabo — Queries Achievements (server-side)
 //
 // Tables ciblées :
 //   - public.achievement_definitions (catalogue immuable)

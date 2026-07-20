@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { PartnerType } from "@/lib/partners/constants";
 
 // =============================================================================
-// KAZA — Queries Partenaires (back-office admin, server-side)
+// Kaabo — Queries Partenaires (back-office admin, server-side)
 // Lecture de `partner_applications` pour la page /admin/partners.
 // RLS : SELECT réservé aux ADMIN (l'INSERT public est géré par la server action
 // `submitPartnerApplication`). Ne throw jamais : retourne [] en cas d'erreur.

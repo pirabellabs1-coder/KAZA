@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Reversements (payouts) pour l'admin finance, branchés sur la table
+// Kaabo — Reversements (payouts) pour l'admin finance, branchés sur la table
 // réelle `withdrawal_requests` (+ bénéficiaire via users). Lecture service role.
 // =============================================================================
 

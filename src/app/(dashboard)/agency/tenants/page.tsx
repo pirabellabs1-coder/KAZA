@@ -7,7 +7,7 @@ import { listOwnerTenants } from "@/lib/queries/owner-activity";
 import { OwnerTenantsView } from "../../owner/tenants/tenants-view";
 
 export const metadata: Metadata = {
-  title: "Locataires — KAZA Pro",
+  title: "Locataires — Kaabo Pro",
   description:
     "Suivez les locataires de votre agence : biens loués, statut des baux et historique.",
 };

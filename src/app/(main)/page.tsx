@@ -30,32 +30,32 @@ const OG_IMAGE =
   "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&h=630&q=80";
 
 export const metadata: Metadata = {
-  title: "KAZA — Louer un logement partout en Afrique",
+  title: "Kaabo — Louer un logement partout en Afrique",
   description:
     "Trouvez et louez appartements, maisons et colocations en Afrique de l'Ouest. Annonces vérifiées, paiements sécurisés et contrats numériques.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "KAZA — Louer un logement partout en Afrique",
+    title: "Kaabo — Louer un logement partout en Afrique",
     description:
       "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez en toute confiance en Afrique de l'Ouest.",
     url: "/",
     type: "website",
-    siteName: "KAZA",
+    siteName: "Kaabo",
     locale: "fr_FR",
     images: [
       {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "KAZA — Immobilier panafricain",
+        alt: "Kaabo — Immobilier panafricain",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KAZA — Louer un logement partout en Afrique",
+    title: "Kaabo — Louer un logement partout en Afrique",
     description:
       "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez partout en Afrique.",
     images: [OG_IMAGE],
@@ -189,7 +189,7 @@ export default async function HomePage() {
         {/* Background image */}
         <Image
           src={HERO_IMAGE}
-          alt="Villa moderne avec piscine en Afrique — logement à louer sur KAZA"
+          alt="Villa moderne avec piscine en Afrique — logement à louer sur Kaabo"
           fill
           priority
           sizes="100vw"
@@ -270,7 +270,7 @@ export default async function HomePage() {
           <RevealOnScroll direction="up">
             <div className="mb-12 text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kaza-blue">
-                KAZA en chiffres
+                Kaabo en chiffres
               </p>
               <h2 className="mt-3 font-heading text-3xl font-bold tracking-tight text-kaza-navy sm:text-4xl">
                 Une plateforme à l&apos;échelle de l&apos;Afrique
@@ -368,7 +368,7 @@ export default async function HomePage() {
                   <Sparkles className="size-6" aria-hidden />
                 </div>
                 <h3 className="font-heading text-xl font-bold text-kaza-navy">
-                  Bientôt sur KAZA
+                  Bientôt sur Kaabo
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Soyez le premier à publier votre bien et touchez une
@@ -405,7 +405,7 @@ export default async function HomePage() {
               </h2>
               <p className="mt-5 text-base text-muted-foreground sm:text-lg">
                 Que vous cherchiez un logement, mettiez en location ou viviez en
-                colocation étudiante, KAZA s&apos;adapte à votre projet.
+                colocation étudiante, Kaabo s&apos;adapte à votre projet.
               </p>
             </div>
           </RevealOnScroll>
@@ -564,7 +564,7 @@ export default async function HomePage() {
                 <div>
                   <Badge className="mb-5 border-0 bg-kaza-green/20 text-kaza-green hover:bg-kaza-green/30">
                     <GraduationCap className="mr-1.5 size-3.5" />
-                    KAZA ÉTUDIANT
+                    Kaabo ÉTUDIANT
                   </Badge>
                   <h2 className="font-heading text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                     Des colocations sûres pour les{" "}
@@ -626,7 +626,7 @@ export default async function HomePage() {
                       <div className="group relative h-44 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 lg:h-56">
                         <Image
                           src={STUDENT_IMAGES[0]}
-                          alt="Étudiants africains en colocation dans un appartement KAZA"
+                          alt="Étudiants africains en colocation dans un appartement Kaabo"
                           fill
                           sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -646,7 +646,7 @@ export default async function HomePage() {
                       <div className="group relative h-32 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 lg:h-40">
                         <Image
                           src={STUDENT_IMAGES[2]}
-                          alt="Chambre étudiante meublée à louer en colocation sur KAZA"
+                          alt="Chambre étudiante meublée à louer en colocation sur Kaabo"
                           fill
                           sizes="(max-width: 1024px) 50vw, 25vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -711,7 +711,7 @@ export default async function HomePage() {
           <RevealOnScroll direction="up">
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md">
               <Users className="size-4 text-kaza-green" aria-hidden />
-              Rejoignez la communauté KAZA
+              Rejoignez la communauté Kaabo
             </div>
             <h2 className="font-heading text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
               Prêt à trouver votre prochain{" "}
@@ -771,7 +771,7 @@ export default async function HomePage() {
             <InlineNewsletter
               source="homepage"
               theme="light"
-              cta="Rejoindre KAZA"
+              cta="Rejoindre Kaabo"
               className="lg:w-auto lg:min-w-[420px]"
             />
           </div>

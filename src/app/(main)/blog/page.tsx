@@ -24,13 +24,13 @@ import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { getBlogList } from "@/lib/blog/articles";
 
 export const metadata: Metadata = {
-  title: "Le journal KAZA — Magazine immobilier africain",
+  title: "Le journal Kaabo — Magazine immobilier africain",
   description:
     "Insights, guides pratiques et analyses sur l'immobilier en Afrique : location, colocation, investissement, juridique et innovations.",
   openGraph: {
-    title: "Le journal KAZA",
+    title: "Le journal Kaabo",
     description:
-      "Le magazine éditorial de KAZA : conseils locataires, propriétaires, étudiants et analyses du marché immobilier africain.",
+      "Le magazine éditorial de Kaabo : conseils locataires, propriétaires, étudiants et analyses du marché immobilier africain.",
     type: "website",
   },
 };
@@ -86,7 +86,7 @@ const CATEGORY_META: Record<string, CategoryStyle> = {
   Plateforme: {
     icon: Sparkles,
     accent: "from-indigo-500/15 to-indigo-500/0 text-indigo-600",
-    description: "Fonctionnalités et coulisses de KAZA",
+    description: "Fonctionnalités et coulisses de Kaabo",
   },
   Tech: {
     icon: Cpu,
@@ -98,7 +98,7 @@ const CATEGORY_META: Record<string, CategoryStyle> = {
 const DEFAULT_CATEGORY_STYLE: CategoryStyle = {
   icon: Newspaper,
   accent: "from-kaza-navy/10 to-kaza-navy/0 text-kaza-navy",
-  description: "Analyses et conseils de la rédaction KAZA",
+  description: "Analyses et conseils de la rédaction Kaabo",
 };
 
 function categoryStyle(label: string): CategoryStyle {
@@ -149,7 +149,7 @@ export default async function BlogPage({
     return (
       <div className="mx-auto max-w-3xl px-4 py-32 text-center">
         <h1 className="font-heading text-3xl font-bold text-kaza-navy">
-          Le journal KAZA
+          Le journal Kaabo
         </h1>
         <p className="mt-3 text-muted-foreground">
           Nos premiers articles arrivent très bientôt. Revenez d&apos;ici peu !
@@ -174,14 +174,14 @@ export default async function BlogPage({
           <FadeIn>
             <Badge className="mb-6 inline-flex border-0 bg-kaza-navy/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-kaza-navy">
               <Sparkles className="mr-2 size-3 text-kaza-blue" aria-hidden="true" />
-              Le journal KAZA
+              Le journal Kaabo
             </Badge>
             <h1 className="font-heading text-5xl font-bold leading-[1.05] text-kaza-navy sm:text-6xl lg:text-7xl">
               Le{" "}
               <span className="bg-gradient-to-r from-kaza-blue to-kaza-green bg-clip-text text-transparent">
                 journal
               </span>{" "}
-              KAZA
+              Kaabo
             </h1>
             <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
               Insights, guides pratiques et actualités du marché immobilier

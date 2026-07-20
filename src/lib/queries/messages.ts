@@ -1,7 +1,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Queries messages Supabase (server-side)
+// Kaabo — Queries messages Supabase (server-side)
 //
 // Lecture des conversations et des messages d'un utilisateur. Toutes les
 // requetes sont filtrees par `sender_id` ou `recipient_id = userId`, ce qui

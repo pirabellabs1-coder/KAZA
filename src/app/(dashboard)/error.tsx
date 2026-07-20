@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - Error Boundary (segment dashboard)
+// Kaabo - Error Boundary (segment dashboard)
 //
 // Capture les erreurs runtime des pages connectees (propriétaire, locataire,
 // étudiant). Affiche un message FR et un bouton Réessayer qui appelle

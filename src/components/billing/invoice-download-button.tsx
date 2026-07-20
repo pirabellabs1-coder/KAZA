@@ -47,7 +47,7 @@ export function buildInvoiceHtml(inv: UserInvoice): string {
   const label = statusLabel(inv.status);
   return `<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8" />
-<title>Facture ${escapeHtml(inv.number)} — KAZA</title>
+<title>Facture ${escapeHtml(inv.number)} — Kaabo</title>
 <style>
   *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
   body{margin:0;padding:40px;color:#1A3A52}
@@ -66,7 +66,7 @@ export function buildInvoiceHtml(inv: UserInvoice): string {
 <body>
   <div class="head">
     <div>
-      <div class="brand">KAZA<span>.</span></div>
+      <div class="brand">Kaabo<span>.</span></div>
       <div class="muted">Plateforme immobilière — PIRABEL LABS</div>
       <div class="muted">immobilierkaza@gmail.com</div>
     </div>
@@ -77,14 +77,14 @@ export function buildInvoiceHtml(inv: UserInvoice): string {
     </div>
   </div>
 
-  <h1>${escapeHtml(inv.description ?? "Abonnement / Service KAZA")}</h1>
+  <h1>${escapeHtml(inv.description ?? "Abonnement / Service Kaabo")}</h1>
   <span class="badge">${escapeHtml(label)}</span>
 
   <table>
     <thead><tr><th>Description</th><th>Statut</th><th style="text-align:right">Montant</th></tr></thead>
     <tbody>
       <tr>
-        <td>${escapeHtml(inv.description ?? "Service KAZA")}</td>
+        <td>${escapeHtml(inv.description ?? "Service Kaabo")}</td>
         <td>${escapeHtml(label)}</td>
         <td style="text-align:right">${escapeHtml(formatPrice(inv.amount))}</td>
       </tr>
@@ -104,7 +104,7 @@ export function buildInvoiceHtml(inv: UserInvoice): string {
   </table>
 
   <div class="foot">
-    Document généré automatiquement par KAZA. Pour toute question relative à cette
+    Document généré automatiquement par Kaabo. Pour toute question relative à cette
     facture, contactez immobilierkaza@gmail.com en précisant le numéro ${escapeHtml(inv.number)}.
   </div>
   <script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script>

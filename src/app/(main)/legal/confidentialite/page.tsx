@@ -5,13 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import { LegalToc } from "@/components/marketing/legal-toc";
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité — KAZA",
+  title: "Politique de confidentialité — Kaabo",
   description:
-    "Politique de protection des données personnelles de KAZA, conforme à la Loi n° 2017-20 du 20 avril 2018 (Code du numérique au Bénin) et aux standards RGPD UE.",
+    "Politique de protection des données personnelles de Kaabo, conforme à la Loi n° 2017-20 du 20 avril 2018 (Code du numérique au Bénin) et aux standards RGPD UE.",
   openGraph: {
-    title: "Politique de confidentialité — KAZA",
+    title: "Politique de confidentialité — Kaabo",
     description:
-      "Comment PIRABEL LABS SARL (KAZA) collecte, utilise et protège vos données personnelles selon le droit béninois.",
+      "Comment PIRABEL LABS SARL (Kaabo) collecte, utilise et protège vos données personnelles selon le droit béninois.",
     type: "article",
   },
 };
@@ -78,7 +78,7 @@ export default function ConfidentialitePage() {
             </h2>
             <p className="mt-3 text-muted-foreground">
               PIRABEL LABS SARL (ci-après «&nbsp;PIRABEL LABS&nbsp;» ou
-              «&nbsp;KAZA&nbsp;»), éditrice de la plateforme KAZA accessible à
+              «&nbsp;Kaabo&nbsp;»), éditrice de la plateforme Kaabo accessible à
               l&apos;adresse <span className="font-medium">https://kaza.africa</span>,
               accorde une importance fondamentale à la protection des données
               personnelles de ses Utilisateurs.

@@ -3,7 +3,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server action : annulation d'une demande de visite par le locataire.
+// Kaabo — Server action : annulation d'une demande de visite par le locataire.
 // Remplace l'ancien form POST vers /api/visits/{id}/cancel (route inexistante).
 // =============================================================================
 

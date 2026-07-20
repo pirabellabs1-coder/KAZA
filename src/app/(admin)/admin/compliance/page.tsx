@@ -30,7 +30,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Conformité réglementaire — KAZA Admin",
+  title: "Conformité réglementaire — Kaabo Admin",
   description: "RGPD · APDP · OHADA · ISO · audits & certifications.",
 };
 

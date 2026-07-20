@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 // =============================================================================
-// KAZA - Badge de statut de contrat
+// Kaabo - Badge de statut de contrat
 // =============================================================================
 // Composant serveur (pas d'état) qui mappe l'enum `contract_status` à un Badge
 // shadcn coloré, avec libellé français.

@@ -1,7 +1,7 @@
 "use server";
 
 // =============================================================================
-// KAZA — Demandes RGPD / APDP (Server Actions)
+// Kaabo — Demandes RGPD / APDP (Server Actions)
 //
 // Persiste les demandes dans `public.gdpr_requests` (migration 00056).
 // RLS :

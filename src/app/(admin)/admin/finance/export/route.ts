@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Export CSV des paiements (Route Handler GET)
+// Kaabo — Admin / Export CSV des paiements (Route Handler GET)
 // =============================================================================
 // Génère un export CSV RÉEL des paiements de la plateforme :
 //   colonnes : id, date, montant (FCFA), statut, méthode.
@@ -28,7 +28,7 @@ const METHOD_LABELS: Record<string, string> = {
   MOBILE_MONEY: "Mobile Money",
   BANK_TRANSFER: "Virement bancaire",
   CARD: "Carte bancaire",
-  WALLET: "Portefeuille KAZA",
+  WALLET: "Portefeuille Kaabo",
   CASH: "Espèces",
 };
 

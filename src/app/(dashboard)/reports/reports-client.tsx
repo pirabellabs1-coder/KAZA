@@ -390,7 +390,7 @@ function ReportDetail({ report }: { report: UserReport }) {
       {report.adminNote && (
         <div>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Note de l&apos;équipe KAZA
+            Note de l&apos;équipe Kaabo
           </p>
           <p className="mt-1 whitespace-pre-line rounded-md border border-kaza-blue/30 bg-kaza-blue/5 p-3 text-sm">
             {report.adminNote}

@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA — Liste des recherches sauvegardées & alertes (espace locataire)
+// Kaabo — Liste des recherches sauvegardées & alertes (espace locataire)
 // Permet de relancer une recherche ou de supprimer une entrée.
 // =============================================================================
 

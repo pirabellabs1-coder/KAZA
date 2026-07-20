@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Admin / Abonnés newsletter
+// Kaabo — Admin / Abonnés newsletter
 // Server component. Lit `newsletter_subscribers` (inscriptions footer, landing,
 // faq…) via `listNewsletterSubscribers`. Export CSV délégué à un composant
 // client. RLS : SELECT réservé aux ADMIN.
@@ -31,7 +31,7 @@ import {
 import { ExportSubscribersButton } from "./export-button";
 
 export const metadata: Metadata = {
-  title: "Abonnés newsletter — Admin KAZA",
+  title: "Abonnés newsletter — Admin Kaabo",
 };
 
 export const dynamic = "force-dynamic";

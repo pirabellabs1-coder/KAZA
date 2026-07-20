@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - Offline Page (Client)
+// Kaabo - Offline Page (Client)
 // Wave 10 - Olamide Adesanya (Mobile/PWA Specialist)
 //
 // UI plein ecran affichee quand l'utilisateur est hors ligne et qu'aucune

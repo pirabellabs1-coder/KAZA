@@ -35,14 +35,14 @@ import { getAllPlans } from "@/lib/queries/plans";
 import { PlusPricingToggle } from "./pricing-toggle";
 
 export const metadata: Metadata = {
-  title: "KAZA Plus — l'expérience premium de l'immobilier",
+  title: "Kaabo Plus — l'expérience premium de l'immobilier",
   description:
-    "KAZA Plus : boost mensuel, analytics privées, support prioritaire et concierge personnel. À partir de 9 900 FCFA/mois.",
+    "Kaabo Plus : boost mensuel, analytics privées, support prioritaire et concierge personnel. À partir de 9 900 FCFA/mois.",
   alternates: { canonical: "/plus" },
   openGraph: {
-    title: "KAZA Plus — l'expérience premium",
+    title: "Kaabo Plus — l'expérience premium",
     description:
-      "Tout KAZA, en mieux. 9 900 FCFA/mois ou 99 000 FCFA/an (2 mois offerts).",
+      "Tout Kaabo, en mieux. 9 900 FCFA/mois ou 99 000 FCFA/an (2 mois offerts).",
     url: "/plus",
     type: "website",
     images: ["/images/hero-bg.jpg"],
@@ -105,7 +105,7 @@ const plusFeatures: PlusFeature[] = [
   },
   {
     icon: ConciergeBell,
-    title: "Concierge personnel KAZA",
+    title: "Concierge personnel Kaabo",
     description:
       "Un interlocuteur unique dédié à vos recherches, vos démarches et vos visites sur le terrain.",
     detail: "Service exclusif Plus",
@@ -145,7 +145,7 @@ const PRIVILEGES_DETAILS = [
   {
     icon: ConciergeBell,
     title: "Concierge sur-mesure",
-    text: "Un conseiller KAZA dédié vous accompagne : présélection d'annonces, prise de RDV, accompagnement aux visites et négociation à votre place.",
+    text: "Un conseiller Kaabo dédié vous accompagne : présélection d'annonces, prise de RDV, accompagnement aux visites et négociation à votre place.",
   },
 ];
 
@@ -167,7 +167,7 @@ const plusComparison: PlusRow[] = [
   { feature: "Badge Premium sur le profil", free: false, plus: true },
   { feature: "Stockage de documents", free: "500 Mo", plus: "Illimité" },
   { feature: "Concierge personnel", free: false, plus: true },
-  { feature: "Accès aux ventes flash KAZA", free: false, plus: true },
+  { feature: "Accès aux ventes flash Kaabo", free: false, plus: true },
 ];
 
 // =============================================================================
@@ -193,7 +193,7 @@ const PLUS_FAQ = [
   },
   {
     q: "Quels modes de paiement sont acceptés pour Plus ?",
-    a: "Tous les moyens disponibles sur KAZA : Mobile Money (MTN, Moov), carte bancaire et virement. La facturation est mensuelle ou annuelle au choix.",
+    a: "Tous les moyens disponibles sur Kaabo : Mobile Money (MTN, Moov), carte bancaire et virement. La facturation est mensuelle ou annuelle au choix.",
   },
 ];
 
@@ -257,7 +257,7 @@ export default async function PlusPage() {
 
           <FadeIn delay={120}>
             <h1 className="font-heading text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-              KAZA Plus — l&apos;expérience{" "}
+              Kaabo Plus — l&apos;expérience{" "}
               <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
                 premium
               </span>{" "}
@@ -267,7 +267,7 @@ export default async function PlusPage() {
 
           <FadeIn delay={240}>
             <p className="mx-auto mt-8 max-w-2xl text-lg text-white/90 sm:text-xl">
-              Tout KAZA, en mieux. Visibilité boostée, support prioritaire,
+              Tout Kaabo, en mieux. Visibilité boostée, support prioritaire,
               concierge personnel et privilèges exclusifs réservés à nos
               membres Plus.
             </p>
@@ -530,7 +530,7 @@ export default async function PlusPage() {
           <RevealOnScroll>
             <Badge className="mb-6 border-0 bg-kaza-navy/90 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-300 shadow-xl">
               <Star className="mr-1.5 size-3.5 fill-current" />
-              Rejoignez l&apos;élite KAZA
+              Rejoignez l&apos;élite Kaabo
             </Badge>
 
             <h2 className="font-heading text-4xl font-bold tracking-tight sm:text-6xl">
@@ -541,7 +541,7 @@ export default async function PlusPage() {
               ?
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-kaza-navy/90 sm:text-xl">
-              Rejoignez les membres KAZA Plus qui profitent d&apos;une
+              Rejoignez les membres Kaabo Plus qui profitent d&apos;une
               expérience supérieure, d&apos;un concierge dédié et de
               privilèges exclusifs.
             </p>

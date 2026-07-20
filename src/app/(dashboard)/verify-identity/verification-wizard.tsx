@@ -412,7 +412,7 @@ function Step1Email({
       <div>
         <h2 className="text-lg font-semibold">Votre adresse email</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Votre identité est rattachée à l&apos;email de votre compte KAZA.
+          Votre identité est rattachée à l&apos;email de votre compte Kaabo.
         </p>
       </div>
 

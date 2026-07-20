@@ -20,7 +20,7 @@ import { formatPrice } from "@/lib/utils";
 import { toast } from "@/components/ui/toast-helper";
 
 // =============================================================================
-// KAZA - Formulaire de paiement (client component)
+// Kaabo - Formulaire de paiement (client component)
 // =============================================================================
 
 interface CheckoutFormProps {
@@ -40,7 +40,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Solde KAZA (wallet) de l'utilisateur courant.
+  // Solde Kaabo (wallet) de l'utilisateur courant.
   const [wallet, setWallet] = useState<{ balance: number; frozen: boolean }>({
     balance: 0,
     frozen: false,
@@ -103,7 +103,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
     setPromoError(null);
   }
 
-  // --- Paiement depuis le solde KAZA (wallet) ---
+  // --- Paiement depuis le solde Kaabo (wallet) ---
   function handleWalletSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -115,7 +115,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
       return;
     }
     if (!walletSufficient) {
-      const msg = "Solde KAZA insuffisant pour ce paiement.";
+      const msg = "Solde Kaabo insuffisant pour ce paiement.";
       setError(msg);
       toast.error(msg);
       return;
@@ -133,7 +133,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
           toast.error(msg);
           return;
         }
-        toast.success("Loyer payé depuis votre solde KAZA.");
+        toast.success("Loyer payé depuis votre solde Kaabo.");
         window.location.href = "/tenant/payments/success?method=wallet";
       } catch (err) {
         const message =
@@ -299,7 +299,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
             >
               politique de confidentialité
             </a>{" "}
-            de KAZA, ainsi que la mise en séquestre des fonds.
+            de Kaabo, ainsi que la mise en séquestre des fonds.
           </Label>
         </div>
       </section>
@@ -332,7 +332,7 @@ export function CheckoutForm({ rentalId, amountTotal }: CheckoutFormProps) {
             )}
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            Paiement sécurisé par KAZA. Vos données sont chiffrées.
+            Paiement sécurisé par Kaabo. Vos données sont chiffrées.
           </p>
         </>
       ) : (

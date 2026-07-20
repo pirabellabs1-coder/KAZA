@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// KAZA - Push Token Register (Client)
+// Kaabo - Push Token Register (Client)
 // Wave 4 - Aminata Traore
 //
 // Banniere "mount-on-demand" qui demande la permission notifications et

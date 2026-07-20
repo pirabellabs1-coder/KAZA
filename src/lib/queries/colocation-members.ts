@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 // =============================================================================
-// KAZA — Candidats colocation à valider par le PRINCIPAL
+// Kaabo — Candidats colocation à valider par le PRINCIPAL
 // Pour chaque groupe dont l'utilisateur est `is_lead`, liste les membres en
 // statut PENDING avec leur identité (+ statut KYC) pour validation.
 // =============================================================================

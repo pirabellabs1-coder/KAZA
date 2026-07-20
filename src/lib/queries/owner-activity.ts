@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries activité par owner (visits, rentals, payments, tenants)
+// Kaabo — Queries activité par owner (visits, rentals, payments, tenants)
 // Server-side uniquement. Tout retour est best-effort : en cas d'erreur Supabase
 // on logge et on retourne un tableau vide (ne jamais casser la page).
 //

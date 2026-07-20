@@ -41,13 +41,13 @@ import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { GlassPanel } from "@/components/shared/glass-panel";
 
 export const metadata: Metadata = {
-  title: "Guide complet du propriétaire — KAZA",
+  title: "Guide complet du propriétaire — Kaabo",
   description:
-    "Le guide premium pour publier, louer et gérer votre bien sur KAZA. Locataires vérifiés, escrow garanti, contrats numériques OHADA, support 24/7.",
+    "Le guide premium pour publier, louer et gérer votre bien sur Kaabo. Locataires vérifiés, escrow garanti, contrats numériques OHADA, support 24/7.",
   openGraph: {
-    title: "Guide du propriétaire — KAZA",
+    title: "Guide du propriétaire — Kaabo",
     description:
-      "Tout pour louer plus vite, plus serein, et augmenter vos revenus locatifs avec KAZA.",
+      "Tout pour louer plus vite, plus serein, et augmenter vos revenus locatifs avec Kaabo.",
     type: "article",
   },
 };
@@ -71,7 +71,7 @@ const whyKaza = [
     icon: "Wallet",
     title: "Escrow garanti",
     description:
-      "Caution et premier loyer bloqués sur compte séquestre KAZA, libérés à la remise effective des clés.",
+      "Caution et premier loyer bloqués sur compte séquestre Kaabo, libérés à la remise effective des clés.",
     metric: "0 impayé sur la caution",
   },
   {
@@ -99,7 +99,7 @@ const whyKaza = [
     icon: "MapPin",
     title: "Visibilité maximale",
     description:
-      "Annonces poussées sur KAZA, Google et nos partenaires immobiliers. Plus de 250 000 visiteurs uniques par mois.",
+      "Annonces poussées sur Kaabo, Google et nos partenaires immobiliers. Plus de 250 000 visiteurs uniques par mois.",
     metric: "x4 vs annonce classique",
   },
 ];
@@ -176,13 +176,13 @@ const bestPractices = [
     icon: UserCheck,
     title: "Vérifiez votre locataire",
     description:
-      "Consultez le score KAZA, les justificatifs (revenus, garant) et les avis d'anciens bailleurs avant d'accepter.",
+      "Consultez le score Kaabo, les justificatifs (revenus, garant) et les avis d'anciens bailleurs avant d'accepter.",
   },
   {
     icon: FileSignature,
     title: "Bail OHADA conforme",
     description:
-      "Utilisez le contrat KAZA pré-rempli : clauses légales, durée, dépôt, révision de loyer, conditions de résiliation.",
+      "Utilisez le contrat Kaabo pré-rempli : clauses légales, durée, dépôt, révision de loyer, conditions de résiliation.",
   },
 ];
 
@@ -198,11 +198,11 @@ const tools = [
 const legalFaq = [
   {
     q: "Quelle est la durée légale d'un bail au Bénin ?",
-    a: "Au Bénin et dans la zone OHADA, le bail d'habitation est généralement conclu pour une durée d'1 an renouvelable tacitement. Pour les locations meublées, des durées plus courtes (6 mois) sont possibles. KAZA propose les deux formats dans son générateur de contrat.",
+    a: "Au Bénin et dans la zone OHADA, le bail d'habitation est généralement conclu pour une durée d'1 an renouvelable tacitement. Pour les locations meublées, des durées plus courtes (6 mois) sont possibles. Kaabo propose les deux formats dans son générateur de contrat.",
   },
   {
     q: "Combien puis-je demander en dépôt de garantie ?",
-    a: "L'usage au Bénin est de 1 à 3 mois de loyer hors charges pour les locations vides, et jusqu'à 2 mois pour les meublées. KAZA recommande 2 mois maximum pour rester compétitif et facilite la sécurisation via son escrow.",
+    a: "L'usage au Bénin est de 1 à 3 mois de loyer hors charges pour les locations vides, et jusqu'à 2 mois pour les meublées. Kaabo recommande 2 mois maximum pour rester compétitif et facilite la sécurisation via son escrow.",
   },
   {
     q: "Puis-je augmenter le loyer en cours de bail ?",
@@ -210,7 +210,7 @@ const legalFaq = [
   },
   {
     q: "Comment résilier un bail à un locataire ?",
-    a: "La résiliation à l'initiative du bailleur doit reposer sur un motif légitime (vente, reprise, manquement grave) et respecter un préavis (3 mois généralement). KAZA accompagne cette procédure avec modèles de lettres recommandés et conseil juridique.",
+    a: "La résiliation à l'initiative du bailleur doit reposer sur un motif légitime (vente, reprise, manquement grave) et respecter un préavis (3 mois généralement). Kaabo accompagne cette procédure avec modèles de lettres recommandés et conseil juridique.",
   },
 ];
 
@@ -237,12 +237,12 @@ export default function GuideProprietairePage() {
               <span className="bg-gradient-to-r from-kaza-green to-kaza-blue bg-clip-text text-transparent">
                 guide complet du propriétaire
               </span>{" "}
-              KAZA
+              Kaabo
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80 sm:text-xl">
               Tout pour publier, louer et gérer votre bien en toute sérénité.
               Locataires vérifiés, escrow garanti, contrats OHADA et support
-              dédié — KAZA s&apos;occupe du reste.
+              dédié — Kaabo s&apos;occupe du reste.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="bg-kaza-green hover:bg-kaza-green/90">
@@ -282,15 +282,15 @@ export default function GuideProprietairePage() {
         </div>
       </section>
 
-      {/* Pourquoi KAZA */}
+      {/* Pourquoi Kaabo */}
       <section className="bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold tracking-widest uppercase text-kaza-blue">
-              Pourquoi KAZA
+              Pourquoi Kaabo
             </p>
             <h2 className="mt-3 font-heading text-3xl font-bold text-kaza-navy sm:text-4xl">
-              6 raisons de choisir KAZA pour votre bien
+              6 raisons de choisir Kaabo pour votre bien
             </h2>
             <p className="mt-4 text-base text-muted-foreground">
               La première plateforme africaine pensée pour les propriétaires
@@ -396,7 +396,7 @@ export default function GuideProprietairePage() {
             </h2>
             <p className="mt-4 text-base text-muted-foreground">
               Les bonnes pratiques pour louer plus vite et en toute sérénité sur
-              KAZA.
+              Kaabo.
             </p>
           </div>
 
@@ -427,7 +427,7 @@ export default function GuideProprietairePage() {
         </div>
       </section>
 
-      {/* Outils KAZA */}
+      {/* Outils Kaabo */}
       <section className="relative overflow-hidden bg-kaza-navy py-20 text-white">
         <div
           className="pointer-events-none absolute -right-24 top-1/2 size-80 -translate-y-1/2 rounded-full bg-kaza-blue/20 blur-3xl"
@@ -439,7 +439,7 @@ export default function GuideProprietairePage() {
               Inclus dans votre compte
             </p>
             <h2 className="mt-3 font-heading text-3xl font-bold sm:text-4xl">
-              Tous les outils KAZA, gratuits pour les propriétaires
+              Tous les outils Kaabo, gratuits pour les propriétaires
             </h2>
             <p className="mt-4 text-base text-white/70">
               Aucun abonnement, aucun frais caché. Vous ne payez qu&apos;une
@@ -515,7 +515,7 @@ export default function GuideProprietairePage() {
         <div className="relative mx-auto max-w-4xl px-4 text-center lg:px-8">
           <Sparkles className="mx-auto size-10 text-white" aria-hidden="true" />
           <h2 className="mt-6 font-heading text-3xl font-bold sm:text-4xl lg:text-5xl">
-            Prêt à publier votre bien sur KAZA ?
+            Prêt à publier votre bien sur Kaabo ?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-white/85">
             Inscription gratuite en moins de 2 minutes. Pas de carte bancaire,

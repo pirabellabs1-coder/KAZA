@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - Profile Validation Schemas (Zod v4)
+// Kaabo - Profile Validation Schemas (Zod v4)
 // Used by React Hook Form on the client and Server Actions on the server
 // =============================================================================
 

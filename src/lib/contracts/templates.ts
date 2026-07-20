@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA — Bibliothèque de modèles de contrats de bail
+// Kaabo — Bibliothèque de modèles de contrats de bail
 // =============================================================================
 // Cette bibliothèque fournit 4 modèles complets de contrats conformes au droit
 // béninois (Loi n° 2018-12 du 02 juillet 2018 portant régime juridique des
@@ -100,7 +100,7 @@ const COMMON_OBLIGATIONS_TENANT: ContractSection = {
   editable: true,
   body: `Conformément aux articles 15 et suivants de la Loi 2018-12, le Locataire s'oblige notamment à :
 
-1. **Payer le loyer et les charges** aux termes convenus, à savoir le 1er à 5 de chaque mois, par virement bancaire, Mobile Money (FeexPay) ou tout autre moyen via la plateforme KAZA (escrow sécurisé).
+1. **Payer le loyer et les charges** aux termes convenus, à savoir le 1er à 5 de chaque mois, par virement bancaire, Mobile Money (FeexPay) ou tout autre moyen via la plateforme Kaabo (escrow sécurisé).
 2. **User paisiblement** des lieux loués suivant leur destination d'habitation, sans troubler la jouissance des voisins.
 3. **Répondre des dégradations** survenues pendant la durée du bail dans les lieux dont il a la jouissance exclusive, à moins qu'il ne prouve qu'elles ont eu lieu par cas de force majeure ou par la faute du Bailleur.
 4. **Assurer l'entretien courant** du logement, les menues réparations et l'ensemble des réparations locatives définies par les usages, sauf si elles sont occasionnées par vétusté, malfaçon, vice de construction ou cas de force majeure.
@@ -148,7 +148,7 @@ const COMMON_TERMINATION_SECTION: ContractSection = {
   required: true,
   editable: true,
   body: `**Résiliation par le Locataire :**
-Le Locataire peut résilier le bail à tout moment, sous réserve de respecter un préavis notifié au Bailleur par lettre recommandée avec accusé de réception, par acte d'huissier ou par tout moyen permettant d'attester de la réception (incluant l'envoi via la plateforme KAZA avec accusé électronique).
+Le Locataire peut résilier le bail à tout moment, sous réserve de respecter un préavis notifié au Bailleur par lettre recommandée avec accusé de réception, par acte d'huissier ou par tout moyen permettant d'attester de la réception (incluant l'envoi via la plateforme Kaabo avec accusé électronique).
 
 Durée du préavis : **3 mois** pour les locations non meublées, **1 mois** pour les locations meublées (art. 32 de la Loi 2018-12).
 
@@ -190,7 +190,7 @@ const COMMON_JURISDICTION_SECTION: ContractSection = {
 - Le **Code civil béninois** pour ce qui n'est pas spécifiquement réglé par la loi spéciale ;
 - Les **Actes uniformes OHADA** dans la mesure où ils sont applicables.
 
-Tout différend né de l'interprétation, de l'exécution ou de la résiliation du présent contrat sera, à défaut d'accord amiable et préalablement à toute action judiciaire, soumis à la **médiation gratuite proposée par la plateforme KAZA** dans un délai maximum de 30 jours.
+Tout différend né de l'interprétation, de l'exécution ou de la résiliation du présent contrat sera, à défaut d'accord amiable et préalablement à toute action judiciaire, soumis à la **médiation gratuite proposée par la plateforme Kaabo** dans un délai maximum de 30 jours.
 
 À défaut de conciliation, les parties attribuent compétence exclusive au **Tribunal de Première Instance de première classe de Cotonou** (chambre civile) pour les litiges relatifs aux baux d'habitation, et au **Tribunal de Commerce de Cotonou** pour les baux à usage professionnel ou commercial.`,
 };
@@ -200,7 +200,7 @@ const COMMON_SIGNATURES_SECTION: ContractSection = {
   title: "Signatures",
   required: true,
   editable: false,
-  body: `Fait à **{{place}}**, le **{{signDate}}**, en deux (2) exemplaires originaux, dont un (1) pour chacune des parties, ainsi qu'un (1) exemplaire électronique conservé sur la plateforme KAZA avec valeur probante équivalente conformément à la **Loi n° 2017-20 du 20 avril 2018** portant Code du numérique en République du Bénin.
+  body: `Fait à **{{place}}**, le **{{signDate}}**, en deux (2) exemplaires originaux, dont un (1) pour chacune des parties, ainsi qu'un (1) exemplaire électronique conservé sur la plateforme Kaabo avec valeur probante équivalente conformément à la **Loi n° 2017-20 du 20 avril 2018** portant Code du numérique en République du Bénin.
 
 Chaque page doit être paraphée et la dernière page signée par les deux parties, précédée de la mention manuscrite « **Lu et approuvé, bon pour bail** ».
 
@@ -270,7 +270,7 @@ Conformément à l'article 7 de la Loi 2018-12, la durée minimale du bail meubl
       title: "Loyer et indexation",
       required: true,
       editable: true,
-      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme KAZA (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
+      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme Kaabo (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
 
 **Indexation :** Le loyer pourra être révisé annuellement à la date anniversaire du contrat, dans la limite de la **variation de l'Indice des Prix à la Consommation (IPC)** publié par l'**Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**, et conformément à l'article 25 de la Loi 2018-12.
 
@@ -304,7 +304,7 @@ Une **régularisation annuelle** sera effectuée sur présentation des justifica
 
 Conformément à l'article 19 de la Loi 2018-12, le dépôt de garantie pour un logement meublé ne peut excéder **deux (2) mois de loyer hors charges**.
 
-Le dépôt de garantie est conservé sur un **compte escrow sécurisé KAZA** (établissement de paiement agréé BCEAO) et ne pourra être assimilé à un paiement de loyer.
+Le dépôt de garantie est conservé sur un **compte escrow sécurisé Kaabo** (établissement de paiement agréé BCEAO) et ne pourra être assimilé à un paiement de loyer.
 
 Il sera restitué au Locataire dans un délai maximum de **deux (2) mois** à compter de la remise des clés, déduction faite, le cas échéant :
 - Des loyers et charges restant dus ;
@@ -369,7 +369,7 @@ Conformément à l'article 6 de la Loi 2018-12, la durée minimale du bail non m
       title: "Loyer et indexation",
       required: true,
       editable: true,
-      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme KAZA (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
+      body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme Kaabo (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
 
 **Indexation :** Le loyer pourra être révisé annuellement à la date anniversaire du contrat, dans la limite de la **variation de l'Indice des Prix à la Consommation (IPC)** publié par l'**Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**, conformément à l'article 25 de la Loi 2018-12.
 
@@ -402,7 +402,7 @@ Une **régularisation annuelle** sera effectuée sur présentation des justifica
 
 Conformément à l'article 19 de la Loi 2018-12, le dépôt de garantie pour un logement non meublé ne peut excéder **un (1) mois de loyer hors charges**.
 
-Le dépôt de garantie est conservé sur un **compte escrow sécurisé KAZA** (établissement de paiement agréé BCEAO) et ne pourra en aucun cas être assimilé à un paiement de loyer.
+Le dépôt de garantie est conservé sur un **compte escrow sécurisé Kaabo** (établissement de paiement agréé BCEAO) et ne pourra en aucun cas être assimilé à un paiement de loyer.
 
 Il sera restitué au Locataire dans un délai maximum de **deux (2) mois** à compter de la remise des clés, déduction faite, le cas échéant :
 - Des loyers et charges restant dus ;
@@ -527,7 +527,7 @@ La solidarité s'étend également aux dégradations constatées dans les partie
 
 Le bail est **renouvelable par tacite reconduction** pour des périodes successives de douze (12) mois, sauf congé donné par l'une des parties dans les conditions légales.
 
-**Préavis de sortie individuel :** Chaque Colocataire peut quitter individuellement le logement moyennant un préavis de **1 mois** notifié au Bailleur et à ses co-colocataires par lettre recommandée, par acte d'huissier ou via la plateforme KAZA.`,
+**Préavis de sortie individuel :** Chaque Colocataire peut quitter individuellement le logement moyennant un préavis de **1 mois** notifié au Bailleur et à ses co-colocataires par lettre recommandée, par acte d'huissier ou via la plateforme Kaabo.`,
     },
     {
       id: "rent",
@@ -536,7 +536,7 @@ Le bail est **renouvelable par tacite reconduction** pour des périodes successi
       editable: true,
       body: `Le loyer mensuel **global** (pour l'ensemble des Colocataires) est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**.
 
-**Mode de paiement :** Le loyer est encaissé via la plateforme KAZA (escrow sécurisé). Chaque Colocataire reçoit un appel à cotisation pour sa quote-part. Le versement est consolidé puis transmis au Bailleur.
+**Mode de paiement :** Le loyer est encaissé via la plateforme Kaabo (escrow sécurisé). Chaque Colocataire reçoit un appel à cotisation pour sa quote-part. Le versement est consolidé puis transmis au Bailleur.
 
 **En cas de défaillance d'un Colocataire**, les autres restent tenus solidairement de la totalité du loyer envers le Bailleur (voir clause de solidarité).
 
@@ -562,7 +562,7 @@ Sont incluses dans les charges : eau, électricité des parties communes, intern
       editable: true,
       body: `Un dépôt de garantie **unique et global** d'un montant de **{{depositAmount}}** (équivalent à **{{depositMonths}} mois de loyer hors charges**, plafond légal article 19 Loi 2018-12) est versé conjointement par les Colocataires à la signature des présentes.
 
-Ce dépôt est conservé sur un **compte escrow sécurisé KAZA**.
+Ce dépôt est conservé sur un **compte escrow sécurisé Kaabo**.
 
 **Restitution :** Le dépôt sera restitué dans son intégralité aux Colocataires, **après le départ du dernier Colocataire** et à la libération complète du logement, dans un délai maximum de **deux (2) mois**, déduction faite des sommes éventuellement dues (loyers impayés, dégradations).
 
@@ -676,7 +676,7 @@ Conformément à l'article 104 de l'AUDCG, le bail à usage professionnel peut �
       title: "Loyer, indexation et révision triennale",
       required: true,
       editable: true,
-      body: `Le loyer mensuel est fixé à **{{rent}}** hors taxes, payable d'avance, au plus tard le **5 de chaque mois**, par virement bancaire ou via la plateforme KAZA.
+      body: `Le loyer mensuel est fixé à **{{rent}}** hors taxes, payable d'avance, au plus tard le **5 de chaque mois**, par virement bancaire ou via la plateforme Kaabo.
 
 **Révision du loyer (art. 117 AUDCG) :** À défaut d'accord écrit entre les parties sur le nouveau montant du loyer, la juridiction compétente est saisie. Le loyer peut être révisé tous les **3 ans** ou à chaque renouvellement.
 
@@ -712,7 +712,7 @@ Conformément à l'article 104 de l'AUDCG, le bail à usage professionnel peut �
 
 Ce dépôt est destiné à garantir l'exécution des obligations du Preneur, notamment le paiement des loyers, charges, indemnités d'occupation et la remise en état des locaux.
 
-Le dépôt est conservé sur un **compte escrow sécurisé KAZA**.
+Le dépôt est conservé sur un **compte escrow sécurisé Kaabo**.
 
 Il sera restitué dans un délai maximum de **2 mois** à compter de la restitution effective des locaux et de la remise des clés, déduction faite des éventuelles sommes dues.`,
     },
@@ -796,7 +796,7 @@ Le Bailleur pourra obtenir l'expulsion du Preneur et de tous occupants de son ch
 - Le **droit commercial béninois** complémentaire ;
 - Les **Actes uniformes OHADA** dans leur ensemble.
 
-Tout différend né de l'interprétation, de l'exécution ou de la résiliation du présent contrat sera, à défaut d'accord amiable et préalablement à toute action judiciaire, soumis à la **médiation proposée par la plateforme KAZA** ou à l'**arbitrage CCJA** dans un délai de 30 jours.
+Tout différend né de l'interprétation, de l'exécution ou de la résiliation du présent contrat sera, à défaut d'accord amiable et préalablement à toute action judiciaire, soumis à la **médiation proposée par la plateforme Kaabo** ou à l'**arbitrage CCJA** dans un délai de 30 jours.
 
 À défaut de conciliation, les parties attribuent compétence exclusive au **Tribunal de Commerce de Cotonou** statuant en premier ressort, avec voie d'appel possible devant la **Cour Commune de Justice et d'Arbitrage (CCJA) de l'OHADA** à Abidjan pour les questions d'interprétation des Actes uniformes OHADA.`,
     },
@@ -909,7 +909,7 @@ export const STANDARD_CLAUSES: StandardClause[] = [
 - **1 mois** pour un logement loué meublé ;
 - **3 mois** pour un logement loué non meublé.
 
-Le préavis doit être notifié par lettre recommandée avec accusé de réception, par acte d'huissier ou par message via la plateforme KAZA avec accusé de réception électronique.`,
+Le préavis doit être notifié par lettre recommandée avec accusé de réception, par acte d'huissier ou par message via la plateforme Kaabo avec accusé de réception électronique.`,
   },
   {
     id: "clause-solidary-guarantor",

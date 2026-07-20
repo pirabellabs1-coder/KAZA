@@ -2,7 +2,7 @@
 import "server-only";
 
 // =============================================================================
-// KAZA — Server Actions Carrières (CRUD admin sur `job_offers`)
+// Kaabo — Server Actions Carrières (CRUD admin sur `job_offers`)
 //
 // Toutes les actions :
 //   1. Valident l'entrée via Zod

@@ -1,5 +1,5 @@
 // =============================================================================
-// KAZA - MessageReadIndicator (server component)
+// Kaabo - MessageReadIndicator (server component)
 //
 // Indicateur de statut d'un message envoye, type WhatsApp :
 //   - sent       : 1 coche grise

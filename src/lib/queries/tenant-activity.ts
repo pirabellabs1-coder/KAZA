@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
-// KAZA — Queries activité locataire / étudiant (server-side)
+// Kaabo — Queries activité locataire / étudiant (server-side)
 //
 // Toutes les fonctions retournent des données prêtes à afficher.
 // Empty array si erreur ou aucune donnée — pas de throw.

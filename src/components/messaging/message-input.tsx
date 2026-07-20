@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// KAZA - MessageInput (client component)
+// Kaabo - MessageInput (client component)
 //
 // Textarea auto-resize + bouton envoyer. Enter envoie, Shift+Enter saute une
 // ligne. Desactive pendant l'envoi pour eviter les doubles soumissions.
