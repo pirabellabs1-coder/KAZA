@@ -14,6 +14,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { awardPoints } from "@/lib/points/award";
 import type { Rating } from "@/types/properties";
 
 import { createNotification, type ActionResult } from "./notifications";
@@ -158,6 +159,9 @@ export async function createReview(
     body: `Vous avez recu une note de ${parsed.data.rating}/5.`,
     link: `/profile`,
   });
+
+  // Points Kaabo : avis donné (+25 à l'auteur de l'avis).
+  await awardPoints(user.id, "REVIEW_GIVEN", "Avis publié", 25);
 
   revalidatePath(`/profile/${parsed.data.targetUserId}`);
   return { success: true, data: data as unknown as Rating };

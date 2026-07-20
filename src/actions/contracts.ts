@@ -11,6 +11,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
+import { awardPoints } from "@/lib/points/award";
 
 // =============================================================================
 // Kaabo - Server Actions Contrats (génération + signature électronique)
@@ -472,6 +473,14 @@ export async function signContract(
           data: { propertyTitle, contractUrl, fullySigned: true },
         });
       }
+      // Points Kaabo : contrat signé (+1000 au locataire).
+      await awardPoints(
+        tenantId,
+        "CONTRACT_SIGNED",
+        `Bail signé — ${propertyTitle}`,
+        1000,
+        { contractId: input.contractId },
+      );
     }
   } catch (err) {
     console.warn("[contracts] notif signature échec:", err);

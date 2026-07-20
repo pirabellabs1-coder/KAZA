@@ -14,22 +14,20 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/toast-helper";
+import { redeemReward } from "@/actions/points";
 
-// Helpers locaux — à brancher sur la table kaza_points / wallet_transactions Supabase
-// À brancher sur la table kaza_points / wallet_transactions Supabase.
 function formatPoints(value: number): string {
   return new Intl.NumberFormat("fr-FR").format(value);
 }
 
-// Fallback no-op — l'échange de points doit être branché sur la mutation
-// Supabase (spend_kaza_points). Retourne `false` pour indiquer l'absence
-// de mécanisme de dépense en attendant.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- stub : paramètres conservés tant que spend_kaza_points n'est pas branché
-function spendPoints(_amount: number, _reason: string): boolean {
-  return false;
+function formatFcfa(value: number): string {
+  return `${new Intl.NumberFormat("fr-FR").format(value)} FCFA`;
 }
 
 export interface Reward {
@@ -112,21 +110,31 @@ export const REWARDS: Reward[] = [
 
 interface RewardsCatalogProps {
   balance: number;
-  onChange: () => void;
+  onChange?: () => void;
 }
 
 export function RewardsCatalog({ balance, onChange }: RewardsCatalogProps) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
   const handleRedeem = (reward: Reward) => {
-    const ok = spendPoints(reward.cost, `Échange — ${reward.title}`);
-    if (!ok) {
-      toast.error("Solde insuffisant pour cette récompense.");
-      return;
-    }
-    toast.success(`Récompense débloquée : ${reward.title} !`);
-    onChange();
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("kaza-points-updated"));
-    }
+    startTransition(async () => {
+      const res = await redeemReward(reward.id);
+      if (!res.success) {
+        toast.error(res.error ?? "Conversion impossible.");
+        return;
+      }
+      toast.success(
+        `${reward.title} — ${formatFcfa(
+          res.walletCredit ?? 0,
+        )} crédités sur votre Wallet Kaabo.`,
+      );
+      onChange?.();
+      router.refresh();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("kaza-points-updated"));
+      }
+    });
   };
 
   return (
@@ -164,12 +172,12 @@ export function RewardsCatalog({ balance, onChange }: RewardsCatalogProps) {
               <Button
                 type="button"
                 onClick={() => handleRedeem(reward)}
-                disabled={!affordable}
+                disabled={!affordable || pending}
                 variant={affordable ? "default" : "outline"}
                 className="w-full gap-2"
               >
                 <Gift className="size-4" />
-                {affordable ? "Échanger" : "Solde insuffisant"}
+                {affordable ? "Convertir en crédit Wallet" : "Solde insuffisant"}
               </Button>
             </CardContent>
           </Card>

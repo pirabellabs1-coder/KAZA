@@ -14,6 +14,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
 import { track } from "@/lib/analytics/track";
+import { awardPoints } from "@/lib/points/award";
 import { getActiveSubscription } from "@/lib/queries/subscriptions";
 import { getPlanQuotas } from "@/lib/subscriptions/quotas";
 import type { Property } from "@/types/properties";
@@ -217,6 +218,15 @@ export async function createProperty(
     eventType: "PROPERTY_PUBLISHED",
     metadata: { property_id: data.id },
   });
+
+  // Points Kaabo : annonce publiée (+250).
+  await awardPoints(
+    user.id,
+    "PROPERTY_LISTED",
+    `Annonce publiée — ${parsed.data.title ?? "bien"}`,
+    250,
+    { property_id: data.id },
+  );
 
   revalidatePath("/owner/properties");
   // TODO: type manquant - `Property` (src/types/properties.ts) n'inclut pas

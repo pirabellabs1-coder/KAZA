@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import {
-  Award,
   Gift,
   History,
   Sparkles,
@@ -24,6 +23,8 @@ import {
   type PointsTransaction,
 } from "@/lib/queries/kaza-points";
 import { cn } from "@/lib/utils";
+import { POINTS_TO_FCFA } from "@/lib/points/constants";
+import { RewardsCatalog } from "./rewards-catalog";
 
 export const metadata: Metadata = {
   title: "Kaabo Points",
@@ -31,77 +32,12 @@ export const metadata: Metadata = {
     "Suivez votre solde de Kaabo Points, l'historique de vos transactions et le catalogue de recompenses.",
 };
 
-interface Reward {
-  id: string;
-  title: string;
-  description: string;
-  cost: number;
-  icon: typeof Gift;
-}
 
-const REWARDS: Reward[] = [
-  {
-    id: "r1",
-    title: "Credit Wallet 500 FCFA",
-    description: "Ajoutez 500 FCFA a votre wallet Kaabo",
-    cost: 100,
-    icon: Gift,
-  },
-  {
-    id: "r2",
-    title: "Bon de reduction 2 000 FCFA",
-    description: "Sur votre prochain loyer mensuel",
-    cost: 500,
-    icon: Gift,
-  },
-  {
-    id: "r3",
-    title: "Boost 7 jours pour 1 annonce",
-    description: "Mise en avant gratuite",
-    cost: 1000,
-    icon: TrendingUp,
-  },
-  {
-    id: "r4",
-    title: "Visite virtuelle 360 gratuite",
-    description: "Pour une de vos annonces",
-    cost: 1500,
-    icon: Sparkles,
-  },
-  {
-    id: "r5",
-    title: "Mois Premium offert",
-    description: "Tous les avantages Kaabo Plus",
-    cost: 2500,
-    icon: Award,
-  },
-  {
-    id: "r6",
-    title: "Caution reduite -50%",
-    description: "Sur votre prochaine location",
-    cost: 5000,
-    icon: Gift,
-  },
-  {
-    id: "r7",
-    title: "1 mois de loyer offert",
-    description: "Jusqu'a 200 000 FCFA",
-    cost: 10000,
-    icon: Award,
-  },
-  {
-    id: "r8",
-    title: "Annee Premium offerte",
-    description: "Kaabo Plus pendant 12 mois",
-    cost: 15000,
-    icon: Award,
-  },
-];
 
 const HOW_TO_EARN: Array<{ action: string; points: number }> = [
   { action: "Inscription", points: 100 },
   { action: "Profil complet", points: 100 },
-  { action: "Identite verifiee (KYC)", points: 200 },
+  { action: "Identite verifiee (KYC)", points: 500 },
   { action: "Annonce publiee", points: 250 },
   { action: "Contrat signe", points: 1000 },
   { action: "Avis donne", points: 25 },
@@ -259,50 +195,11 @@ export default async function PointsPage() {
 
         {/* Recompenses */}
         <TabsContent value="rewards">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {REWARDS.map((reward) => {
-              const canAfford = balance >= reward.cost;
-              const Icon = reward.icon;
-              return (
-                <Card key={reward.id}>
-                  <CardContent className="space-y-3 p-5">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-kaza-blue/10 text-kaza-blue">
-                      <Icon className="size-6" />
-                    </div>
-                    <div>
-                      <p className="font-semibold leading-tight">
-                        {reward.title}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {reward.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between border-t pt-3">
-                      <Badge className="border-0 bg-amber-50 text-amber-900">
-                        <Star className="mr-1 size-3 fill-amber-500 text-amber-500" />
-                        {reward.cost.toLocaleString("fr-FR")} pts
-                      </Badge>
-                      <span
-                        className={cn(
-                          "text-xs font-medium",
-                          canAfford
-                            ? "text-kaza-green"
-                            : "text-muted-foreground",
-                        )}
-                      >
-                        {canAfford
-                          ? "Disponible"
-                          : `Encore ${(reward.cost - balance).toLocaleString("fr-FR")} pts`}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          <RewardsCatalog balance={balance} />
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            Les echanges de recompenses arrivent bientot — cumulez vos points
-            en attendant !
+            Chaque récompense est convertie en crédit sur votre Wallet Kaabo
+            (1 point = {POINTS_TO_FCFA} FCFA), utilisable pour un loyer, un
+            boost, un abonnement ou un retrait.
           </p>
         </TabsContent>
 

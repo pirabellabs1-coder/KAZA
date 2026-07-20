@@ -59,8 +59,9 @@ const HOW_IT_WORKS = [
 const TERMS = [
   "Le programme est reserve aux utilisateurs verifies (identite confirmee).",
   "Le code parrainage est personnel et non transferable.",
-  "Les 1 000 points sont credites apres signature et premier paiement de la location.",
-  "Maximum 50 filleuls valides par annee civile par compte.",
+  "Les 1 000 points sont credites des que votre filleul valide son identite (KYC) sur Kaabo.",
+  "1 point Kaabo = 5 FCFA, convertible en credit Wallet (loyer, boost, abonnement, retrait).",
+  "Le filleul recoit 500 points de bienvenue a son inscription avec votre code.",
   "Kaabo se reserve le droit de suspendre les comptes en cas d'abus avere.",
 ];
 
@@ -122,8 +123,8 @@ export default async function ReferralPage() {
             </h1>
             <p className="mt-3 text-sm text-white/80 sm:text-base">
               Invitez vos amis, votre famille et vos collegues sur Kaabo. Vous
-              gagnez {REFERRAL_REWARD_POINTS} Kaabo Points des leur premiere
-              location signee — eux profitent d&apos;un bonus de bienvenue.
+              gagnez {REFERRAL_REWARD_POINTS} Kaabo Points des que votre filleul
+              valide son identite — eux profitent de 500 points de bienvenue.
             </p>
           </div>
           <div className="hidden lg:block">

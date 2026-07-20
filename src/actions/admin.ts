@@ -24,6 +24,7 @@ import { sendEmail } from "@/lib/notifications/resend";
 import { buildEmail } from "@/lib/notifications/email-template";
 import { writeAuditLog } from "@/lib/audit/write-log";
 import { createNotification } from "@/actions/notifications";
+import { awardPoints } from "@/lib/points/award";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -309,6 +310,46 @@ export async function approveIdentity(
     targetId: input.userId,
     targetLabel: input.userName,
   });
+
+  // Complétion du parrainage : la validation KYC du filleul déclenche la
+  // récompense du parrain (+1000 points), une seule fois.
+  try {
+    const { data: referral } = await adminDb
+      .from("referrals")
+      .select("id, referrer_id, status")
+      .eq("referred_id", input.userId)
+      .eq("status", "PENDING")
+      .maybeSingle();
+    const ref = referral as
+      | { id: string; referrer_id: string; status: string }
+      | null;
+    if (ref?.referrer_id) {
+      await adminDb
+        .from("referrals")
+        .update({
+          status: "COMPLETED",
+          points_awarded: 1000,
+          completed_at: nowIso,
+        })
+        .eq("id", ref.id);
+      await awardPoints(
+        ref.referrer_id,
+        "REFERRAL",
+        `Parrainage validé — ${input.userName}`,
+        1000,
+        { referred_id: input.userId },
+      );
+      await createNotification(adminDb, {
+        userId: ref.referrer_id,
+        type: "system",
+        title: "Parrainage validé 🎉",
+        body: `${input.userName} a validé son identité. Vous gagnez 1000 points Kaabo !`,
+        link: "/referral",
+      });
+    }
+  } catch (err) {
+    console.error("[admin] complétion parrainage:", err);
+  }
 
   const subject = "Identité vérifiée — badge de confiance Kaabo";
   const html = layout(
