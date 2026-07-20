@@ -75,7 +75,7 @@ const BOOST_PLANS: BoostPlan[] = [
     dbPlan: "featured",
     title: "Boost 7 jours",
     duration: 7,
-    price: 5000,
+    price: 500,
     icon: Zap,
     features: [
       "Mise en avant dans les résultats",
@@ -89,7 +89,7 @@ const BOOST_PLANS: BoostPlan[] = [
     dbPlan: "top",
     title: "Boost 30 jours",
     duration: 30,
-    price: 15000,
+    price: 1500,
     icon: Rocket,
     recommended: true,
     features: [
@@ -105,7 +105,7 @@ const BOOST_PLANS: BoostPlan[] = [
     dbPlan: "premium",
     title: "Pack Premium",
     duration: 30,
-    price: 50000,
+    price: 3000,
     icon: Crown,
     features: [
       "1ère position garantie (30j)",

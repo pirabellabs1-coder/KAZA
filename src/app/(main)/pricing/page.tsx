@@ -35,12 +35,12 @@ const formatFcfaPrice = (value: number) =>
 export const metadata: Metadata = {
   title: "Tarifs — Kaabo",
   description:
-    "Une tarification limpide pour chaque profil. Gratuit pour les locataires et étudiants. Commission uniquement sur loyer perçu pour les propriétaires.",
+    "Une tarification simple et abordable. Gratuit pour les locataires et étudiants. Sans commission sur les loyers pour les propriétaires.",
   alternates: { canonical: "/pricing" },
   openGraph: {
     title: "Tarifs Kaabo — Transparent, sans frais cachés",
     description:
-      "Locataires : gratuit. Propriétaires : 0 FCFA + 5% sur loyer perçu ou Pro illimité à 15 000 FCFA/mois.",
+      "Locataires : gratuit. Propriétaires : gratuit sans commission, ou Pro illimité à 2 500 FCFA/mois.",
     url: "/pricing",
     type: "website",
     images: ["/images/hero-bg.jpg"],
@@ -81,7 +81,7 @@ const plans: PricingPlan[] = [
     name: "Propriétaire Starter",
     audience: "Pour les bailleurs indépendants",
     price: "0 FCFA",
-    priceDetail: "+ 5 % sur loyer perçu",
+    priceDetail: "sans commission sur vos loyers",
     description:
       "L'essentiel pour publier et louer vos premières annonces sans engagement.",
     features: [
@@ -100,8 +100,8 @@ const plans: PricingPlan[] = [
   {
     name: "Propriétaire Pro",
     audience: "Pour les agences et investisseurs",
-    price: "15 000 FCFA",
-    priceDetail: "/ mois + 3 % sur loyer",
+    price: "2 500 FCFA",
+    priceDetail: "/ mois, sans commission",
     description:
       "L'expérience la plus complète pour gérer un parc immobilier ambitieux.",
     features: [
@@ -129,7 +129,7 @@ type ComparisonRow = {
 const comparison: ComparisonRow[] = [
   { feature: "Création de compte", tenant: "Gratuit", starter: "Gratuit", pro: "Gratuit" },
   { feature: "Nombre d'annonces actives", tenant: "—", starter: "5", pro: "Illimité" },
-  { feature: "Commission sur loyer perçu", tenant: "—", starter: "5 %", pro: "3 %" },
+  { feature: "Commission sur loyer perçu", tenant: "—", starter: "0 %", pro: "0 %" },
   { feature: "Recherche d'annonces illimitée", tenant: true, starter: false, pro: false },
   { feature: "Messagerie intégrée", tenant: true, starter: true, pro: true },
   { feature: "Vérification KYC", tenant: true, starter: true, pro: true },
@@ -162,7 +162,7 @@ const pricingFaq = [
   },
   {
     q: "L'abonnement annuel est-il avantageux ?",
-    a: "Oui : en optant pour la facturation annuelle, vous bénéficiez de 2 mois offerts sur le plan Pro, soit 30 000 FCFA d'économies par an.",
+    a: "Oui : en optant pour la facturation annuelle (Kaabo Plus Annuel), vous bénéficiez de 2 mois offerts par rapport au tarif mensuel.",
   },
   {
     q: "Que se passe-t-il si mon locataire ne paie pas ?",
