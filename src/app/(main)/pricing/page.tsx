@@ -35,12 +35,12 @@ const formatFcfaPrice = (value: number) =>
 export const metadata: Metadata = {
   title: "Tarifs — Kaabo",
   description:
-    "Une tarification simple et abordable. Gratuit pour les locataires et étudiants. Sans commission sur les loyers pour les propriétaires.",
+    "Une tarification simple et abordable. Gratuit pour les locataires et étudiants. Seulement 2 % de commission sur les loyers perçus pour les propriétaires.",
   alternates: { canonical: "/pricing" },
   openGraph: {
     title: "Tarifs Kaabo — Transparent, sans frais cachés",
     description:
-      "Locataires : gratuit. Propriétaires : gratuit sans commission, ou Pro illimité à 2 500 FCFA/mois.",
+      "Locataires : gratuit. Propriétaires : 0 FCFA + 2 % sur loyer perçu, ou Pro illimité à 5 000 FCFA/mois.",
     url: "/pricing",
     type: "website",
     images: ["/images/hero-bg.jpg"],
@@ -81,7 +81,7 @@ const plans: PricingPlan[] = [
     name: "Propriétaire Starter",
     audience: "Pour les bailleurs indépendants",
     price: "0 FCFA",
-    priceDetail: "sans commission sur vos loyers",
+    priceDetail: "+ 2 % sur loyer perçu",
     description:
       "L'essentiel pour publier et louer vos premières annonces sans engagement.",
     features: [
@@ -101,7 +101,7 @@ const plans: PricingPlan[] = [
     name: "Propriétaire Pro",
     audience: "Pour les agences et investisseurs",
     price: "5 000 FCFA",
-    priceDetail: "/ mois, sans commission",
+    priceDetail: "/ mois + 2 % sur loyer",
     description:
       "L'expérience la plus complète pour gérer un parc immobilier ambitieux.",
     features: [
@@ -129,7 +129,7 @@ type ComparisonRow = {
 const comparison: ComparisonRow[] = [
   { feature: "Création de compte", tenant: "Gratuit", starter: "Gratuit", pro: "Gratuit" },
   { feature: "Nombre d'annonces actives", tenant: "—", starter: "5", pro: "Illimité" },
-  { feature: "Commission sur loyer perçu", tenant: "—", starter: "0 %", pro: "0 %" },
+  { feature: "Commission sur loyer perçu", tenant: "—", starter: "2 %", pro: "2 %" },
   { feature: "Recherche d'annonces illimitée", tenant: true, starter: false, pro: false },
   { feature: "Messagerie intégrée", tenant: true, starter: true, pro: true },
   { feature: "Vérification KYC", tenant: true, starter: true, pro: true },
@@ -153,8 +153,8 @@ const pricingFaq = [
     a: "Aucun. Notre commission s'applique uniquement lorsque vous percevez un loyer. Pas de frais d'inscription, pas de frais de publication, pas de pénalité de résiliation.",
   },
   {
-    q: "Comment fonctionne la commission de 5 % ou 3 % ?",
-    a: "La commission est prélevée automatiquement à chaque encaissement de loyer via la plateforme. Vous recevez 95 % (Starter) ou 97 % (Pro) sur votre wallet Kaabo Pay ou votre compte bancaire, et nous nous occupons du reste.",
+    q: "Comment fonctionne la commission de 2 % ?",
+    a: "La commission de 2 % est prélevée automatiquement à chaque encaissement de loyer via la plateforme, au moment de la libération de l'escrow. Vous recevez 98 % du loyer sur votre wallet Kaabo ou votre compte bancaire, et nous nous occupons du reste.",
   },
   {
     q: "Puis-je changer d'abonnement à tout moment ?",

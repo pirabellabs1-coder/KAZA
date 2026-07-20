@@ -19,6 +19,33 @@ const DEFAULT_HOLD_DAYS = parseInt(
   10
 );
 
+/** Taux de commission par défaut (%) si `platform_settings` est indisponible. */
+const DEFAULT_COMMISSION_RATE = 2;
+
+/**
+ * Lit le taux de commission plateforme (%) depuis `platform_settings.payments`.
+ * Best-effort : retourne le défaut (2 %) en cas d'absence ou d'erreur.
+ */
+async function getCommissionRate(
+  supabase: ReturnType<typeof createAdminClient>
+): Promise<number> {
+  try {
+    const loose = supabase as unknown as SupabaseClient;
+    const { data } = await loose
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "payments")
+      .maybeSingle();
+    const raw = (data as { value?: { commission?: number } } | null)?.value
+      ?.commission;
+    const rate = Number(raw);
+    if (Number.isFinite(rate) && rate >= 0 && rate <= 100) return rate;
+  } catch {
+    // ignore — on retombe sur le défaut
+  }
+  return DEFAULT_COMMISSION_RATE;
+}
+
 /**
  * Calcule la date a laquelle les fonds doivent etre liberes au proprietaire.
  * @param rentalStartDate Date de debut de location (ISO string ou Date)
@@ -243,6 +270,13 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
     escrow.amount_paid ?? escrow.total_amount ?? payment.amount ?? 0
   );
 
+  // Commission plateforme (2 % par défaut) : le propriétaire reçoit le loyer
+  // NET (montant - commission) ; la plateforme conserve la commission (elle
+  // n'est simplement pas reversée — elle reste sur le solde encaissé Kaabo).
+  const commissionRate = await getCommissionRate(supabase);
+  const commission = Math.round((amount * commissionRate) / 100);
+  const ownerAmount = Math.max(0, amount - commission);
+
   // 1) Vérifier la présence de la clé FedaPay AVANT toute mutation de statut.
   if (!process.env.FEDAPAY_SECRET_KEY) {
     throw new Error(
@@ -263,12 +297,12 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
   let payoutId: string;
   try {
     const result = await sendPayout({
-      amount,
+      amount: ownerAmount,
       phoneNumber: destination.phoneNumber,
       mode: destination.mode,
       email: destination.email,
       countryCode: destination.countryCode,
-      description: `Kaabo — libération escrow location ${payment.rental_id}`,
+      description: `Kaabo — libération escrow location ${payment.rental_id} (net, commission ${commissionRate}%)`,
       merchantReference: `escrow-release-${escrow.id}`,
     });
     payoutId = result.payoutId;
@@ -286,7 +320,12 @@ export async function releaseFromEscrow(paymentId: string): Promise<EscrowResult
   const now = new Date().toISOString();
   const { error: escrowErr } = await supabase
     .from("escrow_payments")
-    .update({ status: "RELEASED", release_date: now, payout_ref: payoutId })
+    .update({
+      status: "RELEASED",
+      release_date: now,
+      payout_ref: payoutId,
+      commission_fcfa: commission,
+    })
     .eq("id", escrow.id);
 
   if (escrowErr) {

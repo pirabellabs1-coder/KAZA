@@ -9,6 +9,7 @@ import {
   HandCoins,
   CreditCard,
   BarChart3,
+  Code2,
   Heart,
   MessageSquare,
   Home,
@@ -124,6 +125,7 @@ const agencyNav: NavItem[] = [
   { href: "/agency/wallet", label: "Wallet & retraits", icon: Wallet },
   { href: "/contracts", label: "Contrats", icon: FileText },
   { href: "/contracts/templates", label: "Modèles contrats", icon: FileText },
+  { href: "/developers", label: "API & Développeurs", icon: Code2 },
   { href: "/agency/settings", label: "Paramètres agence", icon: Settings },
 ];
 
@@ -148,6 +150,7 @@ const adminNav: NavItem[] = [
   { href: "/admin/payments", label: "Paiements", icon: CreditCard },
   { href: "/admin/finance", label: "Finance", icon: Wallet },
   { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+  { href: "/developers", label: "API & Développeurs", icon: Code2 },
 ];
 
 const roleNavMap: Record<string, NavItem[]> = {
