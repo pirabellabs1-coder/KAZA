@@ -153,8 +153,8 @@ const pricingFaq = [
     a: "Aucun. Notre commission s'applique uniquement lorsque vous percevez un loyer. Pas de frais d'inscription, pas de frais de publication, pas de pénalité de résiliation.",
   },
   {
-    q: "Comment fonctionne la commission de 2 % ?",
-    a: "La commission de 2 % est prélevée automatiquement à chaque encaissement de loyer via la plateforme, au moment de la libération de l'escrow. Vous recevez 98 % du loyer sur votre wallet Kaabo ou votre compte bancaire, et nous nous occupons du reste.",
+    q: "Comment fonctionne la commission ?",
+    a: "Location : 2 % prélevés automatiquement à chaque encaissement de loyer via la plateforme (vous recevez 98 %). Vente : 3 % prélevés sur l'acompte de réservation versé via Kaabo lorsqu'une offre d'achat est acceptée et sécurisée. Aucune commission tant qu'aucune transaction n'a lieu.",
   },
   {
     q: "Puis-je changer d'abonnement à tout moment ?",

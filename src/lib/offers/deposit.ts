@@ -23,7 +23,7 @@ export async function markOfferDepositPaid(
   const { data: offerRow } = await admin
     .from("property_offers")
     .select(
-      `id, status, deposit_fcfa, buyer_id, property_id,
+      `id, status, deposit_fcfa, amount_fcfa, buyer_id, property_id,
        buyer:users!buyer_id(first_name, last_name),
        property:properties!property_id(owner_id, title, status)`,
     )
@@ -43,14 +43,38 @@ export async function markOfferDepositPaid(
   const propertyId = o.property_id as string | undefined;
   const propertyTitle = (o.property?.title as string | undefined) ?? "le bien";
   const deposit = Number(o.deposit_fcfa ?? 0);
+  const saleAmount = Number(o.amount_fcfa ?? 0);
   const buyerName =
     `${o.buyer?.first_name ?? ""} ${o.buyer?.last_name ?? ""}`.trim() ||
     "L’acheteur";
 
+  // Commission plateforme sur la vente (3 % par défaut, piloté par
+  // platform_settings.payments.saleCommission) — prélevée sur l'acompte qui
+  // transite par Kaabo. On la trace sur l'offre.
+  let saleRate = 3;
+  try {
+    const { data: settings } = await admin
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "payments")
+      .maybeSingle();
+    const raw = (settings as { value?: { saleCommission?: number } } | null)
+      ?.value?.saleCommission;
+    const r = Number(raw);
+    if (Number.isFinite(r) && r >= 0 && r <= 100) saleRate = r;
+  } catch {
+    /* défaut 3 % */
+  }
+  const commission = Math.round((saleAmount * saleRate) / 100);
+
   // Offre → DEPOSIT_PAID (garde WHERE status=ACCEPTED contre la double exécution).
   const { error: updErr } = await admin
     .from("property_offers")
-    .update({ status: "DEPOSIT_PAID", deposit_paid_at: new Date().toISOString() })
+    .update({
+      status: "DEPOSIT_PAID",
+      deposit_paid_at: new Date().toISOString(),
+      commission_fcfa: commission,
+    })
     .eq("id", offerId)
     .eq("status", "ACCEPTED");
   if (updErr) {
