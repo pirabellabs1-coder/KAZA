@@ -213,8 +213,8 @@ export function Footer() {
       <div className="border-t border-white/10 bg-[#0F2A40]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-xs text-white/60 sm:flex-row lg:px-8">
           <p className="text-center sm:text-left">
-            © 2026 <span className="font-semibold text-white/80">KAZA®</span> —
-            Marque déposée. Une création{" "}
+            © 2026 <span className="font-semibold text-white/80">Kaabo</span> —
+            Marque de PIRABEL LABS SARL. Une création{" "}
             <a
               href="https://pirabellabs.com"
               target="_blank"

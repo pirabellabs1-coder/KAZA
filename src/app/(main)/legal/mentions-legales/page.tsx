@@ -120,7 +120,7 @@ export default function MentionsLegalesPage() {
               </dd>
               <dt className="font-medium text-foreground">Marque exploitée</dt>
               <dd className="text-muted-foreground">
-                KAZA® — Plateforme Proptech
+                Kaabo — Plateforme Proptech
               </dd>
             </dl>
           </section>
@@ -134,7 +134,7 @@ export default function MentionsLegalesPage() {
                 <ShieldCheck className="mt-0.5 size-5 shrink-0 text-kaza-green" />
                 <div className="space-y-3 text-sm text-foreground">
                   <p>
-                    <strong>KAZA®</strong> est une marque déposée par{" "}
+                    <strong>Kaabo</strong> est une marque de{" "}
                     <strong>PIRABEL LABS SARL</strong> auprès de l&apos;OAPI
                     (Organisation Africaine de la Propriété Intellectuelle)
                     conformément à l&apos;Accord de Bangui révisé de 2015.
@@ -393,7 +393,7 @@ export default function MentionsLegalesPage() {
         <Separator className="my-10" />
 
         <footer className="text-xs text-muted-foreground">
-          © 2026 KAZA® — Marque déposée par PIRABEL LABS SARL. Une création{" "}
+          © 2026 Kaabo — Marque de PIRABEL LABS SARL. Une création{" "}
           <a
             href="https://pirabellabs.com"
             className="text-kaza-blue hover:underline"

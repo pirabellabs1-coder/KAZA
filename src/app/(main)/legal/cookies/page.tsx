@@ -322,7 +322,7 @@ export default function CookiesPage() {
         <Separator className="my-10" />
 
         <footer className="text-xs text-muted-foreground">
-          © 2026 KAZA® — Marque déposée par PIRABEL LABS SARL. Une création{" "}
+          © 2026 Kaabo — Marque de PIRABEL LABS SARL. Une création{" "}
           <a
             href="https://pirabellabs.com"
             className="text-kaza-blue hover:underline"
