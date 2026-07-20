@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/server";
 import { COUNTRIES, getAllCities } from "@/lib/geo/locations";
 
@@ -23,12 +25,14 @@ export interface GeoStats {
  * Utilise ILIKE sur address car la colonne address est un texte libre.
  */
 export async function getGeoStats(): Promise<GeoStats> {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as unknown as SupabaseClient;
 
-  // 1. Toutes les propriétés AVAILABLE avec leur address + price
+  // 1. Toutes les propriétés AVAILABLE avec address + price + type de transaction.
+  //    Le "loyer moyen" ne doit inclure QUE les locations (RENT) : mélanger un
+  //    prix de vente (plusieurs millions) fausse totalement la moyenne.
   const { data, error } = await supabase
     .from("properties")
-    .select("address, price")
+    .select("address, price, listing_type")
     .eq("status", "AVAILABLE");
 
   if (error || !data) {
@@ -55,6 +59,8 @@ export async function getGeoStats(): Promise<GeoStats> {
   for (const prop of data) {
     const addr = (prop.address as string | null)?.toLowerCase() ?? "";
     const price = Number(prop.price);
+    const isRent =
+      String(prop.listing_type ?? "RENT").toUpperCase() !== "SALE";
 
     // Match ville : on cherche le nom de la ville dans l'adresse
     let matchedCity: { slug: string; countryCode: string } | null = null;
@@ -72,7 +78,8 @@ export async function getGeoStats(): Promise<GeoStats> {
       cityCounts[matchedCity.slug] = (cityCounts[matchedCity.slug] ?? 0) + 1;
       countryCounts[matchedCity.countryCode] =
         (countryCounts[matchedCity.countryCode] ?? 0) + 1;
-      if (price > 0) {
+      // Loyer moyen : uniquement les locations.
+      if (price > 0 && isRent) {
         citySumPrice[matchedCity.slug] =
           (citySumPrice[matchedCity.slug] ?? 0) + price;
         cityPriceCount[matchedCity.slug] =
@@ -90,7 +97,14 @@ export async function getGeoStats(): Promise<GeoStats> {
   // Top neighborhoods par pays — détection par nom dans l'adresse
   const neighborhoodAgg: Record<
     string,
-    { name: string; city: string; countryCode: string; sumPrice: number; count: number }
+    {
+      name: string;
+      city: string;
+      countryCode: string;
+      sumRent: number;
+      rentCount: number;
+      count: number;
+    }
   > = {};
 
   for (const country of COUNTRIES) {
@@ -101,7 +115,8 @@ export async function getGeoStats(): Promise<GeoStats> {
           name: neighborhood.name,
           city: city.name,
           countryCode: country.code,
-          sumPrice: 0,
+          sumRent: 0,
+          rentCount: 0,
           count: 0,
         };
       }
@@ -111,11 +126,17 @@ export async function getGeoStats(): Promise<GeoStats> {
   for (const prop of data) {
     const addr = (prop.address as string | null)?.toLowerCase() ?? "";
     const price = Number(prop.price);
+    const isRent =
+      String(prop.listing_type ?? "RENT").toUpperCase() !== "SALE";
     for (const agg of Object.values(neighborhoodAgg)) {
       const lower = agg.name.toLowerCase();
       if (addr.includes(lower)) {
         agg.count += 1;
-        if (price > 0) agg.sumPrice += price;
+        // Le loyer moyen ne compte que les locations.
+        if (price > 0 && isRent) {
+          agg.sumRent += price;
+          agg.rentCount += 1;
+        }
         break;
       }
     }
@@ -129,7 +150,7 @@ export async function getGeoStats(): Promise<GeoStats> {
         name: n.name,
         city: n.city,
         count: n.count,
-        avgPrice: n.count > 0 ? Math.round(n.sumPrice / n.count) : 0,
+        avgPrice: n.rentCount > 0 ? Math.round(n.sumRent / n.rentCount) : 0,
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);

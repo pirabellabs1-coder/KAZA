@@ -33,6 +33,8 @@ import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/fade-in";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { cn, formatPrice } from "@/lib/utils";
+import { PropertyPicker } from "./property-picker";
+import type { CompareItem } from "@/actions/compare";
 
 // =============================================================================
 // Types et seed
@@ -113,6 +115,15 @@ export default function ComparePage() {
 
   function removeItem(id: string) {
     setItems((prev) => prev.filter((item) => item.id !== id));
+  }
+
+  function addItem(item: CompareItem) {
+    setItems((prev) => {
+      if (prev.length >= MAX_SLOTS || prev.some((p) => p.id === item.id)) {
+        return prev;
+      }
+      return [...prev, item as CompareProperty];
+    });
   }
 
   function clearAll() {
@@ -209,19 +220,22 @@ export default function ComparePage() {
                 Comparez jusqu&apos;à {MAX_SLOTS} biens
               </h2>
               <p className="mt-4 max-w-md text-base text-muted-foreground">
-                Parcourez les annonces et cliquez sur «&nbsp;Comparer&nbsp;»
-                pour les ajouter à votre sélection.
+                Sélectionnez des biens disponibles pour les comparer côte à
+                côte, sans quitter cette page.
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="mt-10 h-12 rounded-full bg-kaza-blue px-8 text-base font-semibold text-white hover:bg-kaza-navy"
-              >
-                <Link href="/search">
-                  <Search className="mr-2 size-4" />
-                  Rechercher des biens
-                </Link>
-              </Button>
+              <PropertyPicker
+                excludeIds={items.map((i) => i.id)}
+                onAdd={addItem}
+                trigger={
+                  <Button
+                    size="lg"
+                    className="mt-10 h-12 rounded-full bg-kaza-blue px-8 text-base font-semibold text-white hover:bg-kaza-navy"
+                  >
+                    <Search className="mr-2 size-4" />
+                    Sélectionner des biens
+                  </Button>
+                }
+              />
             </div>
           </FadeIn>
         )}
@@ -296,21 +310,27 @@ export default function ComparePage() {
 
               {/* Slot d'ajout */}
               {!isFull && (
-                <Link
-                  href="/search"
-                  className="group flex flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-gray-200 bg-gradient-to-br from-white via-[#F7F9FC] to-white p-8 text-center transition-all hover:-translate-y-1 hover:border-kaza-blue hover:bg-kaza-blue/5 hover:shadow-xl print:hidden"
-                >
-                  <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-kaza-blue/10 text-kaza-blue transition-transform group-hover:scale-110">
-                    <Search className="size-6" />
-                  </div>
-                  <p className="font-heading text-lg font-bold text-kaza-navy">
-                    Ajouter un bien
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Encore {MAX_SLOTS - slots} emplacement
-                    {MAX_SLOTS - slots > 1 ? "s" : ""}
-                  </p>
-                </Link>
+                <PropertyPicker
+                  excludeIds={items.map((i) => i.id)}
+                  onAdd={addItem}
+                  trigger={
+                    <button
+                      type="button"
+                      className="group flex w-full flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-gray-200 bg-gradient-to-br from-white via-[#F7F9FC] to-white p-8 text-center transition-all hover:-translate-y-1 hover:border-kaza-blue hover:bg-kaza-blue/5 hover:shadow-xl print:hidden"
+                    >
+                      <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-kaza-blue/10 text-kaza-blue transition-transform group-hover:scale-110">
+                        <Search className="size-6" />
+                      </div>
+                      <p className="font-heading text-lg font-bold text-kaza-navy">
+                        Ajouter un bien
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Encore {MAX_SLOTS - slots} emplacement
+                        {MAX_SLOTS - slots > 1 ? "s" : ""}
+                      </p>
+                    </button>
+                  }
+                />
               )}
             </div>
 
