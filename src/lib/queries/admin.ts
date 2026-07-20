@@ -197,6 +197,47 @@ export async function listAllUsers(
   }));
 }
 
+/**
+ * Récupère un utilisateur unique par son ID (vue admin détaillée).
+ * Renvoie `null` si introuvable.
+ */
+export async function getAdminUserById(
+  id: string,
+): Promise<AdminUserRow | null> {
+  const supabase = await createClient();
+  const { data: u, error } = await supabase
+    .from("users")
+    .select(
+      `id, first_name, last_name, email, phone, role,
+       is_verified, verification_status, address, profile_photo_url,
+       rating_average, created_at, updated_at`,
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error || !u) {
+    if (error) console.error("[queries/admin] getAdminUserById:", error.message);
+    return null;
+  }
+
+  return {
+    id: u.id as string,
+    firstName: (u.first_name as string) ?? "",
+    lastName: (u.last_name as string) ?? "",
+    email: (u.email as string) ?? "",
+    phone: (u.phone as string | null) ?? null,
+    role: coerceRole(u.role),
+    isVerified: Boolean(u.is_verified),
+    verificationStatus: coerceVerification(u.verification_status),
+    address: (u.address as string | null) ?? null,
+    profilePhotoUrl: (u.profile_photo_url as string | null) ?? null,
+    ratingAverage:
+      typeof u.rating_average === "number" ? u.rating_average : null,
+    createdAt: u.created_at as string,
+    updatedAt: u.updated_at as string,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // PROPERTIES
 // ---------------------------------------------------------------------------

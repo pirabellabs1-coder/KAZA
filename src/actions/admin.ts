@@ -642,3 +642,160 @@ export async function setAgencyStatus(
 
   return { success: true };
 }
+
+// ===========================================================================
+// 8. Modération d'annonce (masquer / mettre en avant / supprimer)
+//    Utilisent le service_role (l'admin n'est pas le propriétaire) + audit.
+// ===========================================================================
+
+/**
+ * Masque ou réaffiche une annonce.
+ * `hide=true` → statut UNAVAILABLE (retirée du marché public).
+ * `hide=false` → statut AVAILABLE (republiée).
+ */
+export async function adminSetPropertyHidden(
+  propertyId: string,
+  hide: boolean,
+): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+  if (!propertyId) return { success: false, error: "Identifiant manquant." };
+
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  const { data: prop } = await adminDb
+    .from("properties")
+    .select("title")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  const { error } = await adminDb
+    .from("properties")
+    .update({ status: hide ? "UNAVAILABLE" : "AVAILABLE" })
+    .eq("id", propertyId);
+  if (error) {
+    return { success: false, error: "Impossible de modifier l'annonce." };
+  }
+
+  await writeAuditLog({
+    action: "PROPERTY_HIDDEN",
+    targetType: "PROPERTY",
+    targetId: propertyId,
+    targetLabel: (prop as { title?: string } | null)?.title ?? propertyId,
+    reason: hide ? "Masquée par l'admin" : "Réaffichée par l'admin",
+  });
+
+  revalidatePath("/admin/properties");
+  revalidatePath("/admin/audit-log");
+  return { success: true };
+}
+
+/**
+ * Active / désactive la mise en avant d'une annonce (boost "featured" éditorial,
+ * offert par la plateforme). Crée un boost ACTIVE longue durée, ou expire les
+ * boosts actifs existants si l'annonce est déjà mise en avant.
+ */
+export async function adminToggleFeatured(
+  propertyId: string,
+): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+  if (!propertyId) return { success: false, error: "Identifiant manquant." };
+
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+
+  const { data: prop } = await adminDb
+    .from("properties")
+    .select("title, owner_id")
+    .eq("id", propertyId)
+    .maybeSingle();
+  const property = prop as { title?: string; owner_id?: string } | null;
+  if (!property?.owner_id) {
+    return { success: false, error: "Annonce introuvable." };
+  }
+
+  const nowIso = new Date().toISOString();
+  const { data: activeBoosts } = await adminDb
+    .from("property_boosts")
+    .select("id")
+    .eq("property_id", propertyId)
+    .eq("status", "ACTIVE")
+    .gt("ends_at", nowIso);
+
+  const isFeatured = (activeBoosts?.length ?? 0) > 0;
+
+  if (isFeatured) {
+    // Retirer la mise en avant : on expire les boosts actifs.
+    await adminDb
+      .from("property_boosts")
+      .update({ status: "CANCELLED" })
+      .eq("property_id", propertyId)
+      .eq("status", "ACTIVE");
+  } else {
+    // Mettre en avant : boost éditorial offert (1 an).
+    const ends = new Date();
+    ends.setFullYear(ends.getFullYear() + 1);
+    const { error } = await adminDb.from("property_boosts").insert({
+      property_id: propertyId,
+      user_id: property.owner_id,
+      plan: "featured",
+      amount: 0,
+      starts_at: nowIso,
+      ends_at: ends.toISOString(),
+      status: "ACTIVE",
+    });
+    if (error) {
+      return { success: false, error: "Impossible de mettre en avant l'annonce." };
+    }
+  }
+
+  await writeAuditLog({
+    action: "PROPERTY_FEATURED",
+    targetType: "PROPERTY",
+    targetId: propertyId,
+    targetLabel: property.title ?? propertyId,
+    reason: isFeatured ? "Mise en avant retirée" : "Mise en avant activée",
+  });
+
+  revalidatePath("/admin/properties");
+  revalidatePath("/admin/audit-log");
+  return { success: true };
+}
+
+/**
+ * Supprime définitivement une annonce (et ses dépendances via ON DELETE CASCADE).
+ * Réservé à l'admin. Action irréversible → à confirmer côté UI.
+ */
+export async function adminDeleteProperty(
+  propertyId: string,
+): Promise<AdminActionResult> {
+  const guard = await assertAdmin();
+  if (!guard.ok) return { success: false, error: guard.error };
+  if (!propertyId) return { success: false, error: "Identifiant manquant." };
+
+  const adminDb = createAdminClient() as unknown as SupabaseClient;
+  const { data: prop } = await adminDb
+    .from("properties")
+    .select("title")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  const { error } = await adminDb
+    .from("properties")
+    .delete()
+    .eq("id", propertyId);
+  if (error) {
+    return { success: false, error: "Impossible de supprimer l'annonce." };
+  }
+
+  await writeAuditLog({
+    action: "OTHER",
+    targetType: "PROPERTY",
+    targetId: propertyId,
+    targetLabel: (prop as { title?: string } | null)?.title ?? propertyId,
+    reason: "Annonce supprimée par l'admin",
+  });
+
+  revalidatePath("/admin/properties");
+  revalidatePath("/admin/audit-log");
+  return { success: true };
+}

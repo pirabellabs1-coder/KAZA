@@ -10,7 +10,6 @@ import {
   Flag,
   ShieldAlert,
   Sparkles,
-  Trash2,
   TrendingUp,
   Clock,
   ListChecks,
@@ -21,6 +20,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PropertyModActions } from "./property-mod-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -560,30 +560,14 @@ export default async function AdminPropertiesPage() {
                             <Eye className="size-4" />
                           </Link>
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8 text-amber-600 hover:bg-amber-50"
-                          title="Mettre en avant"
-                        >
-                          <Sparkles className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8 text-slate-600 hover:bg-slate-100"
-                          title="Masquer"
-                        >
-                          <EyeOff className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8 text-red-600 hover:bg-red-50"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <PropertyModActions
+                          propertyId={l.id}
+                          title={l.title}
+                          hidden={
+                            l.status === "UNAVAILABLE" ||
+                            l.status === "ARCHIVED"
+                          }
+                        />
                       </div>
                     </td>
                   </tr>
