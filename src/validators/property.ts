@@ -287,6 +287,12 @@ export const createPropertySchema = z.object({
     .string()
     .min(20, "La description doit contenir au moins 20 caracteres")
     .max(5000, "La description ne peut pas depasser 5000 caracteres"),
+  // Vue 360° (optionnelle) : URL d'une image panoramique équirectangulaire.
+  panorama360Url: z
+    .string()
+    .url("URL panorama invalide")
+    .optional()
+    .or(z.literal("")),
   // Type de transaction : location (loyer mensuel) ou vente (prix de vente).
   listingType: z.enum(["RENT", "SALE"], {
     message: "Veuillez choisir Location ou Vente",

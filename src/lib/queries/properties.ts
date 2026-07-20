@@ -31,6 +31,8 @@ export interface PublicProperty {
   createdAt: string;
   primaryPhotoUrl: string | null;
   photos: string[];
+  /** Vue 360° (image panoramique équirectangulaire), si fournie. */
+  panoramaUrl?: string | null;
   /** Annonce mise en avant par un boost actif (sponsorisée). */
   isBoosted: boolean;
   owner: {
@@ -69,7 +71,7 @@ export async function listPublicProperties(
       `
       id, title, description, listing_type, price, bedrooms, bathrooms,
       square_meters, property_type, status, address, amenities,
-      views_count, created_at,
+      views_count, created_at, panorama_url,
       photos:property_photos(photo_url, display_order),
       owner:users!owner_id(id, first_name, last_name, role, is_verified)
     `,
@@ -152,7 +154,7 @@ export async function getPropertyById(
       `
       id, title, description, listing_type, price, bedrooms, bathrooms,
       square_meters, property_type, status, address, amenities,
-      views_count, created_at,
+      views_count, created_at, panorama_url,
       photos:property_photos(photo_url, display_order),
       owner:users!owner_id(id, first_name, last_name, role, is_verified)
     `,
@@ -186,6 +188,7 @@ export async function getPropertyById(
     createdAt: data.created_at as string,
     primaryPhotoUrl: photos[0] ?? DEFAULT_PHOTO,
     photos: photos.length > 0 ? photos : [DEFAULT_PHOTO],
+    panoramaUrl: (data.panorama_url as string | null) ?? null,
     isBoosted: boostedIds.has(data.id as string),
     owner: ownerRow
       ? {

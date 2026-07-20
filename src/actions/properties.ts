@@ -186,6 +186,7 @@ export async function createProperty(
     property_type: parsed.data.propertyType,
     address: parsed.data.address,
     amenities: parsed.data.amenities,
+    panorama_url: parsed.data.panorama360Url || null,
     location: toGeographyPoint(
       parsed.data.locationLatitude,
       parsed.data.locationLongitude

@@ -97,7 +97,7 @@ import {
   COUNTRIES,
 } from "@/lib/geo/locations";
 import { cn } from "@/lib/utils";
-import { Panorama360Viewer } from "@/components/property/panorama-360-viewer";
+import { Panorama360Uploader } from "@/components/property/panorama-360-uploader";
 import { PhotoUploader } from "@/components/property/photo-uploader";
 import { CountryFlag } from "@/components/shared/country-flag";
 import {
@@ -470,6 +470,7 @@ export function PropertyCreateWizard({ userId }: { userId: string }) {
             | "ROOM",
           address: fullAddress,
           amenities,
+          panorama360Url: values.panorama360Url || undefined,
           locationLatitude: values.lat,
           locationLongitude: values.lng,
           photos: [],
@@ -1465,19 +1466,15 @@ function Step5Media({ userId }: { userId: string }) {
             </h4>
           </div>
         </div>
-        <Input
-          placeholder="URL d'une image équirectangulaire (ratio 2:1)"
-          {...register("panorama360Url")}
+        <Panorama360Uploader
+          value={panoramaUrl}
+          onChange={(url) =>
+            setValue("panorama360Url", url, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
         />
-        <p className="mt-2 text-xs text-muted-foreground">
-          Importez l&apos;URL d&apos;une image panoramique équirectangulaire
-          (ratio 2:1) de votre bien.
-        </p>
-        {panoramaUrl && (
-          <div className="mt-4">
-            <Panorama360Viewer src={panoramaUrl} height={300} />
-          </div>
-        )}
         <FieldError message={formState.errors.panorama360Url?.message} />
       </section>
 

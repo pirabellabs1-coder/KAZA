@@ -8,12 +8,14 @@ import {
   Wifi,
   Star,
   MessageSquare,
+  Compass,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RatingStars } from "@/components/shared/rating-stars";
 import { PropertyCard } from "@/components/property/property-card";
 import { VirtualTour } from "@/components/property/virtual-tour";
+import { Panorama360Viewer } from "@/components/property/panorama-360-viewer";
 import { PropertyActions } from "@/components/property/property-actions";
 import { PropertyLocationMap } from "@/components/property/property-location-map";
 import { VisitRequestButton } from "@/components/property/visit-request-button";
@@ -132,6 +134,23 @@ export default async function PropertyDetailPage({
           embedUrl={undefined}
         />
       </div>
+
+      {/* Vue 360° (si disponible) */}
+      {property.panoramaUrl && (
+        <div className="mx-auto max-w-7xl px-4 pt-4 lg:px-8">
+          <div className="mb-2 flex items-center gap-2">
+            <Compass className="size-5 text-kaza-blue" />
+            <h2 className="font-heading text-lg font-semibold text-foreground">
+              Visite virtuelle 360°
+            </h2>
+          </div>
+          <Panorama360Viewer
+            src={property.panoramaUrl}
+            height={440}
+            autoRotate
+          />
+        </div>
+      )}
 
       {/* Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
