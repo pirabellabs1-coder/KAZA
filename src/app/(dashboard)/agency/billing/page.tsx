@@ -568,6 +568,13 @@ export default async function AgencyBillingPage() {
                           <div className="flex justify-end">
                             <InvoiceDownloadButton
                               invoice={invoice}
+                              client={{
+                                name:
+                                  agencyProfile.legalName ||
+                                  "Compte agence Kaabo",
+                                rccm: agencyProfile.rccm,
+                                ifu: agencyProfile.ifu,
+                              }}
                               className="h-8"
                             />
                           </div>
