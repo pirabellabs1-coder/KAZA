@@ -64,7 +64,7 @@ export interface PlanDetails {
 export const PLAN_DETAILS: Record<string, PlanDetails> = {
   PRO_STARTER: {
     name: "Kaabo Pro Starter",
-    priceMonthly: 2_500,
+    priceMonthly: 5_000,
     audience: "AGENCY",
     features: [
       "50 annonces actives",
@@ -76,7 +76,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
   },
   PRO_PREMIUM: {
     name: "Kaabo Pro Premium",
-    priceMonthly: 6_000,
+    priceMonthly: 15_000,
     audience: "AGENCY",
     features: [
       "200 annonces actives",
@@ -90,7 +90,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
   },
   PRO_ELITE: {
     name: "Kaabo Pro Elite",
-    priceMonthly: 12_000,
+    priceMonthly: 30_000,
     audience: "AGENCY",
     features: [
       "Annonces illimitées",
@@ -104,7 +104,7 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
   },
   PLUS_MONTHLY: {
     name: "Kaabo Plus Mensuel",
-    priceMonthly: 1_500,
+    priceMonthly: 5_000,
     audience: "TENANT",
     features: [
       "Alertes prioritaires",
@@ -115,8 +115,8 @@ export const PLAN_DETAILS: Record<string, PlanDetails> = {
   },
   PLUS_YEARLY: {
     name: "Kaabo Plus Annuel",
-    priceMonthly: 1_250,
-    priceYearly: 15_000,
+    priceMonthly: 4_167,
+    priceYearly: 50_000,
     audience: "TENANT",
     features: [
       "Tout Plus Mensuel",

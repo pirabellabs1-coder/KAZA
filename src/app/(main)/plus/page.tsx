@@ -37,12 +37,12 @@ import { PlusPricingToggle } from "./pricing-toggle";
 export const metadata: Metadata = {
   title: "Kaabo Plus — l'expérience premium de l'immobilier",
   description:
-    "Kaabo Plus : boost mensuel, analytics privées, support prioritaire et concierge personnel. À partir de 1 500 FCFA/mois.",
+    "Kaabo Plus : boost mensuel, analytics privées, support prioritaire et concierge personnel. À partir de 5 000 FCFA/mois.",
   alternates: { canonical: "/plus" },
   openGraph: {
     title: "Kaabo Plus — l'expérience premium",
     description:
-      "Tout Kaabo, en mieux. 1 500 FCFA/mois ou 15 000 FCFA/an (2 mois offerts).",
+      "Tout Kaabo, en mieux. 5 000 FCFA/mois ou 50 000 FCFA/an (2 mois offerts).",
     url: "/plus",
     type: "website",
     images: ["/images/hero-bg.jpg"],

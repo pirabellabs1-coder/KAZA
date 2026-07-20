@@ -30,7 +30,7 @@ export const PLANS: Record<SubscriptionPlanKey, SubscriptionPlan> = {
   PRO: {
     key: "PRO",
     name: "Pro",
-    monthlyPriceFcfa: 2000,
+    monthlyPriceFcfa: 5000,
     description: "Pour propriétaires actifs",
     features: [
       "10 annonces actives",
@@ -43,7 +43,7 @@ export const PLANS: Record<SubscriptionPlanKey, SubscriptionPlan> = {
   PRO_PLUS: {
     key: "PRO_PLUS",
     name: "Pro+",
-    monthlyPriceFcfa: 5000,
+    monthlyPriceFcfa: 15000,
     description: "Pour pros du locatif",
     features: [
       "Annonces illimitées",
@@ -56,7 +56,7 @@ export const PLANS: Record<SubscriptionPlanKey, SubscriptionPlan> = {
   AGENCY: {
     key: "AGENCY",
     name: "Agency",
-    monthlyPriceFcfa: 9900,
+    monthlyPriceFcfa: 30000,
     description: "Pour agences immo",
     features: [
       "Multi-utilisateurs équipe",

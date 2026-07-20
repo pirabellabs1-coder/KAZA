@@ -46,8 +46,8 @@ export function PlusPricingToggle({
   isAuthenticated,
   currentPlan = null,
   manageHref = "/profile",
-  monthlyPriceFcfa = 4_900,
-  yearlyPriceFcfa = 47_000,
+  monthlyPriceFcfa = 5_000,
+  yearlyPriceFcfa = 50_000,
   yearlyMonthlyEquivalentFcfa = 3_900,
 }: PlusPricingToggleProps) {
   const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");

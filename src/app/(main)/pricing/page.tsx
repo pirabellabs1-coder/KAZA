@@ -100,7 +100,7 @@ const plans: PricingPlan[] = [
   {
     name: "Propriétaire Pro",
     audience: "Pour les agences et investisseurs",
-    price: "2 500 FCFA",
+    price: "5 000 FCFA",
     priceDetail: "/ mois, sans commission",
     description:
       "L'expérience la plus complète pour gérer un parc immobilier ambitieux.",

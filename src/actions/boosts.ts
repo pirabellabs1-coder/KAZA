@@ -31,6 +31,17 @@ async function getLooseClient(): Promise<SupabaseClient> {
   return (await createClient()) as unknown as SupabaseClient;
 }
 
+// =============================================================================
+// Catalogue SERVEUR des boosts — SOURCE DE VÉRITÉ des prix et durées.
+// Le client choisit uniquement le `plan` ; le prix et la durée sont imposés
+// ici et JAMAIS lus depuis l'input client (anti-fraude sur le montant payé).
+// =============================================================================
+const BOOST_CATALOG: Record<string, { days: number; price: number }> = {
+  featured: { days: 7, price: 5000 },
+  top: { days: 30, price: 15000 },
+  premium: { days: 30, price: 30000 },
+};
+
 export interface ActiveBoostDTO {
   id: string;
   propertyId: string;
@@ -62,11 +73,14 @@ export interface ActivateBoostResult {
 export async function activateBoost(
   input: ActivateBoostInput,
 ): Promise<ActivateBoostResult> {
-  const { propertyId, plan, days, amount } = input;
+  const { propertyId, plan } = input;
 
-  if (!propertyId || !plan || days <= 0) {
+  // Prix et durée imposés par le catalogue serveur (jamais l'input client).
+  const spec = BOOST_CATALOG[plan];
+  if (!propertyId || !spec) {
     return { success: false, error: "INVALID_INPUT" };
   }
+  const { days, price: priceFcfa } = spec;
 
   const supabase = await getLooseClient();
   const {
@@ -86,8 +100,6 @@ export async function activateBoost(
   if (property.owner_id !== user.id) {
     return { success: false, error: "NOT_OWNER" };
   }
-
-  const priceFcfa = Math.max(0, Math.round(Number(amount) || 0));
 
   // 2) Débit wallet si le boost est payant. Passe par le chemin serveur
   //    sécurisé `walletDebit` (RPC atomique : verrou + vérif gel/solde +
@@ -153,15 +165,14 @@ export async function initiateBoostCheckout(
   input: ActivateBoostInput,
   momo: MomoCheckoutFields,
 ): Promise<BoostCheckoutResult> {
-  const { propertyId, plan, days } = input;
-  const priceFcfa = Math.max(0, Math.round(Number(input.amount) || 0));
+  const { propertyId, plan } = input;
 
-  if (!propertyId || !plan || days <= 0) {
+  // Prix et durée imposés par le catalogue serveur (jamais l'input client).
+  const spec = BOOST_CATALOG[plan];
+  if (!propertyId || !spec) {
     return { success: false, error: "INVALID_INPUT" };
   }
-  if (priceFcfa <= 0) {
-    return { success: false, error: "INVALID_AMOUNT" };
-  }
+  const { days, price: priceFcfa } = spec;
   if (!momo?.phone?.trim() || !momo?.network) {
     return { success: false, error: "Opérateur et numéro Mobile Money requis." };
   }
