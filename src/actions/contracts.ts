@@ -4,6 +4,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -279,6 +280,8 @@ export interface SignContractInput {
   contractId: string;
   /** dataURL PNG (`data:image/png;base64,...`) issu du `<canvas>`. */
   signatureDataUrl: string;
+  /** Consentement explicite ("Lu et approuvé, bon pour bail"). Obligatoire. */
+  consent?: boolean;
 }
 
 export interface SignContractResult {
@@ -298,6 +301,15 @@ export async function signContract(
     return {
       success: false,
       error: "Signature trop courte, veuillez signer à nouveau.",
+    };
+  }
+  // Consentement explicite obligatoire (« Lu et approuvé, bon pour bail »).
+  // Renforce la valeur probante de la signature électronique (Code du numérique).
+  if (input.consent !== true) {
+    return {
+      success: false,
+      error:
+        "Veuillez cocher la mention « Lu et approuvé, bon pour bail » avant de signer.",
     };
   }
 
@@ -373,6 +385,14 @@ export async function signContract(
 
   const now = new Date().toISOString();
 
+  // Faisceau de preuves : IP + appareil du signataire (best-effort).
+  const hdrs = await headers();
+  const ip =
+    hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    hdrs.get("x-real-ip") ||
+    null;
+  const userAgent = hdrs.get("user-agent")?.slice(0, 400) ?? null;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const patch: Record<string, any> = {};
   if (role === "tenant") {
@@ -382,6 +402,9 @@ export async function signContract(
     patch.tenant_signature_hash = signatureHash;
     patch.tenant_signed_at = now;
     patch.signed_by_tenant = true;
+    patch.tenant_consent = true;
+    patch.tenant_signature_ip = ip;
+    patch.tenant_signature_ua = userAgent;
   } else {
     if (contract.owner_signature_hash) {
       return { success: false, error: "Vous avez déjà signé ce contrat." };
@@ -389,6 +412,9 @@ export async function signContract(
     patch.owner_signature_hash = signatureHash;
     patch.owner_signed_at = now;
     patch.signed_by_owner = true;
+    patch.owner_consent = true;
+    patch.owner_signature_ip = ip;
+    patch.owner_signature_ua = userAgent;
   }
 
   // Recalcule le statut en fonction des deux hash (le nouveau + l'existant).

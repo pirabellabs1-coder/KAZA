@@ -25,6 +25,7 @@ export function SignaturePad({ contractId, role }: SignaturePadProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [empty, setEmpty] = useState(true);
+  const [consent, setConsent] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -98,11 +99,21 @@ export function SignaturePad({ contractId, role }: SignaturePadProps) {
       setError("Veuillez dessiner votre signature avant de valider.");
       return;
     }
+    if (!consent) {
+      setError(
+        "Veuillez cocher « Lu et approuvé, bon pour bail » avant de signer.",
+      );
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
       const dataUrl = canvas.toDataURL("image/png");
-      const res = await signContract({ contractId, signatureDataUrl: dataUrl });
+      const res = await signContract({
+        contractId,
+        signatureDataUrl: dataUrl,
+        consent,
+      });
       if (!res.success) {
         setError(res.error ?? "Échec de la signature. Réessayez.");
         return;
@@ -133,6 +144,20 @@ export function SignaturePad({ contractId, role }: SignaturePadProps) {
         onPointerUp={handleUp}
         onPointerLeave={handleUp}
       />
+      <label className="flex items-start gap-2 text-xs text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 size-4 shrink-0 accent-kaza-green"
+        />
+        <span>
+          J&apos;ai lu et j&apos;approuve l&apos;intégralité du contrat.{" "}
+          <strong>Lu et approuvé, bon pour bail.</strong> Je consens à signer ce
+          document par voie électronique (valeur probante conformément au Code
+          du numérique).
+        </span>
+      </label>
       {error ? (
         <p className="text-xs text-red-600">{error}</p>
       ) : null}
@@ -151,7 +176,7 @@ export function SignaturePad({ contractId, role }: SignaturePadProps) {
           type="button"
           size="sm"
           onClick={submit}
-          disabled={submitting || empty}
+          disabled={submitting || empty || !consent}
           className="bg-kaza-green hover:bg-kaza-green/90"
         >
           {submitting ? (

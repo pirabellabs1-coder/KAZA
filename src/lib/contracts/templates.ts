@@ -2,7 +2,7 @@
 // Kaabo — Bibliothèque de modèles de contrats de bail
 // =============================================================================
 // Cette bibliothèque fournit 4 modèles complets de contrats conformes au droit
-// béninois (Loi n° 2018-12 du 02 juillet 2018 portant régime juridique des
+// béninois (Loi n° 2022-30 du 20 décembre 2022 portant régime juridique des
 // baux à usage d'habitation), au droit OHADA (Acte uniforme portant droit
 // commercial général — AUDCG — pour les baux commerciaux) et au Code civil
 // béninois.
@@ -72,7 +72,7 @@ Ci-après dénommé(e) « **le Bailleur** », d'une part,
 
 Ci-après dénommé(e) « **le Locataire** », d'autre part,
 
-**Il a été convenu et arrêté ce qui suit, conformément à la Loi n° 2018-12 du 02 juillet 2018 portant régime juridique des baux à usage d'habitation en République du Bénin.**`,
+**Il a été convenu et arrêté ce qui suit, conformément à la Loi n° 2022-30 du 20 décembre 2022 portant régime juridique des baux à usage d'habitation en République du Bénin.**`,
 };
 
 const COMMON_PROPERTY_SECTION: ContractSection = {
@@ -90,7 +90,7 @@ const COMMON_PROPERTY_SECTION: ContractSection = {
 
 Le Locataire reconnaît avoir visité le bien préalablement à la signature des présentes et déclare le bien conforme à sa destination contractuelle d'habitation.
 
-Le bien est loué à usage exclusif d'habitation principale du Locataire et de sa famille proche. Toute affectation à un usage commercial, artisanal, professionnel ou industriel est strictement interdite, conformément à l'article 3 de la Loi 2018-12.`,
+Le bien est loué à usage exclusif d'habitation principale du Locataire et de sa famille proche. Le Locataire doit exploiter les locaux en bon père de famille et conformément à la destination d'habitation convenue, conformément à l'article 16 de la Loi 2022-30. Toute affectation à un usage commercial, artisanal, professionnel ou industriel non autorisée par écrit est strictement interdite et constitue un motif de résiliation de plein droit (article 74 de la Loi 2022-30).`,
 };
 
 const COMMON_OBLIGATIONS_TENANT: ContractSection = {
@@ -98,15 +98,15 @@ const COMMON_OBLIGATIONS_TENANT: ContractSection = {
   title: "Obligations du Locataire",
   required: true,
   editable: true,
-  body: `Conformément aux articles 15 et suivants de la Loi 2018-12, le Locataire s'oblige notamment à :
+  body: `Conformément aux articles 16, 17 et 66 de la Loi 2022-30, le Locataire s'oblige notamment à :
 
-1. **Payer le loyer et les charges** aux termes convenus, à savoir le 1er à 5 de chaque mois, par virement bancaire, Mobile Money (FeexPay) ou tout autre moyen via la plateforme Kaabo (escrow sécurisé).
-2. **User paisiblement** des lieux loués suivant leur destination d'habitation, sans troubler la jouissance des voisins.
+1. **Payer le loyer et les charges** mensuellement, à la date convenue (au plus tard le 5 de chaque mois), contre quittance, par virement bancaire, Mobile Money (FeexPay) ou tout autre moyen via la plateforme Kaabo (escrow sécurisé).
+2. **Exploiter les locaux en bon père de famille** suivant leur destination d'habitation, sans troubler la jouissance des voisins.
 3. **Répondre des dégradations** survenues pendant la durée du bail dans les lieux dont il a la jouissance exclusive, à moins qu'il ne prouve qu'elles ont eu lieu par cas de force majeure ou par la faute du Bailleur.
-4. **Assurer l'entretien courant** du logement, les menues réparations et l'ensemble des réparations locatives définies par les usages, sauf si elles sont occasionnées par vétusté, malfaçon, vice de construction ou cas de force majeure.
-5. **Souscrire une assurance habitation** couvrant les risques locatifs (incendie, dégât des eaux, explosion) et en justifier annuellement au Bailleur.
-6. **Ne pas transformer** les locaux et équipements loués sans l'accord écrit préalable du Bailleur.
-7. **Permettre l'accès** au logement pour la préparation et l'exécution de travaux d'amélioration des parties communes ou des parties privatives du même immeuble, ainsi que les travaux nécessaires au maintien en état et à l'entretien normal des locaux loués.
+4. **Assumer les réparations d'entretien** et les menues réparations locatives (article 17), sauf si elles sont occasionnées par vétusté, malfaçon, vice de construction ou cas de force majeure.
+5. **Souscrire, à titre conventionnel, une assurance habitation** couvrant les risques locatifs (incendie, dégât des eaux, explosion). Cette assurance, bien que non imposée par la Loi 2022-30 pour le bail d'habitation ordinaire, est vivement recommandée et convenue entre les parties.
+6. **Ne pas transformer** les locaux et équipements loués, ni les sous-louer ou céder le bail, sans l'accord écrit préalable du Bailleur (articles 40 et 43).
+7. **Permettre l'accès** au logement pour l'exécution des travaux et grosses réparations nécessaires au maintien en état des lieux.
 8. **Restituer le bien** en bon état d'entretien et de réparations locatives à la fin du bail.`,
 };
 
@@ -115,14 +115,14 @@ const COMMON_OBLIGATIONS_OWNER: ContractSection = {
   title: "Obligations du Bailleur",
   required: true,
   editable: true,
-  body: `Conformément aux articles 11 à 14 de la Loi 2018-12, le Bailleur s'oblige à :
+  body: `Conformément aux articles 12 à 15 de la Loi 2022-30, le Bailleur s'oblige à :
 
-1. **Délivrer au Locataire** le logement en bon état d'usage et de réparation, ainsi que les équipements mentionnés au contrat en bon état de fonctionnement.
-2. **Assurer la jouissance paisible** du logement et garantir le Locataire des vices ou défauts de nature à y faire obstacle, à l'exception de ceux qui, consignés dans l'état des lieux, auraient fait l'objet de la clause expresse contraire.
-3. **Entretenir les locaux** en état de servir à l'usage prévu par le contrat et y faire toutes les réparations, autres que locatives, nécessaires au maintien en état et à l'entretien normal des locaux loués.
+1. **Délivrer un logement en bon état d'habitabilité** (article 12), ainsi que les équipements mentionnés au contrat en bon état de fonctionnement.
+2. **Assurer la jouissance paisible** du logement et garantir le Locataire du trouble de son propre fait, de celui de ses ayants droit ou préposés (article 15).
+3. **Prendre à sa charge toutes les grosses réparations** devenues nécessaires ou urgentes (murs, toitures, poutres, fosses septiques, ouvrages d'assainissement, etc.), conformément à l'article 13.
 4. **Ne pas s'opposer aux aménagements** réalisés par le Locataire dès lors que ceux-ci ne constituent pas une transformation du bien.
-5. **Remettre gratuitement** une quittance au Locataire qui en fait la demande, dans les conditions prévues par la loi.
-6. **Respecter le délai de préavis** légal en cas de congé pour vendre, reprendre ou motif légitime et sérieux (6 mois pour les baux non meublés, 3 mois pour les baux meublés, art. 32 de la Loi 2018-12).`,
+5. **Remettre une quittance** au Locataire à chaque paiement du loyer (article 66).
+6. **Respecter le préavis de six (6) mois**, par acte extra-judiciaire indiquant les motifs, en cas d'exercice de son droit de reprise (articles 83 et 85), à peine de l'indemnité prévue à l'article 84.`,
 };
 
 const COMMON_INVENTORY_SECTION: ContractSection = {
@@ -148,20 +148,18 @@ const COMMON_TERMINATION_SECTION: ContractSection = {
   required: true,
   editable: true,
   body: `**Résiliation par le Locataire :**
-Le Locataire peut résilier le bail à tout moment, sous réserve de respecter un préavis notifié au Bailleur par lettre recommandée avec accusé de réception, par acte d'huissier ou par tout moyen permettant d'attester de la réception (incluant l'envoi via la plateforme Kaabo avec accusé électronique).
+Le Locataire peut mettre fin au bail en respectant un préavis notifié au Bailleur par lettre recommandée avec accusé de réception, par acte d'huissier ou par tout moyen permettant d'attester de la réception (y compris via la plateforme Kaabo avec accusé électronique).
 
-Durée du préavis : **3 mois** pour les locations non meublées, **1 mois** pour les locations meublées (art. 32 de la Loi 2018-12).
+La Loi 2022-30 ne fixe pas de durée légale de préavis pour le congé donné par le Locataire ; les parties conviennent d'un préavis de **un (1) mois**.
 
-**Résiliation par le Bailleur :**
-Le Bailleur ne peut donner congé au Locataire qu'à l'échéance du bail et pour l'un des motifs suivants :
-- Reprise du bien pour y habiter ou y loger un proche (conjoint, ascendant, descendant) ;
-- Vente du bien (avec droit de préemption du Locataire) ;
-- Motif légitime et sérieux (notamment manquements graves du Locataire).
+**Reprise du bien par le Bailleur (article 83) :**
+Le Bailleur qui souhaite reprendre le bien doit notifier son intention au Locataire par **acte extra-judiciaire**, au moins **six (6) mois** à l'avance, en indiquant les motifs de la reprise. Les travaux justifiant la reprise doivent débuter dans un délai maximum de trois (3) mois (article 85). À défaut de respecter ces obligations, le Bailleur est redevable d'une indemnité au moins égale au loyer annuel, sans préjudice de dommages-intérêts (article 84).
 
-Le congé doit être notifié au moins **6 mois** avant l'échéance pour un bail non meublé et **3 mois** avant l'échéance pour un bail meublé.
+**Vente du bien :**
+En cas de vente, le Locataire bénéficie d'un **droit de préemption** : à peine de nullité de la vente, le Bailleur doit lui proposer l'acquisition par priorité (articles 49 à 51).
 
 **Renouvellement :**
-À défaut de congé donné dans les délais légaux, le bail est reconduit tacitement pour la même durée et aux mêmes conditions, sous réserve d'une éventuelle révision du loyer dans les limites légales.`,
+Les parties conviennent qu'à défaut de congé donné dans les conditions ci-dessus, le bail se poursuivra par reconduction pour une durée équivalente, sous réserve d'une éventuelle révision du loyer dans la limite légale (article 68).`,
 };
 
 const COMMON_RESOLUTORY_SECTION: ContractSection = {
@@ -169,15 +167,18 @@ const COMMON_RESOLUTORY_SECTION: ContractSection = {
   title: "Clause résolutoire",
   required: true,
   editable: true,
-  body: `À défaut de paiement du loyer, des charges récupérables ou du dépôt de garantie aux termes convenus, et **deux mois** après un commandement de payer demeuré infructueux signifié au Locataire par acte extra-judiciaire (huissier) ou par mise en demeure recommandée, le présent bail sera résilié de plein droit, sans qu'il soit besoin de remplir aucune autre formalité judiciaire.
+  body: `Le présent bail comporte une **clause de résiliation de plein droit** au sens des articles 67, 73 et 74 de la Loi 2022-30.
 
-Cette clause s'applique également :
-- À défaut d'assurance habitation justifiée annuellement ;
-- En cas d'usage des locaux contraire à leur destination ;
-- En cas de troubles graves et répétés de jouissance causés aux voisins ;
-- En cas de sous-location non autorisée par écrit par le Bailleur.
+En cas de non-paiement du loyer ou des charges, le Bailleur fait signifier au Locataire une **sommation de payer par acte d'huissier** (article 75). Le Locataire dispose alors d'**un (1) mois** pour s'acquitter de sa dette (article 76). À l'expiration de ce délai et à défaut de paiement, le bail est résilié de plein droit.
 
-Dans tous les cas, le Locataire devra restituer les lieux à première demande et le Bailleur pourra obtenir son expulsion ainsi que celle de tous occupants de son chef, par simple ordonnance de référé.`,
+Conformément à l'article 74, la clause peut également être mise en œuvre dans les cas limitativement énumérés par la loi, notamment :
+- Non-usage paisible des lieux ou usage contraire à leur destination ;
+- Transformation des locaux d'habitation en locaux commerciaux ou professionnels non autorisée ;
+- Sous-location ou cession non autorisée par écrit par le Bailleur ;
+- Nuisances sonores ou troubles graves et répétés du voisinage ;
+- Branchement clandestin d'eau ou d'électricité.
+
+L'inexécution est constatée par huissier de justice. Le président du tribunal de première instance du lieu de situation de l'immeuble, saisi en référé, ordonne la résiliation et l'expulsion, et statue dans les **trente (30) jours** de sa saisine (articles 73, 76 et 77). **Seul un huissier de justice** peut procéder à l'expulsion (article 78).`,
 };
 
 const COMMON_JURISDICTION_SECTION: ContractSection = {
@@ -186,13 +187,15 @@ const COMMON_JURISDICTION_SECTION: ContractSection = {
   required: true,
   editable: false,
   body: `Le présent contrat est régi par le droit béninois, notamment :
-- La **Loi n° 2018-12 du 02 juillet 2018** portant régime juridique des baux à usage d'habitation en République du Bénin ;
+- La **Loi n° 2022-30 du 20 décembre 2022** portant régime juridique du bail à usage d'habitation en République du Bénin, dont les dispositions sont **d'ordre public** (article 139) ;
 - Le **Code civil béninois** pour ce qui n'est pas spécifiquement réglé par la loi spéciale ;
 - Les **Actes uniformes OHADA** dans la mesure où ils sont applicables.
 
-Tout différend né de l'interprétation, de l'exécution ou de la résiliation du présent contrat sera, à défaut d'accord amiable et préalablement à toute action judiciaire, soumis à la **médiation gratuite proposée par la plateforme Kaabo** dans un délai maximum de 30 jours.
+Conformément à l'article 139, toute clause du présent contrat contraire aux dispositions d'ordre public de la Loi 2022-30 est réputée non écrite.
 
-À défaut de conciliation, les parties attribuent compétence exclusive au **Tribunal de Première Instance de première classe de Cotonou** (chambre civile) pour les litiges relatifs aux baux d'habitation, et au **Tribunal de Commerce de Cotonou** pour les baux à usage professionnel ou commercial.`,
+Tout différend né de l'interprétation, de l'exécution ou de la résiliation du présent contrat sera, à défaut d'accord amiable et préalablement à toute action judiciaire, soumis à la **médiation proposée par la plateforme Kaabo** dans un délai maximum de 30 jours.
+
+À défaut de conciliation, compétence est attribuée au **Tribunal de Première Instance du lieu de situation de l'immeuble** (article 76 de la Loi 2022-30).`,
 };
 
 const COMMON_SIGNATURES_SECTION: ContractSection = {
@@ -200,15 +203,18 @@ const COMMON_SIGNATURES_SECTION: ContractSection = {
   title: "Signatures",
   required: true,
   editable: false,
-  body: `Fait à **{{place}}**, le **{{signDate}}**, en deux (2) exemplaires originaux, dont un (1) pour chacune des parties, ainsi qu'un (1) exemplaire électronique conservé sur la plateforme Kaabo avec valeur probante équivalente conformément à la **Loi n° 2017-20 du 20 avril 2018** portant Code du numérique en République du Bénin.
+  body: `Fait à **{{place}}**, le **{{signDate}}**, établi conformément à l'article 5 de la Loi 2022-30 en **autant d'exemplaires originaux qu'il y a de parties** (article 10), ainsi qu'un exemplaire électronique conservé sur la plateforme **Kaabo** avec valeur probante conformément au **Code du numérique en République du Bénin**.
 
-Chaque page doit être paraphée et la dernière page signée par les deux parties, précédée de la mention manuscrite « **Lu et approuvé, bon pour bail** ».
+Chaque partie appose sa signature (ou son empreinte digitale pour celle qui ne sait ou ne peut signer, conformément à l'article 6). En signant par voie électronique via la plateforme Kaabo, chaque partie déclare expressément : « **Lu et approuvé, bon pour bail** ». La signature électronique est horodatée et scellée par une empreinte cryptographique (hash), constituant un faisceau de preuves de l'identité du signataire et de l'intégrité du document.
 
 | LE BAILLEUR | LE LOCATAIRE |
 |-------------|--------------|
 | {{owner.name}} | {{tenant.name}} |
-| Signature : | Signature : |
-| Date : {{signDate}} | Date : {{signDate}} |`,
+| Signé électroniquement le : {{signDate}} | Signé électroniquement le : {{signDate}} |
+
+---
+
+*Contrat généré et archivé par la plateforme **Kaabo**, exploitée par **PIRABEL** (établissement immatriculé au RCCM sous le numéro **RB/ABY/26 A 39852**, siège à Bohicon, République du Bénin). Kaabo agit comme prestataire technique d'intermédiation et de conservation ; la responsabilité du contenu du bail incombe aux parties signataires.*`,
 };
 
 // -----------------------------------------------------------------------------
@@ -225,7 +231,7 @@ const TEMPLATE_RESIDENTIAL_FURNISHED: ContractTemplate = {
   defaultDurationMonths: 12,
   defaultDepositMonths: 2,
   legalBasis:
-    "Loi 2018-12 du 02 juillet 2018 (art. 7 — bail meublé) et Code civil béninois",
+    "Loi n° 2022-30 du 20 décembre 2022 (bail à usage d'habitation) et Code civil béninois",
   sections: [
     {
       ...COMMON_PARTIES_SECTION,
@@ -261,9 +267,9 @@ Tout élément manquant, défectueux ou abîmé devra être signalé par écrit 
       editable: true,
       body: `Le présent bail est consenti et accepté pour une durée de **{{durationMonths}} mois** (douze mois) à compter du **{{startDate}}** pour se terminer de plein droit le **{{endDate}}**.
 
-Conformément à l'article 7 de la Loi 2018-12, la durée minimale du bail meublé est de **un (1) an**.
+Conformément à l'article 72 de la Loi 2022-30, la durée du bail est **librement fixée par les parties** ; la loi n'impose pas de durée minimale pour le bail d'habitation.
 
-À l'expiration de ce terme, le bail sera reconduit tacitement pour des périodes successives d'une (1) année, à défaut de congé délivré par l'une des parties dans les conditions et délais prévus par la loi (préavis de 3 mois pour le Bailleur, 1 mois pour le Locataire).`,
+À l'expiration de ce terme, et à défaut de congé donné dans les conditions prévues au contrat, le bail se poursuivra pour une durée équivalente aux mêmes conditions, sous réserve d'une éventuelle révision du loyer dans la limite légale (article 68).`,
     },
     {
       id: "rent",
@@ -272,11 +278,11 @@ Conformément à l'article 7 de la Loi 2018-12, la durée minimale du bail meubl
       editable: true,
       body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme Kaabo (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
 
-**Indexation :** Le loyer pourra être révisé annuellement à la date anniversaire du contrat, dans la limite de la **variation de l'Indice des Prix à la Consommation (IPC)** publié par l'**Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**, et conformément à l'article 25 de la Loi 2018-12.
+**Révision du loyer :** Conformément à l'article 68 de la Loi 2022-30, le loyer peut être révisé dans les conditions fixées au présent contrat ou, à défaut, lors de son renouvellement. **L'augmentation résultant de la clause de révision ne peut excéder 2 % du montant annuel initial du loyer.** Par ailleurs, le loyer annuel ne peut dépasser 8 % de la valeur réelle du logement (article 57). Toute clause interdisant au Locataire le recours à la révision est réputée nulle et non avenue (article 65).
 
-Toute révision devra être notifiée par écrit au Locataire au moins **2 mois** avant sa prise d'effet, accompagnée du justificatif de l'indice de référence.
+Toute révision est notifiée par écrit au Locataire au moins **deux (2) mois** avant sa prise d'effet.
 
-**Pénalités de retard :** Tout retard de paiement excédant 10 jours entraînera l'application d'intérêts moratoires au taux légal en vigueur, sans préjudice de la mise en œuvre de la clause résolutoire prévue ci-après.`,
+**Pénalités de retard :** Tout retard de paiement pourra entraîner l'application d'intérêts moratoires au taux légal en vigueur, sans préjudice de la mise en œuvre de la clause résolutoire prévue ci-après.`,
     },
     {
       id: "charges",
@@ -302,9 +308,9 @@ Une **régularisation annuelle** sera effectuée sur présentation des justifica
       editable: true,
       body: `Un dépôt de garantie d'un montant de **{{depositAmount}}** (équivalent à **{{depositMonths}} mois de loyer hors charges**) est versé par le Locataire à la signature des présentes.
 
-Conformément à l'article 19 de la Loi 2018-12, le dépôt de garantie pour un logement meublé ne peut excéder **deux (2) mois de loyer hors charges**.
+Conformément aux articles 57 et 69 de la Loi 2022-30, le cautionnement (dépôt de garantie) **ne peut excéder trois (3) mois de loyer**. Il est versé lors de la remise des clés, ne peut être révisé en cours de bail (article 71) et le Bailleur ne peut réclamer aucun supplément.
 
-Le dépôt de garantie est conservé sur un **compte escrow sécurisé Kaabo** (établissement de paiement agréé BCEAO) et ne pourra être assimilé à un paiement de loyer.
+Le dépôt de garantie est conservé sur un **compte escrow sécurisé Kaabo** et ne pourra être assimilé à un paiement de loyer.
 
 Il sera restitué au Locataire dans un délai maximum de **deux (2) mois** à compter de la remise des clés, déduction faite, le cas échéant :
 - Des loyers et charges restant dus ;
@@ -326,7 +332,7 @@ Il sera restitué au Locataire dans un délai maximum de **deux (2) mois** à co
 - Sa **responsabilité civile vie privée** envers les voisins et les tiers ;
 - Le **mobilier et les effets personnels** contre le vol, l'incendie et les dégâts des eaux.
 
-Une **attestation d'assurance** devra être remise au Bailleur à la signature du contrat puis chaque année à la date d'échéance, sous peine de mise en œuvre de la clause résolutoire.`,
+Une **attestation d'assurance** sera remise au Bailleur à la signature du contrat puis chaque année à la date d'échéance. Les parties conviennent expressément de cette obligation d'assurance à titre contractuel ; la Loi 2022-30 ne l'impose pas au locataire d'habitation ordinaire, mais elle est vivement recommandée pour la protection des deux parties.`,
     },
     COMMON_TERMINATION_SECTION,
     COMMON_RESOLUTORY_SECTION,
@@ -349,7 +355,7 @@ const TEMPLATE_RESIDENTIAL_UNFURNISHED: ContractTemplate = {
   defaultDurationMonths: 36,
   defaultDepositMonths: 1,
   legalBasis:
-    "Loi 2018-12 du 02 juillet 2018 (art. 6 — bail non meublé) et Code civil béninois",
+    "Loi n° 2022-30 du 20 décembre 2022 (bail à usage d'habitation) et Code civil béninois",
   sections: [
     COMMON_PARTIES_SECTION,
     COMMON_PROPERTY_SECTION,
@@ -360,9 +366,9 @@ const TEMPLATE_RESIDENTIAL_UNFURNISHED: ContractTemplate = {
       editable: true,
       body: `Le présent bail est consenti et accepté pour une durée de **{{durationMonths}} mois** (trente-six mois, soit 3 années pleines) à compter du **{{startDate}}** pour se terminer de plein droit le **{{endDate}}**.
 
-Conformément à l'article 6 de la Loi 2018-12, la durée minimale du bail non meublé consenti par un bailleur personne physique est de **trois (3) ans**, et de **six (6) ans** lorsque le bailleur est une personne morale.
+Conformément à l'article 72 de la Loi 2022-30, la durée du bail est **librement fixée par les parties** ; la loi n'impose pas de durée minimale pour le bail d'habitation.
 
-À l'expiration de ce terme, le bail sera reconduit tacitement pour des périodes successives de trois (3) années, à défaut de congé délivré par l'une des parties dans les conditions et délais prévus par la loi (préavis de 6 mois pour le Bailleur, 3 mois pour le Locataire).`,
+À l'expiration de ce terme, et à défaut de congé donné dans les conditions prévues au contrat, le bail se poursuivra pour une durée équivalente aux mêmes conditions, sous réserve d'une éventuelle révision du loyer dans la limite légale (article 68).`,
     },
     {
       id: "rent",
@@ -371,11 +377,11 @@ Conformément à l'article 6 de la Loi 2018-12, la durée minimale du bail non m
       editable: true,
       body: `Le loyer mensuel est fixé à **{{rent}}** payable d'avance, au plus tard le **5 de chaque mois**, via la plateforme Kaabo (escrow sécurisé FeexPay / Mobile Money / virement bancaire).
 
-**Indexation :** Le loyer pourra être révisé annuellement à la date anniversaire du contrat, dans la limite de la **variation de l'Indice des Prix à la Consommation (IPC)** publié par l'**Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**, conformément à l'article 25 de la Loi 2018-12.
+**Révision du loyer :** Conformément à l'article 68 de la Loi 2022-30, l'augmentation résultant de la clause de révision **ne peut excéder 2 % du montant annuel initial du loyer**. Le loyer annuel ne peut par ailleurs dépasser 8 % de la valeur réelle du logement (article 57). Toute clause interdisant au Locataire le recours à la révision est réputée nulle et non avenue (article 65).
 
-La révision ne peut intervenir qu'une fois par an et doit être notifiée par écrit au Locataire au moins **2 mois** avant sa prise d'effet, avec justificatif de l'indice de référence.
+La révision est notifiée par écrit au Locataire au moins **deux (2) mois** avant sa prise d'effet.
 
-**Pénalités de retard :** Tout retard de paiement excédant 10 jours entraînera l'application d'intérêts moratoires au taux légal en vigueur.`,
+**Pénalités de retard :** Tout retard de paiement pourra entraîner l'application d'intérêts moratoires au taux légal en vigueur.`,
     },
     {
       id: "charges",
@@ -400,9 +406,9 @@ Une **régularisation annuelle** sera effectuée sur présentation des justifica
       editable: true,
       body: `Un dépôt de garantie d'un montant de **{{depositAmount}}** (équivalent à **{{depositMonths}} mois de loyer hors charges**) est versé par le Locataire à la signature des présentes.
 
-Conformément à l'article 19 de la Loi 2018-12, le dépôt de garantie pour un logement non meublé ne peut excéder **un (1) mois de loyer hors charges**.
+Conformément aux articles 57 et 69 de la Loi 2022-30, le cautionnement (dépôt de garantie) **ne peut excéder trois (3) mois de loyer**. Il est versé lors de la remise des clés, ne peut être révisé en cours de bail (article 71) et le Bailleur ne peut réclamer aucun supplément.
 
-Le dépôt de garantie est conservé sur un **compte escrow sécurisé Kaabo** (établissement de paiement agréé BCEAO) et ne pourra en aucun cas être assimilé à un paiement de loyer.
+Le dépôt de garantie est conservé sur un **compte escrow sécurisé Kaabo** et ne pourra en aucun cas être assimilé à un paiement de loyer.
 
 Il sera restitué au Locataire dans un délai maximum de **deux (2) mois** à compter de la remise des clés, déduction faite, le cas échéant :
 - Des loyers et charges restant dus ;
@@ -424,7 +430,7 @@ Il sera restitué au Locataire dans un délai maximum de **deux (2) mois** à co
 - Sa **responsabilité civile vie privée** envers les voisins et les tiers ;
 - Le **mobilier et les effets personnels** contre le vol, l'incendie et les dégâts des eaux.
 
-Une **attestation d'assurance** devra être remise au Bailleur à la signature du contrat puis chaque année à la date d'échéance, sous peine de mise en œuvre de la clause résolutoire.`,
+Une **attestation d'assurance** sera remise au Bailleur à la signature du contrat puis chaque année à la date d'échéance. Les parties conviennent expressément de cette obligation d'assurance à titre contractuel ; la Loi 2022-30 ne l'impose pas au locataire d'habitation ordinaire, mais elle est vivement recommandée pour la protection des deux parties.`,
     },
     {
       id: "improvements",
@@ -460,7 +466,7 @@ const TEMPLATE_COLOCATION: ContractTemplate = {
   defaultDurationMonths: 12,
   defaultDepositMonths: 2,
   legalBasis:
-    "Loi 2018-12 du 02 juillet 2018, Code civil béninois (art. 1200 et suivants — solidarité conventionnelle)",
+    "Loi n° 2022-30 du 20 décembre 2022, Code civil béninois (art. 1200 et suivants — solidarité conventionnelle)",
   sections: [
     {
       id: "parties",
@@ -483,7 +489,7 @@ Ci-après dénommé(e) « **le Bailleur** », d'une part,
 
 D'autre part,
 
-**Il a été convenu et arrêté ce qui suit, conformément à la Loi n° 2018-12 du 02 juillet 2018 portant régime juridique des baux à usage d'habitation en République du Bénin.**`,
+**Il a été convenu et arrêté ce qui suit, conformément à la Loi n° 2022-30 du 20 décembre 2022 portant régime juridique des baux à usage d'habitation en République du Bénin.**`,
     },
     COMMON_PROPERTY_SECTION,
     {
@@ -540,7 +546,7 @@ Le bail est **renouvelable par tacite reconduction** pour des périodes successi
 
 **En cas de défaillance d'un Colocataire**, les autres restent tenus solidairement de la totalité du loyer envers le Bailleur (voir clause de solidarité).
 
-**Indexation :** Le loyer peut être révisé annuellement selon l'IPC INSAE Bénin (art. 25 Loi 2018-12), avec préavis de 2 mois.`,
+**Révision du loyer :** Conformément à l'article 68 de la Loi 2022-30, l'augmentation ne peut excéder **2 % du montant annuel initial du loyer**, notifiée par écrit au moins deux (2) mois à l'avance.`,
     },
     {
       id: "charges",
@@ -560,7 +566,7 @@ Sont incluses dans les charges : eau, électricité des parties communes, intern
       title: "Dépôt de garantie unique",
       required: true,
       editable: true,
-      body: `Un dépôt de garantie **unique et global** d'un montant de **{{depositAmount}}** (équivalent à **{{depositMonths}} mois de loyer hors charges**, plafond légal article 19 Loi 2018-12) est versé conjointement par les Colocataires à la signature des présentes.
+      body: `Un dépôt de garantie **unique et global** d'un montant de **{{depositAmount}}** (équivalent à **{{depositMonths}} mois de loyer hors charges** ; plafond légal de **3 mois** au sens des articles 57 et 69 de la Loi 2022-30) est versé conjointement par les Colocataires à la signature des présentes.
 
 Ce dépôt est conservé sur un **compte escrow sécurisé Kaabo**.
 
@@ -887,11 +893,11 @@ export const STANDARD_CLAUSES: StandardClause[] = [
     body: `Tout retard de paiement du loyer ou des charges excédant **10 jours** entraînera de plein droit, sans mise en demeure préalable, l'application d'une **pénalité forfaitaire de 5 % du montant impayé**, ainsi que des **intérêts moratoires au taux légal** en vigueur, calculés jour par jour à compter de la date d'échéance jusqu'au paiement effectif.`,
   },
   {
-    id: "clause-insee-indexation",
+    id: "clause-revision-loyer",
     category: "Indexation",
-    title: "Indexation annuelle sur l'IPC INSAE Bénin",
+    title: "Révision du loyer (plafond légal 2 %)",
     recommended: true,
-    body: `Le loyer sera révisé automatiquement chaque année à la date anniversaire du contrat, en fonction de la **variation annuelle de l'Indice des Prix à la Consommation (IPC) publié par l'Institut National de la Statistique et de l'Analyse Économique (INSAE) du Bénin**. Le nouveau loyer prendra effet le mois suivant la notification écrite adressée par le Bailleur au Locataire, accompagnée du justificatif officiel de l'indice de référence.`,
+    body: `Le loyer pourra être révisé chaque année à la date anniversaire du contrat. Conformément à l'**article 68 de la Loi n° 2022-30 du 20 décembre 2022**, l'augmentation résultant de la révision **ne peut excéder 2 % du montant annuel initial du loyer**. Le loyer annuel ne peut par ailleurs dépasser 8 % de la valeur réelle du logement (article 57). La révision est notifiée par écrit au Locataire au moins **deux (2) mois** avant sa prise d'effet. Toute clause privant le Locataire du droit à révision est réputée non écrite (article 65).`,
   },
   {
     id: "clause-tacit-renewal",
