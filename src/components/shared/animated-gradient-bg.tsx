@@ -36,8 +36,11 @@ export function AnimatedGradientBg({ children, className }: AnimatedGradientBgPr
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-white/80 backdrop-blur-3xl"
       />
-      {/* Contenu */}
-      <div className="relative z-10">{children}</div>
+      {/* Contenu — w-full pour que le centrage interne (mx-auto) fonctionne
+          quand ce composant est utilisé en flex (ex. `flex items-center` pour
+          centrer verticalement un hero). Sinon le wrapper se réduit à sa
+          largeur de contenu et se colle à gauche. */}
+      <div className="relative z-10 w-full">{children}</div>
     </div>
   );
 }
