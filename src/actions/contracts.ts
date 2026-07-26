@@ -469,6 +469,28 @@ export async function signContract(
     return { success: false, error: "Impossible d'enregistrer la signature." };
   }
 
+  // Signature complète → on scelle le hash du document signé (best-effort,
+  // inerte tant que la migration 00069 n'est pas appliquée). La preuve lie
+  // ainsi les signatures au TEXTE du contrat, pas seulement aux traits PNG.
+  if (patch.status === "SIGNED") {
+    try {
+      const { data: doc } = await signAdmin
+        .from("contracts")
+        .select("document_hash")
+        .eq("id", input.contractId)
+        .maybeSingle();
+      const dh = (doc as { document_hash?: string | null } | null)?.document_hash;
+      if (dh) {
+        await signAdmin
+          .from("contracts")
+          .update({ signed_document_hash: dh })
+          .eq("id", input.contractId);
+      }
+    } catch {
+      /* colonnes absentes — inerte tant que 00069 n'est pas appliquée */
+    }
+  }
+
   revalidatePath(`/contracts/${input.contractId}`);
   revalidatePath("/contracts");
 

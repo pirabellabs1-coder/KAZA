@@ -1,5 +1,7 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -130,6 +132,8 @@ export async function generateContractDocument(
     const html = buildContractHtml(data);
     const bytes = new TextEncoder().encode(html);
     const objectPath = `${contractId}.html`;
+    // Condensat SHA-256 du document généré : scelle le TEXTE du contrat.
+    const documentHash = createHash("sha256").update(html).digest("hex");
 
     const { error: upErr } = await admin.storage
       .from("contracts")
@@ -145,6 +149,18 @@ export async function generateContractDocument(
       .update({ pdf_url: objectPath, contract_pdf_url: objectPath })
       .eq("id", contractId);
     if (updErr) return { ok: false, error: `maj: ${updErr.message}` };
+
+    // Enregistre le hash du document — mise à jour ISOLÉE et best-effort : si la
+    // colonne document_hash n'existe pas encore (migration 00069 non appliquée),
+    // l'échec est ignoré et n'affecte pas la génération.
+    try {
+      await admin
+        .from("contracts")
+        .update({ document_hash: documentHash })
+        .eq("id", contractId);
+    } catch {
+      /* colonne absente — inerte tant que 00069 n'est pas appliquée */
+    }
 
     return { ok: true, path: objectPath };
   } catch (e) {
