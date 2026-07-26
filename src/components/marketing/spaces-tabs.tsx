@@ -1,15 +1,15 @@
 "use client";
 
 // =============================================================================
-// Kaabo — Section « Comment ça marche » en onglets
+// Kaabo — Section « Comment ça marche » : cartes d'espaces + navigation onglets
 // -----------------------------------------------------------------------------
-// Présente les 5 espaces de la plateforme (locataires, acheteurs, propriétaires,
-// agences, étudiants) sous forme d'onglets : une barre de sélection + un panneau
-// unique coloré selon l'espace. Plus lisible qu'une grille de cartes quand le
-// nombre d'espaces augmente.
+// On conserve l'affichage en cartes (comme avant, ~3 visibles sur desktop) mais
+// on couvre les 5 espaces (locataires, acheteurs, propriétaires, agences,
+// étudiants). La barre d'onglets fait défiler la rangée jusqu'à la carte
+// choisie (scroll horizontal piloté par les onglets).
 // =============================================================================
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -112,7 +112,8 @@ const SPACES: Space[] = [
     icon: Home,
     variant: "navy",
     title: "Pour les propriétaires",
-    subtitle: "Mettez vos biens en location ou en vente et augmentez vos revenus.",
+    subtitle:
+      "Mettez vos biens en location ou en vente et augmentez vos revenus.",
     cta: { label: "Publier une annonce", href: "/signup?role=owner" },
     ctaClass: "bg-kaza-green text-white hover:bg-kaza-green/90",
     steps: [
@@ -199,9 +200,41 @@ const SPACES: Space[] = [
 ];
 
 export function SpacesTabs() {
-  const [active, setActive] = useState(SPACES[0].id);
-  const current = SPACES.find((s) => s.id === active) ?? SPACES[0];
-  const Icon = current.icon;
+  const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [active, setActive] = useState(0);
+
+  // Un onglet fait défiler la rangée jusqu'à la carte correspondante.
+  const goTo = useCallback((index: number) => {
+    setActive(index);
+    const card = cardRefs.current[index];
+    const track = trackRef.current;
+    if (card && track) {
+      track.scrollTo({
+        left: card.offsetLeft - track.offsetLeft,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+  // Synchronise l'onglet actif quand on fait défiler manuellement la rangée.
+  const handleScroll = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const center = track.scrollLeft + track.clientWidth / 2;
+    let nearest = 0;
+    let best = Infinity;
+    cardRefs.current.forEach((c, i) => {
+      if (!c) return;
+      const cardCenter = c.offsetLeft - track.offsetLeft + c.clientWidth / 2;
+      const dist = Math.abs(cardCenter - center);
+      if (dist < best) {
+        best = dist;
+        nearest = i;
+      }
+    });
+    setActive(nearest);
+  }, []);
 
   return (
     <div>
@@ -211,16 +244,16 @@ export function SpacesTabs() {
         aria-label="Espaces Kaabo"
         className="mb-8 flex flex-wrap justify-center gap-2"
       >
-        {SPACES.map((s) => {
+        {SPACES.map((s, i) => {
           const TabIcon = s.icon;
-          const isActive = s.id === active;
+          const isActive = i === active;
           return (
             <button
               key={s.id}
               role="tab"
               type="button"
               aria-selected={isActive}
-              onClick={() => setActive(s.id)}
+              onClick={() => goTo(i)}
               className={cn(
                 "inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-all",
                 isActive
@@ -235,49 +268,59 @@ export function SpacesTabs() {
         })}
       </div>
 
-      {/* PANNEAU DE L'ESPACE ACTIF */}
-      <GradientCard
-        variant={current.variant}
-        className="mx-auto max-w-4xl p-8 lg:p-12"
+      {/* RANGÉE DE CARTES (≈3 visibles sur desktop, défilement par onglets) */}
+      <div
+        ref={trackRef}
+        onScroll={handleScroll}
+        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-start">
-          {/* Intro + CTA */}
-          <div>
-            <div className="mb-5 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-              <Icon className="size-7" aria-hidden />
-            </div>
-            <h3 className="font-heading text-2xl font-bold lg:text-3xl">
-              {current.title}
-            </h3>
-            <p className="mt-3 text-sm text-white/80 lg:text-base">
-              {current.subtitle}
-            </p>
-            <Button asChild className={cn("mt-6", current.ctaClass)}>
-              <Link href={current.cta.href}>
-                {current.cta.label}
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </div>
-
-          {/* Étapes */}
-          <ul className="space-y-5">
-            {current.steps.map((step) => (
-              <li key={step.step} className="flex gap-4">
-                <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
-                  {step.step}
-                </span>
-                <div>
-                  <h4 className="font-semibold">{step.title}</h4>
-                  <p className="mt-1 text-sm text-white/75">
-                    {step.description}
-                  </p>
+        {SPACES.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <div
+              key={s.id}
+              ref={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              className="w-[85%] shrink-0 snap-start sm:w-[46%] lg:w-[calc((100%-3rem)/3)]"
+            >
+              <GradientCard
+                variant={s.variant}
+                className="flex h-full flex-col p-8 lg:p-10"
+              >
+                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
+                  <Icon className="size-7" aria-hidden />
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </GradientCard>
+                <h3 className="font-heading text-2xl font-bold">{s.title}</h3>
+                <p className="mt-2 text-sm text-white/80">{s.subtitle}</p>
+
+                <ul className="mt-8 flex-1 space-y-6">
+                  {s.steps.map((step) => (
+                    <li key={step.step} className="flex gap-4">
+                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
+                        {step.step}
+                      </span>
+                      <div>
+                        <h4 className="font-semibold">{step.title}</h4>
+                        <p className="mt-1 text-sm text-white/75">
+                          {step.description}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button asChild className={cn("mt-8 w-full", s.ctaClass)}>
+                  <Link href={s.cta.href}>
+                    {s.cta.label}
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </GradientCard>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
