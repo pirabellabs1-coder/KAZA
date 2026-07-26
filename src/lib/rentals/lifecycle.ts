@@ -50,13 +50,19 @@ export async function createPendingRental(input: {
       ? input.startDate
       : new Date().toISOString().slice(0, 10);
 
+  // Caution par défaut : 3 mois de loyer (usage courant au Bénin), ajustable
+  // par le bailleur dans le bail (setContractTerms). Elle figure ainsi dans le
+  // document de bail dès le départ au lieu de rester à 0.
+  const defaultDeposit =
+    input.securityDeposit ?? Math.round((input.monthlyRent || 0) * 3);
+
   const { data, error } = await admin
     .from("rentals")
     .insert({
       property_id: input.propertyId,
       tenant_id: input.tenantId,
       monthly_rent: input.monthlyRent,
-      security_deposit: input.securityDeposit ?? 0,
+      security_deposit: defaultDeposit,
       start_date: startDate,
       status: "PENDING",
     })

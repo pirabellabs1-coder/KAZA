@@ -435,21 +435,21 @@ export default async function PropertyDetailPage({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        Caution (indicative, 1–2 mois)
+                        Caution (jusqu&apos;à 3 mois)
                       </span>
-                      <span>{formatPrice(property.price)}</span>
+                      <span>{formatPrice(property.price * 3)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between font-semibold">
-                      <span>Total à l&apos;entrée (estimé)</span>
-                      <span>{formatPrice(property.price * 2)}</span>
+                      <span>Total à l&apos;entrée (max. estimé)</span>
+                      <span>{formatPrice(property.price * 4)}</span>
                     </div>
                     <p className="pt-1 text-[11px] leading-snug text-muted-foreground">
-                      Montant estimatif : le 1<sup>er</sup> loyer et la caution
-                      exacte sont fixés dans le bail. La caution est conservée en
-                      séquestre et restituée en fin de location. La commission
-                      Kaabo (2 %) est prélevée côté propriétaire, jamais sur le
-                      locataire.
+                      Estimation : le 1<sup>er</sup> loyer et la caution exacte
+                      (souvent 3 mois, selon le bail) sont fixés par le bailleur.
+                      La caution est conservée en séquestre et restituée au
+                      locataire en fin de location. La commission Kaabo (2 %) est
+                      prélevée côté propriétaire, jamais sur le locataire.
                     </p>
                   </div>
                 </>
