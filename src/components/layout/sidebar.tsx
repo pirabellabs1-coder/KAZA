@@ -371,47 +371,51 @@ export function Sidebar({ role = "OWNER", className }: SidebarProps) {
             })}
           </div>
         ))}
-      </nav>
 
-      {/* Bottom section */}
-      <div className="space-y-1 border-t p-4">
-        <Link
-          href="/notifications"
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-            pathname.startsWith("/notifications")
-              ? "bg-kaza-navy text-white"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}
-        >
-          <Bell className="size-5" />
-          Notifications
-        </Link>
-        <Link
-          href="/verify-identity"
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-            pathname.startsWith("/verify-identity")
-              ? "bg-kaza-navy text-white"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}
-        >
-          <ShieldCheck className="size-5" />
-          Vérifier mon identité
-        </Link>
-        <Link
-          href="/settings"
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-            pathname === "/settings"
-              ? "bg-kaza-navy text-white"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}
-        >
-          <Settings className="size-5" />
-          Paramètres
-        </Link>
-      </div>
+        {/* Compte : lié à la navigation (défile avec le reste, plus fixé en
+            bas). Séparé visuellement par un filet supérieur. */}
+        <div className="space-y-1 border-t border-border pt-4">
+          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+            Compte
+          </p>
+          <Link
+            href="/notifications"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              pathname.startsWith("/notifications")
+                ? "bg-kaza-navy text-white"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <Bell className="size-5" />
+            Notifications
+          </Link>
+          <Link
+            href="/verify-identity"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              pathname.startsWith("/verify-identity")
+                ? "bg-kaza-navy text-white"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <ShieldCheck className="size-5" />
+            Vérifier mon identité
+          </Link>
+          <Link
+            href="/settings"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              pathname === "/settings"
+                ? "bg-kaza-navy text-white"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <Settings className="size-5" />
+            Paramètres
+          </Link>
+        </div>
+      </nav>
     </aside>
   );
 }
