@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/release-escrow",
       "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/roommate-rent",
+      "schedule": "0 6 1 * *"
     }
   ]
 }

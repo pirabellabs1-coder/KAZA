@@ -454,8 +454,12 @@ export async function signContract(
     patch.status = "PENDING_TENANT";
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error: updErr } = await (supabase as any)
+  // Écriture via le client ADMIN : toutes les validations (rôle du signataire,
+  // ordre locataire→bailleur, non-re-signature) ont été faites ci-dessus. On ne
+  // dépend donc pas de la policy RLS d'UPDATE (défense en profondeur — la
+  // migration 00068 restreint par ailleurs l'UPDATE direct via PostgREST).
+  const signAdmin = createAdminClient() as unknown as SupabaseClient;
+  const { error: updErr } = await signAdmin
     .from("contracts")
     .update(patch)
     .eq("id", input.contractId);
