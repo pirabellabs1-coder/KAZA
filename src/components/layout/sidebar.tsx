@@ -110,6 +110,7 @@ const agencyNav: NavItem[] = [
   { href: "/owner/offers", label: "Offres d'achat", icon: Tag },
   { href: "/agency/visits", label: "Visites", icon: CalendarCheck },
   { href: "/agency/payments", label: "Loyers & encaissements", icon: Receipt },
+  { href: "/agency/statement", label: "Relevé de gestion", icon: Receipt },
   { href: "/agency/reviews", label: "Évaluations", icon: Star },
   { href: "/agency/mandates", label: "Mandats", icon: Handshake },
   { href: "/agency/commissions", label: "Commissions", icon: Coins },

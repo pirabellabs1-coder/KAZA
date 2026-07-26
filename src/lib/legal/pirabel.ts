@@ -11,8 +11,8 @@ export const PIRABEL = {
   legalName: "PIRABEL",
   manager: "Gildas Lissanon",
   rccm: "RB/ABY/26 A 39852",
-  /** IFU (numéro fiscal) — à renseigner dès obtention. */
-  ifu: "",
+  /** IFU (numéro fiscal / Identifiant Fiscal Unique). */
+  ifu: "0202336099991",
   address: "Bohicon, Zou — République du Bénin",
   email: "immobilierkaza@gmail.com",
   /** Taux de TVA applicable au Bénin (%). */
