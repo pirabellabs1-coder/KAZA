@@ -29,7 +29,7 @@ export async function completeEndedRentals(
   const { data, error } = await admin
     .from("rentals")
     .select(
-      `id, tenant_id, property_id, end_date, status,
+      `id, tenant_id, property_id, end_date, status, security_deposit,
        property:properties!property_id(owner_id, title, status)`,
     )
     .eq("status", "ACTIVE")
@@ -66,6 +66,28 @@ export async function completeEndedRentals(
       continue;
     }
     completed += 1;
+
+    // Restitution de la caution au locataire (crédit wallet, idempotent).
+    // NB : restitution intégrale par défaut ; une retenue pour dégradations
+    // relèverait d'un futur état des lieux de sortie / litige.
+    const deposit = Math.max(0, Number(r.security_deposit ?? 0));
+    if (tenantId && deposit > 0) {
+      const { data: already } = await admin
+        .from("wallet_transactions")
+        .select("id")
+        .eq("reference_id", rentalId)
+        .eq("type", "REFUND_GIVEN")
+        .maybeSingle();
+      if (!already) {
+        await admin.from("wallet_transactions").insert({
+          user_id: tenantId,
+          type: "REFUND_GIVEN",
+          amount_fcfa: deposit,
+          description: `Restitution de caution — ${propertyTitle}`,
+          reference_id: rentalId,
+        });
+      }
+    }
 
     // Bien → AVAILABLE (s'il était loué).
     if (propertyId) {

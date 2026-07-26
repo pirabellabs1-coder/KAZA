@@ -19,6 +19,8 @@ interface PaymentSummaryProps {
   periodLabel: string;
   monthlyRent: number;
   serviceFeeRate?: number; // defaut 3%
+  /** Caution encaissée avec ce paiement (0 pour les loyers récurrents). */
+  depositFcfa?: number;
 }
 
 export function PaymentSummary({
@@ -28,9 +30,11 @@ export function PaymentSummary({
   periodLabel,
   monthlyRent,
   serviceFeeRate = 0.03,
+  depositFcfa = 0,
 }: PaymentSummaryProps) {
   const serviceFee = Math.round(monthlyRent * serviceFeeRate);
-  const total = monthlyRent + serviceFee;
+  const deposit = Math.max(0, Math.round(depositFcfa));
+  const total = monthlyRent + serviceFee + deposit;
 
   return (
     <Card className="sticky top-6">
@@ -83,7 +87,18 @@ export function PaymentSummary({
               <span className="text-foreground">{formatPrice(serviceFee)}</span>
             </div>
           )}
+          {deposit > 0 && (
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>Caution (dépôt de garantie)</span>
+              <span className="text-foreground">{formatPrice(deposit)}</span>
+            </div>
+          )}
         </div>
+        {deposit > 0 && (
+          <p className="text-[11px] leading-snug text-muted-foreground">
+            La caution est conservée en séquestre et restituée en fin de bail.
+          </p>
+        )}
 
         <Separator />
 

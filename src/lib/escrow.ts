@@ -104,7 +104,7 @@ export async function holdInEscrow(
   // Recupere le owner via property -> rental.
   const { data: rental, error: rentalErr } = await supabase
     .from("rentals")
-    .select("tenant_id, property_id, properties:property_id(owner_id)")
+    .select("tenant_id, property_id, monthly_rent, properties:property_id(owner_id)")
     .eq("id", payment.rental_id)
     .single();
 
@@ -130,6 +130,15 @@ export async function holdInEscrow(
     )
   );
 
+  // Part « caution » du versement : tout ce qui dépasse le loyer mensuel (le 1er
+  // paiement inclut le loyer + la caution ; les loyers suivants = loyer seul).
+  // Cette part ne sera PAS reversée au propriétaire (restituée au locataire en
+  // fin de bail).
+  const monthlyRent = Number(
+    (rental as unknown as { monthly_rent?: number }).monthly_rent ?? 0
+  );
+  const depositPart = Math.max(0, Number(payment.amount ?? 0) - monthlyRent);
+
   // Upsert escrow row.
   const { error: escrowErr } = await supabase
     .from("escrow_payments")
@@ -140,6 +149,7 @@ export async function holdInEscrow(
         owner_id: ownerId,
         total_amount: payment.amount,
         amount_paid: payment.amount,
+        deposit_fcfa: depositPart,
         duration_days: durationDays,
         status: "HELD",
         release_date: releaseIso,
@@ -171,6 +181,7 @@ interface EscrowRow {
   tenant_id: string;
   amount_paid: number | null;
   total_amount: number | null;
+  deposit_fcfa: number | null;
   status: string;
 }
 
@@ -191,9 +202,14 @@ async function releaseEscrowRow(
   const amount = Number(escrow.amount_paid ?? escrow.total_amount ?? 0);
   if (amount <= 0) return { released: false, reason: "montant nul" };
 
+  // La caution (deposit_fcfa) n'est PAS reversée au propriétaire : elle reste
+  // en séquestre et sera restituée au locataire en fin de bail. La commission
+  // Kaabo porte uniquement sur la part loyer.
+  const deposit = Math.max(0, Number(escrow.deposit_fcfa ?? 0));
+  const rentPortion = Math.max(0, amount - deposit);
   const rate = await getCommissionRate(supabase);
-  const commission = Math.round((amount * rate) / 100);
-  const ownerAmount = Math.max(0, amount - commission);
+  const commission = Math.round((rentPortion * rate) / 100);
+  const ownerAmount = Math.max(0, rentPortion - commission);
 
   const loose = supabase as unknown as SupabaseClient;
 
@@ -258,7 +274,7 @@ export async function releaseFromEscrow(
 
   const { data: escrow, error: escrowFetchErr } = await supabase
     .from("escrow_payments")
-    .select("id, rental_id, owner_id, tenant_id, amount_paid, total_amount, status")
+    .select("id, rental_id, owner_id, tenant_id, amount_paid, total_amount, deposit_fcfa, status")
     .eq("rental_id", payment.rental_id)
     .maybeSingle();
 
@@ -268,7 +284,7 @@ export async function releaseFromEscrow(
     );
   }
 
-  const res = await releaseEscrowRow(supabase, escrow as EscrowRow);
+  const res = await releaseEscrowRow(supabase, escrow as unknown as EscrowRow);
   if (!res.released) {
     return { paymentId, status: "skipped", reason: res.reason };
   }
@@ -285,7 +301,7 @@ export async function autoReleaseDueEscrows(
   const nowIso = new Date().toISOString();
   const { data, error } = await supabase
     .from("escrow_payments")
-    .select("id, rental_id, owner_id, tenant_id, amount_paid, total_amount, status")
+    .select("id, rental_id, owner_id, tenant_id, amount_paid, total_amount, deposit_fcfa, status")
     .eq("status", "HELD")
     .lte("release_date", nowIso)
     .limit(200);
@@ -296,7 +312,7 @@ export async function autoReleaseDueEscrows(
 
   let released = 0;
   let skipped = 0;
-  for (const row of data as EscrowRow[]) {
+  for (const row of data as unknown as EscrowRow[]) {
     try {
       const res = await releaseEscrowRow(supabase, row);
       if (res.released) released += 1;

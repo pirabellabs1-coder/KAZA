@@ -72,7 +72,7 @@ export async function initiateRentPayment(
   // Recupere les details du rental + email pour le provider.
   const { data: rental, error: rentalErr } = await supabase
     .from("rentals")
-    .select("id, tenant_id, monthly_rent, property_id, status")
+    .select("id, tenant_id, monthly_rent, security_deposit, property_id, status")
     .eq("id", input.rentalId)
     .single();
 
@@ -134,7 +134,18 @@ export async function initiateRentPayment(
     // a déjà affiché l'erreur à l'application). Le paiement passe au plein tarif.
   }
 
-  const amountToCharge = Math.max(0, baseAmount - discount);
+  // Caution (dépôt de garantie) : encaissée UNIQUEMENT au 1er paiement (bail
+  // encore PENDING). Elle s'ajoute après remise (la remise ne porte que sur le
+  // loyer). Conservée en séquestre puis restituée en fin de bail.
+  const isFirstPayment =
+    (rental as { status?: string }).status === "PENDING";
+  const caution = isFirstPayment
+    ? Math.max(
+        0,
+        Number((rental as { security_deposit?: number }).security_deposit ?? 0),
+      )
+    : 0;
+  const amountToCharge = Math.max(0, baseAmount - discount) + caution;
 
   if (!input.phone || !input.phone.trim()) {
     return { success: false, error: "Numéro de téléphone requis." };
@@ -147,7 +158,9 @@ export async function initiateRentPayment(
     const result = await createPayment({
       amount: amountToCharge,
       currency: "XOF",
-      description: `Loyer mensuel - location ${rental.id}`,
+      description: caution > 0
+        ? `1er loyer + caution - location ${rental.id}`
+        : `Loyer mensuel - location ${rental.id}`,
       customerEmail: user.email ?? "",
       customerPhone: input.phone,
       network: input.network,
@@ -316,7 +329,7 @@ export async function payRentFromWallet(
 
   const { data: rental, error: rentalErr } = await supabase
     .from("rentals")
-    .select("id, tenant_id, monthly_rent, property_id, status")
+    .select("id, tenant_id, monthly_rent, security_deposit, property_id, status")
     .eq("id", input.rentalId)
     .single();
   if (rentalErr || !rental) return { success: false, error: "Location introuvable." };
@@ -350,7 +363,16 @@ export async function payRentFromWallet(
       if (discount > 0) appliedPromoCode = input.promoCode.trim().toUpperCase();
     }
   }
-  const amountToCharge = Math.max(0, baseAmount - discount);
+  // Caution encaissée uniquement au 1er paiement (bail PENDING), après remise.
+  const isFirstPayment =
+    (rental as { status?: string }).status === "PENDING";
+  const caution = isFirstPayment
+    ? Math.max(
+        0,
+        Number((rental as { security_deposit?: number }).security_deposit ?? 0),
+      )
+    : 0;
+  const amountToCharge = Math.max(0, baseAmount - discount) + caution;
   if (amountToCharge <= 0) return { success: false, error: "Montant invalide." };
 
   const admin = createAdminClient();

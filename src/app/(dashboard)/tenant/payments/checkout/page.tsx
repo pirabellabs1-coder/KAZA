@@ -74,10 +74,14 @@ export default async function CheckoutPage({
   const now = new Date();
   const periodLabel = `Loyer de ${MONTHS_FR[now.getMonth()]} ${now.getFullYear()}`;
   const rentalId = rental.id;
-  // Le serveur facture exactement le loyer mensuel (pas de frais de service) :
-  // le montant AFFICHÉ doit donc être égal au montant DÉBITÉ pour éviter toute
-  // sous-facturation / incohérence avec le code promo (recalculé sur le loyer).
-  const total = rental.monthlyRent;
+  // Caution encaissée UNIQUEMENT au 1er paiement (bail encore PENDING) — cohérent
+  // avec le calcul serveur (initiateRentPayment / payRentFromWallet). Le montant
+  // affiché doit égaler le montant débité.
+  const isFirstPayment = rental.status === "PENDING";
+  const caution = isFirstPayment
+    ? Math.max(0, Number(rental.securityDeposit ?? 0))
+    : 0;
+  const total = rental.monthlyRent + caution;
 
   return (
     <div className="space-y-6">
@@ -121,6 +125,7 @@ export default async function CheckoutPage({
             periodLabel={periodLabel}
             monthlyRent={rental.monthlyRent}
             serviceFeeRate={0}
+            depositFcfa={caution}
           />
         </div>
       </div>
