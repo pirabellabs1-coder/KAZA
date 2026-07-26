@@ -109,22 +109,15 @@ export async function ensureContractForRental(
   }
   const contractId = (data as { id: string }).id;
 
-  // Génération du PDF — best-effort, ne bloque pas.
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (supabaseUrl && anonKey) {
-    try {
-      await fetch(`${supabaseUrl}/functions/v1/generate-contract-pdf`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${anonKey}`,
-        },
-        body: JSON.stringify({ contractId }),
-      });
-    } catch {
-      // Non bloquant : régénérable depuis l'éditeur de contrat.
-    }
+  // Génération du document in-app (best-effort). Le statut reste DRAFT : c'est
+  // le bailleur qui complète les conditions puis « envoie au locataire ».
+  try {
+    const { generateContractDocument } = await import(
+      "@/lib/contracts/generate"
+    );
+    await generateContractDocument(contractId);
+  } catch {
+    // Non bloquant : régénérable depuis l'éditeur de contrat.
   }
   return contractId;
 }

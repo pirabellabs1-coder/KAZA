@@ -1,5 +1,7 @@
 import "server-only";
 
+import { PIRABEL } from "@/lib/legal/pirabel";
+
 // =============================================================================
 // Kaabo - Constructeur de contrat de bail (Bénin)
 // =============================================================================
@@ -181,8 +183,9 @@ export function buildContractHtml(data: ContractData): string {
       </dl>
     </div>
   </div>
-  <p>Il a été convenu et arrêté ce qui suit, dans le cadre des dispositions du droit
-  béninois et des Actes uniformes de l'OHADA applicables au bail à usage d'habitation.</p>
+  <p>Il a été convenu et arrêté ce qui suit, dans le cadre de la loi n° 2022-30 portant
+  bail à usage d'habitation en République du Bénin, des dispositions du droit béninois
+  et des Actes uniformes de l'OHADA applicables.</p>
 
   <h2><span class="clause-num">1.</span>Objet du bail et désignation des lieux loués</h2>
   <p>Le Bailleur donne à bail au Preneur, qui accepte, le bien immobilier ci-après désigné :</p>
@@ -248,10 +251,10 @@ export function buildContractHtml(data: ContractData): string {
   restée sans effet.</p>
 
   <h2><span class="clause-num">9.</span>Droit applicable et juridiction</h2>
-  <p>Le présent contrat est soumis au droit béninois et aux Actes uniformes de l'OHADA
-  applicables au bail à usage d'habitation. Tout litige relatif à son interprétation
-  ou à son exécution sera, à défaut d'accord amiable, porté devant les juridictions
-  compétentes de <strong>${esc(city)}</strong>.</p>
+  <p>Le présent contrat est soumis à la loi n° 2022-30 portant bail à usage d'habitation
+  en République du Bénin, au droit béninois et aux Actes uniformes de l'OHADA. Tout
+  litige relatif à son interprétation ou à son exécution sera, à défaut d'accord
+  amiable, porté devant les juridictions compétentes de <strong>${esc(city)}</strong>.</p>
 
   <h2><span class="clause-num">10.</span>Signature électronique</h2>
   <p>Les parties reconnaissent la valeur juridique de la signature électronique
@@ -276,8 +279,10 @@ export function buildContractHtml(data: ContractData): string {
   </div>
 
   <footer>
-    Document généré par Kaabo &middot; Référence ${esc(data.contractId)} &middot;
-    Ce document a valeur légale une fois signé par les deux parties.
+    Document établi via la plateforme Kaabo, exploitée par ${esc(PIRABEL.legalName)}
+    (RCCM ${esc(PIRABEL.rccm)} &middot; IFU ${esc(PIRABEL.ifu)}, ${esc(PIRABEL.address)}).
+    &middot; Référence ${esc(data.contractId)} &middot;
+    Ce document a valeur légale une fois signé électroniquement par les deux parties.
   </footer>
 </body>
 </html>`;

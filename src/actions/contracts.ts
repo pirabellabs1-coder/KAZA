@@ -97,24 +97,15 @@ export async function createContract(
     return { success: false, error: "Impossible de créer le contrat." };
   }
 
-  // Déclenche l'Edge Function (fire-and-forget : on n'attend pas le PDF pour
-  // rendre la main, l'UI affichera "génération en cours" jusqu'au refresh).
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (supabaseUrl && anonKey) {
-    try {
-      await fetch(`${supabaseUrl}/functions/v1/generate-contract-pdf`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${anonKey}`,
-        },
-        body: JSON.stringify({ contractId: contract.id }),
-      });
-    } catch (err) {
-      console.warn("[contracts] Edge Function trigger échec:", err);
-      // Non bloquant : on pourra relancer la génération via un bouton dédié.
-    }
+  // Génère le document in-app (statut inchangé : reste DRAFT).
+  try {
+    const { generateContractDocument } = await import(
+      "@/lib/contracts/generate"
+    );
+    await generateContractDocument(contract.id);
+  } catch (err) {
+    console.warn("[contracts] génération document échec:", err);
+    // Non bloquant : on pourra relancer la génération via l'éditeur.
   }
 
   revalidatePath("/contracts");
@@ -186,6 +177,26 @@ export async function setContractTerms(
     .eq("id", input.rentalId);
   if (error) return { success: false, error: "Impossible d'enregistrer." };
 
+  // Régénère le document pour refléter les nouvelles conditions financières.
+  try {
+    const { data: c } = await admin
+      .from("contracts")
+      .select("id")
+      .eq("rental_id", input.rentalId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const cid = (c as { id?: string } | null)?.id;
+    if (cid) {
+      const { generateContractDocument } = await import(
+        "@/lib/contracts/generate"
+      );
+      await generateContractDocument(cid);
+    }
+  } catch (err) {
+    console.warn("[contracts] régénération après terms échec:", err);
+  }
+
   revalidatePath("/contracts");
   return { success: true };
 }
@@ -254,6 +265,16 @@ export async function sendContractToTenant(
     .eq("status", "DRAFT");
   if (updErr) {
     return { success: false, error: "Impossible d'envoyer le bail." };
+  }
+
+  // Fige le document sur les conditions définitives avant signature.
+  try {
+    const { generateContractDocument } = await import(
+      "@/lib/contracts/generate"
+    );
+    await generateContractDocument(contractId);
+  } catch (err) {
+    console.warn("[contracts] régénération avant envoi échec:", err);
   }
 
   if (tenantId) {
