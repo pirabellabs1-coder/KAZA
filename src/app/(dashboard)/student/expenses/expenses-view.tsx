@@ -128,7 +128,7 @@ export function ExpensesView({ userId, groups, selectedGroupId, data }: Props) {
               avec vos colocataires.
             </p>
             <Button asChild className="mt-2">
-              <Link href="/student/roommate-matching">Trouver une colocation</Link>
+              <Link href="/student-living">Trouver une colocation</Link>
             </Button>
           </CardContent>
         </Card>

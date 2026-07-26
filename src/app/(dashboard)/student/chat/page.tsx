@@ -43,7 +43,7 @@ export default async function StudentChatPage() {
               colocataires. La messagerie de groupe s&apos;activera automatiquement.
             </p>
             <Button asChild className="mt-2 bg-kaza-blue hover:bg-kaza-blue/90">
-              <Link href="/student/roommate-matching">Trouver une colocation</Link>
+              <Link href="/student-living">Trouver une colocation</Link>
             </Button>
           </CardContent>
         </Card>

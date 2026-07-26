@@ -283,13 +283,24 @@ export async function requestToJoinColocation(
 
   const { data: listing } = await admin
     .from("roommate_listings")
-    .select("id, user_id, title")
+    .select("id, user_id, title, status")
     .eq("id", listingId)
     .maybeSingle();
-  const l = listing as { id: string; user_id: string; title: string } | null;
+  const l = listing as {
+    id: string;
+    user_id: string;
+    title: string;
+    status: string;
+  } | null;
   if (!l) return { success: false, error: "Annonce introuvable." };
   if (l.user_id === user.id) {
     return { success: false, error: "C'est votre propre colocation." };
+  }
+  if (l.status && l.status !== "ACTIVE") {
+    return {
+      success: false,
+      error: "Cette colocation est complète ou n'accepte plus de demandes.",
+    };
   }
 
   const groupId = await ensureColocationGroup(l.id, l.user_id, l.title);
@@ -393,6 +404,40 @@ export async function decideColocationMember(
     return { success: false, error: "Cette demande a déjà été traitée." };
   }
 
+  // Capacité de la colocation (people_looking_for = nombre total de places,
+  // colocataire principal inclus — cohérent avec l'affichage « places restantes »).
+  const { data: grp } = await admin
+    .from("roommate_groups")
+    .select("listing_id")
+    .eq("id", m.group_id)
+    .maybeSingle();
+  const listingId = (grp as { listing_id?: string } | null)?.listing_id ?? null;
+  let capacity = 1;
+  if (listingId) {
+    const { data: lst } = await admin
+      .from("roommate_listings")
+      .select("people_looking_for, bedrooms_available")
+      .eq("id", listingId)
+      .maybeSingle();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ll: any = lst;
+    capacity = Number(ll?.people_looking_for ?? ll?.bedrooms_available ?? 1);
+  }
+
+  if (decision === "ACCEPTED") {
+    const { count: acceptedCount } = await admin
+      .from("roommate_members")
+      .select("id", { count: "exact", head: true })
+      .eq("group_id", m.group_id)
+      .eq("status", "ACCEPTED");
+    if ((acceptedCount ?? 0) >= capacity) {
+      return {
+        success: false,
+        error: "La colocation est déjà complète — aucune place disponible.",
+      };
+    }
+  }
+
   const patch =
     decision === "ACCEPTED"
       ? { status: "ACCEPTED", joined_at: new Date().toISOString() }
@@ -402,6 +447,22 @@ export async function decideColocationMember(
     .update(patch)
     .eq("id", memberId);
   if (error) return { success: false, error: error.message };
+
+  // La colocation est complète → l'annonce passe FULL (n'accepte plus de demandes).
+  if (decision === "ACCEPTED" && listingId) {
+    const { count: newCount } = await admin
+      .from("roommate_members")
+      .select("id", { count: "exact", head: true })
+      .eq("group_id", m.group_id)
+      .eq("status", "ACCEPTED");
+    if ((newCount ?? 0) >= capacity) {
+      await admin
+        .from("roommate_listings")
+        .update({ status: "FULL" })
+        .eq("id", listingId)
+        .eq("status", "ACTIVE");
+    }
+  }
 
   // Notifie le candidat.
   try {
