@@ -176,6 +176,33 @@ const BENIN_CITIES: City[] = [
       { slug: "centre", name: "Centre", priceTier: 3, tags: ["affaires"] },
     ],
   },
+
+  // --- Chefs-lieux de département & grandes communes (couverture élargie) ---
+  // Quartiers non détaillés : saisis librement à la création d'annonce.
+  { slug: "djougou", name: "Djougou", countryCode: "BJ", isCapital: false, population: 260_000, lat: 9.708, lng: 1.666, neighborhoods: [] },
+  { slug: "kandi", name: "Kandi", countryCode: "BJ", isCapital: false, population: 178_000, lat: 11.134, lng: 2.938, neighborhoods: [] },
+  { slug: "lokossa", name: "Lokossa", countryCode: "BJ", isCapital: false, population: 105_000, lat: 6.638, lng: 1.716, neighborhoods: [] },
+  { slug: "come", name: "Comè", countryCode: "BJ", isCapital: false, population: 80_000, lat: 6.406, lng: 1.881, neighborhoods: [] },
+  { slug: "aplahoue", name: "Aplahoué", countryCode: "BJ", isCapital: false, population: 125_000, lat: 6.933, lng: 1.683, neighborhoods: [] },
+  { slug: "dogbo", name: "Dogbo-Tota", countryCode: "BJ", isCapital: false, population: 105_000, lat: 6.79, lng: 1.782, neighborhoods: [] },
+  { slug: "savalou", name: "Savalou", countryCode: "BJ", isCapital: false, population: 145_000, lat: 7.928, lng: 1.975, neighborhoods: [] },
+  { slug: "dassa-zoume", name: "Dassa-Zoumè", countryCode: "BJ", isCapital: false, population: 112_000, lat: 7.75, lng: 2.183, neighborhoods: [] },
+  { slug: "save", name: "Savè", countryCode: "BJ", isCapital: false, population: 78_000, lat: 8.034, lng: 2.487, neighborhoods: [] },
+  { slug: "glazoue", name: "Glazoué", countryCode: "BJ", isCapital: false, population: 125_000, lat: 7.968, lng: 2.24, neighborhoods: [] },
+  { slug: "bassila", name: "Bassila", countryCode: "BJ", isCapital: false, population: 130_000, lat: 9.008, lng: 1.665, neighborhoods: [] },
+  { slug: "tchaourou", name: "Tchaourou", countryCode: "BJ", isCapital: false, population: 180_000, lat: 8.887, lng: 2.597, neighborhoods: [] },
+  { slug: "nikki", name: "Nikki", countryCode: "BJ", isCapital: false, population: 150_000, lat: 9.94, lng: 3.21, neighborhoods: [] },
+  { slug: "bembereke", name: "Bembèrèkè", countryCode: "BJ", isCapital: false, population: 130_000, lat: 10.2, lng: 2.66, neighborhoods: [] },
+  { slug: "ndali", name: "N'Dali", countryCode: "BJ", isCapital: false, population: 110_000, lat: 9.86, lng: 2.72, neighborhoods: [] },
+  { slug: "banikoara", name: "Banikoara", countryCode: "BJ", isCapital: false, population: 250_000, lat: 11.298, lng: 2.438, neighborhoods: [] },
+  { slug: "malanville", name: "Malanville", countryCode: "BJ", isCapital: false, population: 168_000, lat: 11.868, lng: 3.383, neighborhoods: [] },
+  { slug: "tanguieta", name: "Tanguiéta", countryCode: "BJ", isCapital: false, population: 75_000, lat: 10.62, lng: 1.267, neighborhoods: [] },
+  { slug: "allada", name: "Allada", countryCode: "BJ", isCapital: false, population: 145_000, lat: 6.665, lng: 2.151, neighborhoods: [] },
+  { slug: "seme-podji", name: "Sèmè-Podji", countryCode: "BJ", isCapital: false, population: 230_000, lat: 6.37, lng: 2.63, neighborhoods: [] },
+  { slug: "pobe", name: "Pobè", countryCode: "BJ", isCapital: false, population: 123_000, lat: 6.98, lng: 2.665, neighborhoods: [] },
+  { slug: "ketou", name: "Kétou", countryCode: "BJ", isCapital: false, population: 156_000, lat: 7.363, lng: 2.6, neighborhoods: [] },
+  { slug: "sakete", name: "Sakété", countryCode: "BJ", isCapital: false, population: 116_000, lat: 6.736, lng: 2.658, neighborhoods: [] },
+  { slug: "grand-popo", name: "Grand-Popo", countryCode: "BJ", isCapital: false, population: 60_000, lat: 6.283, lng: 1.826, neighborhoods: [] },
 ];
 
 // ---------------------------------------------------------------------------

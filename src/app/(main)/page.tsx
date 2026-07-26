@@ -30,16 +30,16 @@ const OG_IMAGE =
   "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&h=630&q=80";
 
 export const metadata: Metadata = {
-  title: "Kaabo — Louer un logement partout en Afrique",
+  title: "Kaabo — Louer ou acheter un logement partout en Afrique",
   description:
-    "Trouvez et louez appartements, maisons et colocations en Afrique de l'Ouest. Annonces vérifiées, paiements sécurisés et contrats numériques.",
+    "Louez ou achetez appartements, maisons, terrains et colocations en Afrique de l'Ouest. Annonces vérifiées, paiements sécurisés et contrats numériques.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Kaabo — Louer un logement partout en Afrique",
+    title: "Kaabo — Louer ou acheter un logement partout en Afrique",
     description:
-      "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez en toute confiance en Afrique de l'Ouest.",
+      "Location et vente immobilière : annonces vérifiées, paiements sécurisés et contrats numériques. En toute confiance en Afrique de l'Ouest.",
     url: "/",
     type: "website",
     siteName: "Kaabo",
@@ -55,9 +55,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kaabo — Louer un logement partout en Afrique",
+    title: "Kaabo — Louer ou acheter un logement partout en Afrique",
     description:
-      "Annonces vérifiées, paiements sécurisés et contrats numériques. Louez partout en Afrique.",
+      "Location et vente immobilière : annonces vérifiées, paiements sécurisés et contrats numériques partout en Afrique.",
     images: [OG_IMAGE],
   },
 };
@@ -159,15 +159,15 @@ export default async function HomePage() {
       description: "Fonds en séquestre jusqu'à la remise des clés",
     },
     {
-      value: 0,
-      suffix: "%",
-      label: "Commission cachée",
-      description: "En direct, sans frais d'agence surprise",
+      value: 2,
+      suffix: " en 1",
+      label: "Location & vente",
+      description: "Louez ou achetez sur une seule plateforme",
     },
     {
-      value: 3,
+      value: 5,
       label: "Espaces dédiés",
-      description: "Propriétaires, locataires et étudiants",
+      description: "Propriétaires, locataires, étudiants, agences & acheteurs",
     },
     {
       value: 5,
@@ -224,8 +224,8 @@ export default async function HomePage() {
 
           <FadeIn delay={300}>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg lg:text-xl">
-              Annonces vérifiées, paiements 100% sécurisés et contrats
-              numériques.
+              À louer ou à acheter : annonces vérifiées, paiements 100%
+              sécurisés et contrats numériques.
               <br className="hidden sm:block" />
               Toute la confiance d&apos;une plateforme moderne, sans
               intermédiaire.
@@ -401,11 +401,12 @@ export default async function HomePage() {
                 Comment ça marche
               </p>
               <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-kaza-navy sm:text-4xl lg:text-5xl">
-                Trois espaces, une expérience fluide
+                Des espaces pensés pour chaque projet
               </h2>
               <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-                Que vous cherchiez un logement, mettiez en location ou viviez en
-                colocation étudiante, Kaabo s&apos;adapte à votre projet.
+                Que vous cherchiez à louer ou à acheter, à mettre un bien en
+                location ou en vente, ou à vivre en colocation étudiante, Kaabo
+                s&apos;adapte à votre projet.
               </p>
             </div>
           </RevealOnScroll>
@@ -421,10 +422,10 @@ export default async function HomePage() {
                   <Key className="size-7" aria-hidden />
                 </div>
                 <h3 className="font-heading text-2xl font-bold">
-                  Pour les locataires
+                  Pour les locataires & acheteurs
                 </h3>
                 <p className="mt-2 text-sm text-white/80">
-                  Trouvez et louez votre prochain chez-vous en toute confiance.
+                  Louez ou achetez votre prochain chez-vous en toute confiance.
                 </p>
 
                 <ul className="mt-8 flex-1 space-y-6">
@@ -465,10 +466,11 @@ export default async function HomePage() {
                   <Home className="size-7" aria-hidden />
                 </div>
                 <h3 className="font-heading text-2xl font-bold">
-                  Pour les propriétaires
+                  Propriétaires & agences
                 </h3>
                 <p className="mt-2 text-sm text-white/80">
-                  Mettez vos biens en valeur et augmentez vos revenus locatifs.
+                  Mettez vos biens en location ou en vente et augmentez vos
+                  revenus.
                 </p>
 
                 <ul className="mt-8 flex-1 space-y-6">

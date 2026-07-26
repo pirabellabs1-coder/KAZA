@@ -41,10 +41,21 @@ export const propertyFormSchema = z.object({
   }),
   listingPurpose: z.enum(LISTING_PURPOSES).default("RENT"),
 
-  // Étape 2 : Localisation (obligatoire)
+  // Étape 2 : Localisation
+  // Le pays et l'adresse restent obligatoires. La ville peut être choisie dans
+  // le référentiel (citySlug) OU saisie librement (cityName) si absente de la
+  // liste — idem pour le quartier (neighborhoodSlug OU neighborhoodName). Le
+  // quartier n'est plus bloquant : beaucoup de communes n'ont pas de quartier
+  // référencé, et l'adresse précise + le repère suffisent à localiser le bien.
   countryCode: z.string().length(2, "Sélectionnez un pays"),
-  citySlug: z.string().min(1, "Sélectionnez une ville"),
-  neighborhoodSlug: z.string().min(1, "Sélectionnez un quartier"),
+  citySlug: z.string().optional().default(""),
+  cityName: z.string().max(80, "Nom de ville trop long").optional().default(""),
+  neighborhoodSlug: z.string().optional().default(""),
+  neighborhoodName: z
+    .string()
+    .max(80, "Nom de quartier trop long")
+    .optional()
+    .default(""),
   addressLine: z.string().min(5, "Adresse précise requise"),
   lat: z.number().optional(),
   lng: z.number().optional(),
@@ -173,7 +184,9 @@ export const propertyStepSchemas = {
   2: propertyFormSchema.pick({
     countryCode: true,
     citySlug: true,
+    cityName: true,
     neighborhoodSlug: true,
+    neighborhoodName: true,
     addressLine: true,
     landmark: true,
     lat: true,
@@ -238,7 +251,9 @@ export const propertyStepFieldKeys = {
   2: [
     "countryCode",
     "citySlug",
+    "cityName",
     "neighborhoodSlug",
+    "neighborhoodName",
     "addressLine",
     "landmark",
     "lat",

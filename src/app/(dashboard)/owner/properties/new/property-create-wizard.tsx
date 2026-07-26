@@ -248,7 +248,9 @@ const DEFAULTS: PropertyFormData = {
   listingPurpose: "RENT",
   countryCode: "",
   citySlug: "",
+  cityName: "",
   neighborhoodSlug: "",
+  neighborhoodName: "",
   addressLine: "",
   lat: undefined,
   lng: undefined,
@@ -373,6 +375,15 @@ export function PropertyCreateWizard({ userId }: { userId: string }) {
       toast.error("Veuillez corriger les erreurs avant de continuer");
       return;
     }
+    // Étape Localisation : une ville doit être fournie (référentiel OU saisie
+    // libre). Le quartier reste facultatif.
+    if (currentStep === 2) {
+      const v = form.getValues();
+      if (!v.citySlug && !(v.cityName ?? "").trim()) {
+        toast.error("Indiquez une ville (dans la liste ou en saisie libre)");
+        return;
+      }
+    }
     const next = Math.min(currentStep + 1, TOTAL_STEPS);
     setCurrentStep(next);
     setMaxReached((p) => Math.max(p, next));
@@ -429,11 +440,22 @@ export function PropertyCreateWizard({ userId }: { userId: string }) {
           LAND: "LAND",
           COMMERCIAL: "COMMERCIAL",
         };
+        // Adresse lisible : on privilégie les noms du référentiel, avec repli
+        // sur la saisie libre (ville/quartier hors liste).
+        const countryName =
+          getCountryByCode(values.countryCode)?.name ?? values.countryCode;
+        const cityObj = values.citySlug
+          ? getCityBySlug(values.countryCode, values.citySlug)
+          : undefined;
+        const cityLabel = cityObj?.name || (values.cityName ?? "").trim();
+        const neighborhoodLabel =
+          cityObj?.neighborhoods.find((n) => n.slug === values.neighborhoodSlug)
+            ?.name || (values.neighborhoodName ?? "").trim();
         const fullAddress = [
           values.addressLine,
-          values.neighborhoodSlug,
-          values.citySlug,
-          values.countryCode,
+          neighborhoodLabel,
+          cityLabel,
+          countryName,
         ]
           .filter(Boolean)
           .join(", ");
@@ -901,12 +923,16 @@ function Step1Type() {
 // ÉTAPE 2 — LOCALISATION
 // ---------------------------------------------------------------------------
 
+// Valeur sentinelle du Select « ville/quartier absent de la liste ».
+const OTHER = "__other__";
+
 function Step2Location() {
   const { watch, setValue, register, formState } =
     useFormContext<PropertyFormData>();
 
   const countryCode = watch("countryCode");
   const citySlug = watch("citySlug");
+  const cityName = watch("cityName") ?? "";
   const neighborhoodSlug = watch("neighborhoodSlug");
   const lat = watch("lat");
   const lng = watch("lng");
@@ -924,23 +950,68 @@ function Step2Location() {
     (n) => n.slug === neighborhoodSlug,
   );
 
-  // Quand on change de pays, on reset ville+quartier
+  // Bascule liste ↔ saisie libre. Initialisée depuis les valeurs du formulaire
+  // (utile à la restauration d'un brouillon avec une ville/quartier hors liste).
+  const [cityMode, setCityMode] = useState<"list" | "free">(
+    !citySlug && cityName.trim().length > 0 ? "free" : "list",
+  );
+  const [nbMode, setNbMode] = useState<"list" | "free">(
+    !!(watch("neighborhoodName") ?? "").trim() ? "free" : "list",
+  );
+
+  const cityHasNeighborhoods = !!city && city.neighborhoods.length > 0;
+  // Quartier en saisie libre : pas de ville référentiel, ville sans quartier
+  // référencé, ou choix explicite « Autre quartier ».
+  const nbFreeText = !cityHasNeighborhoods || nbMode === "free";
+
+  // Quand on change de pays, on reset ville+quartier (liste et saisie libre)
   const handleCountryChange = (code: string) => {
     setValue("countryCode", code, { shouldValidate: true, shouldDirty: true });
     setValue("citySlug", "", { shouldValidate: false });
+    setValue("cityName", "", { shouldValidate: false });
     setValue("neighborhoodSlug", "", { shouldValidate: false });
+    setValue("neighborhoodName", "", { shouldValidate: false });
     setValue("lat", undefined);
     setValue("lng", undefined);
+    setCityMode("list");
+    setNbMode("list");
   };
 
   const handleCityChange = (slug: string) => {
-    setValue("citySlug", slug, { shouldValidate: true, shouldDirty: true });
     setValue("neighborhoodSlug", "", { shouldValidate: false });
+    setValue("neighborhoodName", "", { shouldValidate: false });
+    setNbMode("list");
+    if (slug === OTHER) {
+      // Bascule en saisie libre : on vide le slug, cityName devient éditable.
+      setValue("citySlug", "", { shouldValidate: true, shouldDirty: true });
+      setValue("lat", undefined);
+      setValue("lng", undefined);
+      setCityMode("free");
+      return;
+    }
+    setCityMode("list");
+    setValue("citySlug", slug, { shouldValidate: true, shouldDirty: true });
+    setValue("cityName", "", { shouldValidate: false });
     const c = getCityBySlug(countryCode, slug);
     if (c) {
       setValue("lat", c.lat);
       setValue("lng", c.lng);
     }
+  };
+
+  const handleNeighborhoodChange = (slug: string) => {
+    if (slug === OTHER) {
+      setValue("neighborhoodSlug", "", { shouldValidate: false });
+      setValue("neighborhoodName", "", { shouldValidate: false });
+      setNbMode("free");
+      return;
+    }
+    setNbMode("list");
+    setValue("neighborhoodName", "", { shouldValidate: false });
+    setValue("neighborhoodSlug", slug, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleGeolocate = () => {
@@ -1000,7 +1071,7 @@ function Step2Location() {
             Ville <span className="text-destructive">*</span>
           </Label>
           <Select
-            value={citySlug}
+            value={cityMode === "free" ? OTHER : citySlug}
             onValueChange={handleCityChange}
             disabled={!country}
           >
@@ -1022,56 +1093,97 @@ function Step2Location() {
                   )}
                 </SelectItem>
               ))}
+              {country && (
+                <SelectItem value={OTHER}>
+                  Autre ville / commune (à préciser)…
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
-          <FieldError message={formState.errors.citySlug?.message} />
+          {cityMode === "free" && country && (
+            <Input
+              placeholder="Saisissez le nom de la ville ou de la commune"
+              className="mt-2"
+              autoFocus
+              {...register("cityName")}
+            />
+          )}
+          <FieldError message={formState.errors.cityName?.message} />
         </div>
 
-        {/* QUARTIER */}
+        {/* QUARTIER (facultatif) */}
         <div>
           <Label htmlFor="neighborhood" className="text-sm font-semibold">
-            Quartier <span className="text-destructive">*</span>
+            Quartier{" "}
+            <span className="text-xs font-normal text-muted-foreground">
+              (recommandé)
+            </span>
           </Label>
-          <Select
-            value={neighborhoodSlug}
-            onValueChange={(v) =>
-              setValue("neighborhoodSlug", v, {
-                shouldValidate: true,
-                shouldDirty: true,
-              })
-            }
-            disabled={!city}
-          >
-            <SelectTrigger id="neighborhood" className="mt-1.5 w-full">
-              <SelectValue
+
+          {nbFreeText ? (
+            <>
+              <Input
+                id="neighborhood"
                 placeholder={
-                  city ? "Choisir un quartier" : "Sélectionnez d'abord une ville"
+                  country
+                    ? "Saisissez le quartier / zone (ex. Zongo, Cité SONEB…)"
+                    : "Sélectionnez d'abord un pays"
                 }
+                className="mt-1.5"
+                disabled={!countryCode && !citySlug && cityMode !== "free"}
+                {...register("neighborhoodName")}
               />
-            </SelectTrigger>
-            <SelectContent>
-              {city?.neighborhoods.map((n) => (
-                <SelectItem key={n.slug} value={n.slug}>
-                  <div className="flex w-full items-center justify-between gap-3">
-                    <span>{n.name}</span>
-                    <span className="text-xs font-bold text-kaza-blue">
-                      {"€".repeat(n.priceTier)}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {neighborhood && (
-            <div className="mt-2 flex flex-wrap gap-1">
-              {neighborhood.tags.map((t) => (
-                <Badge key={t} variant="outline" className="text-[10px]">
-                  {t}
-                </Badge>
-              ))}
-            </div>
+              {cityHasNeighborhoods && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNbMode("list");
+                    setValue("neighborhoodName", "", { shouldValidate: false });
+                  }}
+                  className="mt-1.5 text-xs font-medium text-kaza-blue hover:underline"
+                >
+                  ← Choisir dans la liste des quartiers
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <Select
+                value={neighborhoodSlug}
+                onValueChange={handleNeighborhoodChange}
+                disabled={!city}
+              >
+                <SelectTrigger id="neighborhood" className="mt-1.5 w-full">
+                  <SelectValue placeholder="Choisir un quartier" />
+                </SelectTrigger>
+                <SelectContent>
+                  {city?.neighborhoods.map((n) => (
+                    <SelectItem key={n.slug} value={n.slug}>
+                      <div className="flex w-full items-center justify-between gap-3">
+                        <span>{n.name}</span>
+                        <span className="text-xs font-bold text-kaza-blue">
+                          {"€".repeat(n.priceTier)}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={OTHER}>
+                    Autre quartier (à préciser)…
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {neighborhood && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {neighborhood.tags.map((t) => (
+                    <Badge key={t} variant="outline" className="text-[10px]">
+                      {t}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </>
           )}
-          <FieldError message={formState.errors.neighborhoodSlug?.message} />
+          <FieldError message={formState.errors.neighborhoodName?.message} />
         </div>
 
         {/* ADRESSE */}
