@@ -89,6 +89,16 @@ export default async function PropertyDetailPage({
   const isAuthenticated = Boolean(user);
   const isOwnProperty = user?.id === owner?.id;
   const isSale = property.listingType === "SALE";
+  // Un bien réservé/vendu ne doit plus accepter d'offre/candidature.
+  const isAvailable = property.status === "AVAILABLE";
+  const statusLabelFr =
+    property.status === "SOLD"
+      ? "Vendu"
+      : property.status === "RESERVED"
+        ? "Réservé"
+        : property.status === "RENTED"
+          ? "Loué"
+          : null;
 
   const ownerFullName = owner
     ? `${owner.firstName} ${owner.lastName}`
@@ -319,17 +329,24 @@ export default async function PropertyDetailPage({
                     </div>
                   ) : (
                     <div className="mb-3 space-y-2">
-                      <MakeOfferButton
-                        propertyId={property.id}
-                        propertyTitle={property.title}
-                        askingPrice={property.price}
-                        isAuthenticated={isAuthenticated}
-                      />
+                      {isAvailable ? (
+                        <MakeOfferButton
+                          propertyId={property.id}
+                          propertyTitle={property.title}
+                          askingPrice={property.price}
+                          isAuthenticated={isAuthenticated}
+                        />
+                      ) : (
+                        <div className="rounded-md border border-amber-300 bg-amber-100/70 p-3 text-center text-sm font-semibold text-amber-800">
+                          {statusLabelFr ?? "Indisponible"} — ce bien n&apos;accepte
+                          plus d&apos;offre.
+                        </div>
+                      )}
                       <Button asChild variant="outline" className="w-full">
                         <Link
                           href={
                             owner?.id
-                              ? `/messages?to=${owner.id}`
+                              ? `/messages/${owner.id}?property=${property.id}`
                               : "/messages"
                           }
                         >
@@ -369,24 +386,44 @@ export default async function PropertyDetailPage({
                     </div>
                   ) : (
                     <div className="mb-3 space-y-2">
-                      <VisitRequestButton
-                        propertyId={property.id}
-                        propertyTitle={property.title}
-                        propertyAddress={property.address}
-                        ownerName={ownerFullName}
-                        isAuthenticated={isAuthenticated}
-                        variant="large"
-                      />
-                      <ApplyButton
-                        propertyId={property.id}
-                        propertyTitle={property.title}
-                        isAuthenticated={isAuthenticated}
-                      />
+                      {isAvailable ? (
+                        <>
+                          <VisitRequestButton
+                            propertyId={property.id}
+                            propertyTitle={property.title}
+                            propertyAddress={property.address}
+                            ownerName={ownerFullName}
+                            isAuthenticated={isAuthenticated}
+                            variant="large"
+                          />
+                          <ApplyButton
+                            propertyId={property.id}
+                            propertyTitle={property.title}
+                            isAuthenticated={isAuthenticated}
+                          />
+                        </>
+                      ) : (
+                        <div className="rounded-md border border-amber-300 bg-amber-100/70 p-3 text-center text-sm font-semibold text-amber-800">
+                          {statusLabelFr ?? "Indisponible"} — ce bien n&apos;est
+                          plus disponible à la location.
+                        </div>
+                      )}
+                      <Button asChild variant="outline" className="w-full">
+                        <Link
+                          href={
+                            owner?.id
+                              ? `/messages/${owner.id}?property=${property.id}`
+                              : "/messages"
+                          }
+                        >
+                          Contacter le propriétaire
+                        </Link>
+                      </Button>
                     </div>
                   )}
 
                   <p className="mb-4 text-center text-xs text-muted-foreground">
-                    Aucun frais ne sera prélevé
+                    Aucun frais ne sera prélevé avant la signature du bail
                   </p>
 
                   <Separator className="my-4" />

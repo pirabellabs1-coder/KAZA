@@ -11,6 +11,7 @@ import {
   XCircle,
   Ban,
   Eye,
+  ArrowRight,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -102,6 +103,17 @@ export function ApplicationsView({
                     </p>
                   </div>
                   <div className="flex shrink-0 gap-2">
+                    {a.status === "ACCEPTED" && (
+                      <Button
+                        asChild
+                        size="sm"
+                        className="gap-1.5 bg-kaza-green text-white hover:bg-kaza-green/90"
+                      >
+                        <Link href="/tenant/rentals">
+                          <ArrowRight className="size-3.5" /> Signer & finaliser
+                        </Link>
+                      </Button>
+                    )}
                     <Button asChild variant="outline" size="sm" className="gap-1.5">
                       <Link href={`/properties/${a.propertyId}`}>
                         <Eye className="size-3.5" /> Le bien

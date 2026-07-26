@@ -93,6 +93,38 @@ async function decideRefund(
 
   const decisionNote = note?.trim() || null;
 
+  // Si APPROUVÉ : on effectue d'ABORD le remboursement réel (crédit du wallet
+  // locataire depuis l'escrow). On ne marque la demande « APPROUVÉE » que si le
+  // crédit a réussi — plus de fausse confirmation quand le remboursement échoue.
+  const paymentId = (request.payment_id as string | null) ?? null;
+  if (status === "APPROVED" && paymentId) {
+    try {
+      const res = await refundFromEscrow(
+        paymentId,
+        decisionNote ?? "Remboursement approuvé par l'administration.",
+      );
+      if (res.status !== "refunded") {
+        return {
+          success: false,
+          error:
+            "Le remboursement n'a pas pu être effectué (" +
+            (res.reason ?? res.status) +
+            "). La demande reste en attente.",
+        };
+      }
+    } catch (e) {
+      console.error(
+        "[refunds] refundFromEscrow exception:",
+        e instanceof Error ? e.message : e,
+      );
+      return {
+        success: false,
+        error:
+          "Le remboursement a échoué. La demande reste en attente, réessayez.",
+      };
+    }
+  }
+
   const { error: updateErr } = await supabase
     .from("refund_requests")
     .update({
@@ -110,31 +142,6 @@ async function decideRefund(
       success: false,
       error: "Impossible d'enregistrer la decision.",
     };
-  }
-
-  // Si APPROUVÉ : déclenche le remboursement réel depuis l'escrow (renvoi des
-  // fonds au locataire). refundFromEscrow gère le payout 2-étapes FedaPay et ne
-  // touche l'escrow que s'il est encore HELD. Best-effort : on logue l'échec
-  // sans invalider la décision (un retry manuel reste possible).
-  const paymentId = (request.payment_id as string | null) ?? null;
-  if (status === "APPROVED" && paymentId) {
-    try {
-      const res = await refundFromEscrow(
-        paymentId,
-        decisionNote ?? "Remboursement approuvé par l'administration.",
-      );
-      if (res.status !== "refunded") {
-        console.error(
-          "[refunds] refundFromEscrow statut inattendu:",
-          res.status,
-        );
-      }
-    } catch (e) {
-      console.error(
-        "[refunds] refundFromEscrow exception:",
-        e instanceof Error ? e.message : e,
-      );
-    }
   }
 
   // Journalise l'action admin (best-effort : un echec ne casse pas la decision).

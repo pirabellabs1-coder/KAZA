@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/end-leases",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/release-escrow",
+      "schedule": "30 2 * * *"
     }
   ]
 }

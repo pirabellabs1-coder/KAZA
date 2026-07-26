@@ -535,7 +535,9 @@ export async function listStudentColocations(
     `,
     )
     .eq("user_id", userId)
-    .in("status", ["APPROVED", "ACTIVE"]);
+    // Le statut « membre actif » de l'enum roommate_status est ACCEPTED
+    // (APPROVED/ACTIVE n'existent pas → la requête échouait silencieusement).
+    .in("status", ["ACCEPTED"]);
 
   const [ownedRes, membershipsRes] = await Promise.all([
     ownedQuery,
@@ -618,7 +620,7 @@ export async function listStudentColocations(
     members: Array<{ status: string }> | null;
   }>) {
     const active = (g.members ?? []).filter((mm) =>
-      ["APPROVED", "ACTIVE"].includes(mm.status),
+      mm.status === "ACCEPTED",
     ).length;
     membersByListing.set(
       g.listing_id,
