@@ -5,8 +5,6 @@ import {
   ArrowRight,
   CheckCircle2,
   GraduationCap,
-  Home,
-  Key,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -17,6 +15,7 @@ import { PropertySearchBar } from "@/components/property/property-search-bar";
 import { listPublicProperties } from "@/lib/queries/properties";
 import { StatCounter } from "@/components/marketing/stat-counter";
 import { GradientCard } from "@/components/marketing/gradient-card";
+import { SpacesTabs } from "@/components/marketing/spaces-tabs";
 import { InlineNewsletter } from "@/components/marketing/inline-newsletter";
 import { RevealOnScroll } from "@/components/shared/reveal-on-scroll";
 import { FadeIn } from "@/components/shared/fade-in";
@@ -67,69 +66,6 @@ const STUDENT_IMAGES = [
   "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=600&q=80",
   "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80",
-];
-
-const tenantSteps = [
-  {
-    step: "01",
-    title: "Découvrez",
-    description:
-      "Parcourez des annonces vérifiées avec photos haute qualité et visites virtuelles immersives.",
-  },
-  {
-    step: "02",
-    title: "Réservez en sécurité",
-    description:
-      "Payez via notre tunnel d'escrow sécurisé. Vos fonds sont protégés jusqu'à l'emménagement.",
-  },
-  {
-    step: "03",
-    title: "Emménagez sereinement",
-    description:
-      "Signez votre contrat numérique et gérez votre location depuis votre espace personnel.",
-  },
-];
-
-const ownerSteps = [
-  {
-    step: "01",
-    title: "Publiez & sélectionnez",
-    description:
-      "Mettez votre bien en avant auprès de locataires vérifiés, avec une fiche premium en 5 minutes.",
-  },
-  {
-    step: "02",
-    title: "Gestion simplifiée",
-    description:
-      "Encaissement automatique des loyers, suivi des visites et reporting clair en un coup d'œil.",
-  },
-  {
-    step: "03",
-    title: "Maximisez vos revenus",
-    description:
-      "Tarification dynamique et analyses de marché pour optimiser le rendement de vos biens.",
-  },
-];
-
-const studentSteps = [
-  {
-    step: "01",
-    title: "Matching colocataires",
-    description:
-      "Notre algorithme vous propose des colocataires compatibles, vérifiés et notés par la communauté.",
-  },
-  {
-    step: "02",
-    title: "Frais partagés auto",
-    description:
-      "Loyer, eau, électricité, internet : tout se calcule et se répartit automatiquement chaque mois.",
-  },
-  {
-    step: "03",
-    title: "Bail numérique",
-    description:
-      "Signature électronique du bail, opposable et conforme au droit en vigueur. Plus de papiers perdus.",
-  },
 ];
 
 const studentBenefits = [
@@ -405,146 +341,15 @@ export default async function HomePage() {
               </h2>
               <p className="mt-5 text-base text-muted-foreground sm:text-lg">
                 Que vous cherchiez à louer ou à acheter, à mettre un bien en
-                location ou en vente, ou à vivre en colocation étudiante, Kaabo
-                s&apos;adapte à votre projet.
+                location ou en vente, à gérer une agence ou à vivre en
+                colocation étudiante, Kaabo s&apos;adapte à votre projet.
               </p>
             </div>
           </RevealOnScroll>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Locataires */}
-            <RevealOnScroll direction="up" delay={0}>
-              <GradientCard
-                variant="blue"
-                className="flex h-full flex-col p-8 lg:p-10"
-              >
-                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-                  <Key className="size-7" aria-hidden />
-                </div>
-                <h3 className="font-heading text-2xl font-bold">
-                  Pour les locataires & acheteurs
-                </h3>
-                <p className="mt-2 text-sm text-white/80">
-                  Louez ou achetez votre prochain chez-vous en toute confiance.
-                </p>
-
-                <ul className="mt-8 flex-1 space-y-6">
-                  {tenantSteps.map((step) => (
-                    <li key={step.step} className="flex gap-4">
-                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
-                        {step.step}
-                      </span>
-                      <div>
-                        <h4 className="font-semibold">{step.title}</h4>
-                        <p className="mt-1 text-sm text-white/75">
-                          {step.description}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  asChild
-                  className="mt-8 w-full bg-white text-kaza-blue hover:bg-white/90"
-                >
-                  <Link href="/search">
-                    Rechercher un logement
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              </GradientCard>
-            </RevealOnScroll>
-
-            {/* Propriétaires */}
-            <RevealOnScroll direction="up" delay={150}>
-              <GradientCard
-                variant="navy"
-                className="flex h-full flex-col p-8 lg:p-10"
-              >
-                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-                  <Home className="size-7" aria-hidden />
-                </div>
-                <h3 className="font-heading text-2xl font-bold">
-                  Propriétaires & agences
-                </h3>
-                <p className="mt-2 text-sm text-white/80">
-                  Mettez vos biens en location ou en vente et augmentez vos
-                  revenus.
-                </p>
-
-                <ul className="mt-8 flex-1 space-y-6">
-                  {ownerSteps.map((step) => (
-                    <li key={step.step} className="flex gap-4">
-                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
-                        {step.step}
-                      </span>
-                      <div>
-                        <h4 className="font-semibold">{step.title}</h4>
-                        <p className="mt-1 text-sm text-white/75">
-                          {step.description}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  asChild
-                  className="mt-8 w-full bg-kaza-green text-white hover:bg-kaza-green/90"
-                >
-                  <Link href="/signup?role=owner">
-                    Publier une annonce
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              </GradientCard>
-            </RevealOnScroll>
-
-            {/* Étudiants */}
-            <RevealOnScroll direction="up" delay={300}>
-              <GradientCard
-                variant="green"
-                className="flex h-full flex-col p-8 lg:p-10"
-              >
-                <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-                  <GraduationCap className="size-7" aria-hidden />
-                </div>
-                <h3 className="font-heading text-2xl font-bold">
-                  Pour les étudiants
-                </h3>
-                <p className="mt-2 text-sm text-white/80">
-                  Colocations vérifiées, frais partagés, à deux pas du campus.
-                </p>
-
-                <ul className="mt-8 flex-1 space-y-6">
-                  {studentSteps.map((step) => (
-                    <li key={step.step} className="flex gap-4">
-                      <span className="shrink-0 font-heading text-2xl font-bold text-white/40">
-                        {step.step}
-                      </span>
-                      <div>
-                        <h4 className="font-semibold">{step.title}</h4>
-                        <p className="mt-1 text-sm text-white/75">
-                          {step.description}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  asChild
-                  className="mt-8 w-full bg-white text-kaza-green hover:bg-white/90"
-                >
-                  <Link href="/student-living">
-                    Trouver une colocation
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              </GradientCard>
-            </RevealOnScroll>
-          </div>
+          <RevealOnScroll direction="up">
+            <SpacesTabs />
+          </RevealOnScroll>
         </div>
       </section>
 
