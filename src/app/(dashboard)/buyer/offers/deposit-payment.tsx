@@ -20,7 +20,40 @@ import { formatPrice } from "@/lib/utils";
 import {
   payOfferDepositFromWallet,
   initiateOfferDepositPayment,
+  withdrawOffer,
 } from "@/actions/property-offers";
+
+/** Bouton « Retirer mon offre » (offre PENDING ou ACCEPTED non payée). */
+export function WithdrawOfferButton({ offerId }: { offerId: string }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handle = () => {
+    if (!window.confirm("Retirer votre offre pour ce bien ?")) return;
+    startTransition(async () => {
+      const res = await withdrawOffer(offerId);
+      if (res.success) {
+        toast.success("Offre retirée");
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Échec");
+      }
+    });
+  };
+
+  return (
+    <Button
+      size="sm"
+      variant="ghost"
+      className="gap-1.5 text-rose-600 hover:text-rose-700"
+      disabled={isPending}
+      onClick={handle}
+    >
+      {isPending ? <Loader2 className="size-3.5 animate-spin" /> : null}
+      Retirer
+    </Button>
+  );
+}
 
 export function DepositPaymentButton({
   offerId,

@@ -2,12 +2,16 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, X, BadgeCheck } from "lucide-react";
+import { Check, Loader2, X, BadgeCheck, Undo2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast-helper";
 
-import { decideOffer, markPropertySold } from "@/actions/property-offers";
+import {
+  decideOffer,
+  markPropertySold,
+  cancelReservation,
+} from "@/actions/property-offers";
 
 export function OfferDecisionButtons({ offerId }: { offerId: string }) {
   const router = useRouter();
@@ -85,6 +89,47 @@ export function MarkSoldButton({ offerId }: { offerId: string }) {
         <BadgeCheck className="size-3.5" />
       )}
       Marquer comme vendu
+    </Button>
+  );
+}
+
+export function CancelReservationButton({ offerId }: { offerId: string }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handle = () => {
+    if (
+      !window.confirm(
+        "Annuler la réservation ? L'acompte sera remboursé à l'acheteur et le bien redeviendra disponible.",
+      )
+    ) {
+      return;
+    }
+    startTransition(async () => {
+      const res = await cancelReservation(offerId);
+      if (res.success) {
+        toast.success("Réservation annulée — acompte remboursé à l'acheteur");
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Échec");
+      }
+    });
+  };
+
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      className="gap-1.5 text-rose-600 hover:text-rose-700"
+      disabled={isPending}
+      onClick={handle}
+    >
+      {isPending ? (
+        <Loader2 className="size-3.5 animate-spin" />
+      ) : (
+        <Undo2 className="size-3.5" />
+      )}
+      Annuler la réservation
     </Button>
   );
 }

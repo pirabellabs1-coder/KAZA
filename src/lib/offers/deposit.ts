@@ -88,7 +88,7 @@ export async function markOfferDepositPaid(
       .from("properties")
       .update({ status: "RESERVED" })
       .eq("id", propertyId)
-      .in("status", ["AVAILABLE", "PENDING_REVIEW"]);
+      .eq("status", "AVAILABLE");
   }
 
   // Notifie le vendeur (best-effort).

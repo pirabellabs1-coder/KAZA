@@ -9,7 +9,11 @@ import { getCurrentDisplayUser } from "@/lib/auth/current-user";
 import { listOffersForSeller } from "@/lib/queries/offers";
 import { formatPrice, formatDate } from "@/lib/utils";
 
-import { OfferDecisionButtons, MarkSoldButton } from "./offer-actions";
+import {
+  OfferDecisionButtons,
+  MarkSoldButton,
+  CancelReservationButton,
+} from "./offer-actions";
 
 export const metadata: Metadata = { title: "Offres d'achat reçues — Kaabo" };
 export const dynamic = "force-dynamic";
@@ -121,7 +125,10 @@ export default async function OwnerOffersPage() {
                       <OfferDecisionButtons offerId={o.id} />
                     )}
                     {o.status === "DEPOSIT_PAID" && (
-                      <MarkSoldButton offerId={o.id} />
+                      <div className="flex flex-wrap gap-2">
+                        <MarkSoldButton offerId={o.id} />
+                        <CancelReservationButton offerId={o.id} />
+                      </div>
                     )}
                   </div>
                 </CardContent>

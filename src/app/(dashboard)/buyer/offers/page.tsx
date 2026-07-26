@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 import { listOffersForBuyer } from "@/lib/queries/offers";
 import { formatPrice, formatDate } from "@/lib/utils";
 
-import { DepositPaymentButton } from "./deposit-payment";
+import { DepositPaymentButton, WithdrawOfferButton } from "./deposit-payment";
 
 export const metadata: Metadata = { title: "Mes offres d'achat — Kaabo" };
 export const dynamic = "force-dynamic";
@@ -152,6 +152,9 @@ export default async function BuyerOffersPage() {
                           deposit={o.deposit}
                           walletBalance={walletBalance}
                         />
+                      )}
+                      {(o.status === "PENDING" || o.status === "ACCEPTED") && (
+                        <WithdrawOfferButton offerId={o.id} />
                       )}
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/properties/${o.propertyId}`}>

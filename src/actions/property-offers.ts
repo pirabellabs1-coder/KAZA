@@ -259,7 +259,7 @@ async function loadPayableOffer(
   // Le bien doit toujours être disponible : si un autre acheteur a déjà versé
   // son acompte (bien RESERVED) ou si la vente est conclue (SOLD), on refuse.
   const propStatus = o.property?.status as string | undefined;
-  if (propStatus && propStatus !== "AVAILABLE" && propStatus !== "PENDING_REVIEW") {
+  if (propStatus && propStatus !== "AVAILABLE") {
     return {
       ok: false,
       error: "Ce bien n'est plus disponible (déjà réservé ou vendu).",
@@ -443,7 +443,7 @@ export async function markPropertySold(offerId: string): Promise<ActionResult> {
   const { data: offerRow } = await admin
     .from("property_offers")
     .select(
-      `id, status, buyer_id, property_id,
+      `id, status, buyer_id, property_id, deposit_fcfa, commission_fcfa,
        property:properties!property_id(owner_id, title)`,
     )
     .eq("id", offerId)
@@ -456,6 +456,8 @@ export async function markPropertySold(offerId: string): Promise<ActionResult> {
   const propertyId = o.property_id as string | undefined;
   const propertyTitle = (o.property?.title as string | undefined) ?? "le bien";
   const buyerId = o.buyer_id as string | undefined;
+  const deposit = Number(o.deposit_fcfa ?? 0);
+  const commission = Number(o.commission_fcfa ?? 0);
 
   if (ownerId !== user.id) {
     return { success: false, error: "Action réservée au vendeur du bien." };
@@ -473,6 +475,30 @@ export async function markPropertySold(offerId: string): Promise<ActionResult> {
     .update({ status: "CLOSED", closed_at: new Date().toISOString() })
     .eq("id", offerId)
     .eq("status", "DEPOSIT_PAID");
+
+  // Reversement au vendeur : l'acompte NET (acompte − commission Kaabo) est
+  // crédité au wallet du vendeur ; Kaabo conserve la commission. Le solde du
+  // prix est réglé hors plateforme (notaire). Idempotent (reference_id=offre).
+  if (ownerId) {
+    const sellerNet = Math.max(0, deposit - commission);
+    if (sellerNet > 0) {
+      const { data: already } = await admin
+        .from("wallet_transactions")
+        .select("id")
+        .eq("reference_id", offerId)
+        .eq("type", "ADJUSTMENT")
+        .maybeSingle();
+      if (!already) {
+        await admin.from("wallet_transactions").insert({
+          user_id: ownerId,
+          type: "ADJUSTMENT",
+          amount_fcfa: sellerNet,
+          description: `Acompte de vente (net de commission Kaabo) — ${propertyTitle}`,
+          reference_id: offerId,
+        });
+      }
+    }
+  }
 
   // Bien → SOLD.
   if (propertyId) {
@@ -506,6 +532,153 @@ export async function markPropertySold(offerId: string): Promise<ActionResult> {
     });
   } catch (err) {
     console.error("[property-offers] notify sale closed:", err);
+  }
+
+  revalidatePath("/owner/offers");
+  revalidatePath("/buyer/offers");
+  revalidatePath("/owner/properties");
+  return { success: true };
+}
+
+/**
+ * L'acheteur retire son offre encore en attente (PENDING) ou acceptée mais non
+ * encore payée (ACCEPTED) → WITHDRAWN. Libère l'index d'unicité (une seule offre
+ * active par bien) et permet de re-soumettre.
+ */
+export async function withdrawOffer(offerId: string): Promise<ActionResult> {
+  if (!offerId) return { success: false, error: "Offre introuvable." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+  const { data: offerRow } = await admin
+    .from("property_offers")
+    .select("id, status, buyer_id, property:properties!property_id(owner_id, title)")
+    .eq("id", offerId)
+    .maybeSingle();
+  if (!offerRow) return { success: false, error: "Offre introuvable." };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const o: any = offerRow;
+  if (o.buyer_id !== user.id) {
+    return { success: false, error: "Cette offre ne vous appartient pas." };
+  }
+  if (o.status !== "PENDING" && o.status !== "ACCEPTED") {
+    return {
+      success: false,
+      error:
+        o.status === "DEPOSIT_PAID"
+          ? "L'acompte a été versé : contactez le vendeur pour annuler la réservation."
+          : "Cette offre ne peut plus être retirée.",
+    };
+  }
+
+  const { error: updErr } = await admin
+    .from("property_offers")
+    .update({ status: "WITHDRAWN" })
+    .eq("id", offerId)
+    .in("status", ["PENDING", "ACCEPTED"]);
+  if (updErr) {
+    return { success: false, error: "Impossible de retirer l'offre." };
+  }
+
+  revalidatePath("/buyer/offers");
+  revalidatePath("/owner/offers");
+  return { success: true };
+}
+
+/**
+ * Le vendeur (ou l'admin) annule une réservation dont l'acompte a été versé
+ * (vente qui ne se conclut pas) : l'acompte est REMBOURSÉ au wallet de
+ * l'acheteur, l'offre passe CANCELLED et le bien redevient AVAILABLE.
+ * Idempotent (garde WHERE status=DEPOSIT_PAID + reference_id du remboursement).
+ */
+export async function cancelReservation(
+  offerId: string,
+  reason?: string,
+): Promise<ActionResult> {
+  if (!offerId) return { success: false, error: "Offre introuvable." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Vous devez être connecté." };
+
+  const admin = createAdminClient() as unknown as SupabaseClient;
+
+  // Rôle admin ?
+  const { data: me } = await admin
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  const isAdmin = (me as { role?: string } | null)?.role === "ADMIN";
+
+  const { data: offerRow } = await admin
+    .from("property_offers")
+    .select(
+      `id, status, buyer_id, property_id, deposit_fcfa,
+       property:properties!property_id(owner_id, title, status)`,
+    )
+    .eq("id", offerId)
+    .maybeSingle();
+  if (!offerRow) return { success: false, error: "Offre introuvable." };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const o: any = offerRow;
+  const ownerId = o.property?.owner_id as string | undefined;
+  const buyerId = o.buyer_id as string | undefined;
+  const propertyId = o.property_id as string | undefined;
+  const propertyTitle = (o.property?.title as string | undefined) ?? "le bien";
+  const deposit = Number(o.deposit_fcfa ?? 0);
+
+  if (!isAdmin && ownerId !== user.id) {
+    return {
+      success: false,
+      error: "Action réservée au vendeur du bien ou à un administrateur.",
+    };
+  }
+  if (o.status !== "DEPOSIT_PAID") {
+    return { success: false, error: "Aucune réservation à annuler pour cette offre." };
+  }
+
+  // Offre → CANCELLED (garde d'idempotence).
+  const { error: updErr } = await admin
+    .from("property_offers")
+    .update({ status: "CANCELLED" })
+    .eq("id", offerId)
+    .eq("status", "DEPOSIT_PAID");
+  if (updErr) {
+    return { success: false, error: "Impossible d'annuler la réservation." };
+  }
+
+  // Remboursement de l'acompte au wallet de l'acheteur (idempotent).
+  if (buyerId && deposit > 0) {
+    const { data: already } = await admin
+      .from("wallet_transactions")
+      .select("id")
+      .eq("reference_id", offerId)
+      .eq("type", "REFUND_GIVEN")
+      .maybeSingle();
+    if (!already) {
+      await admin.from("wallet_transactions").insert({
+        user_id: buyerId,
+        type: "REFUND_GIVEN",
+        amount_fcfa: Math.round(deposit),
+        description: `Remboursement acompte — ${propertyTitle}${reason ? ` (${reason})` : ""}`,
+        reference_id: offerId,
+      });
+    }
+  }
+
+  // Bien → AVAILABLE (s'il était réservé).
+  if (propertyId) {
+    await admin
+      .from("properties")
+      .update({ status: "AVAILABLE" })
+      .eq("id", propertyId)
+      .eq("status", "RESERVED");
   }
 
   revalidatePath("/owner/offers");
